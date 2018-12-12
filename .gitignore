@@ -1,0 +1,10 @@
+#db
+pgdata
+db.env
+
+#api
+node_modules
+duketic.sql
+
+# frontend
+frontend

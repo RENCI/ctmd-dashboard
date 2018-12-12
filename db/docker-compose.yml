@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    container_name: tic-db
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./duketic.sql:/data/duketic.sql
+    ports:
+      - 5432:5432

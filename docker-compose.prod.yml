@@ -1,0 +1,20 @@
+version: '3'
+
+volumes:
+  conf:
+  frontend:
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile-prod
+    volumes:
+      - ./frontend:/usr/src/app
+      - ./frontend/default.conf:/etc/nginx/conf.d/default.conf
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 80:80
