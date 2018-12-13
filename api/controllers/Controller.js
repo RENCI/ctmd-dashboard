@@ -1,6 +1,6 @@
 const db = require('../config/database')
 
-exports.query = (req, res, query) => {
+exports.runQuery = (req, res, query) => {
     db.any(query)
         .then(data => {
             console.log(`HIT: ${req.path}`)
