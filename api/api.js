@@ -12,6 +12,6 @@ app.listen(PORT, () => {
 })
 
 // Routes
-const Routes = require('./routes/Routes')
-app.use('/api', Routes)
+const ProposalRoutes = require('./routes/ProposalRoutes')
+app.use('/proposals', ProposalRoutes)
 
