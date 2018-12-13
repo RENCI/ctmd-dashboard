@@ -41,7 +41,10 @@ router.get('/approved/second-meeting/by-year', (req, res) => {
 
 // For services approved in first meeting:
 router.get('/approved/first-meeting/by-month', (req, res) => {
-    query = 'SELECT service.proposal_id, service.services_approved,vote.meeting_date,EXTRACT (YEAR FROM vote.meeting_date) as year, EXTRACT(MONTH FROM vote.meeting_date) as month, funding.funding FROM service \
+    query = 'SELECT service.proposal_id, service.services_approved, vote.meeting_date, \
+        EXTRACT (YEAR FROM vote.meeting_date) as year, \
+        EXTRACT(MONTH FROM vote.meeting_date) as month, funding.funding \
+        FROM service \
         INNER JOIN vote on service.proposal_id = vote.proposal_id \
         INNER JOIN funding ON funding.proposal_id=vote.proposal_id \
         WHERE vote.meeting_date is not NULL ORDER BY year, month;'
@@ -49,7 +52,10 @@ router.get('/approved/first-meeting/by-month', (req, res) => {
 })
 // For services approved in second meeting:
 router.get('/approved/second-meeting/by-month', (req, res) => {
-    query = 'SELECT service.proposal_id, service.services_approved,vote.meeting_date_2,EXTRACT (YEAR FROM vote.meeting_date_2) as year, EXTRACT(MONTH FROM vote.meeting_date_2) as month, funding.funding FROM service \
+    query = 'SELECT service.proposal_id, service.services_approved, vote.meeting_date_2, \
+        EXTRACT (YEAR FROM vote.meeting_date_2) as year, \
+        EXTRACT(MONTH FROM vote.meeting_date_2) as month, funding.funding \
+        FROM service \
         INNER JOIN vote on service.proposal_id = vote.proposal_id \
         INNER JOIN funding ON funding.proposal_id=vote.proposal_id \
         WHERE vote.meeting_date_2 is not NULL ORDER BY year, month;'
@@ -61,7 +67,8 @@ router.get('/approved/second-meeting/by-month', (req, res) => {
 // // 
 
 router.get('/approved/by-submitting-institution', (req, res) => {
-    query = 'SELECT DISTINCT proposal.proposal_id, service.services_approved, proposal.org_name, funding.funding FROM proposal \
+    query = 'SELECT DISTINCT proposal.proposal_id, service.services_approved, proposal.org_name, funding.funding \
+        FROM proposal \
         INNER JOIN service ON proposal.proposal_id=service.proposal_id \
         INNER JOIN funding ON funding.proposal_id=service.proposal_id ORDER BY proposal.org_name;'
     controller.runQuery(req, res, query)

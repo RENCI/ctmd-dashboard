@@ -1,7 +1,11 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const db = require('./config/database')
+
+// CORS
+app.use(cors())
 
 // Config
 const PORT = 3030
