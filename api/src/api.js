@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const db = require('./src/config/database')
+const db = require('./config/database')
 
 // Config
 const PORT = 3030
@@ -12,6 +12,6 @@ app.listen(PORT, () => {
 })
 
 // Routes
-const Routes = require('./src/routes/Routes')
+const Routes = require('./routes/Routes')
 app.use('/api', Routes)
 
