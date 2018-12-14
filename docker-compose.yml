@@ -13,23 +13,26 @@ services:
       - ./db/duketic.sql:/data/duketic.sql
     env_file:
      - ./db.env
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
+
   api:
     container_name: node
     build:
       context: ./api/
       dockerfile: Dockerfile
-    ports:
-      - "3030:3030"
     volumes:
-      - ./api:/api
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules/
+    ports:
+      - 3030:3030
     environment:
       - NODE_ENV=development
     env_file:
      - ./db.env
     depends_on:
       - db
+
   frontend:
     container_name: react
     build:
@@ -43,5 +46,5 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - db
+      - api
 
