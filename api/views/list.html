@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Endpoints</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        a, a:visited {
+            color: #001A57;
+        }
+        .endpoints {
+            list-style-type: none;
+            padding: 0;
+        }
+        .endpoint {
+            border: 1px solid #eee;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .desc {
+            font-weight: bold;
+            padding-bottom: 1rem;
+        }
+        .path {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 250ms, color 250ms;
+        }
+        .path:hover {
+            background-color: #ddd;
+            color: #0680CD;
+        }
+    </style>
+</head>
+<body>
+    <h1>API: Available Endpoints</h1>
+    
+    <h2>Approved by the PAT for a &lt;service – i.e. CIRB&gt;</h2>
+
+    <ul class="endpoints">
+        <li class="endpoint">
+            <div class="desc">For services approved in first meeting, by fiscal year</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-year">api/proposals/approved/first-meeting/by-year</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">For services approved in second meeting, by fiscal year</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-year">api/proposals/approved/second-meeting/by-year</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">For services approved in first meeting, by month</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-month">api/proposals/approved/first-meeting/by-month</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">For services approved in second meeting, by month</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-month">api/proposals/approved/second-meeting/by-month</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Institution Submitted</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/by-submitting-institution">api/proposals/approved/by-submitting-institution</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Institution assigned to (i.e. which TIC/RIC)</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/by-assigned-institution">api/proposals/approved/by-assigned-institution</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Therapeutic Area</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved/by-therapeutic-area">api/proposals/approved/by-therapeutic-area</a>
+        </li>
+    </ul>
+    
+    <h2>Submitted for a &lt;service – i.e. CIRB – for ‘other’ should be noted combined as well as each item separate if possible’&gt;</h2>
+
+    <ul class="endpoints">
+        <li class="endpoint">
+            <div class="desc">For submitted proposals, by fiscal year</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-year">api/proposals/submitted/by-year</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Submitted proposals, by month</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-month">api/proposals/submitted/by-month</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Institution submitted</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-submitting-institution">api/proposals/submitted/by-submitting-institution</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Institution assigned to (i.e. which TIC/RIC)</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-assigned-institution">api/proposals/submitted/by-assigned-institution</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Therapeutic Area</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-therapeutic-area">api/proposals/submitted/by-therapeutic-area</a>
+        </li>
+    </ul>
+    
+    <h2>Approved by PAT for Comprehensive Consultation</h2>
+
+    <ul class="endpoints">
+<!--
+        <li class="endpoint">
+            <div class="desc">Approved for consultation</div>
+            <a class="path" href="https://pmd.renci.org/api">api</a>
+        </li>
+-->
+        <li class="endpoint">
+            <div class="desc">Approved for consultation, by fiscal year</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-year">api/proposals/approved-for-consultation/by-year</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Approved for consultation, by month</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-month">api/proposals/approved-for-consultation/by-month</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Institution submitted</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-submitting-institution">api/proposals/approved-for-consultation/by-submitting-institution</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Institution assigned to (i.e. which TIC/RIC)</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-assigned-institution">api/proposals/approved-for-consultation/by-assigned-institution</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">By Therapeutic Area</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-therapeutic-area">api/proposals/approved-for-consultation/by-therapeutic-area</a>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Resubmissions</div>
+            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/resubmissions">api/proposals/approved-for-consultation/resubmissions</a>
+        </li>
+    </ul>
+</body>
+</html>

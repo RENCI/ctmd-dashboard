@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const controller = require('../controllers/Controller')
+const controller = require('../controllers/QueryController')
 
 // Routes beginning with "HOSTNAME/proposals/..."
 

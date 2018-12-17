@@ -16,6 +16,12 @@ app.listen(PORT, () => {
 })
 
 // Routes
+
+// Endpoint List
+const InfoRoutes = require('./routes/EndpointList')
+app.use('/list', InfoRoutes)
+
+// Proposals
 const ProposalRoutes = require('./routes/Proposals')
 app.use('/proposals', ProposalRoutes)
 
