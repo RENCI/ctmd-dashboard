@@ -1,20 +1,50 @@
 version: '3'
 
-volumes:
-  conf:
-  frontend:
-
 services:
+  db:
+    container_name: postgres
+    restart: always
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    volumes:
+      - ./db/pgdata/:/var/lib/postgresql/data/
+      - ./db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./db/duketic.sql:/data/duketic.sql
+    env_file:
+     - ./db.env
+    expose:
+      - 5432
+
+  api:
+    container_name: node
+    build:
+      context: ./api/
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules/
+    ports:
+      - 3030:3030
+    environment:
+      - NODE_ENV=production
+    env_file:
+     - ./db.env
+    depends_on:
+      - db
+
   frontend:
-    container_name: frontend
+    container_name: react
     build:
       context: ./frontend/
       dockerfile: Dockerfile-prod
     volumes:
       - ./frontend:/usr/src/app
-      - ./frontend/default.conf:/etc/nginx/conf.d/default.conf
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=production
     ports:
-      - 80:80
+      - 3000:3000
+    depends_on:
+      - api
+
