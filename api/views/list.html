@@ -20,37 +20,41 @@
             margin-bottom: 0.5rem;
             border-radius: 0.25rem;
         }
-        .request-type {
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.25rem;
-            display: inline-block;
-            color: #fff;
-            font-family: monospace;
-        }
-        .get {
-            background-color: #f66;
-        }
-        .get::after {
-            margin: 0.5rem;
-            content: 'GET';
-        }
         .desc {
             font-weight: bold;
             padding-bottom: 1rem;
         }
-        .path {
+        .request::before {
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+            padding: 0.5rem 0.5rem;
+            display: inline-block;
+            color: #fff;
             font-family: monospace;
+            margin: 0;
+            position: relative;
+            right: 0;
+            left: 0;
+            margin-right: 0.5rem;
+            transition: background-color 250ms;
+        }
+        .get::before {
+            content: 'GET';
+            background-color: #dcc;
+        }
+        .endpoint:hover .get::before {
+            background-color: #f66;
+        }
+        .route > a {
+            font-family: monospace;
+            border-radius: 0.5rem;
             background-color: #eee;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
+            padding: 0.5rem 0.5rem 0.5rem 0;
+            margin: 0;
             transition: background-color 250ms, color 250ms, margin-left 500ms;
         }
-        .endpoint:hover > .path {
-            margin-left: 0.5rem;
-        }
-        .path:hover {
+        .endpoint:hover > .route > a {
             background-color: #ddd;
-            color: #0680CD;
         }
     </style>
 </head>
@@ -62,66 +66,59 @@
     <ul class="endpoints">
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    For services approved in first meeting, by fiscal year
-                </span>
+                For services approved in first meeting, by fiscal year
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-year">api/proposals/approved/first-meeting/by-year</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-year">api/proposals/approved/first-meeting/by-year</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    For services approved in second meeting, by fiscal year
-                </span>
+                For services approved in second meeting, by fiscal year
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-year">api/proposals/approved/second-meeting/by-year</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-year">api/proposals/approved/second-meeting/by-year</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    For services approved in first meeting, by month
-                </span>
+                For services approved in first meeting, by month
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-month">api/proposals/approved/first-meeting/by-month</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-month">api/proposals/approved/first-meeting/by-month</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    For services approved in second meeting, by month
-                </span>
+                For services approved in second meeting, by month
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-month">api/proposals/approved/second-meeting/by-month</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-month">api/proposals/approved/second-meeting/by-month</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Institution Submitted
-                </span>
+                By Institution Submitted
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/by-submitting-institution">api/proposals/approved/by-submitting-institution</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/by-submitting-institution">api/proposals/approved/by-submitting-institution</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Institution assigned to (i.e. which TIC/RIC)
-                </span>
+                By Institution assigned to (i.e. which TIC/RIC)
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/by-assigned-institution">api/proposals/approved/by-assigned-institution</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/by-assigned-institution">api/proposals/approved/by-assigned-institution</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Therapeutic Area
-                </span>
+                By Therapeutic Area
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved/by-therapeutic-area">api/proposals/approved/by-therapeutic-area</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/by-therapeutic-area">api/proposals/approved/by-therapeutic-area</a>
+            </div>
         </li>
     </ul>
     
@@ -130,48 +127,43 @@
     <ul class="endpoints">
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    For submitted proposals, by fiscal year
-                </span>
+                For submitted proposals, by fiscal year
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-year">api/proposals/submitted/by-year</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-year">api/proposals/submitted/by-year</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    Submitted proposals, by month
-                </span>
+                Submitted proposals, by month
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-month">api/proposals/submitted/by-month</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-month">api/proposals/submitted/by-month</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Institution submitted
-                </span>
+                By Institution submitted
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-submitting-institution">api/proposals/submitted/by-submitting-institution</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-submitting-institution">api/proposals/submitted/by-submitting-institution</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Institution assigned to (i.e. which TIC/RIC)
-                </span>
+                By Institution assigned to (i.e. which TIC/RIC)
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-assigned-institution">api/proposals/submitted/by-assigned-institution</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-assigned-institution">api/proposals/submitted/by-assigned-institution</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Therapeutic Area
-                </span>
+                By Therapeutic Area
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/submitted/by-therapeutic-area">api/proposals/submitted/by-therapeutic-area</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-therapeutic-area">api/proposals/submitted/by-therapeutic-area</a>
+            </div>
         </li>
     </ul>
     
@@ -181,67 +173,60 @@
 <!--
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                    <span>
-                        Approved for consultation
-                    </span>
+                    Approved for consultation
                     </div>
-            <a class="path" href="https://pmd.renci.org/api">api</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api">api</a>
+            </div>
         </li>
 -->
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    Approved for consultation, by fiscal year
-                </span>
+                Approved for consultation, by fiscal year
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-year">api/proposals/approved-for-consultation/by-year</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-year">api/proposals/approved-for-consultation/by-year</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    Approved for consultation, by month
-                </span>
+                Approved for consultation, by month
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-month">api/proposals/approved-for-consultation/by-month</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-month">api/proposals/approved-for-consultation/by-month</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Institution submitted
-                </span>
+                By Institution submitted
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-submitting-institution">api/proposals/approved-for-consultation/by-submitting-institution</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-submitting-institution">api/proposals/approved-for-consultation/by-submitting-institution</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Institution assigned to (i.e. which TIC/RIC)
-                </span>
+                By Institution assigned to (i.e. which TIC/RIC)
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-assigned-institution">api/proposals/approved-for-consultation/by-assigned-institution</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-assigned-institution">api/proposals/approved-for-consultation/by-assigned-institution</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    By Therapeutic Area
-                </span>
+                By Therapeutic Area
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-therapeutic-area">api/proposals/approved-for-consultation/by-therapeutic-area</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-therapeutic-area">api/proposals/approved-for-consultation/by-therapeutic-area</a>
+            </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                <span class="request-type get"></span>
-                <span>
-                    Resubmissions
-                </span>
+                Resubmissions
             </div>
-            <a class="path" href="https://pmd.renci.org/api/proposals/approved-for-consultation/resubmissions">api/proposals/approved-for-consultation/resubmissions</a>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/resubmissions">api/proposals/approved-for-consultation/resubmissions</a>
+            </div>
         </li>
     </ul>
 </body>
