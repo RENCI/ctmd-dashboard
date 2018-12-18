@@ -17,7 +17,8 @@
         .endpoint {
             border: 1px solid #eee;
             padding: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
         }
         .desc {
             font-weight: bold;
@@ -28,7 +29,10 @@
             background-color: #eee;
             padding: 0.5rem;
             border-radius: 0.25rem;
-            transition: background-color 250ms, color 250ms;
+            transition: background-color 250ms, color 250ms, margin-left 500ms;
+        }
+        .endpoint:hover > .path {
+            margin-left: 0.5rem;
         }
         .path:hover {
             background-color: #ddd;
