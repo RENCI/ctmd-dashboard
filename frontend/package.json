@@ -2,7 +2,7 @@
   "name": "duke-tic",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://renciweb.github.io/duke-tic",
+  "homepage": "https://pmd.renci.org/",
   "devDependencies": {},
   "dependencies": {
     "@material-ui/core": "^3.4.0",
