@@ -15,7 +15,7 @@ app.listen(PORT, () => {
     console.log(`\nShhh... I'm listening on port ${PORT}.\n`)
 })
 
-// Routes // // // // // // // // // // // // // //
+// // // Routes // // //
 
 // Endpoint List/Documentation
 const DocumentationRoutes = require('./routes/Documentation')
@@ -28,4 +28,3 @@ app.use('/proposals', ProposalRoutes)
 // General
 const GeneralRoutes = require('./routes/General')
 app.use('/', GeneralRoutes)
-
