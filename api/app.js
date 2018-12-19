@@ -8,7 +8,7 @@ const db = require('./config/database')
 app.use(cors())
 
 // Config
-const PORT = 3030
+const PORT = process.env.API_PORT || 3030
 
 // Tell me it's working!
 app.listen(PORT, () => {
