@@ -18,6 +18,4 @@ RUN npm install -g
 
 COPY ./ ./
 
-EXPOSE 3030
-
 CMD ["npm", "start"]
