@@ -17,9 +17,9 @@ app.listen(PORT, () => {
 
 // Routes // // // // // // // // // // // // // //
 
-// Endpoint Docs/List
-const InfoRoutes = require('./routes/EndpointList')
-app.use('/list', InfoRoutes)
+// Endpoint List/Documentation
+const DocumentationRoutes = require('./routes/Documentation')
+app.use('/list', DocumentationRoutes)
 
 // Proposals
 const ProposalRoutes = require('./routes/Proposals')
