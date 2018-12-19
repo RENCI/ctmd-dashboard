@@ -24,14 +24,13 @@ class ApprovedProposals extends Component {
         proposals: [],
     }
     
-    endpointRoot = 'http://localhost:3030/proposals/approved'
     endpoints = {
-        0: `${ this.endpointRoot }/first-meeting/by-year`,
-        1: `${ this.endpointRoot }/second-meeting/by-year`,
-        2: `${ this.endpointRoot }/first-meeting/by-month`,
-        3: `${ this.endpointRoot }/second-meeting/by-month`,
-        4: `${ this.endpointRoot }/by-submitting-institution`,
-        5: `${ this.endpointRoot }/by-assigned-institution`,
+        0: `${ this.props.apiRoot }/proposals/approved/first-meeting/by-year`,
+        1: `${ this.props.apiRoot }/proposals/approved/second-meeting/by-year`,
+        2: `${ this.props.apiRoot }/proposals/approved/first-meeting/by-month`,
+        3: `${ this.props.apiRoot }/proposals/approved/second-meeting/by-month`,
+        4: `${ this.props.apiRoot }/proposals/approved/by-submitting-institution`,
+        5: `${ this.props.apiRoot }/proposals/approved/by-assigned-institution`,
     }
     
     componentWillMount = this.fetchData

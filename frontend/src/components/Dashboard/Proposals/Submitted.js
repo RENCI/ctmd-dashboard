@@ -22,13 +22,12 @@ class SubmittedProposals extends Component {
         proposals: [],
     }
     
-    endpointRoot = 'http://localhost:3030/proposals/submitted'
     endpoints = {
-        0: `${ this.endpointRoot }/by-year`,
-        1: `${ this.endpointRoot }/by-month`,
-        2: `${ this.endpointRoot }/by-submitting-institution`,
-        3: `${ this.endpointRoot }/by-assigned-institution`,
-        4: `${ this.endpointRoot }/by-therapeutic-area`,
+        0: `${ this.props.apiRoot }/proposals/submitted/by-year`,
+        1: `${ this.props.apiRoot }/proposals/submitted/by-month`,
+        2: `${ this.props.apiRoot }/proposals/submitted/by-submitting-institution`,
+        3: `${ this.props.apiRoot }/proposals/submitted/by-assigned-institution`,
+        4: `${ this.props.apiRoot }/proposals/submitted/by-therapeutic-area`,
     }
     
     componentWillMount = this.fetchData
