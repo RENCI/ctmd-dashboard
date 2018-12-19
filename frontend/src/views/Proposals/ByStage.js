@@ -1,9 +1,9 @@
 import React from 'react'
 
-import Heading from '../../../components/Typography/Heading'
-import Paragraph from '../../../components/Typography/Paragraph'
+import Heading from '../../components/Typography/Heading'
+import Paragraph from '../../components/Typography/Paragraph'
 
-import ProposalsInEachStage from '../../../components/Charts/Bar/ProposalsInEachStage'
+import ProposalsInEachStage from '../../components/Charts/Bar/ProposalsInEachStage'
 
 const proposalsByStage = (props) => {
     return (

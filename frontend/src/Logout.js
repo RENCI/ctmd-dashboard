@@ -1,9 +1,9 @@
 import React from 'react'
-import Page from '../components/Layout/Page'
-import Heading from '../components/Typography/Heading'
-import Paragraph from '../components/Typography/Paragraph'
+import Page from './components/Layout/Page'
+import Heading from './components/Typography/Heading'
+import Paragraph from './components/Typography/Paragraph'
 
-import { AuthConsumer } from '../contexts/AuthContext'
+import { AuthConsumer } from './contexts/AuthContext'
 
 const logoutPage = (props) => {
     return (

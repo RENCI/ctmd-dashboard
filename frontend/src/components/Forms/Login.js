@@ -76,9 +76,9 @@ class LoginForm extends Component {
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={this.state.checkedB}
-                                    onChange={this.handleChange('checkedB')}
-                                    value="checkedB"
+                                    checked={ this.state.checked }
+                                    onChange={ this.handleChange('checked') }
+                                    value="checked"
                                     color="primary"
                                 />
                             }

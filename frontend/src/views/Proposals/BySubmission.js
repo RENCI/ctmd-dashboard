@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Heading from '../../../components/Typography/Heading'
+import Heading from '../../components/Typography/Heading'
 
-import SubmittedProposals from '../../../components/Dashboard/Proposals/Submitted'
+import SubmittedProposals from '../../components/Dashboard/Proposals/Submitted'
 
 const proposalsBySubmission = (props) => {
     

@@ -5,7 +5,6 @@ import Container from './Container'
 import Header from './Header'
 import Footer from './Footer'
 import Menu from './Menu/MainMenu'
-import DashboardFab from '../Dashboard/Fab'
 
 const styles = (theme) => ({
     main: {
@@ -38,7 +37,6 @@ const page = (props) => {
                 ? null
                 : <Footer />
             }
-            <DashboardFab />
         </Fragment>
     )
 }

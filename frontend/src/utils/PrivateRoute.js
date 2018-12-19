@@ -14,7 +14,7 @@ const privateRoute = ({ component: Component, ...rest }) => {
                                     return (
                                         context.authenticated === true
                                         ? <Component { ...props }/>
-                                        : <Redirect to="/dashboard/login"/>
+                                        : <Redirect to="/login"/>
                                     )
                                 }
                             }

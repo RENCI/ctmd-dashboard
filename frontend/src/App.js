@@ -1,14 +1,18 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Switch,  Route } from 'react-router-dom'
+import PrivateRoute from './utils/PrivateRoute'
+import { withStyles } from '@material-ui/core/styles'
 import { AuthProvider } from './contexts/AuthContext'
+import LoginPage from './Login'
+import LogoutPage from './Logout'
+import Dashboard from './Dashboard'
 
-import LandingPage from './views/Index'
-import AboutPage from './views/About'
-import StartProposalPage from './views/StartProposal'
-import ReportsPage from './views/Reports'
-import ContactPage from './views/Contact'
+const drawerWidth = 240
 
-import Auth from './views/Dashboard/Auth'
+const styles = (theme) => ({
+    root: { },
+})
 
 class App extends Component {
     constructor(props) {
@@ -18,10 +22,11 @@ class App extends Component {
             user: {
                 name: 'Jane Doe',
                 email: 'janedoe@email.com',
-            }
+            },
+            mobileOpen: false,
         }
     }
-
+    
     updateLocalStorage = () => {
         localStorage.setItem('authenticated', this.state.authenticated);
     }
@@ -36,21 +41,6 @@ class App extends Component {
         console.log('Logged out!')
     }
 
-    componentWillMount = () => {
-        const authState = localStorage.getItem('authenticated') === 'true' ? true : false
-        this.setState({
-            authenticated: authState,
-        })
-        console.log(
-            localStorage.getItem('authenticated') === 'true'
-            ? "You are already logged in."
-            : "You are not logged in.")
-    }
-
-    authenticationChecker = () => {
-        return this.state.authenticated
-    }
-
     render() {
         return (
             <AuthProvider value={{
@@ -60,17 +50,18 @@ class App extends Component {
                 logout: this.logoutHandler,
             }}>
                 <Switch>
-                    <Route exact path="/" component={ Auth }/>
-                    <Route path="/about" component={ AboutPage }/>
-                    <Route path="/start-proposal" component={ StartProposalPage }/>
-                    <Route path="/reports" component={ ReportsPage }/>
-                    <Route path="/contact" component={ ContactPage }/>
-                    <Route path="/dashboard" component={ Auth }/>
-                    <Route path="/home" component={ LandingPage }/>
+                    <Route exact path="/login" component={ LoginPage }/>
+                    <Route exact path="/logout" component={ LogoutPage }/>
+                    <PrivateRoute path="/" component={ Dashboard }/>
+                    <PrivateRoute component={ LoginPage }/>
                 </Switch>
             </AuthProvider>
         )
     }
 }
 
-export default App
+App.propTypes = {
+    classes: PropTypes.object.isRequired,
+}
+
+export default withStyles(styles)(App)

@@ -1,13 +1,13 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Paper } from '@material-ui/core'
-import Page from '../components/Layout/Page'
-import Heading from '../components/Typography/Heading'
-import Paragraph from '../components/Typography/Paragraph'
-import LoginForm from '../components/Forms/Login'
-import ContinueToDashboard from '../components/Forms/ContinueToDashboard'
+import Page from './components/Layout/Page'
+import Heading from './components/Typography/Heading'
+import Paragraph from './components/Typography/Paragraph'
+import LoginForm from './components/Forms/Login'
+import ContinueToDashboard from './components/Forms/ContinueToDashboard'
 
-import { AuthConsumer } from '../contexts/AuthContext'
+import { AuthConsumer } from './contexts/AuthContext'
 
 const styles = (theme) => ({
     container: {

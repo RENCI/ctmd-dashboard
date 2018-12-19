@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react'
 import { TextField, Table, TableCell, Paper, TableHead, TableRow, TableBody } from '@material-ui/core'
 
-import Heading from '../../../components/Typography/Heading'
-import Subheading from '../../../components/Typography/Subheading'
-import Paragraph from '../../../components/Typography/Paragraph'
+import Heading from '../../components/Typography/Heading'
+import Subheading from '../../components/Typography/Subheading'
+import Paragraph from '../../components/Typography/Paragraph'
 
 const classes = {
     root: {

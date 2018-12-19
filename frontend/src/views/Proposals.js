@@ -2,14 +2,14 @@ import React, { Fragment } from 'react'
 
 import { Grid } from '@material-ui/core'
 
-import BubbleChart from '../../components/Charts/BubbleChart'
-import AreaChart from '../../components/Charts/AreaChart'
+import BubbleChart from '../components/Charts/BubbleChart'
+import AreaChart from '../components/Charts/AreaChart'
 
-import Heading from '../../components/Typography/Heading'
-import Subheading from '../../components/Typography/Subheading'
-import Paragraph from '../../components/Typography/Paragraph'
+import Heading from '../components/Typography/Heading'
+import Subheading from '../components/Typography/Subheading'
+import Paragraph from '../components/Typography/Paragraph'
 
-import ProposalsInEachStage from '../../components/Charts/Bar/ProposalsInEachStage'
+import ProposalsInEachStage from '../components/Charts/Bar/ProposalsInEachStage'
 
 const proposalsPage = (props) => {
     return (
