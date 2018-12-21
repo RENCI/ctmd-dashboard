@@ -16,6 +16,8 @@ import {
 
 import { AuthConsumer } from './contexts/AuthContext'
 
+import ScrollToTop from './utils/ScrollToTop'
+
 import Heading from './components/Typography/Heading'
 import SideMenu from './components/Menus/SideMenu'
 import UserMenu from './components/Menus/UserMenu'
@@ -180,18 +182,20 @@ class Dashboard extends Component {
                                 </nav>
                                 <main className={ classes.main }>
                                     <div className={ classes.toolbar } />
-                                    <Switch>
-                                        <Route exact path="/settings" component={ SettingsPage }/>
-                                        <Route path="/reports/proposals/approval" component={ ProposalsByApproval }/>
-                                        <Route path="/reports/proposals/submission" component={ ProposalsBySubmission }/>
-                                        <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                        <Route path="/reports/proposals" component={ ProposalsIndex }/>
-                                        <Route path="/reports/forecasts" component={ ForecastsPage }/>
-                                        <Route path="/reports/performance" component={ PerformancePage }/>
-                                        <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
-                                        <Route path="/analytics/query-builder" component={ QueryBuilderPage }/>
-                                        <Route path="/" component={ HomePage }/>
-                                    </Switch>
+                                    <ScrollToTop>
+                                        <Switch>
+                                            <Route exact path="/settings" component={ SettingsPage }/>
+                                            <Route path="/reports/proposals/approval" component={ ProposalsByApproval }/>
+                                            <Route path="/reports/proposals/submission" component={ ProposalsBySubmission }/>
+                                            <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
+                                            <Route path="/reports/proposals" component={ ProposalsIndex }/>
+                                            <Route path="/reports/forecasts" component={ ForecastsPage }/>
+                                            <Route path="/reports/performance" component={ PerformancePage }/>
+                                            <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
+                                            <Route path="/analytics/query-builder" component={ QueryBuilderPage }/>
+                                            <Route path="/" component={ HomePage }/>
+                                        </Switch>
+                                    </ScrollToTop>
                                 </main>
                             </div>
                         )
