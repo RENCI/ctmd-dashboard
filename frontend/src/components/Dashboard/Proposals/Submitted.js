@@ -39,7 +39,7 @@ class SubmittedProposals extends Component {
                 this.setState({ proposals: response.data })
             })
             .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
+                // console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
             })
     }
 
