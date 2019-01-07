@@ -2,7 +2,7 @@ import React from 'react'
 
 import Heading from '../../components/Typography/Heading'
 
-import Proposals from '../../components/Tables/Proposals/Proposals'
+import Proposals from '../../components/Tables/ProposalsTable'
 
 const submittedProposals = (props) => {
     
