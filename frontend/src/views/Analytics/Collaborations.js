@@ -3,18 +3,20 @@ import React, { Fragment } from 'react'
 import Heading from '../../components/Typography/Heading'
 import Paragraph from '../../components/Typography/Paragraph'
 
+import ProposalsNetwork from '../../components/Visualizations/Proposals'
+
 const classes = theme => ({
     root: { },
 })
 
 const collaborationsPage = (props) => {
+    const apiUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/network' : 'http://localhost:3030/proposals/network'
     return (
         <Fragment className={ classes.root }>
+        
             <Heading>Collaborations</Heading>
 
-            <Paragraph>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum doloribus distinctio praesentium asperiores quod sequi impedit porro earum vel minus reiciendis alias maxime, maiores vitae, officiis suscipit beatae sapiente incidunt. Rerum tenetur fuga praesentium iusto explicabo placeat ad beatae et alias, officia, possimus doloremque dolores nostrum? Similique provident, eligendi officiis.
-            </Paragraph>
+            <ProposalsNetwork apiUrl={ apiUrl } />
 
         </Fragment>
     )

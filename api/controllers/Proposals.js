@@ -49,7 +49,7 @@ exports.submittedProposals = (req, res) => {
 }
 
 exports.proposalsNetwork = (req, res) => {
-    query = `SELECT DISTINCT
+    query = `SELECT DISTINCT 
             proposal.proposal_id, "PI".pi_firstname, "PI".pi_lastname,
             proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration
         FROM proposal
