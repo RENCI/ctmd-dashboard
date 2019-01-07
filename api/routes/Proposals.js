@@ -1,8 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const controller = require('../controllers/QueryController')
+const proposalsController = require('../controllers/Proposals')
 
 // Routes beginning with "HOSTNAME/proposals/..."
+
+router.route('/approved').get(proposalsController.approvedProposals)
+router.route('/submitted').get(proposalsController.submittedProposals)
 
 // // // // // // // // // // // // // // // // // // // // // //
 // // // Approved by the PAT for a <service – i.e. CIRB> // // //

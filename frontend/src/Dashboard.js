@@ -16,16 +16,17 @@ import {
 
 import { AuthConsumer } from './contexts/AuthContext'
 
+import ScrollToTop from './utils/ScrollToTop'
+
 import Heading from './components/Typography/Heading'
 import SideMenu from './components/Menus/SideMenu'
 import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
-import ProposalsIndex from './views/Proposals/Index'
 import ProposalsByStage from './views/Proposals/ByStage'
-import ProposalsByApproval from './views/Proposals/ByApproval'
-import ProposalsBySubmission from './views/Proposals/BySubmission'
+import ApprovedProposals from './views/Proposals/Approved'
+import SubmittedProposals from './views/Proposals/Submitted'
 
 import ForecastsPage from './views/Forecasts'
 import PerformancePage from './views/Performance'
@@ -92,9 +93,9 @@ class Dashboard extends Component {
                 items: [
                     { text: 'Proposals', icon: <LayersIcon/>, href: '/reports/proposals',
                         submenu: [
+                            { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
+                            { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
-                            { text: 'By Submission', path: '/reports/proposals/submission', icon: <KeyboardArrowRightIcon/> },
-                            { text: 'By Approval', path: '/reports/proposals/approval', icon: <KeyboardArrowRightIcon/> },
                         ]
                     },
                     { text: 'Forecasts', icon: <LayersIcon/>, href: '/reports/forecasts', },
@@ -180,18 +181,19 @@ class Dashboard extends Component {
                                 </nav>
                                 <main className={ classes.main }>
                                     <div className={ classes.toolbar } />
-                                    <Switch>
-                                        <Route exact path="/settings" component={ SettingsPage }/>
-                                        <Route path="/reports/proposals/approval" component={ ProposalsByApproval }/>
-                                        <Route path="/reports/proposals/submission" component={ ProposalsBySubmission }/>
-                                        <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                        <Route path="/reports/proposals" component={ ProposalsIndex }/>
-                                        <Route path="/reports/forecasts" component={ ForecastsPage }/>
-                                        <Route path="/reports/performance" component={ PerformancePage }/>
-                                        <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
-                                        <Route path="/analytics/query-builder" component={ QueryBuilderPage }/>
-                                        <Route path="/" component={ HomePage }/>
-                                    </Switch>
+                                    <ScrollToTop>
+                                        <Switch>
+                                            <Route exact path="/settings" component={ SettingsPage }/>
+                                            <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
+                                            <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
+                                            <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
+                                            <Route path="/reports/forecasts" component={ ForecastsPage }/>
+                                            <Route path="/reports/performance" component={ PerformancePage }/>
+                                            <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
+                                            <Route path="/analytics/query-builder" component={ QueryBuilderPage }/>
+                                            <Route path="/" component={ HomePage }/>
+                                        </Switch>
+                                    </ScrollToTop>
                                 </main>
                             </div>
                         )
