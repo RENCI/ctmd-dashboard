@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { InteractiveForceGraph, ForceGraphNode, ForceGraphLink } from 'react-vis-force';
 import axios from 'axios'
 
 class proposalsNetwork extends Component {
@@ -29,23 +28,6 @@ class proposalsNetwork extends Component {
             return (
                 <div>
                     <div id="networkDiv">
-                        <InteractiveForceGraph
-                            simulationOptions={{ height: 300, width: 600 }}
-                            onSelectNode={(node) => console.log(node)}
-                            highlightDependencies
-                        >
-                            {
-                                proposals.map((proposal, index) => {
-                                    return (
-                                        <ForceGraphNode
-                                            key={ index }
-                                            node={{ id: proposal.proposal_id, label: proposal.proposal_id }}
-                                            fill="red"
-                                        />
-                                    )
-                                })
-                            }
-                        </InteractiveForceGraph>
                     </div>
                     <pre>
                         { JSON.stringify(proposals, null, 2) }
