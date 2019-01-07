@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
+import { Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core'
 import { AppBar, Tabs, Tab } from '@material-ui/core'
 import { Paper } from '@material-ui/core';
 
@@ -13,24 +14,21 @@ const styles = theme => ({
     tab: {},
     contents: {
         padding: 2 * theme.spacing.unit,
-        overflowY: 'scroll',
-        maxHeight: 'calc(100vh - 250px)'
     },
 })
 
-class ApprovedProposals extends Component {
+class SubmittedProposals extends Component {
     state = {
         value: 0,
         proposals: [],
     }
     
     endpoints = {
-        0: `${ this.props.apiRoot }/proposals/approved/first-meeting/by-year`,
-        1: `${ this.props.apiRoot }/proposals/approved/second-meeting/by-year`,
-        2: `${ this.props.apiRoot }/proposals/approved/first-meeting/by-month`,
-        3: `${ this.props.apiRoot }/proposals/approved/second-meeting/by-month`,
-        4: `${ this.props.apiRoot }/proposals/approved/by-submitting-institution`,
-        5: `${ this.props.apiRoot }/proposals/approved/by-assigned-institution`,
+        0: `${ this.props.apiRoot }/proposals/submitted/by-year`,
+        1: `${ this.props.apiRoot }/proposals/submitted/by-month`,
+        2: `${ this.props.apiRoot }/proposals/submitted/by-submitting-institution`,
+        3: `${ this.props.apiRoot }/proposals/submitted/by-assigned-institution`,
+        4: `${ this.props.apiRoot }/proposals/submitted/by-therapeutic-area`,
     }
     
     componentWillMount = this.fetchData
@@ -57,10 +55,11 @@ class ApprovedProposals extends Component {
             <div className={ classes.root }>
                 <AppBar position="static" className={ classes.tabStrip }>
                     <Tabs fullWidth value={ value } onChange={ this.handleChange }>
-                        <Tab className={ classes.tab } label="Approved in First Meeting" />
-                        <Tab className={ classes.tab } label="Approved in Second Meeting" />
+                        <Tab className={ classes.tab } label="By Year" />
+                        <Tab className={ classes.tab } label="By Month" />
                         <Tab className={ classes.tab } label="Submitting Institution" />
                         <Tab className={ classes.tab } label="Assigned Institution" />
+                        <Tab className={ classes.tab } label="By therapeutic Area" />
                     </Tabs>
                 </AppBar>
                 <Paper className={ classes.contents }>
@@ -73,4 +72,4 @@ class ApprovedProposals extends Component {
     }
 }
 
-export default withStyles(styles)(ApprovedProposals)
+export default withStyles(styles)(SubmittedProposals)

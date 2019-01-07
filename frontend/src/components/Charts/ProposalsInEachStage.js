@@ -1,11 +1,11 @@
 import React from "react";
 import { withTheme } from '@material-ui/core/styles'
 import Chart from "react-apexcharts";
-import ProposalsApprovedForSpecificServices from '../../../data/ProposalsApprovedForSpecificServices'
+import ProposalsInEachStage from '../../data/ProposalsInEachStage'
 
-const keys = Object.keys(ProposalsApprovedForSpecificServices)
-const categories = keys.map( (key) => ProposalsApprovedForSpecificServices[key].name )
-const data = keys.map( (key) => ProposalsApprovedForSpecificServices[key].count )
+const keys = Object.keys(ProposalsInEachStage)
+const categories = keys.map( (key) => ProposalsInEachStage[key].name )
+const data = keys.map( (key) => ProposalsInEachStage[key].count )
 
 const barGraph = (props) => {
     const { theme } = props
@@ -16,7 +16,6 @@ const barGraph = (props) => {
         plotOptions: {
             bar: {
                 columnWidth: '90%',
-                endingShape: 'rounded',
             }
         },
         stroke: {
