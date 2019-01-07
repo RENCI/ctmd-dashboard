@@ -7,6 +7,7 @@ const proposalsController = require('../controllers/Proposals')
 
 router.route('/approved').get(proposalsController.approvedProposals)
 router.route('/submitted').get(proposalsController.submittedProposals)
+router.route('/network').get(proposalsController.proposalsNetwork)
 
 // // // // // // // // // // // // // // // // // // // // // //
 // // // Approved by the PAT for a <service – i.e. CIRB> // // //
