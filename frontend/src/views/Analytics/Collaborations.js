@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 
 import Heading from '../../components/Typography/Heading'
 
@@ -11,13 +11,13 @@ const classes = theme => ({
 const collaborationsPage = (props) => {
     const apiUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/network' : 'http://localhost:3030/proposals/network'
     return (
-        <Fragment className={ classes.root }>
+        <div className={ classes.root }>
         
             <Heading>Collaborations</Heading>
 
             <ProposalsNetwork apiUrl={ apiUrl } />
 
-        </Fragment>
+        </div>
     )
 }
 
