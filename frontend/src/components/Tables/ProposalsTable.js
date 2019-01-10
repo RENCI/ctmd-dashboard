@@ -43,13 +43,8 @@ class ApprovedProposals extends Component {
     }
 
     componentWillMount = this.fetchData
-    
-    handleChange = (event, value) => {
-        this.setState({ value }, this.fetchData)
-    }
-    
+        
     render() {
-        const { value } = this.state
         const { classes } = this.props
         return (
             <div className={ classes.root }>
