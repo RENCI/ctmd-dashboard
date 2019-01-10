@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 
 import Heading from '../../components/Typography/Heading'
-import Paragraph from '../../components/Typography/Paragraph'
 
 import ProposalsNetwork from '../../components/Visualizations/Proposals'
 
