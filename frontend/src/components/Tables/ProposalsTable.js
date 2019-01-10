@@ -19,13 +19,12 @@ const styles = theme => ({
     contents: {
         padding: 2 * theme.spacing.unit,
         overflowY: 'scroll',
-        maxHeight: 'calc(100vh - 250px)'
+        maxHeight: 'calc(100vh - 190px)'
     },
 })
 
 class ApprovedProposals extends Component {
     state = {
-        value: 0,
         proposals: [],
         tableHeaders: [],
     }
@@ -74,7 +73,13 @@ class ApprovedProposals extends Component {
                                                     {
                                                         this.state.tableHeaders.map(header => (
                                                             <TableCell>
-                                                                { prop[header] }
+                                                                {
+                                                                    (typeof prop[header] === 'object' && prop[header] !== null)
+                                                                    ? prop[header].map(item => {
+                                                                        return <p>{ item }</p>
+                                                                    })
+                                                                    : prop[header]
+                                                                }
                                                             </TableCell>
                                                         ))
                                                     }
