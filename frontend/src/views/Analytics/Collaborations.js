@@ -2,7 +2,7 @@ import React from 'react'
 
 import Heading from '../../components/Typography/Heading'
 
-import ProposalsNetwork from '../../components/Visualizations/Proposals'
+import ProposalsNetwork from '../../components/Visualizations/ProposalsNetworkContainer'
 
 const classes = theme => ({
     root: { },
