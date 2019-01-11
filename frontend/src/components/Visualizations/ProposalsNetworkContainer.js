@@ -18,7 +18,7 @@ class proposalsNetwork extends Component {
             })
     }
 
-    componentWillMount = this.fetchData    
+    componentWillMount = this.fetchData
 
     render() {
         const { proposals } = this.state

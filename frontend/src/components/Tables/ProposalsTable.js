@@ -11,11 +11,6 @@ const snakeCaseToNormal = (str) => {
 
 const styles = theme => ({
     root: {},
-    tabStrip: {
-        backgroundColor: theme.palette.grey[200],
-        color: theme.palette.primary.main,
-    },
-    tab: {},
     contents: {
         padding: 2 * theme.spacing.unit,
         overflowY: 'scroll',
@@ -42,7 +37,9 @@ class ApprovedProposals extends Component {
             })
     }
 
-    componentWillMount = this.fetchData
+    componentDidMount() {
+        this.fetchData()
+    } 
         
     render() {
         const { classes } = this.props
