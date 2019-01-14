@@ -93,8 +93,8 @@ class Dashboard extends Component {
                 items: [
                     { text: 'Proposals', icon: <LayersIcon/>, href: '/reports/proposals',
                         submenu: [
-                            { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
                             { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
+                            { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                         ]
                     },

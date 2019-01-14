@@ -8,7 +8,14 @@ import axios from 'axios'
 const styles = theme => ({
     root: { },
     headCell: {
-        textAlign: 'center',
+        height: '100px',
+        verticalAlign: 'bottom',
+        fontSize: '80%',
+    },
+    headCellText: {
+        writingMode: 'vertical-rl',
+        transform: 'rotate(180deg)',
+        textAlign: 'left',
     },
     bodyRow: {
         transition: 'background-color 250ms',
@@ -76,7 +83,13 @@ class ProposalsMatrix extends Component {
                     <TableRow>
                         <TableCell padding="dense">&nbsp;</TableCell>
                         {
-                            services.map(service => <TableCell key={ service.index } padding="dense">{ service.description }</TableCell>)
+                            services.map(service => (
+                                <TableCell className={ classes.headCell } key={ service.index } padding="dense">
+                                    <div className={ classes.headCellText }>
+                                        { service.description }
+                                    </div>
+                                </TableCell>
+                            ))
                         }
                     </TableRow>
                 </TableHead>
