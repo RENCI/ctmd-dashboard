@@ -48,7 +48,43 @@ Start all three services:
 $ docker-compose up
 ```
 
-The development `frontend` and `api` containers start with React's development server and nodemon, respectively, allowing hot reloading, so there's really little need to ever rebuild during development.
+The above command starts abd attaches to the three containers and results in output like the following.
+
+```bash
+Starting postgres ... 
+Starting postgres ... done
+Starting node ... 
+Starting node ... done
+Starting react ... 
+Starting react ... done
+Attaching to postgres, node, react
+postgres    | 2019-01-14 15:31:03.025 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres    | 2019-01-14 15:31:03.025 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres    | 2019-01-14 15:31:03.033 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres    | 2019-01-14 15:31:03.066 UTC [24] LOG:  database system was shut down at 2019-01-14 14:51:46 UTC
+node        | 
+postgres    | 2019-01-14 15:31:03.077 UTC [1] LOG:  database system is ready to accept connections
+node        | > api@1.0.0 start /usr/src/app
+node        | > nodemon app
+node        | 
+node        | [nodemon] 1.18.9
+node        | [nodemon] to restart at any time, enter `rs`
+node        | [nodemon] watching: *.*
+node        | [nodemon] starting `node app.js`
+node        | 
+node        | Shhh... I'm listening on port 3030.
+node        | 
+react       | 
+react       | > duke-tic@0.1.0 start /usr/src/app
+react       | > react-scripts start
+react       | 
+react       | Starting the development server...
+react       | 
+
+
+```
+
+\* Note that the development `frontend` and `api` containers start with React's development server and nodemon, respectively, allowing hot reloading, so there's really little need to ever rebuild during development.
 
 It's nice to leave your session attached to keep an eye on errors, but of course you want to rebuild and/or detach at times:
 
@@ -74,6 +110,17 @@ $ docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
 This serves the frontend to port `80` on the host, and is thus reachable simply at `http://localhost`. The API is publicly accessible via `http://localhost/api`.
+
+
+## Tinkering within a Container
+
+To tinker and test various things, one can log into an individual container with the `exec`. For example, we often need to test and polish queries. To do so, we can attach to the `postgres` container with the command
+
+```bash
+docker exec -it postgres bash
+```
+
+Then proceed normally, executing something like `psql duketic` to select the desired database---`duketic` in this case.
 
 ## Tear it Down
 
