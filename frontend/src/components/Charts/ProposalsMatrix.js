@@ -1,33 +1,27 @@
 import React, { Component } from 'react'
+import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
-import { Table, TableRow, TableCell, TableHead, TableBody } from '@material-ui/core'
+import { Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core'
+import { Tooltip } from '@material-ui/core'
 import axios from 'axios'
 
 const snakeCaseToNormal = (str) => {
     return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 }
 
-const VertTableCell = props => {
-    const { children } = props
-    return (
-        <TableCell>
-            <div style={{ writingMode: 'vertical-rl', }}>
-                { children }
-            </div>
-        </TableCell>
-    )
-}
-
 const styles = theme => ({
     root: { },
-    head: { },
-    headRow: { },
-    headCell: {
-        border: '1px solid #f00',
+    bodyCell: {
+        borderRadius: '10px',
+        padding: theme.spacing.unit,
     },
-    body: { },
-    bodyRow: { },
-    bodyCell: { },
+    bodyCellFilled: {
+        backgroundColor: theme.palette.primary.main,
+        transition: 'background-color 250ms',
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.main,
+        }
+    },
 })
 
 class ProposalsMatrix extends Component {
@@ -50,35 +44,45 @@ class ProposalsMatrix extends Component {
     componentDidMount() {
         this.fetchData()
     } 
-
+    
     render() {
         const { proposals } = this.state
         const { classes } = this.props
         return (
-            <Table className={ classes.root }>
-                <TableHead className={ classes.head }>
-                    <TableRow className={ classes.headRow }>
-                        <VertTableCell className={ classes.headCell }>Column One</VertTableCell>
-                        <VertTableCell className={ classes.headCell }>Column Two</VertTableCell>
-                        <VertTableCell className={ classes.headCell }>Column Three</VertTableCell>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>&nbsp;</TableCell>
+                        {
+                            [...Array(8).keys()].map(val => {
+                                return (
+                                    <TableCell>{ val + 1}</TableCell>
+                                )
+                            })
+                        }
                     </TableRow>
                 </TableHead>
-                <TableBody className={ classes.body }>
-                    <TableRow className={ classes.bodyRow }>
-                        <TableCell className={ classes.bodyCell }>0</TableCell>
-                        <TableCell className={ classes.bodyCell }>1</TableCell>
-                        <TableCell className={ classes.bodyCell }>1</TableCell>
-                    </TableRow>
-                    <TableRow className={ classes.bodyRow }>
-                        <TableCell className={ classes.bodyCell }>1</TableCell>
-                        <TableCell className={ classes.bodyCell }>0</TableCell>
-                        <TableCell className={ classes.bodyCell }>0</TableCell>
-                    </TableRow>
-                    <TableRow className={ classes.bodyRow }>
-                        <TableCell className={ classes.bodyCell }>1</TableCell>
-                        <TableCell className={ classes.bodyCell }>1</TableCell>
-                        <TableCell className={ classes.bodyCell }>1</TableCell>
-                    </TableRow>
+                <TableBody>
+                    {
+                        proposals.map(proposal => {
+                            return (
+                                <TableRow>
+                                    <TableCell>
+                                        { proposal.proposal_id }
+                                    </TableCell>
+                                    {
+                                        [...Array(8).keys()].map(val => {
+                                            return (proposal.services_approved.indexOf(`services_approved___${val + 1}`) >= 0)
+                                            ? <Tooltip title={ `services_approved___${val + 1}` } placement="top">
+                                                <TableCell className={ classnames(classes.bodyCell, classes.bodyCellFilled) }></TableCell>
+                                            </Tooltip>
+                                            : <TableCell className={ classnames(classes.bodyCell) }></TableCell>
+                                        })
+                                    }
+                                </TableRow>
+                            )
+                        })
+                    }
                 </TableBody>
             </Table>
         )
