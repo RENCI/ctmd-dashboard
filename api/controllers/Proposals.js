@@ -29,6 +29,27 @@ exports.list = (req, res) => {
         })
 }
 
+exports.byStage = (req, res) => {
+    query = `SELECT DISTINCT
+            proposal.proposal_id,
+            TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
+            name2.description AS tic_name,
+            name.description AS proposal_status
+        FROM proposal
+        INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
+    db.any(query)
+        .then(data => {
+            console.log(`HIT: /proposals${ req.path }`)
+            data.sort(compareIds)
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+        })
+}
+
 exports.approvedServices = (req, res) => {
     query = `SELECT DISTINCT vote.proposal_id, services_approved, vote.meeting_date
         FROM vote
