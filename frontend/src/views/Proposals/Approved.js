@@ -2,12 +2,12 @@ import React from 'react'
 
 import Heading from '../../components/Typography/Heading'
 
-import ProposalsTable from '../../components/Tables/ProposalsTable'
-import ProposalsMatrix from '../../components/Charts/ProposalsMatrix'
+import ProposalsMatrix from '../../components/Charts/ProposalsMatrixApproved'
 
 const proposalsByApproval = (props) => {
 
-    const apiUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/approved' : 'http://localhost:3030/proposals/approved'
+    const proposalsUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/approved-services' : 'http://localhost:3030/proposals/approved-services'
+    const servicesUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/services/approval' : 'http://localhost:3030/services/approval'
 
     return (
         <div>
@@ -15,7 +15,7 @@ const proposalsByApproval = (props) => {
 
             <br/>
 
-            <ProposalsMatrix apiUrl={ apiUrl }/>
+            <ProposalsMatrix proposalsUrl={ proposalsUrl } servicesUrl={ servicesUrl }/>
             
         </div>
     )

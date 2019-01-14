@@ -8,16 +8,4 @@ router.get('/pis', (req, res) => {
     controller.runQuery(req, res, query)
 })
 
-// Name & dscription, given name -- from dropdowns
-router.get('/name/:id', (req, res) => {
-    query = `SELECT * FROM name WHERE id='${req.params.id}';`
-    controller.runQuery(req, res, query)
-})
-
-// Names & dscriptions, given name -- from dropdowns
-router.get('/name/like/:id', (req, res) => {
-    query = `SELECT * FROM name WHERE id like '${req.params.id}%';`
-    controller.runQuery(req, res, query)
-})
-
 module.exports = router

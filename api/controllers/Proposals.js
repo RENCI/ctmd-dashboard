@@ -8,7 +8,7 @@ const compareIds = (p, q) => {
     return (p.proposal_id < q.proposal_id) ? -1 : 1
 }
 
-exports.approvedProposalsServices = (req, res) => {
+exports.approvedServices = (req, res) => {
     query = `SELECT DISTINCT vote.proposal_id, services_approved, vote.meeting_date
         FROM vote
         INNER JOIN service_services_approved ON vote.proposal_id=service_services_approved.proposal_id
@@ -16,58 +16,52 @@ exports.approvedProposalsServices = (req, res) => {
     db.any(query)
         .then(data => {
             console.log(`HIT: /proposals${ req.path }`)
+            let newData = []
             data.forEach(prop => {
                 prop.proposal_id = parseInt(prop.proposal_id)
-                prop.meeting_date = prop.meeting_date.toDateString()
-            })
-            data.sort(compareIds)
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-        })
-}
-
-exports.approvedProposals = (req, res) => {
-    query = `SELECT DISTINCT service.proposal_id, service.services_approved, vote.meeting_date, funding.funding
-        FROM service
-        INNER JOIN vote ON service.proposal_id=vote.proposal_id
-        INNER JOIN funding ON funding.proposal_id=vote.proposal_id
-        WHERE vote.meeting_date is not NULL;`
-    db.any(query)
-        .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
-            data.forEach(prop => {
-                prop.proposal_id = parseInt(prop.proposal_id)
-                prop.services_approved = stringToArray(prop.services_approved)
-                prop.meeting_date = prop.meeting_date.toDateString()
-                prop.funding = parseInt(prop.funding)
-            })
-            data.sort(compareIds)
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-        })
-}
-
-exports.submittedProposals = (req, res) => {
-    query = `SELECT DISTINCT proposal.proposal_id, proposal.new_service_selection, proposal.planned_submission_date
-        FROM proposal
-        INNER JOIN funding ON proposal.proposal_id = funding.proposal_id;`
-    db.any(query)
-        .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
-            data.forEach(prop => {
-                prop.proposal_id = parseInt(prop.proposal_id)
-                prop.new_service_selection = stringToArray(prop.new_service_selection)
-                if (prop.planned_submission_date) {
-                    prop.planned_submission_date = prop.planned_submission_date.toDateString()
+                const propIndex = newData.findIndex(q => q.proposal_id === prop.proposal_id)
+                if (propIndex >= 0) {
+                    newData[propIndex].services_approved.push(prop.services_approved) 
+                } else {
+                    newData.push({
+                        proposal_id: prop.proposal_id,
+                        services_approved: [prop.services_approved],
+                        meeting_date: prop.meeting_date.toDateString(),
+                    })
                 }
-                prop.funding = parseInt(prop.funding)
             })
-            data.sort(compareIds)
-            res.status(200).send(data)
+            newData.sort(compareIds)
+            res.status(200).send(newData)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+        })
+}
+
+exports.submittedServices = (req, res) => {
+    query = `SELECT DISTINCT vote.proposal_id, new_service_selection, vote.meeting_date
+        FROM vote
+        INNER JOIN proposal_new_service_selection ON vote.proposal_id=proposal_new_service_selection.proposal_id
+        WHERE vote.meeting_date is not NULL order by vote.proposal_id;`
+    db.any(query)
+        .then(data => {
+            console.log(`HIT: /proposals${ req.path }`)
+            let newData = []
+            data.forEach(prop => {
+                prop.proposal_id = parseInt(prop.proposal_id)
+                const propIndex = newData.findIndex(q => q.proposal_id === prop.proposal_id)
+                if (propIndex >= 0) {
+                    newData[propIndex].new_service_selection.push(prop.new_service_selection) 
+                } else {
+                    newData.push({
+                        proposal_id: prop.proposal_id,
+                        new_service_selection: [prop.new_service_selection],
+                        meeting_date: prop.meeting_date.toDateString(),
+                    })
+                }
+            })
+            newData.sort(compareIds)
+            res.status(200).send(newData)
         })
         .catch(error => {
             console.log('ERROR:', error)
@@ -75,11 +69,6 @@ exports.submittedProposals = (req, res) => {
 }
 
 exports.proposalsNetwork = (req, res) => {
-    // query = `SELECT DISTINCT proposal.proposal_id, "PI".pi_firstname, "PI".pi_lastname,
-    //         proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration
-    //     FROM proposal
-    //     INNER JOIN funding ON proposal.proposal_id=funding.proposal_id
-    //     INNER JOIN "PI" ON "PI".pi_lastname=proposal.pi_lastname;`
     query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
             proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
             proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,

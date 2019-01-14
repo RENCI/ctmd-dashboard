@@ -64,171 +64,43 @@
 <body>
     <h1>API: Available Endpoints</h1>
     
-    <h2>Approved by the PAT for a &lt;service – i.e. CIRB&gt;</h2>
+    <h2>Proposals</h2>
 
     <ul class="endpoints">
         <li class="endpoint">
             <div class="desc">
-                For services approved in first meeting, by fiscal year
+                Approved Proposals - Approved Services
             </div>
             <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-year">api/proposals/approved/first-meeting/by-year</a>
+                <a class="get request" href="https://pmd.renci.org/api/proposals/services">api/proposals/approved-services</a>
             </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                For services approved in second meeting, by fiscal year
+                Submitted Proposals - New Service Selection
             </div>
             <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-year">api/proposals/approved/second-meeting/by-year</a>
+                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted">api/proposals/submitted-services</a>
             </div>
         </li>
-        <li class="endpoint">
-            <div class="desc">
-                For services approved in first meeting, by month
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/first-meeting/by-month">api/proposals/approved/first-meeting/by-month</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                For services approved in second meeting, by month
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/second-meeting/by-month">api/proposals/approved/second-meeting/by-month</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Institution Submitted
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/by-submitting-institution">api/proposals/approved/by-submitting-institution</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Institution assigned to (i.e. which TIC/RIC)
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/by-assigned-institution">api/proposals/approved/by-assigned-institution</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Therapeutic Area
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved/by-therapeutic-area">api/proposals/approved/by-therapeutic-area</a>
-            </div>
-        </li>
-    </ul>
     
-    <h2>Submitted for a &lt;service – i.e. CIRB – for ‘other’ should be noted combined as well as each item separate if possible’&gt;</h2>
+    <h2>Services</h2>
 
     <ul class="endpoints">
         <li class="endpoint">
             <div class="desc">
-                For submitted proposals, by fiscal year
+                Approval Services
             </div>
             <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-year">api/proposals/submitted/by-year</a>
+                <a class="get request" href="https://pmd.renci.org/api/services/approval">api/services/approval</a>
             </div>
         </li>
         <li class="endpoint">
             <div class="desc">
-                Submitted proposals, by month
+                Submission Services
             </div>
             <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-month">api/proposals/submitted/by-month</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Institution submitted
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-submitting-institution">api/proposals/submitted/by-submitting-institution</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Institution assigned to (i.e. which TIC/RIC)
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-assigned-institution">api/proposals/submitted/by-assigned-institution</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Therapeutic Area
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/submitted/by-therapeutic-area">api/proposals/submitted/by-therapeutic-area</a>
-            </div>
-        </li>
-    </ul>
-    
-    <h2>Approved by PAT for Comprehensive Consultation</h2>
-
-    <ul class="endpoints">
-<!--
-        <li class="endpoint">
-            <div class="desc">
-                    Approved for consultation
-                    </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api">api</a>
-            </div>
-        </li>
--->
-        <li class="endpoint">
-            <div class="desc">
-                Approved for consultation, by fiscal year
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-year">api/proposals/approved-for-consultation/by-year</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                Approved for consultation, by month
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-month">api/proposals/approved-for-consultation/by-month</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Institution submitted
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-submitting-institution">api/proposals/approved-for-consultation/by-submitting-institution</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Institution assigned to (i.e. which TIC/RIC)
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-assigned-institution">api/proposals/approved-for-consultation/by-assigned-institution</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                By Therapeutic Area
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/by-therapeutic-area">api/proposals/approved-for-consultation/by-therapeutic-area</a>
-            </div>
-        </li>
-        <li class="endpoint">
-            <div class="desc">
-                Resubmissions
-            </div>
-            <div class="route">
-                <a class="get request" href="https://pmd.renci.org/api/proposals/approved-for-consultation/resubmissions">api/proposals/approved-for-consultation/resubmissions</a>
+                <a class="get request" href="https://pmd.renci.org/api/services/submission">api/services/submission</a>
             </div>
         </li>
     </ul>

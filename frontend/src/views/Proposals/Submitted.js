@@ -2,11 +2,12 @@ import React from 'react'
 
 import Heading from '../../components/Typography/Heading'
 
-import Proposals from '../../components/Tables/ProposalsTable'
+import ProposalsMatrix from '../../components/Charts/ProposalsMatrixSubmitted'
 
-const submittedProposals = (props) => {
+const proposalsBySubmission = (props) => {
     
-    const apiRoot = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/submitted' : 'http://localhost:3030/proposals/submitted'
+    const proposalsUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/submitted-services' : 'http://localhost:3030/proposals/submitted-services'
+    const servicesUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/services/submission' : 'http://localhost:3030/services/submission'
     
     return (
         <div>
@@ -14,10 +15,10 @@ const submittedProposals = (props) => {
 
             <br/>
 
-            <Proposals apiRoot={ apiRoot }/>
+            <ProposalsMatrix proposalsUrl={ proposalsUrl } servicesUrl={ servicesUrl }/>
             
         </div>
     )
 }
 
-export default submittedProposals
+export default proposalsBySubmission

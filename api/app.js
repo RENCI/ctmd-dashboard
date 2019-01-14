@@ -25,6 +25,10 @@ app.use('/list', DocumentationRoutes)
 const ProposalRoutes = require('./routes/Proposals')
 app.use('/proposals', ProposalRoutes)
 
+// Services
+const ServiceRoutes = require('./routes/Services')
+app.use('/services', ServiceRoutes)
+
 // General
 const GeneralRoutes = require('./routes/General')
 app.use('/', GeneralRoutes)
