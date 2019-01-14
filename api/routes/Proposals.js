@@ -6,6 +6,7 @@ const proposalsController = require('../controllers/Proposals')
 // Routes beginning with "HOSTNAME/proposals/..."
 
 router.route('/approved').get(proposalsController.approvedProposals)
+router.route('/approved/services').get(proposalsController.approvedProposalsServices)
 router.route('/submitted').get(proposalsController.submittedProposals)
 router.route('/network').get(proposalsController.proposalsNetwork)
 router.route('/by-stage').get(proposalsController.byStage)

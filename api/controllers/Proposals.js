@@ -8,6 +8,26 @@ const compareIds = (p, q) => {
     return (p.proposal_id < q.proposal_id) ? -1 : 1
 }
 
+exports.approvedProposalsServices = (req, res) => {
+    query = `SELECT DISTINCT vote.proposal_id, services_approved, vote.meeting_date
+        FROM vote
+        INNER JOIN service_services_approved ON vote.proposal_id=service_services_approved.proposal_id
+        WHERE vote.meeting_date is not NULL order by vote.proposal_id;`
+    db.any(query)
+        .then(data => {
+            console.log(`HIT: /proposals${ req.path }`)
+            data.forEach(prop => {
+                prop.proposal_id = parseInt(prop.proposal_id)
+                prop.meeting_date = prop.meeting_date.toDateString()
+            })
+            data.sort(compareIds)
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+        })
+}
+
 exports.approvedProposals = (req, res) => {
     query = `SELECT DISTINCT service.proposal_id, service.services_approved, vote.meeting_date, funding.funding
         FROM service
