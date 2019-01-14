@@ -10,17 +10,14 @@ const compareIds = (p, q) => {
 
 exports.list = (req, res) => {
     query = `SELECT DISTINCT
-            CAST(proposal_id AS INTEGER),
+            proposal.proposal_id,
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-            tic_ric_assign,
-            tic_ric_assign_v2,
-            project_budget1,
-            project_budget2,
-            project_budget3,
-            project_budget4,
-            project_budget5,
-            project_budget6
-        FROM proposal;`
+            name2.description AS tic_name,
+            name.description AS proposal_status
+        FROM proposal
+        INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
     db.any(query)
         .then(data => {
             console.log(`HIT: /proposals${ req.path }`)
@@ -119,18 +116,5 @@ exports.proposalsNetwork = (req, res) => {
         })
         .catch(err => {
             console.log('ERROR:', err)
-        })
-}
-
-exports.byStage = (req, res) => {
-    query = `SELECT * FROM proposal;`
-    db.any(query)
-        .then(data => {
-            console.log(data)
-            res.status(200).send(data.slice(0,3))
-        })
-        .catch(err => {
-            console.log(err)
-            res.status(500).send('no data')
         })
 }
