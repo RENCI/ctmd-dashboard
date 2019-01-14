@@ -29,6 +29,10 @@ app.use('/proposals', ProposalRoutes)
 const ServiceRoutes = require('./routes/Services')
 app.use('/services', ServiceRoutes)
 
+// Stages
+const StageRoutes = require('./routes/Stages')
+app.use('/stages', StageRoutes)
+
 // General
 const GeneralRoutes = require('./routes/General')
 app.use('/', GeneralRoutes)
