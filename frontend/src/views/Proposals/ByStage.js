@@ -6,18 +6,16 @@ import Paragraph from '../../components/Typography/Paragraph'
 import ProposalsInEachStage from '../../components/Charts/ProposalsInEachStage'
 
 const proposalsByStage = (props) => {
+    const proposalsUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals' : 'http://localhost:3030/proposals'
+    const stagesUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/stages' : 'http://localhost:3030/stages'
+
     return (
         <div>
             <Heading>
                 Proposals by Stage
             </Heading>
 
-            <Paragraph>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Distinctio dolores corrupti, beatae quam, dolorum adipisci incidunt, temporibus accusantium fugit iure odio amet.
-            </Paragraph>
-
-            <ProposalsInEachStage />
+            <ProposalsInEachStage proposalsUrl={ proposalsUrl } stagesUrl={ stagesUrl }/>
 
         </div>
     )
