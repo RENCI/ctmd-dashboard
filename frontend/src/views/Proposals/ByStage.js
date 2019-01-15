@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import axios from 'axios'
 
 import Heading from '../../components/Typography/Heading'
-import Paragraph from '../../components/Typography/Paragraph'
 
 import ProposalsInEachStage from '../../components/Charts/ProposalsInEachStage'
 
@@ -38,7 +37,7 @@ class proposalsByStage extends Component {
                 {
                     stages.length > 0
                     ? <ProposalsInEachStage proposalsByStage={ this.state.stages }/>
-                    : ('nope')
+                    : null
                 }
             </div>
         )
