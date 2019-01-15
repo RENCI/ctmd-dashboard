@@ -29,24 +29,37 @@ exports.list = (req, res) => {
         })
 }
 
+const camelCase = str => {
+    let string = str.toLowerCase().replace(/[^A-Za-z0-9]/g, ' ').split(' ')
+        .reduce((result, word) => result + capitalize(word.toLowerCase()))
+    return string.charAt(0).toLowerCase() + string.slice(1)
+}
+const capitalize = str => str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
+
 exports.byStage = (req, res) => {
-    query = `SELECT DISTINCT
-            proposal.proposal_id,
-            TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-            name2.description AS tic_name,
-            name.description AS proposal_status
-        FROM proposal
-        INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 as varchar)
-        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
-        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
+    let query = `SELECT description AS name FROM name WHERE "column"='protocol_status' ORDER BY index;`
     db.any(query)
-        .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
-            data.sort(compareIds)
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
+        .then(stages => {
+            stages.forEach(stage => { stage.count = 0 })
+            query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status
+                FROM proposal
+                INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+                INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+                WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
+            db.any(query)
+                .then(data => {
+                    console.log(`HIT: /proposals${ req.path }`)
+                    data.forEach(proposal => {
+                        const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
+                        if (index >= 0) {
+                            stages[index].count += 1
+                        }
+                    })
+                    res.status(200).send(stages)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
         })
 }
 

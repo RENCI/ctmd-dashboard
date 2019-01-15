@@ -6,33 +6,38 @@ const barGraph = (props) => {
     const { theme } = props
     const chartOptions = {
         fill: {
-            colors: [theme.palette.primary.main,]
+            colors: [theme.palette.primary.main],
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                type: "horizontal",
+                shadeIntensity: 0.26,
+                gradientToColors: undefined,
+                inverseColors: true,
+                opacityFrom: 0.95,
+                opacityTo: 0.95,
+                stops: [50, 0, 100],
+            },
         },
         plotOptions: {
-            bar: {
-                columnWidth: '90%',
-            }
+            bar: { columnWidth: '90%', }
         },
-        stroke: {
-            width: 0,
-        },
+        stroke: { width: 0, },
         xaxis: {
-            labels: {
-                rotate: -45,
-            },
-            categories: []
+            labels: { rotate: -60, },
+            categories: props.proposalsByStage.map(stage => stage.name)
         },
         yaxis: {
-            title: {
-                text: 'Number of Proposals',
-            },
+            title: { text: 'Number of Proposals', },
+        },
+        tooltip: {
+            enabled: false
         },
     }
     const series = [{
         name: "Proposals",
-        data: props.proposalsByStage,
+        data: props.proposalsByStage.map(stage => stage.count),
     }]
-    console.log(props.stages)
     return (
         <Chart
             type="bar"
