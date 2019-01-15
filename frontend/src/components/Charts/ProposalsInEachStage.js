@@ -1,83 +1,90 @@
-import React, { Component } from "react"
-import axios from 'axios'
+import React from "react"
 import { withTheme } from '@material-ui/core/styles'
 import Chart from "react-apexcharts"
-import ProposalsInEachStage from '../../data/ProposalsInEachStage'
 
-const keys = Object.keys(ProposalsInEachStage)
-const categories = keys.map( (key) => ProposalsInEachStage[key].name )
-const data = keys.map( (key) => ProposalsInEachStage[key].count )
-
-class BarGraph extends Component {
-    state = {
-        proposals: [],
-        stages: [],
-    }
-
-    async fetchProposals() {
-        await axios.get(this.props.proposalsUrl)
-            .then(response => {
-                this.setState({ proposals: response.data, })
-            })
-            .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
-            })
-    }
-
-    async fetchStages() {
-        await axios.get(this.props.stagesUrl)
-            .then(response => {
-                this.setState({ stages: response.data, })
-            })
-            .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
-            })
-    }
-
-    componentDidMount() {
-        this.fetchProposals()
-        this.fetchStages()
-    }
-
-    render() {
-        const { theme } = this.props
-        const options = {
-            fill: {
-                colors: [theme.palette.primary.main,]
+const barGraph = (props) => {
+    const { theme } = props
+    const chartOptions = {
+        chart: {
+            height: 100,
+        },
+        fill: {
+            colors: [theme.palette.primary.main,],
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                type: "vertical",
+                shadeIntensity: 0.26,
+                gradientToColors: undefined,
+                inverseColors: true,
+                opacityFrom: 0.95,
+                opacityTo: 0.95,
+                stops: [50, 0, 100],
             },
-            plotOptions: {
-                bar: {
-                    columnWidth: '90%',
-                }
-            },
-            stroke: {
-                width: 0,
-            },
-            xaxis: {
-                labels: {
-                    rotate: -45,
-                },
-                categories: categories,
-            },
-            yaxis: {
-                title: {
-                    text: 'Number of Proposals',
+        },
+        grid: {
+            row: {
+                colors: [theme.palette.common.white, theme.palette.primary.main],
+                opacity: 0.05,
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                columnWidth: '100%',
+                endingShape: 'rounded',
+            }
+        },
+        stroke: { width: 0, },
+        xaxis: {
+            title: {
+                text: 'Number of Proposals',
+                style: {
+                    fontSize: '14px',
                 },
             },
-        }
-        const series = [{
-            name: "Proposals",
-            data: data,
-        }]
-        return (
-            <Chart
-                type="bar"
-                options={ options }
-                series={ series }
-                width="100%"
-            />
-        )
+            labels: {
+                rotate: 0,
+                trim: false,
+                style: {
+                    colors: [],
+                    fontSize: '14px',
+                    fontFamily: 'sans-serif',
+                    cssClass: 'xaxis-label',
+                },
+            },
+            categories: props.proposalsByStage.map(stage => stage.name)
+        },
+        yaxis: {
+            title: {
+                text: 'Stage',
+                rotate: -90,
+            },
+            labels: {
+                style: {
+                    fontSize: '14px',
+                    fontFamily: 'sans-serif',
+                    cssClass: 'yaxis-label',
+                },
+            },
+        },
+        tooltip: {
+            enabled: true,
+            followCursor: true,
+        },
     }
+    const series = [{
+        name: "Proposals",
+        data: props.proposalsByStage.map(stage => stage.count),
+    }]
+    return (
+        <Chart
+            type="bar"
+            options={ chartOptions }
+            series={ series }
+            width="100%"
+        />
+    )
 }
 
-export default withTheme()(BarGraph)
+export default withTheme()(barGraph)
