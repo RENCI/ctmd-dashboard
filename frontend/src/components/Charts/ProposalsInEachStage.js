@@ -5,12 +5,15 @@ import Chart from "react-apexcharts"
 const barGraph = (props) => {
     const { theme } = props
     const chartOptions = {
+        chart: {
+            height: 100,
+        },
         fill: {
-            colors: [theme.palette.primary.main],
+            colors: [theme.palette.primary.main,],
             type: 'gradient',
             gradient: {
                 shade: 'light',
-                type: "horizontal",
+                type: "vertical",
                 shadeIntensity: 0.26,
                 gradientToColors: undefined,
                 inverseColors: true,
@@ -19,19 +22,55 @@ const barGraph = (props) => {
                 stops: [50, 0, 100],
             },
         },
+        grid: {
+            row: {
+                colors: [theme.palette.common.white, theme.palette.primary.main],
+                opacity: 0.05,
+            }
+        },
         plotOptions: {
-            bar: { columnWidth: '90%', }
+            bar: {
+                horizontal: true,
+                columnWidth: '100%',
+                endingShape: 'rounded',
+            }
         },
         stroke: { width: 0, },
         xaxis: {
-            labels: { rotate: -60, },
+            title: {
+                text: 'Number of Proposals',
+                style: {
+                    fontSize: '14px',
+                },
+            },
+            labels: {
+                rotate: 0,
+                trim: false,
+                style: {
+                    colors: [],
+                    fontSize: '14px',
+                    fontFamily: 'sans-serif',
+                    cssClass: 'xaxis-label',
+                },
+            },
             categories: props.proposalsByStage.map(stage => stage.name)
         },
         yaxis: {
-            title: { text: 'Number of Proposals', },
+            title: {
+                text: 'Stage',
+                rotate: -90,
+            },
+            labels: {
+                style: {
+                    fontSize: '14px',
+                    fontFamily: 'sans-serif',
+                    cssClass: 'yaxis-label',
+                },
+            },
         },
         tooltip: {
-            enabled: false
+            enabled: true,
+            followCursor: true,
         },
     }
     const series = [{
