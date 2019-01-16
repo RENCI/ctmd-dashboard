@@ -12,6 +12,7 @@ exports.list = (req, res) => {
     query = `SELECT DISTINCT
             proposal.proposal_id,
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
+            proposal.prop_submit,
             name2.description AS tic_name,
             name.description AS proposal_status
         FROM proposal
@@ -21,6 +22,10 @@ exports.list = (req, res) => {
     db.any(query)
         .then(data => {
             console.log(`HIT: /proposals${ req.path }`)
+            data.forEach(proposal => {
+                proposal.submission_date = proposal.prop_submit.toDateString()
+                delete proposal.prop_submit
+            })
             data.sort(compareIds)
             res.status(200).send(data)
         })
