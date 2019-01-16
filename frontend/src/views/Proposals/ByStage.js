@@ -20,7 +20,7 @@ class proposalsByStage extends Component {
                 this.setState({ stages: response.data, })
             })
             .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
+                console.error('Error:', error)
             })
     }
 

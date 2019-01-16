@@ -24,7 +24,7 @@ class proposalsByApproval extends Component {
                 })
             })
             .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
+                console.error('Error:', error)
             })
     }
 
