@@ -42,10 +42,12 @@ const camelCase = str => {
 const capitalize = str => str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
 
 exports.byStage = (req, res) => {
-    let query = `SELECT description AS name FROM name WHERE "column"='protocol_status' ORDER BY index;`
+    let query = `SELECT description AS name
+        FROM name
+        WHERE "column"='protocol_status' ORDER BY index;`
     db.any(query)
         .then(stages => {
-            stages.forEach(stage => { stage.count = 0 })
+            stages.forEach(stage => { stage.proposals = [] })
             query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
                     proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
@@ -61,7 +63,9 @@ exports.byStage = (req, res) => {
                     console.log(`HIT: /proposals${ req.path }`)
                     data.forEach(proposal => {
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
-                        if (index >= 0) { stages[index].count += 1 }
+                        if (index >= 0) {
+                            stages[index].proposals.push(proposal)
+                        }
                     })
                     res.status(200).send(stages)
                 })
