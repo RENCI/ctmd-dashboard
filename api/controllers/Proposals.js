@@ -54,15 +54,14 @@ exports.byStage = (req, res) => {
         .then(stages => {
             stages.forEach(stage => { stage.proposals = [] })
             query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
-                proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
-                proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
-                TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
-            FROM proposal
-            INNER JOIN funding ON proposal.proposal_id=funding.proposal_id
-            INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-            INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar)
-            INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
-            WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null;`
+                    proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar) and name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
             db.any(query)
                 .then(data => {
                     console.log(`HIT: /proposals${ req.path }`)
