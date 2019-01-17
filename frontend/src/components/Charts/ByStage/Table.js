@@ -1,7 +1,7 @@
 import React from "react"
 import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
-import Subheading from '../Typography/Subheading'
+import Subheading from '../../Typography/Subheading'
 import ProposalChip from './ProposalChip'
 
 const keyGenerator = () => {
