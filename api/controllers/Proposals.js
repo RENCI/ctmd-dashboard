@@ -48,9 +48,11 @@ exports.byStage = (req, res) => {
     db.any(query)
         .then(stages => {
             stages.forEach(stage => { stage.proposals = [] })
-            query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
-                    proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
-                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    // proposal.tic_ric_assign_v2, proposal.protocol_status, 
+                    // proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+            query = `SELECT DISTINCT
+                    proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
+                    proposal.org_name, funding.anticipated_budget, funding.funding_duration,
                 TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
                 INNER JOIN funding ON proposal.proposal_id=funding.proposal_id
@@ -61,8 +63,12 @@ exports.byStage = (req, res) => {
             db.any(query)
                 .then(data => {
                     console.log(`HIT: /proposals${ req.path }`)
+                    data.sort(compareIds)
                     data.forEach(proposal => {
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
+                        proposal.proposal_id = parseInt(proposal.proposal_id)
+                        proposal.org_name = parseInt(proposal.org_name)
+                        proposal.proposal_status = parseInt(proposal.proposal_status)
                         if (index >= 0) {
                             stages[index].proposals.push(proposal)
                         }

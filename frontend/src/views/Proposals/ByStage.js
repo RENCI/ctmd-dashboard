@@ -3,7 +3,7 @@ import axios from 'axios'
 
 import Heading from '../../components/Typography/Heading'
 
-import ProposalsInEachStage from '../../components/Charts/ProposalsInEachStage'
+import ProposalsInEachStage from '../../components/ProposalsMatrix/Matrix'
 
 const stagesUrl = process.env.NODE_ENV === 'production'
     ? 'https://pmd.renci.org/api/proposals/by-stage'
