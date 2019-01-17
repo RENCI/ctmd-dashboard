@@ -18,21 +18,34 @@ const theme = createMuiTheme({
     // colors
     palette: {
         primary: {
-            main: '#003366',
+            main: '#001A57',
         },
         secondary: {
-            main: '#F09905',
+            main: '#00539B',
         },
         error: {
             main: '#cc3300',
         },
-        tertiary: {
-            black: '#262626',
-            slate:'#666666',
-            silver: '#b5b5b5',
-            rhino: '#b5b5b5',
-            sand: '#ebf0cc',
-        }
+        extended: {
+            copper: '#C84E00',
+            persimmon: '#E89923',
+            dandelion: '#FFD960',
+            piedmont: '#A1B70D',
+            eno: '#339898',
+            magnolia: '#1D6363',
+            prussianBlue: '#005587',
+            shaleBlue: '#0577B1',
+            ironweed: '#993399',
+            hatteras: '#E2E6ED',
+            whisperGray: '#F3F2F1',
+            gingerBeer: '#FCF7E5',
+            dogwood: '#988675',
+            shackleford: '#DAD0C6',
+            castIron: '#262626',
+            graphite: '#666666',
+            granite: '#B5B5B5',
+            limestone: '#E5E5E5',
+        },
     },
     // text
     typography: {
