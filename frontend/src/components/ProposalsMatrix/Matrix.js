@@ -2,7 +2,15 @@ import React from "react"
 import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import Subheading from '../Typography/Subheading'
-import ProposalDot from './DataDot'
+import ProposalChip from './ProposalChip'
+
+const keyGenerator = () => {
+    var text = ''
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    for (var i = 0; i < 5; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
 
 const styles = (theme) => ({
     root: {
@@ -11,66 +19,66 @@ const styles = (theme) => ({
     },
     row: {
         display: 'flex',
-        alignItems: 'center',
         borderBottom: '1px solid ' + theme.palette.grey[200],
+    },
+    hightlightRow: {
         backgroundColor: 'transparent',
-        transition: 'background-color 250ms',
+        transition: 'background-color 250ms, opacity 250ms',
+        opacity: 0.75,
         '&:hover': {
-            backgroundColor: theme.palette.grey[200],
-            '& $rowData': {
-                opacity: 1,
-            }
-        }
+            opacity: 1,
+        },
     },
     columnHeading: {
         fontWeight: 'bold',
         fontFamily: theme.typography.heading,
     },
-    rowLabel: {
+    leftColumn: {
         textAlign: 'right',
-        verticalAlign: 'middle',
-        minWidth: '300px',
-        maxWidth: '300px',
-        padding: theme.spacing.unit / 2,
+        minWidth: '200px',
+        maxWidth: '200px',
+        transition: 'min-width 250ms, max-width 250ms',
+        padding: theme.spacing.unit,
+        [theme.breakpoints.up('md')]: {
+            minWidth: '300px',
+            maxWidth: '300px',
+        },
+    },
+    rightColumn: {
+        flex: 1,
+        padding: theme.spacing.unit,
+    },
+    rowLabel: {
+        padding: 2 * theme.spacing.unit,
+        verticalAlign: 'top',
     },
     rowData: {
-        flex: 1,
         padding: theme.spacing.unit / 2,
-        opacity: 0.69,
     },
 })
 
 const barGraph = (props) => {
-    const { classes, theme } = props
+    const { classes } = props
     const stages = props.proposalsByStage
     return (
         <div className={ classes.root }>
             <div className={ classes.row }>
-                <div className={ classnames(classes.rowLabel, classes.columnHeading) }>
+                <div className={ classnames(classes.leftColumn, classes.columnHeading) }>
                     <Subheading>Stage</Subheading>
                 </div>
-                <div className={ classnames(classes.rowData, classes.columnHeading) }>
+                <div className={ classnames(classes.rightColumn, classes.columnHeading) }>
                     <Subheading>Proposals</Subheading>
                 </div>
             </div>
             {
                 stages.map(stage => {
                     return (
-                        <div className={ classes.row } key={ stage.name } >
-                            <div className={ classes.rowLabel }>
+                        <div className={ classnames(classes.row, classes.hightlightRow) } key={ stage.name } >
+                            <div className={ classnames(classes.leftColumn, classes.rowLabel) }>
                                 { stage.name }
                             </div>
-                            <div className={ classes.rowData }>
-                                {
-                                    stage.proposals.map(proposal => {
-                                        return (
-                                            <ProposalDot
-                                                key={ `${stage.name}-${proposal.proposal_id}` }
-                                                proposal={ proposal }
-                                            />
-                                        )
-                                    })
-                                }
+                            <div className={ classnames(classes.rightColumn, classes.rowData) }>
+                                { stage.proposals.map(proposal => <ProposalChip key={ keyGenerator() } proposal={ proposal }/>) }
                             </div>
                         </div>
                     )

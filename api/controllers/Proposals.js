@@ -1,13 +1,24 @@
 const db = require('../config/database')
 
-const stringToArray = (str) => {
-    return str.slice(1, -1).split(',').filter(el => el != '')
-}
+// Helper Functions
+///////////////////
 
-const compareIds = (p, q) => {
-    return (p.proposal_id < q.proposal_id) ? -1 : 1
+// Parse array-like string returned by Postgres into a real array
+const stringToArray = (str) => str.slice(1, -1).split(',').filter(el => el != '')
+// Helper function to sort proposals by proposal_id
+const compareIds = (p, q) => (p.proposal_id < q.proposal_id) ? -1 : 1
+// Convert string to CamelCase
+const camelCase = str => {
+    let string = str.toLowerCase().replace(/[^A-Za-z0-9]/g, ' ').split(' ')
+        .reduce((result, word) => result + capitalize(word.toLowerCase()))
+    return string.charAt(0).toLowerCase() + string.slice(1)
 }
+const capitalize = str => str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
 
+// Controllers
+//////////////
+
+// /proposals
 exports.list = (req, res) => {
     query = `SELECT DISTINCT
             proposal.proposal_id,
@@ -34,13 +45,7 @@ exports.list = (req, res) => {
         })
 }
 
-const camelCase = str => {
-    let string = str.toLowerCase().replace(/[^A-Za-z0-9]/g, ' ').split(' ')
-        .reduce((result, word) => result + capitalize(word.toLowerCase()))
-    return string.charAt(0).toLowerCase() + string.slice(1)
-}
-const capitalize = str => str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
-
+// /proposals/by-stage
 exports.byStage = (req, res) => {
     let query = `SELECT description AS name
         FROM name
@@ -48,30 +53,25 @@ exports.byStage = (req, res) => {
     db.any(query)
         .then(stages => {
             stages.forEach(stage => { stage.proposals = [] })
-                    // proposal.tic_ric_assign_v2, proposal.protocol_status, 
-                    // proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
-            query = `SELECT DISTINCT
-                    proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
-                    proposal.org_name, funding.anticipated_budget, funding.funding_duration,
+            query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
+                proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
+                proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                 TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
-                FROM proposal
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id
-                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar)
-                INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
-                WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
+            FROM proposal
+            INNER JOIN funding ON proposal.proposal_id=funding.proposal_id
+            INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+            INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar)
+            INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+            WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null;`
             db.any(query)
                 .then(data => {
                     console.log(`HIT: /proposals${ req.path }`)
-                    data.sort(compareIds)
                     data.forEach(proposal => {
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
                         proposal.proposal_id = parseInt(proposal.proposal_id)
                         proposal.org_name = parseInt(proposal.org_name)
                         proposal.proposal_status = parseInt(proposal.proposal_status)
-                        if (index >= 0) {
-                            stages[index].proposals.push(proposal)
-                        }
+                        if (index >= 0) stages[index].proposals.push(proposal)
                     })
                     res.status(200).send(stages)
                 })
@@ -81,6 +81,7 @@ exports.byStage = (req, res) => {
         })
 }
 
+// /proposals/approved-services
 exports.approvedServices = (req, res) => {
     query = `SELECT DISTINCT vote.proposal_id, services_approved, vote.meeting_date
         FROM vote
@@ -111,6 +112,7 @@ exports.approvedServices = (req, res) => {
         })
 }
 
+// /proposals/submitted-services
 exports.submittedServices = (req, res) => {
     query = `SELECT DISTINCT vote.proposal_id, new_service_selection, vote.meeting_date
         FROM vote
@@ -141,6 +143,7 @@ exports.submittedServices = (req, res) => {
         })
 }
 
+// /proposals/network
 exports.proposalsNetwork = (req, res) => {
     query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
             proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
