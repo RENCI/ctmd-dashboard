@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
@@ -28,6 +29,42 @@ export default function() {
 
       // Start with empty selections
       svg = d3.select(),
+
+      // Tooltip
+      tip = d3Tip()
+          //.attr("class", "d3-tip")
+          .style("line-height", 1)
+          .style("font-weight", "bold")
+          .style("padding", "12px")
+          .style("background", "rgba(0, 0, 0, 0.8)")
+          .style("color", "#fff")
+          .style("border-radius", "2px")
+          .style("pointer-events", "none")
+          .html(function(d) {
+            switch (d.type) {
+              case "pi":
+                return "PI: " + d.name + "<br><br>" +
+                       "Proposals: " + d.proposals.length;
+
+              case "proposal":
+                return "Proposal: " + d.name + "<br><br>" +
+                       "Budget: " + d.budget + "<br>" +
+                       "Duration: " + d.duration + "<br>" +
+                       "Status: " + d.status;
+
+              case "org":
+                return "Organization: " + d.name + "<br><br>" +
+                       "Proposals: " + d.proposals.length;
+
+              case "tic":
+                return "TIC: " + d.name + "<br><br>" +
+                       "Proposals: " + d.proposals.length;
+
+              default:
+                console.log("Invalid type: " + d.type);
+                return "";
+            }
+          }),
 
       // Event dispatcher
       dispatcher = d3.dispatch("highlightNode");
@@ -61,6 +98,9 @@ export default function() {
           .attr("class", function(d) { return d; });
 
       svg = svgEnter.merge(svg);
+
+      // Tooltips
+      svg.call(tip);
 
       draw();
     });
@@ -160,7 +200,7 @@ export default function() {
 
         switch (type) {
           case "pi":
-            node.name = d.id;
+            node.name = id;
             break;
 
           case "proposal":
@@ -323,11 +363,15 @@ export default function() {
 
             dragNode = d;
 
+            tip.show(d, this);
+
 //            $(this).tooltip("show");
           })
           .on("drag", function(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
+
+            tip.show(d, this);
 
 //            $(this).tooltip("show");
           })
@@ -342,6 +386,8 @@ export default function() {
             dragNode = null;
 
             highlightNode();
+
+            tip.hide();
 
 //            $(this).tooltip("hide");
           });
@@ -361,6 +407,7 @@ export default function() {
 
             highlightNode(d);
 
+            tip.show(d, this);
 //            $(this).tooltip("show");
           })
           .on("mouseout", function(d) {
@@ -368,6 +415,7 @@ export default function() {
 
             highlightNode();
 
+            tip.hide();
 //            $(this).tooltip("hide");
           })
           .call(drag);
@@ -376,7 +424,7 @@ export default function() {
 
       // Node update
       nodeEnter.merge(node)
-          .attr("data-original-title", nodeLabel)
+//          .attr("data-original-title", nodeLabel)
         .select("circle")
           .attr("r", nodeRadius);
 
@@ -457,32 +505,6 @@ export default function() {
               .style("fill", "black");
 
           svg.select(".network").selectAll(".node").raise();
-        }
-      }
-
-      function nodeLabel(d) {
-        switch (d.type) {
-          case "pi":
-            return "PI: " + d.name + "<br><br>" +
-                   "Proposals: " + d.proposals.length;
-
-          case "proposal":
-            return "Proposal: " + d.name + "<br><br>" +
-                   "Budget: " + d.budget + "<br>" +
-                   "Duration: " + d.duration + "<br>" +
-                   "Status: " + d.status;
-
-          case "org":
-            return "Organization: " + d.name + "<br><br>" +
-                   "Proposals: " + d.proposals.length;
-
-          case "tic":
-            return "TIC: " + d.name + "<br><br>" +
-                   "Proposals: " + d.proposals.length;
-
-          default:
-            console.log("Invalid type: " + d.type);
-            return "";
         }
       }
 
