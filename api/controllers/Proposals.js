@@ -66,7 +66,6 @@ exports.byStage = (req, res) => {
                 .then(data => {
                     console.log(`HIT: /proposals${ req.path }`)
                     data.forEach(proposal => {
-                        console.log(proposal.proposal_id, proposal.tic_name)
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
                         proposal.proposal_id = parseInt(proposal.proposal_id)
                         proposal.org_name = parseInt(proposal.org_name)
@@ -99,7 +98,6 @@ exports.byTic = (req, res) => {
                 LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
             db.any(query)
                 .then(data => {
-                    console.log(tics)
                     data.forEach(proposal => {
                         // console.log(proposal)
                         const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
