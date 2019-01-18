@@ -80,6 +80,41 @@ exports.byStage = (req, res) => {
         })
 }
 
+// /proposals/by-tic
+exports.byTic = (req, res) => {
+    console.log(`HIT: /proposals${ req.path }`)
+    let query = `SELECT index, description AS name FROM name WHERE "column"='tic_ric_assign_v2' ORDER BY index;`
+    db.any(query)
+        .then(tics => {
+            tics.forEach(tic => { tic.proposals = [] })
+            query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
+                    proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar) and name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
+            db.any(query)
+                .then(data => {
+                    console.log(tics)
+                    data.forEach(proposal => {
+                        // console.log(proposal)
+                        const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
+                        proposal.proposal_id = parseInt(proposal.proposal_id)
+                        proposal.org_name = parseInt(proposal.org_name)
+                        proposal.proposal_status = parseInt(proposal.proposal_status)
+                        if (index >= 0) tics[index].proposals.push(proposal)
+                    })
+                    res.status(200).send(tics)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        })
+}
+
 // /proposals/approved-services
 exports.approvedServices = (req, res) => {
     query = `SELECT DISTINCT vote.proposal_id, services_approved, vote.meeting_date
