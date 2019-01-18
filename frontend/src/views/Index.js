@@ -82,7 +82,7 @@ class HomePage extends Component {
 
     pieChartOptions = (labels = []) => ({
         plotOptions: {
-            pie: { expandOnClick: false },
+            pie: { expandOnClick: false }, // Why doesn't this work?
         },
         labels: labels,
         theme: {
