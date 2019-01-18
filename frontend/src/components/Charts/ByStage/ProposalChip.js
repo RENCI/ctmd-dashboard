@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
 import ProposalTooltip from './ProposalTooltip'
@@ -19,7 +19,7 @@ const styles = (theme) => ({
 })
 
 const proposalChip = (props) => {
-    const { classes, className, proposal } = props
+    const { classes, proposal } = props
     return (
         <ProposalTooltip proposal={ proposal }>
             <Chip label={ proposal.proposal_id } className={ classes.chip }/>

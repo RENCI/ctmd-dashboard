@@ -5,7 +5,6 @@ import { Grid, Card, CardContent } from '@material-ui/core'
 import ApexChart from 'react-apexcharts'
 
 import Heading from '../components/Typography/Heading'
-import Paragraph from '../components/Typography/Paragraph'
 import Spinner from '../components/Spinner/Spinner'
 
 const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
