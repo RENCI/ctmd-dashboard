@@ -11,9 +11,9 @@ const styles = (theme) => ({
         fontWeight: 'bold',
         margin: '3px',
         minWidth: '50px',
-        transition: 'backgroundColor 250ms',
+        transition: 'background-color 250ms',
         '&:hover': {
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: theme.palette.extended.persimmon,
         },
     },
 })

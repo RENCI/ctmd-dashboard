@@ -66,6 +66,7 @@ exports.byStage = (req, res) => {
                 .then(data => {
                     console.log(`HIT: /proposals${ req.path }`)
                     data.forEach(proposal => {
+                        console.log(proposal.proposal_id, proposal.tic_name)
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
                         proposal.proposal_id = parseInt(proposal.proposal_id)
                         proposal.org_name = parseInt(proposal.org_name)
