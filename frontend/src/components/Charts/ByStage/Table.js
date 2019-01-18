@@ -19,6 +19,10 @@ const styles = (theme) => ({
     },
     row: {
         display: 'flex',
+        flexDirection: 'column',
+        [theme.breakpoints.up('sm')]: {
+            flexDirection: 'row',
+        },
         borderBottom: '1px solid ' + theme.palette.grey[200],
     },
     hightlightRow: {
@@ -34,11 +38,14 @@ const styles = (theme) => ({
         fontFamily: theme.typography.heading,
     },
     leftColumn: {
-        textAlign: 'right',
+        textAlign: 'left',
         minWidth: '200px',
         maxWidth: '200px',
         transition: 'min-width 250ms, max-width 250ms',
         padding: theme.spacing.unit,
+        [theme.breakpoints.up('sm')]: {
+            textAlign: 'right',
+        },
         [theme.breakpoints.up('md')]: {
             minWidth: '300px',
             maxWidth: '300px',
