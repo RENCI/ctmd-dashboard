@@ -19,11 +19,11 @@ const styles = (theme) => ({
     },
     row: {
         display: 'flex',
+        borderBottom: '1px solid ' + theme.palette.grey[200],
         flexDirection: 'column',
-        [theme.breakpoints.up('sm')]: {
+        [theme.breakpoints.up('md')]: {
             flexDirection: 'row',
         },
-        borderBottom: '1px solid ' + theme.palette.grey[200],
     },
     hightlightRow: {
         backgroundColor: 'transparent',
@@ -39,14 +39,12 @@ const styles = (theme) => ({
     },
     leftColumn: {
         textAlign: 'left',
-        minWidth: '200px',
-        maxWidth: '200px',
+        minWidth: '100%',
+        maxWidth: '100%',
         transition: 'min-width 250ms, max-width 250ms',
         padding: theme.spacing.unit,
-        [theme.breakpoints.up('sm')]: {
-            textAlign: 'right',
-        },
         [theme.breakpoints.up('md')]: {
+            textAlign: 'right',
             minWidth: '300px',
             maxWidth: '300px',
         },
