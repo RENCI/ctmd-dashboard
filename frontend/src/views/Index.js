@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Grid, Card, CardContent, CardMedia } from '@material-ui/core'
+import { Grid, Card, CardContent } from '@material-ui/core'
 import ApexChart from 'react-apexcharts'
 
 import Heading from '../components/Typography/Heading'
