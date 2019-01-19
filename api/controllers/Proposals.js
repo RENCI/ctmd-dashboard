@@ -45,7 +45,6 @@ exports.list = (req, res) => {
         WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
     db.any(query)
         .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
             data.forEach(proposal => {
                 proposal.submission_date = proposal.prop_submit.toDateString()
                 delete proposal.prop_submit
@@ -77,9 +76,7 @@ exports.byStage = (req, res) => {
                 LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
             db.any(query)
                 .then(data => {
-                    console.log(`HIT: /proposals${ req.path }`)
                     data.forEach(proposal => {
-                        console.log(proposal.proposal_id, proposal.tic_name)
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
                         proposal.proposal_id = parseInt(proposal.proposal_id)
                         proposal.org_name = parseInt(proposal.org_name)
@@ -96,7 +93,6 @@ exports.byStage = (req, res) => {
 
 // /proposals/by-tic
 exports.byTic = (req, res) => {
-    console.log(`HIT: /proposals${ req.path }`)
     let query = `SELECT index, description AS name FROM name WHERE "column"='tic_ric_assign_v2' ORDER BY index;`
     db.any(query)
         .then(tics => {
@@ -112,7 +108,6 @@ exports.byTic = (req, res) => {
                 LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
             db.any(query)
                 .then(data => {
-                    console.log(tics)
                     data.forEach(proposal => {
                         // console.log(proposal)
                         const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
@@ -137,7 +132,6 @@ exports.approvedServices = (req, res) => {
         WHERE vote.meeting_date is not NULL order by vote.proposal_id;`
     db.any(query)
         .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
             let newData = []
             data.forEach(prop => {
                 prop.proposal_id = parseInt(prop.proposal_id)
@@ -168,7 +162,6 @@ exports.submittedServices = (req, res) => {
         WHERE vote.meeting_date is not NULL order by vote.proposal_id;`
     db.any(query)
         .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
             let newData = []
             data.forEach(prop => {
                 prop.proposal_id = parseInt(prop.proposal_id)
@@ -205,7 +198,6 @@ exports.proposalsNetwork = (req, res) => {
         WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
     db.any(query)
         .then(data => {
-            console.log(`HIT: /proposals${ req.path }`)
             data.forEach(prop => {
                 delete prop.tic_ric_assign_v2
                 delete prop.redcap_repeat_instrument
