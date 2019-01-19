@@ -24,6 +24,9 @@
             font-weight: bold;
             padding-bottom: 1rem;
         }
+        .details {
+            padding-bottom: 1rem;
+        }
         .request::before {
             border-top-left-radius: 0.5rem;
             border-bottom-left-radius: 0.5rem;
@@ -68,17 +71,43 @@
 
     <ul class="endpoints">
         <li class="endpoint">
-            <div class="desc">
-                Approved Proposals - Approved Services
+            <div class="desc">Single Proposal</div>
+            <div class="details">Returns proposals in proposal table with given <code>:id</code>.</div>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/1">api/proposals/:id</a>
             </div>
+        </li>
+        <li class="endpoint">
+            <div class="desc">All Proposals</div>
+            <div class="details">Returns array of all proposals as object with the following attributes: including <code>proposal_id</code> (integer), <code>pi_name</code> (string), <code>tic_name</code> (string), <code>proposal_status</code> (integer), and <code>submission_date</code> (string, <em>e.g.</em>, Wed Oct 26 2016).</div>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals">api/proposals</a>
+            </div>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Proposal - By Stage</div>
+            <div class="details">Returns array of stages and array of proposals in each stage.</div>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/by-stage">api/proposals/by-stage</a>
+            </div>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Proposal - By TIC/RIC</div>
+            <div class="details">Returns array of TICs and array of proposals in each stage.</div>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/proposals/by-tic">api/proposals/by-tic</a>
+            </div>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Approved Proposals - Approved Services</div>
+            <div class="details">Returns array of approved proposals and services (given as <code>id</code>s) for which they are approved.</div>
             <div class="route">
                 <a class="get request" href="https://pmd.renci.org/api/proposals/approved-services">api/proposals/approved-services</a>
             </div>
         </li>
         <li class="endpoint">
-            <div class="desc">
-                Submitted Proposals - New Service Selection
-            </div>
+            <div class="desc">Submitted Proposals - New Service Selection</div>
+            <div class="details">Returns array of submitted proposals and services (given as <code>id</code>s).</div>
             <div class="route">
                 <a class="get request" href="https://pmd.renci.org/api/proposals/submitted-services">api/proposals/submitted-services</a>
             </div>
@@ -88,17 +117,34 @@
 
     <ul class="endpoints">
         <li class="endpoint">
-            <div class="desc">
-                Approval Services
-            </div>
+            <div class="desc">Approval Services</div>
+            <div class="details">Returns services for proposals in the approval stage.</div>
             <div class="route">
                 <a class="get request" href="https://pmd.renci.org/api/services/approval">api/services/approval</a>
             </div>
         </li>
         <li class="endpoint">
-            <div class="desc">
-                Submission Services
+            <div class="desc">Submission Services</div>
+            <div class="details">Returns services for proposals in the submission stage.</div>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/services/submission">api/services/submission</a>
             </div>
+        </li>
+    </ul>
+
+    <h2>Visualizations</h2>
+
+    <ul class="endpoints">
+        <li class="endpoint">
+            <div class="desc">Proposals Network</div>
+            <div class="details">Returns proposals with details required for network visualization, including <code>proposal_id</code> (integer), <code>proposal_status</code> (string), <code>tic_name</code> (string), <code>org_name</code> (integer), <code>protocol_status</code> (integer), <code>anticipated_budget</code> (string), <code>funding_duration</code> (string), and <code>pi_name</code> (string).</div>
+            <div class="route">
+                <a class="get request" href="https://pmd.renci.org/api/services/approval">api/services/approval</a>
+            </div>
+        </li>
+        <li class="endpoint">
+            <div class="desc">Submission Services</div>
+            <div class="details">Returns services for proposals in the submission stage.</div>
             <div class="route">
                 <a class="get request" href="https://pmd.renci.org/api/services/submission">api/services/submission</a>
             </div>
@@ -109,9 +155,8 @@
 
     <ul class="endpoints">
         <li class="endpoint">
-            <div class="desc">
-                PIs
-            </div>
+            <div class="desc">PIs</div>
+            <div class="details">Returns </div>
             <div class="route">
                 <a class="get request" href="https://pmd.renci.org/api/pis">api/pis</a>
             </div>
