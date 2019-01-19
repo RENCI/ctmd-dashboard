@@ -18,6 +18,19 @@ const capitalize = str => str.charAt(0).toUpperCase() + str.toLowerCase().slice(
 // Controllers
 //////////////
 
+// /proposals/:id(\\d+)
+exports.getOne = (req, res) => {
+    query = `SELECT * FROM proposal WHERE proposal_id=${ req.params.id };`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('Error:', error)
+            res.status(500).send('Error', error)
+        })
+}
+
 // /proposals
 exports.list = (req, res) => {
     query = `SELECT DISTINCT

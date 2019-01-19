@@ -21,10 +21,6 @@ app.listen(PORT, () => {
 const DocumentationRoutes = require('./routes/Documentation')
 app.use('/list', DocumentationRoutes)
 
-// Proposal
-const ProposalRoutes = require('./routes/Proposal')
-app.use('/proposal', ProposalRoutes)
-
 // Proposals
 const ProposalsRoutes = require('./routes/Proposals')
 app.use('/proposals', ProposalsRoutes)
