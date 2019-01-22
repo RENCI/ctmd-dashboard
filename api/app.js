@@ -15,15 +15,19 @@ app.listen(PORT, () => {
     console.log(`\nShhh... I'm listening on port ${PORT}.\n`)
 })
 
+// Custom Middleware - Route-Logging
+
+const routeLogger = (req, res, next) => {
+    console.log(`HIT: ${ req.path }`)
+    next()
+}
+app.use(routeLogger)
+
 // // // Routes // // //
 
 // Endpoint List/Documentation
 const DocumentationRoutes = require('./routes/Documentation')
 app.use('/list', DocumentationRoutes)
-
-// Proposal
-const ProposalRoutes = require('./routes/Proposal')
-app.use('/proposal', ProposalRoutes)
 
 // Proposals
 const ProposalsRoutes = require('./routes/Proposals')
