@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
-import ProposalTooltip from './ProposalTooltip'
+import ProposalTooltip from '../../Tooltips/ProposalTooltip'
 
 const styles = (theme) => ({
     chip: {

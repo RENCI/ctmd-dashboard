@@ -37,7 +37,7 @@ const styles = (theme) => ({
     },
 })
 
-const proposalTooltip = withStyles(styles)((props) => {
+const proposalTooltip = (props) => {
     const { classes, children, proposal } = props
     const tooltipContent = (
         <Fragment>
@@ -53,6 +53,6 @@ const proposalTooltip = withStyles(styles)((props) => {
             { children }
         </Tooltip>
     )
-})
+}
 
 export default withStyles(styles)(proposalTooltip)
