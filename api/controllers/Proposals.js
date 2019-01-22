@@ -10,20 +10,18 @@ exports.getOne = (req, res) => {
         .then(data => {
             res.status(200).send(data)
         })
-        .catch(error => {
-            console.log('Error:', error)
-            res.status(500).send('Error', error)
+        .catch(error => { console.log('ERROR:', error) .status(500).send('Error', error)
         })
 }
 
 // /proposals
 exports.list = (req, res) => {
     query = `SELECT DISTINCT
-            proposal.proposal_id,
+            CAST(proposal.proposal_id AS INT),
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
             proposal.prop_submit,
-            name2.description AS tic_name,
-            name.description AS proposal_status
+            name.description AS proposal_status,
+            name2.description AS tic_name
         FROM proposal
         INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 as varchar)
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
@@ -37,9 +35,7 @@ exports.list = (req, res) => {
             data.sort(compareIds)
             res.status(200).send(data)
         })
-        .catch(error => {
-            console.log('ERROR:', error)
-        })
+        .catch(error => { console.log('ERROR:', error) })
 }
 
 // /proposals/by-stage
@@ -50,8 +46,14 @@ exports.byStage = (req, res) => {
     db.any(query)
         .then(stages => {
             stages.forEach(stage => { stage.proposals = [] })
-            query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
-                    proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    CAST(proposal.org_name AS INT),
+                    proposal.tic_ric_assign_v2,
+                    CAST(proposal.protocol_status AS INT),
+                    funding.anticipated_budget, funding.funding_duration,
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
@@ -63,16 +65,11 @@ exports.byStage = (req, res) => {
                 .then(data => {
                     data.forEach(proposal => {
                         const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
-                        proposal.proposal_id = parseInt(proposal.proposal_id)
-                        proposal.org_name = parseInt(proposal.org_name)
-                        proposal.proposal_status = parseInt(proposal.proposal_status)
                         if (index >= 0) stages[index].proposals.push(proposal)
                     })
                     res.status(200).send(stages)
                 })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
+                .catch(error => { console.log('ERROR:', error) })
         })
 }
 
@@ -82,8 +79,13 @@ exports.byTic = (req, res) => {
     db.any(query)
         .then(tics => {
             tics.forEach(tic => { tic.proposals = [] })
-            query = `SELECT DISTINCT proposal.proposal_id, name.description AS proposal_status, name2.description AS tic_name,
-                    proposal.org_name, proposal.tic_ric_assign_v2, proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    name.description AS proposal_status, name2.description AS tic_name,
+                    CAST(proposal.org_name AS INT),
+                    proposal.tic_ric_assign_v2,
+                    CAST(proposal.org_name AS INT),
+                    proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
@@ -96,16 +98,12 @@ exports.byTic = (req, res) => {
                     data.forEach(proposal => {
                         // console.log(proposal)
                         const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
-                        proposal.proposal_id = parseInt(proposal.proposal_id)
-                        proposal.org_name = parseInt(proposal.org_name)
-                        proposal.proposal_status = parseInt(proposal.proposal_status)
+                        proposal.tic_ric_assign_v2 = parseInt(proposal.tic_ric_assign_v2)
                         if (index >= 0) tics[index].proposals.push(proposal)
                     })
                     res.status(200).send(tics)
                 })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
+                .catch(error => { console.log('ERROR:', error) })
         })
 }
 
@@ -134,9 +132,7 @@ exports.approvedServices = (req, res) => {
             newData.sort(compareIds)
             res.status(200).send(newData)
         })
-        .catch(error => {
-            console.log('ERROR:', error)
-        })
+        .catch(error => { console.log('ERROR:', error) })
 }
 
 // /proposals/submitted-services
@@ -164,9 +160,7 @@ exports.submittedServices = (req, res) => {
             newData.sort(compareIds)
             res.status(200).send(newData)
         })
-        .catch(error => {
-            console.log('ERROR:', error)
-        })
+        .catch(error => { console.log('ERROR:', error) })
 }
 
 // /proposals/network
@@ -194,7 +188,5 @@ exports.proposalsNetwork = (req, res) => {
             data.sort(compareIds)
             res.status(200).send(data)
         })
-        .catch(err => {
-            console.log('ERROR:', err)
-        })
+        .catch(error => { console.log('ERROR:', err) })
 }
