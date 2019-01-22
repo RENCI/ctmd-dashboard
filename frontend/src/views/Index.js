@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { withStyles, withTheme } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 import { Grid, Card, CardContent } from '@material-ui/core'
 import ApexChart from 'react-apexcharts'
 
 import Heading from '../components/Typography/Heading'
+import Paragraph from '../components/Typography/Paragraph'
 import Spinner from '../components/Spinner/Spinner'
 
 const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
@@ -12,6 +13,34 @@ const apiUrl = {
     proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByStage: apiRoot + 'proposals/by-stage',
 }
+
+const chartOptions = (categories = []) => ({
+    fill: { colors: 'blue' },
+    plotOptions: {
+        bar: {
+            columnWidth: '90%',
+            dataLabels: { position: 'top', },
+        }
+    },
+    dataLabels: {
+        offsetY: -20,
+        style: {
+            fontSize: '12px',
+            colors: ['#304758'],
+        }
+    },  
+    stroke: { width: 0, },
+    xaxis: {
+        labels: { show: categories.length > 0 ? true : false },
+        categories: categories,
+        axisTicks: { show: false, },
+        axisBorder: { show: false },
+    },
+    yaxis: {
+        show: false,
+    },
+    grid: { show: false, },
+})
 
 const styles = (theme) => ({
     root: {
@@ -41,76 +70,6 @@ class HomePage extends Component {
         proposalsByStage: [],
     }
 
-    barChartOptions = (categories = []) => ({
-        plotOptions: {
-            bar: {
-                horizontal: true,
-                barHeight: '90%',
-                dataLabels: { position: 'top', },
-            }
-        },
-        colors: [
-            this.props.theme.palette.primary.main,
-            this.props.theme.palette.extended.persimmon,
-        ],
-        dataLabels: {
-            offsetX: 0,
-            textAnchor: 'end',
-            style: {
-                fontSize: '12px',
-                colors: ['#304758'],
-            },
-        },  
-        stroke: { width: 0, },
-        tooltip: {
-            theme: 'light',
-            followCursor: true,
-            x: { show: true },
-            y: { show: true, title: { formatter: () => '' }, },
-        },
-        xaxis: {
-            labels: { show: false },
-            categories: categories,
-            axisTicks: { show: false, },
-            axisBorder: { show: false },
-        },
-        yaxis: {
-            labels: { show: true },
-        },
-        grid: { show: false },
-    })
-
-    pieChartOptions = (labels = []) => ({
-        plotOptions: {
-            pie: {
-                donut: {
-                    expandOnClick: false,
-                    labels: {
-                        show: true,
-                    }
-                }
-            },
-        },
-        labels: labels,
-        theme: {
-            monochrome: { enabled: true }
-        },
-        title: {
-            show: false,
-            text: '',
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: { width: 200 },
-                legend: { position: 'bottom' }
-            }
-        }],
-        legend: {
-            show: false,
-        },
-    })
-
     componentDidMount() {
         const promises = [
             axios.get(apiUrl.proposalsByTic),
@@ -129,7 +88,7 @@ class HomePage extends Component {
     }
 
     render() {
-        const { classes, theme } = this.props
+        const { classes } = this.props
         const { proposalsByTic, proposalsByStage } = this.state
         return (
             <div className={ classes.root }>
@@ -146,8 +105,8 @@ class HomePage extends Component {
                             <CardContent>
                                 {
                                     (proposalsByTic) ? (
-                                        <ApexChart type="bar" height="300"
-                                            options={ this.barChartOptions(proposalsByTic.map(tic => tic.name.slice(0, -4))) }
+                                        <ApexChart type="bar" height="250"
+                                            options={ chartOptions(proposalsByTic.map(tic => tic.name.slice(0, -4))) }
                                             series={ [{
                                                 name: "Proposals",
                                                 data: proposalsByTic.map(tic => tic.proposals.length),
@@ -170,9 +129,13 @@ class HomePage extends Component {
                             <CardContent>
                                 {
                                     (proposalsByStage) ? (
-                                        <ApexChart type="pie" width="100%"
-                                            options={ this.pieChartOptions(proposalsByStage.map(stage => stage.name)) }
-                                            series={ proposalsByStage.map(stage => stage.proposals.length) }
+                                        <ApexChart type="bar" height="250"
+                                            options={ chartOptions() }
+                                            series={ [{
+                                                name: "Proposals",
+                                                data: proposalsByStage.map(stage => stage.proposals.length),
+                                            }] }
+                                            width="100%"
                                         />
                                     ) : (
                                         <Spinner />
@@ -189,4 +152,4 @@ class HomePage extends Component {
     }
 }
 
-export default withTheme()(withStyles(styles)(HomePage))
+export default withStyles(styles)(HomePage)
