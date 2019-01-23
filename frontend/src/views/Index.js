@@ -14,34 +14,6 @@ const apiUrl = {
     proposalsByStage: apiRoot + 'proposals/by-stage',
 }
 
-const chartOptions = (categories = []) => ({
-    fill: { colors: 'blue' },
-    plotOptions: {
-        bar: {
-            columnWidth: '90%',
-            dataLabels: { position: 'top', },
-        }
-    },
-    dataLabels: {
-        offsetY: -20,
-        style: {
-            fontSize: '12px',
-            colors: ['#304758'],
-        }
-    },  
-    stroke: { width: 0, },
-    xaxis: {
-        labels: { show: categories.length > 0 ? true : false },
-        categories: categories,
-        axisTicks: { show: false, },
-        axisBorder: { show: false },
-    },
-    yaxis: {
-        show: false,
-    },
-    grid: { show: false, },
-})
-
 const styles = (theme) => ({
     root: {
         // ...theme.mixins.debug
@@ -70,6 +42,34 @@ class HomePage extends Component {
         proposalsByStage: [],
     }
 
+    chartOptions = (categories = []) => ({
+        fill: { colors: 'blue' },
+        plotOptions: {
+            bar: {
+                columnWidth: '90%',
+                dataLabels: { position: 'top', },
+            }
+        },
+        dataLabels: {
+            offsetY: -20,
+            style: {
+                fontSize: '12px',
+                colors: [this.props.theme.palette.primary.main],
+            }
+        },  
+        stroke: { width: 0, },
+        xaxis: {
+            labels: { show: categories.length > 0 ? true : false },
+            categories: categories,
+            axisTicks: { show: false, },
+            axisBorder: { show: false },
+        },
+        yaxis: {
+            show: false,
+        },
+        grid: { show: false, },
+    })
+
     componentDidMount() {
         const promises = [
             axios.get(apiUrl.proposalsByTic),
@@ -88,7 +88,7 @@ class HomePage extends Component {
     }
 
     render() {
-        const { classes } = this.props
+        const { classes, theme } = this.props
         const { proposalsByTic, proposalsByStage } = this.state
         return (
             <div className={ classes.root }>
@@ -106,7 +106,7 @@ class HomePage extends Component {
                                 {
                                     (proposalsByTic) ? (
                                         <ApexChart type="bar" height="250"
-                                            options={ chartOptions(proposalsByTic.map(tic => tic.name.slice(0, -4))) }
+                                            options={ this.chartOptions(proposalsByTic.map(tic => tic.name.slice(0, -4))) }
                                             series={ [{
                                                 name: "Proposals",
                                                 data: proposalsByTic.map(tic => tic.proposals.length),
@@ -130,11 +130,32 @@ class HomePage extends Component {
                                 {
                                     (proposalsByStage) ? (
                                         <ApexChart type="bar" height="250"
-                                            options={ chartOptions() }
+                                            options={ this.chartOptions() }
                                             series={ [{
                                                 name: "Proposals",
                                                 data: proposalsByStage.map(stage => stage.proposals.length),
                                             }] }
+                                            width="100%"
+                                        />
+                                    ) : (
+                                        <Spinner />
+                                    )
+                                }
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item sm={ 12 } className={ classes.item }>
+                        <Card className={ classes.card } square={ true }>
+                            <CardContent>
+                                <Heading>Proposals By Stage</Heading>
+                            </CardContent>
+                            <CardContent>
+                                {
+                                    (proposalsByStage) ? (
+                                        <ApexChart type="bar" height="400"
+                                            options={ this.chartOptions() }
+                                            series={ [{ data: proposalsByStage.map(stage => stage.proposals.length) }] }
                                             width="100%"
                                         />
                                     ) : (
@@ -152,4 +173,4 @@ class HomePage extends Component {
     }
 }
 
-export default withStyles(styles)(HomePage)
+export default withStyles(styles, { withTheme: true })(HomePage)
