@@ -9,8 +9,12 @@ import {
     Dashboard as DashboardIcon,
     Layers as LayersIcon,
     Settings as SettingsIcon,
-    GroupWork as GroupWorkIcon,
+    Share as ShareIcon,
+    HourglassEmpty as HourglassEmptyIcon,
     ExitToApp as ExitToAppIcon,
+    Grade as GradeIcon,
+    Description as DescriptionIcon,
+    Assessment as AssessmentIcon,
     KeyboardArrowRight as KeyboardArrowRightIcon,
 } from '@material-ui/icons'
 
@@ -87,27 +91,29 @@ class Dashboard extends Component {
                 title: '',
                 items: [
                     { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
+                    {
+                        text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals',
+                    },
                 ],
             },
             {
-                title: 'Reports',
+                title: '',
                 items: [
-                    { text: 'Proposals', icon: <LayersIcon/>, href: '/reports/proposals',
+                    { text: 'Reports', icon: <AssessmentIcon/>, href: '/reports/proposals',
                         submenu: [
-                            { text: 'All', path: '/reports/proposals', icon: <KeyboardArrowRightIcon/> },
                             { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
                             { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                         ]
                     },
-                    { text: 'Forecasts', icon: <LayersIcon/>, href: '/reports/forecasts', },
-                    { text: 'Performance', icon: <LayersIcon/>, href: '/reports/performance', },
+                    { text: 'Forecasts', icon: <HourglassEmptyIcon/>, href: '/reports/forecasts', },
+                    { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', },
                 ],
             },
             {
                 title: 'Analytics',
                 items: [
-                    { text: 'Collaborations', icon: <GroupWorkIcon />, href: '/analytics/collaborations', },
+                    { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
                     { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', },
                 ],
             },
@@ -187,10 +193,11 @@ class Dashboard extends Component {
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>
                                             
+                                            <Route path="/proposals" component={ AllProposals }/>
+                                            
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                            <Route path="/reports/proposals" component={ AllProposals }/>
                                             
                                             <Route path="/reports/forecasts" component={ ForecastsPage }/>
                                             <Route path="/reports/performance" component={ PerformancePage }/>
