@@ -23,6 +23,7 @@ import { AuthConsumer } from './contexts/AuthContext'
 import ScrollToTop from './utils/ScrollToTop'
 
 import Heading from './components/Typography/Heading'
+import Subheading from './components/Typography/Subheading'
 import SideMenu from './components/Menus/SideMenu'
 import UserMenu from './components/Menus/UserMenu'
 
@@ -59,7 +60,7 @@ const styles = (theme) => ({
     toolbar: {
         display: 'flex',
         paddingRight: 24,
-        ...theme.mixins.toolbar
+        backgroundColor: theme.palette.secondary.main,
     },
     menuButton: {
         marginRight: 20,
@@ -67,8 +68,22 @@ const styles = (theme) => ({
             display: 'none',
         },
     },
+    title: {
+        // ...theme.mixins.debug,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: theme.spacing.unit,
+        transition: 'padding 250ms',
+        [theme.breakpoints.up('sm')]: {
+            padding: 2 * theme.spacing.unit,
+        },
+    },
     heading: {
         color: theme.palette.common.white,
+        flex: 1,
+    },
+    subheading: {
+        color: theme.palette.grey[200],
         flex: 1,
     },
     drawerPaper: {
@@ -77,7 +92,12 @@ const styles = (theme) => ({
     },
     main: {
         flexGrow: 1,
-        padding: theme.spacing.unit * 3,
+        padding: 4 * theme.spacing.unit,
+        paddingTop: 16 * theme.spacing.unit,
+        transition: 'padding-top 250ms',
+        [theme.breakpoints.up('sm')]: {
+            paddingTop: 18 * theme.spacing.unit,
+        },
     },
 })
 class Dashboard extends Component {
@@ -149,9 +169,10 @@ class Dashboard extends Component {
                                         >
                                             <MenuIcon />
                                         </IconButton>
-                                        <Heading className={ classes.heading }>
-                                            Duke/Vanderbilt TIC Dashboard
-                                        </Heading>
+                                        <div className={ classes.title }>
+                                            <Heading className={ classes.heading }>Duke/Vanderbilt</Heading>
+                                            <Subheading className={ classes.subheading }>TIC Dashboard</Subheading>
+                                        </div>
                                         {
                                             context.authenticated === true
                                             ? <UserMenu menuItems={ userMenuItems }/>
