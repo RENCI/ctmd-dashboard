@@ -8,5 +8,6 @@ exports.runQuery = (req, res, query) => {
         })
         .catch(error => {
             console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
         })
 }

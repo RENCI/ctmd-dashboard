@@ -25,22 +25,16 @@ app.use(routeLogger)
 
 // // // Routes // // //
 
-// Endpoint List/Documentation
-const DocumentationRoutes = require('./routes/Documentation')
-app.use('/list', DocumentationRoutes)
-
 // Proposals
-const ProposalsRoutes = require('./routes/Proposals')
-app.use('/proposals', ProposalsRoutes)
-
+app.use('/proposals', require('./routes/Proposals'))
+// PIs
+app.use('/pis', require('./routes/Pis'))
 // Services
-const ServiceRoutes = require('./routes/Services')
-app.use('/services', ServiceRoutes)
-
+app.use('/services', require('./routes/Services'))
 // Stages
-const StageRoutes = require('./routes/Stages')
-app.use('/stages', StageRoutes)
+app.use('/stages', require('./routes/Stages'))
+// Organizations
+app.use('/organizations', require('./routes/Organizations'))
 
-// General
-const GeneralRoutes = require('./routes/General')
-app.use('/', GeneralRoutes)
+// Endpoint List/Documentation
+app.use('/list', require('./routes/Documentation'))
