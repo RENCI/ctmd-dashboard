@@ -26,7 +26,7 @@ On the PMD VM, dump a snapshot of the database.
 $ pg_dump duketic > duketic.sql
 ```
 
-That command will put the dumped data into the `/var/lib/pgdata` directory. Copy that file into this project's `db/` directory.
+That command will put the dumped data into the `/var/lib/pgsql` directory. Copy that file into this project's `db` directory.
 
 ```bash
 /cloned/repo/db/ $ scp username@pmd-host:/path/to/duketic.sql .
