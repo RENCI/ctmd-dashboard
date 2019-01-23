@@ -21,10 +21,12 @@ exports.list = (req, res) => {
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
             proposal.prop_submit,
             name.description AS proposal_status,
-            name2.description AS tic_name
+            name2.description AS tic_name,
+            name3.description AS org_name
         FROM proposal
         INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 as varchar)
-        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar)
+        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2'
+        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name as varchar) AND name3."column"='org_name'
         WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
     db.any(query)
         .then(data => {
@@ -50,17 +52,16 @@ exports.byStage = (req, res) => {
                     CAST(proposal.proposal_id AS INT),
                     name.description AS proposal_status,
                     name2.description AS tic_name,
-                    CAST(proposal.org_name AS INT),
-                    proposal.tic_ric_assign_v2,
-                    CAST(proposal.protocol_status AS INT),
+                    name3.description AS org_name,
                     funding.anticipated_budget, funding.funding_duration,
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
                 INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
                 INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar) and name."column"='protocol_status'
-                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar) AND name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name as varchar) AND name3."column"='org_name';`
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
@@ -81,10 +82,10 @@ exports.byTic = (req, res) => {
             tics.forEach(tic => { tic.proposals = [] })
             query = `SELECT DISTINCT
                     CAST(proposal.proposal_id AS INT),
-                    name.description AS proposal_status, name2.description AS tic_name,
-                    CAST(proposal.org_name AS INT),
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
                     proposal.tic_ric_assign_v2,
-                    CAST(proposal.org_name AS INT),
                     proposal.protocol_status, funding.anticipated_budget, funding.funding_duration,
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
@@ -92,7 +93,8 @@ exports.byTic = (req, res) => {
                 INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
                 INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
                 INNER JOIN name ON name.index=CAST(proposal.protocol_status as varchar) and name."column"='protocol_status'
-                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2';`
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 as varchar) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name as varchar) AND name3."column"='org_name';`
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
