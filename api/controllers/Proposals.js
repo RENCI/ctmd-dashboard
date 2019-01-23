@@ -10,7 +10,9 @@ exports.getOne = (req, res) => {
         .then(data => {
             res.status(200).send(data)
         })
-        .catch(error => { console.log('ERROR:', error) .status(500).send('Error', error)
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
         })
 }
 
@@ -37,7 +39,10 @@ exports.list = (req, res) => {
             data.sort(compareIds)
             res.status(200).send(data)
         })
-        .catch(error => { console.log('ERROR:', error) })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 // /proposals/by-stage
@@ -70,7 +75,10 @@ exports.byStage = (req, res) => {
                     })
                     res.status(200).send(stages)
                 })
-                .catch(error => { console.log('ERROR:', error) })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                    res.status(500).send('There was an error fetching data.')
+                })
         })
 }
 
@@ -105,7 +113,10 @@ exports.byTic = (req, res) => {
                     })
                     res.status(200).send(tics)
                 })
-                .catch(error => { console.log('ERROR:', error) })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                    res.status(500).send('There was an error fetching data.')
+                })
         })
 }
 
@@ -134,7 +145,10 @@ exports.approvedServices = (req, res) => {
             newData.sort(compareIds)
             res.status(200).send(newData)
         })
-        .catch(error => { console.log('ERROR:', error) })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 // /proposals/submitted-services
@@ -162,7 +176,10 @@ exports.submittedServices = (req, res) => {
             newData.sort(compareIds)
             res.status(200).send(newData)
         })
-        .catch(error => { console.log('ERROR:', error) })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 // /proposals/network
@@ -188,5 +205,8 @@ exports.proposalsNetwork = (req, res) => {
             data.sort(compareIds)
             res.status(200).send(data)
         })
-        .catch(error => { console.log('ERROR:', err) })
+        .catch(error => {
+            console.log('ERROR:', err)
+            res.status(500).send('There was an error fetching data.')
+        })
 }

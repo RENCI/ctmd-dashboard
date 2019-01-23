@@ -9,9 +9,9 @@ exports.approvalServices = (req, res) => {
             })
             res.status(200).send(services)
         })
-        .catch(err => {
-            console.log(err)
-            res.status(500).send('no data')
+        .catch(error => {
+            console.log(error)
+            res.status(500).send('There was an error fetching data.')
         })
 }
 
@@ -24,8 +24,8 @@ exports.submissionServices = (req, res) => {
             })
             res.status(200).send(services)
         })
-        .catch(err => {
-            console.log(err)
-            res.status(500).send('no data')
+        .catch(error => {
+            console.log(error)
+            res.status(500).send('There was an error fetching data.')
         })
 }
