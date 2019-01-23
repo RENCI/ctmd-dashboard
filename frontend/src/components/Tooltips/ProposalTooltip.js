@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Tooltip } from '@material-ui/core'
+import ListItem from './ListItem'
 
 const styles = (theme) => ({
     popper: {
@@ -23,7 +24,7 @@ const styles = (theme) => ({
     tooltip: {
         backgroundColor: theme.palette.primary.light,
         fontSize: '100%',
-        position: 'relateive',
+        position: 'relative',
     },
     title: {
         borderBottom: '1px solid ' + theme.palette.common.white,
@@ -43,8 +44,9 @@ const proposalTooltip = (props) => {
         <Fragment>
             <div className={ classes.title }>Proposal { proposal.proposal_id}</div>
             <div className={ classes.body }>
-                <div className={ classes.bodyText }>PI: { proposal.pi_name }</div>
-                <div className={ classes.bodyText }>TIC: { proposal.tic_name }</div>
+                <ListItem title="PI" content={ proposal.pi_name }/>
+                <ListItem twoLines title="Submitting Organization" content={ proposal.org_name }/>
+                <ListItem title="Assigned TIC/RIC" content={ proposal.tic_name }/>
             </div>
         </Fragment>
     )

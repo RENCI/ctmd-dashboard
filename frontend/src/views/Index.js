@@ -145,27 +145,6 @@ class HomePage extends Component {
                         </Card>
                     </Grid>
 
-                    <Grid item sm={ 12 } className={ classes.item }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Heading>Proposals By Stage</Heading>
-                            </CardContent>
-                            <CardContent>
-                                {
-                                    (proposalsByStage) ? (
-                                        <ApexChart type="bar" height="400"
-                                            options={ this.chartOptions() }
-                                            series={ [{ data: proposalsByStage.map(stage => stage.proposals.length) }] }
-                                            width="100%"
-                                        />
-                                    ) : (
-                                        <Spinner />
-                                    )
-                                }
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
                 </Grid>
 
             </div>
