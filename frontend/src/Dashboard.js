@@ -24,6 +24,7 @@ import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
+import AllProposals from './views/Proposals/All'
 import ProposalsByStage from './views/Proposals/ByStage'
 import ApprovedProposals from './views/Proposals/Approved'
 import SubmittedProposals from './views/Proposals/Submitted'
@@ -93,6 +94,7 @@ class Dashboard extends Component {
                 items: [
                     { text: 'Proposals', icon: <LayersIcon/>, href: '/reports/proposals',
                         submenu: [
+                            { text: 'All', path: '/reports/proposals', icon: <KeyboardArrowRightIcon/> },
                             { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
                             { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
@@ -184,9 +186,12 @@ class Dashboard extends Component {
                                     <ScrollToTop>
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>
+                                            
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
+                                            <Route path="/reports/proposals" component={ AllProposals }/>
+                                            
                                             <Route path="/reports/forecasts" component={ ForecastsPage }/>
                                             <Route path="/reports/performance" component={ PerformancePage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
