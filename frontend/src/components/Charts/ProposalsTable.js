@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core'
-import { Paper } from '@material-ui/core';
+import MaterialTable from 'material-table'
+import { Icon, IconButton, Tooltip } from '@material-ui/core';
 
-const styles = theme => ({
-    root: {},
-    contents: {
+const styles = (theme) => ({
+    table: {
         padding: 2 * theme.spacing.unit,
         overflowY: 'scroll',
         maxHeight: 'calc(100vh - 190px)'
@@ -16,41 +15,26 @@ const styles = theme => ({
 class ProposalsTable extends Component {
     render() {
         const { classes, proposals } = this.props
-        const attributes = [
-            { key: 'proposal_id', name: 'Proposal ID' },
-            { key: 'pi_name', name: 'PI' },
-            { key: 'proposal_status', name: 'Proposal Status' },
-            { key: 'tic_name', name: 'TIC' },
-            { key: 'org_name', name: 'Organization' },
-            { key: 'submittion_date', name: 'Submission Date' },
-        ]
         return (
-            <div className={ classes.root }>
-                <Paper className={ classes.contents }>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                {
-                                    attributes.map(attr => {
-                                        return <TableCell>{ attr.name }</TableCell>
-                                    })
-                                }
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {
-                                proposals.map(proposal => {
-                                    return (
-                                        <TableRow>
-                                            { attributes.map(attr => <TableCell>{ proposal[attr.key] }</TableCell>) }
-                                        </TableRow>
-                                    )
-                                })
-                            }
-                        </TableBody>
-                    </Table>
-                </Paper>
-            </div>
+            <MaterialTable
+                className={ classes.table }
+                columns={ [
+                    { title: 'Proposal ID', field: 'proposal_id', type: 'numeric', },
+                    { title: 'PI', field: 'pi_name', },
+                    { title: 'Proposal Status', field: 'proposal_status', },
+                    { title: 'TIC', field: 'tic_name', },
+                    { title: 'Organization', field: 'org_name', },
+                    { title: 'Submission Date', field: 'submittion_date', },
+                ] }
+                data={ proposals }
+                options={{
+                    columnsButton: true,
+                    exportButton: true,
+                    pageSize: 15,
+                    pageSizeOptions: [15, 25, 50],
+                }}
+                title=""
+            />
         )
     }
 }

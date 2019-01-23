@@ -28,9 +28,16 @@ class proposalsTable extends Component {
         const { proposals } = this.state
         return (
             <div>
-                <Heading>Approved Proposals</Heading>
+                <Heading>Proposals</Heading>
+                
+                <br/>
 
-                <ProposalsTable proposals={ proposals }/>
+
+                {
+                    (proposals.length > 0)
+                    ? <ProposalsTable proposals={ proposals }/>
+                    : <Spinner/>
+                }
                                 
             </div>
         )
