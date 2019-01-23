@@ -32,7 +32,6 @@ class proposalsTable extends Component {
                 
                 <br/>
 
-
                 {
                     (proposals.length > 0)
                     ? <ProposalsTable proposals={ proposals }/>

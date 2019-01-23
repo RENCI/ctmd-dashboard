@@ -21,10 +21,10 @@ exports.list = (req, res) => {
     query = `SELECT DISTINCT
             CAST(proposal.proposal_id AS INT),
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-            proposal.prop_submit,
             name.description AS proposal_status,
             name2.description AS tic_name,
-            name3.description AS org_name
+            name3.description AS org_name,
+            proposal.prop_submit
         FROM proposal
         INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
@@ -34,7 +34,6 @@ exports.list = (req, res) => {
         .then(data => {
             data.forEach(proposal => {
                 proposal.submission_date = proposal.prop_submit.toDateString()
-                delete proposal.prop_submit
             })
             data.sort(compareIds)
             res.status(200).send(data)

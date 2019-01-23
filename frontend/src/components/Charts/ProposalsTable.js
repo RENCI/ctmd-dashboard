@@ -24,7 +24,7 @@ class ProposalsTable extends Component {
                     { title: 'Proposal Status', field: 'proposal_status', },
                     { title: 'TIC', field: 'tic_name', },
                     { title: 'Organization', field: 'org_name', },
-                    { title: 'Submission Date', field: 'submittion_date', },
+                    { title: 'Submission Date', field: 'prop_submit', type: 'datetime', render: ({submission_date}) => <span>{ submission_date }</span>},
                 ] }
                 data={ proposals }
                 options={{
@@ -32,6 +32,7 @@ class ProposalsTable extends Component {
                     exportButton: true,
                     pageSize: 15,
                     pageSizeOptions: [15, 25, 50],
+                    filtering: true,
                 }}
                 title=""
             />
