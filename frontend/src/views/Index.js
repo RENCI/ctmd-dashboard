@@ -168,14 +168,6 @@ class HomePage extends Component {
                                                 fromDate="2017-01-01"
                                                 toDate="2018-12-31"
                                                 colors={ Object.values(theme.palette.extended).slice(1,6) }
-                                                // colors={[
-                                                //     theme.palette.extended.persimmon,
-                                                //     theme.palette.extended.dandelion,
-                                                //     theme.palette.extended.eno,
-                                                //     theme.palette.extended.magnolia,
-                                                //     theme.palette.extended.prussianBlue,
-                                                //     theme.palette.extended.shaleBlue,
-                                                // ]}
                                             />
                                     ) : (
                                         <Spinner />
