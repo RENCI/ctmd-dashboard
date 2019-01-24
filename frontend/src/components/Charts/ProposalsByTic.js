@@ -43,7 +43,6 @@ const proposalsGroupedByTicAndStatus = (props) => {
             ...tic.proposals.countBy('proposal_status'),
         }
     })
-    console.log(proposalGroups)
     return (
         <ResponsiveBar
             data={ proposalGroups }
@@ -51,7 +50,7 @@ const proposalsGroupedByTicAndStatus = (props) => {
             indexBy="name"
             margin={{
                 "top": 0,
-                "right": 64,
+                "right": 32,
                 "bottom": 0,
                 "left": 100
             }}
@@ -113,8 +112,8 @@ const proposalsGroupedByTicAndStatus = (props) => {
             animate={ true }
             motionStiffness={ 90 }
             motionDamping={ 15 }
-            legends={[
-                {
+            legends={ props.width < 1000 ? [] : (
+                [{
                     "dataFrom": "keys",
                     "anchor": "top-right",
                     "direction": "column",
@@ -122,21 +121,21 @@ const proposalsGroupedByTicAndStatus = (props) => {
                     "translateX": 32,
                     "translateY": 0,
                     "itemsSpacing": 2,
-                    "itemWidth": 300,
+                    "itemWidth": 20,
                     "itemHeight": 20,
                     "itemDirection": "right-to-left",
-                    "itemOpacity": 0.85,
+                    "itemOpacity": 0.75,
                     "symbolSize": 20,
                     "effects": [
                         {
                             "on": "hover",
                             "style": {
-                                "itemOpacity": 1
+                                "itemOpacity": 1.0
                             }
                         }
                     ]
-                }
-            ]}
+                }]
+            )}
         />
     )
 }

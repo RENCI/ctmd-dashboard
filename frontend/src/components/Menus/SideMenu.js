@@ -64,7 +64,10 @@ class sideBar extends Component {
                                                     </Collapse>
                                                 </Fragment>
                                             ) : (
-                                                <ListItem button key={ item.text } component={ NavLink } to={ item.href } activeClassName={ classes.activeLink } exact>
+                                                <ListItem component={ NavLink } to={ item.href } exact
+                                                    button key={ item.text } activeClassName={ classes.activeLink }
+                                                    disabled={ item.disabled }
+                                                >
                                                     <ListItemIcon>{ item.icon }</ListItemIcon>
                                                     <ListItemText primary={ item.text } />
                                                 </ListItem>

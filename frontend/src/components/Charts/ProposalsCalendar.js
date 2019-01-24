@@ -12,10 +12,10 @@ const calendar = (props) => {
             direction="horizontal"
             emptyColor="#eeeeee"
             margin={{
-                "top": 100,
-                "right": 30,
-                "bottom": 60,
-                "left": 30
+                "top": 32,
+                "right": 0,
+                "bottom": 0,
+                "left": 32,
             }}
             yearSpacing={ 40 }
             monthBorderColor="#ffffff"
