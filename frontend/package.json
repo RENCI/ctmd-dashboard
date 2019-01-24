@@ -7,6 +7,7 @@
   "dependencies": {
     "@material-ui/core": "^3.4.0",
     "@material-ui/icons": "^3.0.1",
+    "@nivo/bar": "^0.52.1",
     "@nivo/calendar": "^0.52.1",
     "apexcharts": "^2.2.0",
     "auth0-js": "^9.8.2",

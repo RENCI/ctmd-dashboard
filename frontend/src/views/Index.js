@@ -9,6 +9,7 @@ import Heading from '../components/Typography/Heading'
 import Paragraph from '../components/Typography/Paragraph'
 import Spinner from '../components/Spinner/Spinner'
 import Calendar from '../components/Charts/ProposalsCalendar'
+import TicBarChart from '../components/Charts/ProposalsByTic'
 
 const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
 const apiUrl = {
@@ -36,6 +37,13 @@ const styles = (theme) => ({
     chart: {
         backgroundColor: theme.palette.extended.copper,
         height: '200px',
+    },
+    barChartContainer: {
+        width: 'calc(100vw - 96px)',
+        height: '650px',
+        [theme.breakpoints.up('sm')]: {
+            width: 'calc(100vw - 240px - 96px)',
+        }
     },
     calendarContainer: {
         height: `calc(100vw * 74/100 + 160px)`,
@@ -111,72 +119,34 @@ class HomePage extends Component {
                 
                 <br/>
 
-                <Grid container>
-                    <Grid item xs={ 12 } sm={ 6 } className={ classes.item }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Heading>Proposals By TIC</Heading>
-                            </CardContent>
-                            <CardContent>
-                                {
-                                    (proposalsByTic) ? (
-                                        <ApexChart type="bar" height="250"
-                                            options={ this.chartOptions(proposalsByTic.map(tic => tic.name.slice(0, -4))) }
-                                            series={ [{
-                                                name: "Proposals",
-                                                data: proposalsByTic.map(tic => tic.proposals.length),
-                                            }] }
-                                            width="100%"
-                                        />
-                                    ) : (
-                                        <Spinner />
-                                    )
-                                }
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                <Card className={ classnames(classes.card, classes.barChartContainer) } square={ true }>
+                    <CardContent style={{ height: '300px' }}>
+                        {
+                            (proposalsByTic) ? (
+                                <TicBarChart proposals={ proposalsByTic }
+                                    colors={ Object.values(theme.palette.extended) }
+                                />
+                            ) : (
+                                <Spinner />
+                            )
+                        }
+                    </CardContent>
+                </Card>
 
-                    <Grid item xs={ 12 } sm={ 6 } className={ classes.item }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Heading>Proposals By Stage</Heading>
-                            </CardContent>
-                            <CardContent>
-                                {
-                                    (proposalsByStage) ? (
-                                        <ApexChart type="bar" height="250"
-                                            options={ this.chartOptions() }
-                                            series={ [{
-                                                name: "Proposals",
-                                                data: proposalsByStage.map(stage => stage.proposals.length),
-                                            }] }
-                                            width="100%"
-                                        />
-                                    ) : (
-                                        <Spinner />
-                                    )
-                                }
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                <Card className={ classnames(classes.card, classes.calendarContainer) } square={ true }>
+                        {
+                            (proposalsByDate) ? (
+                                    <Calendar proposals={ proposalsByDate }
+                                        fromDate="2017-01-01"
+                                        toDate="2018-12-31"
+                                        colors={ Object.values(theme.palette.extended).slice(1,6) }
+                                    />
+                            ) : (
+                                <Spinner />
+                            )
+                        }
+                </Card>
 
-                    <Grid item xs={ 12 } className={ classes.item }>
-                        <Card className={ classnames(classes.card, classes.calendarContainer) } square={ true }>
-                                {
-                                    (proposalsByDate) ? (
-                                            <Calendar proposals={ proposalsByDate }
-                                                fromDate="2017-01-01"
-                                                toDate="2018-12-31"
-                                                colors={ Object.values(theme.palette.extended).slice(1,6) }
-                                            />
-                                    ) : (
-                                        <Spinner />
-                                    )
-                                }
-                        </Card>
-                    </Grid>
-
-                </Grid>
             </div>
         )
     }
