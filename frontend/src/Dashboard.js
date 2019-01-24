@@ -110,16 +110,12 @@ class Dashboard extends Component {
         }
         this.menuItems = [
             {
-                title: '',
                 items: [
                     { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
-                    {
-                        text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals',
-                    },
+                    { text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals', },
                 ],
             },
             {
-                title: '',
                 items: [
                     { text: 'Reports', icon: <AssessmentIcon/>, href: '/reports/proposals',
                         submenu: [
@@ -133,7 +129,6 @@ class Dashboard extends Component {
                 ],
             },
             {
-                title: 'Analytics',
                 items: [
                     { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
                     { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', },
