@@ -7,7 +7,6 @@ import {
     Menu as MenuIcon,
     Build as BuildIcon,
     Dashboard as DashboardIcon,
-    Layers as LayersIcon,
     Settings as SettingsIcon,
     Share as ShareIcon,
     HourglassFull as HourglassFullIcon,
