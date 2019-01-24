@@ -10,7 +10,7 @@ import {
     Layers as LayersIcon,
     Settings as SettingsIcon,
     Share as ShareIcon,
-    HourglassEmpty as HourglassEmptyIcon,
+    HourglassFull as HourglassFullIcon,
     ExitToApp as ExitToAppIcon,
     Grade as GradeIcon,
     Description as DescriptionIcon,
@@ -45,12 +45,6 @@ const styles = (theme) => ({
     root: {
         display: 'flex',
     },
-    drawer: {
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
-    },
     appBar: {
         marginLeft: drawerWidth,
         [theme.breakpoints.up('sm')]: {
@@ -61,6 +55,7 @@ const styles = (theme) => ({
         display: 'flex',
         paddingRight: 24,
         backgroundColor: theme.palette.secondary.main,
+        backgroundImage: `linear-gradient(${ theme.palette.secondary.main }, ${ theme.palette.primary.main })`,
     },
     menuButton: {
         marginRight: 20,
@@ -89,6 +84,13 @@ const styles = (theme) => ({
     drawerPaper: {
         width: drawerWidth,
         backgroundColor: theme.palette.common.white,
+    },
+    drawer: {
+        backgroundColor: theme.palette.extended.graphite,
+        [theme.breakpoints.up('sm')]: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
     },
     main: {
         flexGrow: 1,
@@ -126,7 +128,7 @@ class Dashboard extends Component {
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                         ]
                     },
-                    { text: 'Forecasts', icon: <HourglassEmptyIcon/>, href: '/reports/forecasts', },
+                    { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', },
                     { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', },
                 ],
             },
