@@ -16,6 +16,7 @@ const apiUrl = {
     proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByStage: apiRoot + 'proposals/by-stage',
     proposalsByDate: apiRoot + 'proposals/by-date',
+    proposalStatuses: apiRoot + 'statuses',
 }
 
 const styles = (theme) => ({
@@ -53,6 +54,7 @@ class HomePage extends Component {
             proposalsByTic: [],
             proposalsByStage: [],
             proposalsByDate: [],
+            proposalStatuses: [],
         }
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
     }
@@ -68,6 +70,7 @@ class HomePage extends Component {
             axios.get(apiUrl.proposalsByTic),
             axios.get(apiUrl.proposalsByStage),
             axios.get(apiUrl.proposalsByDate),
+            axios.get(apiUrl.proposalStatuses),
         ]
         Promise.all(promises)
             .then((response) => {
@@ -75,6 +78,7 @@ class HomePage extends Component {
                     proposalsByTic: response[0].data,
                     proposalsByStage: response[1].data,
                     proposalsByDate: response[2].data,
+                    proposalStatuses: response[3].data,
                 })
             })
             .catch(error => {
@@ -89,7 +93,7 @@ class HomePage extends Component {
     render() {
         const { width, height } = this.state
         const { classes, theme } = this.props
-        const { proposalsByTic, proposalsByStage, proposalsByDate } = this.state
+        const { proposalsByTic, proposalsByStage, proposalsByDate, proposalStatuses } = this.state
         if (proposalsByDate.length > 0) {
             proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value)
         }
@@ -100,6 +104,7 @@ class HomePage extends Component {
                         {
                             (proposalsByTic) ? (
                                 <TicBarChart proposals={ proposalsByTic }
+                                    statuses={ proposalStatuses.map(({ description }) => description) }
                                     colors={ Object.values(theme.palette.extended) }
                                     width={ width } height={ height }
                                 />

@@ -10,31 +10,6 @@ Array.prototype.countBy = function(prop) {
     }, {})
 }
 
-// * Create endpoint to pull these from the database
-const statuses = [
-    'Submitted',
-    'Pending Submission',
-    'Returned to Investigator',
-    'Under Review',
-    'Approved for Service(s)',
-    'Approved for Initial Consultation',
-    'Approved for Comprehensive Consultation',
-    'Ready for Initial Consultation',
-    'Re-Submitted',
-    'Pending Re-submission',
-    'Comprehensive Complete - Grant Submitted',
-    'Ready for NCATS Review',
-    'Ready for Implementation',
-    'No Further Network Support',
-    'Not Approved',
-    'Approved for Service(s) Pending Receipt of Funding',
-    'On Hold',
-    'Service(s) Complete',
-    'Approved for Network Support',
-    'Withdrawn by PI',
-    'Withdrawn by PI post-award',
-]
-
 const tooltip = (event) => {
     const { id, value, index, indexValue, color, data } = event
     return (
@@ -52,7 +27,7 @@ const tooltip = (event) => {
 }
 
 const proposalsGroupedByTicAndStatus = (props) => {
-    const { proposals, colors } = props
+    const { proposals, statuses, colors } = props
     const proposalGroups = proposals.map((tic) => {
         return {
             name: tic.name,
