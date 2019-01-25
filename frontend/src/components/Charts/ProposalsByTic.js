@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 
 Array.prototype.countBy = function(prop) {
@@ -34,6 +34,22 @@ const statuses = [
     'Withdrawn by PI',
     'Withdrawn by PI post-award',
 ]
+
+const tooltip = (event) => {
+    const { id, value, index, indexValue, color, data } = event
+    return (
+        <Fragment>
+            <div style={{ display: 'flex', }}>
+                <div style={{ display: 'inline', backgroundColor: color, width: '3.6rem', height: '3.6rem', marginRight: '0.5rem', }}>&nbsp;</div>
+                <div style={{ flex: 1, lineHeight: '1.2rem', }}>
+                    <div><strong>{ indexValue }</strong></div>
+                    <div>{ id }</div>
+                    <div>{ value } Proposals</div>
+                </div>
+            </div>
+        </Fragment>
+    )
+}
 
 const proposalsGroupedByTicAndStatus = (props) => {
     const { proposals, colors } = props
@@ -136,6 +152,7 @@ const proposalsGroupedByTicAndStatus = (props) => {
                     ]
                 }]
             )}
+            tooltip={ tooltip }
         />
     )
 }
