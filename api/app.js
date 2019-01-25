@@ -33,6 +33,8 @@ app.use('/pis', require('./routes/Pis'))
 app.use('/services', require('./routes/Services'))
 // Stages
 app.use('/stages', require('./routes/Stages'))
+// Statuses
+app.use('/statuses', require('./routes/Statuses'))
 // Organizations
 app.use('/organizations', require('./routes/Organizations'))
 
