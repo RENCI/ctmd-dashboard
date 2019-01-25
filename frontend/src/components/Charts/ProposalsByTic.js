@@ -44,7 +44,7 @@ const tooltip = (event) => {
                 <div style={{ flex: 1, lineHeight: '1.2rem', }}>
                     <div><strong>{ indexValue }</strong></div>
                     <div>{ id }</div>
-                    <div>{ value } Proposals</div>
+                    <div>{ value } Proposal{ value > 1 ? 's' : null }</div>
                 </div>
             </div>
         </Fragment>
