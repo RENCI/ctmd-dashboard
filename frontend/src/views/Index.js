@@ -3,9 +3,9 @@ import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import { Grid, Card, CardContent } from '@material-ui/core'
-import ApexChart from 'react-apexcharts'
 
 import Heading from '../components/Typography/Heading'
+import Subheading from '../components/Typography/Subheading'
 import Paragraph from '../components/Typography/Paragraph'
 import Spinner from '../components/Spinner/Spinner'
 import Calendar from '../components/Charts/ProposalsCalendar'
@@ -22,76 +22,48 @@ const styles = (theme) => ({
     root: {
         // ...theme.mixins.debug
     },
-    container: {
-        margin: 4 * theme.spacing.unit,
-        display: 'block',
-        '&:last-child': { marginRight: 0, },
-    },
-    item: {
-    },
     card: {
-        marginRight: 2 * theme.spacing.unit,
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],
     },
-    chart: {
-        backgroundColor: theme.palette.extended.copper,
-        height: '200px',
-    },
-    barChartContainer: {
-        width: 'calc(100vw - 96px)',
-        height: '650px',
+    chartContainer: {
+        padding: 4 * theme.spacing.unit,
+        width: 'calc(100vw - 48px)',
         [theme.breakpoints.up('sm')]: {
-            width: 'calc(100vw - 240px - 96px)',
+            width: 'calc(100vw - 240px - 86px)',
         }
     },
+    barChartContainer: {
+        height: '670px',
+    },
     calendarContainer: {
-        height: `calc(100vw * 74/100 + 160px)`,
-        width: 'calc(100vw - 96px)',
-        height: 'calc((100vw - 64px) * 30/52 + 160px)',
+        height: `calc(100vw * 30/55 + 64px)`,
         [theme.breakpoints.up('sm')]: {
-            width: 'calc(100vw - 240px - 96px)',
-            height: 'calc((100vw - 240px - 64px) * 30/52 + 160px)',
+            height: `calc((100vw - 240px) * 26/55 + 64px)`,
         }
     }
 })
 
 class HomePage extends Component {
-    state = {
-        proposalsByTic: [],
-        proposalsByStage: [],
-        proposalsByDate: [],
+    constructor(props) {
+        super(props)
+        this.state = {
+            width: 0,
+            height: 0,
+            proposalsByTic: [],
+            proposalsByStage: [],
+            proposalsByDate: [],
+        }
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
     }
 
-    chartOptions = (categories = []) => ({
-        fill: { colors: 'blue' },
-        plotOptions: {
-            bar: {
-                columnWidth: '90%',
-                dataLabels: { position: 'top', },
-            }
-        },
-        dataLabels: {
-            offsetY: -20,
-            style: {
-                fontSize: '12px',
-                colors: [this.props.theme.palette.primary.main],
-            }
-        },  
-        stroke: { width: 0, },
-        xaxis: {
-            labels: { show: categories.length > 0 ? true : false },
-            categories: categories,
-            axisTicks: { show: false, },
-            axisBorder: { show: false },
-        },
-        yaxis: {
-            show: false,
-        },
-        grid: { show: false, },
-    })
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight })
+    }
 
     componentDidMount() {
+        this.updateWindowDimensions()
+        window.addEventListener('resize', this.updateWindowDimensions)
         const promises = [
             axios.get(apiUrl.proposalsByTic),
             axios.get(apiUrl.proposalsByStage),
@@ -110,21 +82,26 @@ class HomePage extends Component {
             })
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+    
     render() {
+        const { width, height } = this.state
         const { classes, theme } = this.props
         const { proposalsByTic, proposalsByStage, proposalsByDate } = this.state
+        if (proposalsByDate.length > 0) {
+            proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value)
+        }
         return (
             <div className={ classes.root }>
-                <Heading>Dashboard Home</Heading>
-                
-                <br/>
-
-                <Card className={ classnames(classes.card, classes.barChartContainer) } square={ true }>
-                    <CardContent style={{ height: '300px' }}>
+                <Card className={ classes.card } square={ true }>
+                    <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
                         {
                             (proposalsByTic) ? (
                                 <TicBarChart proposals={ proposalsByTic }
                                     colors={ Object.values(theme.palette.extended) }
+                                    width={ width } height={ height }
                                 />
                             ) : (
                                 <Spinner />
@@ -133,7 +110,18 @@ class HomePage extends Component {
                     </CardContent>
                 </Card>
 
-                <Card className={ classnames(classes.card, classes.calendarContainer) } square={ true }>
+                <Card className={ classnames(classes.card) } square={ true }>
+                    <CardContent className={ classnames(classes.chartContainer, classes.calendarContainer) }>
+                        <Subheading>
+                            {
+                                (proposalsByDate.length > 0) ? (
+                                        <span>
+                                            { proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value) }
+                                        </span>
+                                ) : null
+                            }
+                            &nbsp;Submitted Proposals Since 2016
+                        </Subheading>
                         {
                             (proposalsByDate) ? (
                                     <Calendar proposals={ proposalsByDate }
@@ -145,6 +133,7 @@ class HomePage extends Component {
                                 <Spinner />
                             )
                         }
+                    </CardContent>
                 </Card>
 
             </div>

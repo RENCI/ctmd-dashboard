@@ -32,11 +32,7 @@ import AllProposals from './views/Proposals/All'
 import ProposalsByStage from './views/Proposals/ByStage'
 import ApprovedProposals from './views/Proposals/Approved'
 import SubmittedProposals from './views/Proposals/Submitted'
-
-import ForecastsPage from './views/Forecasts'
-import PerformancePage from './views/Performance'
 import CollaborationsPage from './views/Analytics/Collaborations'
-import QueryBuilderPage from './views/Analytics/QueryBuilder'
 
 const drawerWidth = 240
 
@@ -93,11 +89,12 @@ const styles = (theme) => ({
     },
     main: {
         flexGrow: 1,
-        padding: 4 * theme.spacing.unit,
-        paddingTop: 16 * theme.spacing.unit,
+        padding: 2 * theme.spacing.unit,
+        paddingTop: 18 * theme.spacing.unit,
         transition: 'padding-top 250ms',
         [theme.breakpoints.up('sm')]: {
-            paddingTop: 18 * theme.spacing.unit,
+            padding: 4 * theme.spacing.unit,
+            paddingTop: 20 * theme.spacing.unit,
         },
     },
 })
@@ -107,6 +104,7 @@ class Dashboard extends Component {
         this.state = {
             mobileOpen: false,
         }
+        // this object is passed to the SideMenu component to build the dashboard's side menu
         this.menuItems = [
             {
                 items: [
@@ -123,14 +121,14 @@ class Dashboard extends Component {
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                         ]
                     },
-                    { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', },
-                    { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', },
+                    { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
+                    { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', disabled: true, },
                 ],
             },
             {
                 items: [
                     { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
-                    { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', },
+                    { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', disabled: true, },
                 ],
             },
         ]
@@ -216,10 +214,7 @@ class Dashboard extends Component {
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
                                             
-                                            <Route path="/reports/forecasts" component={ ForecastsPage }/>
-                                            <Route path="/reports/performance" component={ PerformancePage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
-                                            <Route path="/analytics/query-builder" component={ QueryBuilderPage }/>
                                             <Route path="/" component={ HomePage }/>
                                         </Switch>
                                     </ScrollToTop>
