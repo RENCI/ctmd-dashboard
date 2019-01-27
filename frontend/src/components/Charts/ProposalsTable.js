@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import MaterialTable from 'material-table'
-import { Icon, IconButton, Tooltip } from '@material-ui/core';
 
 const styles = (theme) => ({
     table: {
