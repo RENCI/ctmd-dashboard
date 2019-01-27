@@ -3,7 +3,7 @@ import axios from 'axios'
 import Heading from '../../components/Typography/Heading'
 
 import ProposalsMatrix from '../../components/Charts/ProposalsMatrixApproved'
-import Spinner from '../../components/Spinner/Spinner'
+import { CircularLoader } from '../../components/Progress/Progress'
 
 const proposalsUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/approved-services' : 'http://localhost:3030/proposals/approved-services'
 const servicesUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/services/approval' : 'http://localhost:3030/services/approval'
@@ -40,7 +40,7 @@ class proposalsByApproval extends Component {
                 {
                     (proposals.length > 0 && services.length > 0)
                     ? <ProposalsMatrix proposals={ proposals } services={ services }/>
-                    : <Spinner/>
+                    : <CircularLoader/>
                 }
                 
             </div>

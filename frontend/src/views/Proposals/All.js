@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import Spinner from '../../components/Spinner/Spinner'
+import { CircularLoader } from '../../components/Progress/Progress'
 import Heading from '../../components/Typography/Heading'
 
 import ProposalsTable from '../../components/Charts/ProposalsTable'
@@ -35,7 +35,7 @@ class proposalsTable extends Component {
                 {
                     (proposals.length > 0)
                     ? <ProposalsTable proposals={ proposals }/>
-                    : <Spinner/>
+                    : <CircularLoader/>
                 }
                                 
             </div>

@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles'
 import { Card, CardContent } from '@material-ui/core'
 
 import Subheading from '../components/Typography/Subheading'
-import Spinner from '../components/Spinner/Spinner'
+import { CircularLoader } from '../components/Progress/Progress'
 import Calendar from '../components/Charts/ProposalsCalendar'
 import TicBarChart from '../components/Charts/ProposalsByTic'
 
@@ -103,7 +103,7 @@ class HomePage extends Component {
                                     width={ width } height={ height }
                                 />
                             ) : (
-                                <Spinner />
+                                <CircularLoader />
                             )
                         }
                     </CardContent>
@@ -129,7 +129,7 @@ class HomePage extends Component {
                                         colors={ Object.values(theme.palette.extended).slice(1,6) }
                                     />
                             ) : (
-                                <Spinner />
+                                <CircularLoader />
                             )
                         }
                     </CardContent>
