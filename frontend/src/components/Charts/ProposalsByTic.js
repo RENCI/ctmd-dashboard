@@ -11,7 +11,7 @@ Array.prototype.countBy = function(prop) {
 }
 
 const tooltip = (event) => {
-    const { id, value, index, indexValue, color, data } = event
+    const { id, value, indexValue, color } = event
     return (
         <Fragment>
             <div style={{ display: 'flex', }}>
