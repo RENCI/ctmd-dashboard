@@ -49,7 +49,6 @@ class HomePage extends Component {
             width: 0,
             height: 0,
             proposalsByTic: [],
-            proposalsByStage: [],
             proposalsByDate: [],
             proposalStatuses: [],
         }
