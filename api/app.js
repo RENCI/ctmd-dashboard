@@ -26,15 +26,19 @@ app.use(routeLogger)
 // // // Routes // // //
 
 // Proposals
-app.use('/proposals', require('./routes/Proposals'))
-// PIs
-app.use('/pis', require('./routes/Pis'))
+app.use('/proposals', require('./routes/proposals'))
+// Proposal Stages
+app.use('/stages', require('./routes/stages'))
+// Proposal Statuses
+app.use('/statuses', require('./routes/statuses'))
 // Services
-app.use('/services', require('./routes/Services'))
-// Stages
-app.use('/stages', require('./routes/Stages'))
+app.use('/services', require('./routes/services'))
+// PIs
+app.use('/pis', require('./routes/pis'))
+// TICs
+app.use('/tics', require('./routes/tics'))
 // Organizations
-app.use('/organizations', require('./routes/Organizations'))
+app.use('/organizations', require('./routes/organizations'))
 
 // Endpoint List/Documentation
-app.use('/list', require('./routes/Documentation'))
+app.use('/list', require('./routes/documentation'))

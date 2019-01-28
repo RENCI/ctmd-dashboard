@@ -32,13 +32,13 @@ That command will put the dumped data into the `/var/lib/pgsql` directory. Copy 
 /cloned/repo/db/ $ scp username@pmd-host:/path/to/duketic.sql .
 ```
 
-The `db` container looks for that file to populate a copy of the database.
+The `postgres` container looks for that file to populate a copy of the database.
 
-Note: In production, we'll communicate with the real database on the server, but using a working copy for now ensures we avoid conflicts while the schema converges to its final version.
+Note: In production, we'll communicate with the real database on the server, but using a working copy for now ensures we avoid conflicts while the schema converges to its final version. Moreover, it's a large file with potentially sensitive information.
 
 ## Start 
 
-There are three containers that we need to run--they are named `frontend`, `api`, and `db`.
+There are three services that we need to run--they are named `frontend`, `api`, and `db`.
 
 ### Development
 
@@ -48,7 +48,7 @@ Start all three services:
 $ docker-compose up
 ```
 
-The above command starts abd attaches to the three containers and results in output like the following.
+The above command starts and attaches to the three containers and results in output like the following.
 
 ```bash
 Starting postgres ... 
@@ -80,11 +80,13 @@ react       | > react-scripts start
 react       | 
 react       | Starting the development server...
 react       | 
-
+  .
+  .
+  .
 
 ```
 
-\* Note that the development `frontend` and `api` containers start with React's development server and nodemon, respectively, allowing hot reloading, so there's really little need to ever rebuild during development.
+\* Note that the development `frontend` and `api` services start with React's development server and nodemon, respectively, allowing hot reloading, so there's really little need to ever rebuild during development.
 
 It's nice to leave your session attached to keep an eye on errors, but of course you want to rebuild and/or detach at times:
 
@@ -129,3 +131,19 @@ $ docker-compose down
 ```
 
 \* Note: the postgres storage (at `/db/pgdata`) is made with root privileges. If the db image needs to be rebuilt (with a new `.sql` file perhaps), remove this directory: `$ sudo rm -r /db/pgdata`. Next time it builds, the new `.sql` file will be used to build the database.
+
+## Additional References
+
+Links to some tools used in this project are below.
+
+- Docker
+  + Docker: [https://docs.docker.com](https://docs.docker.com)
+  + Docker Compose: [https://docs.docker.com/compose/](https://docs.docker.com/compose/)
+  + Docker Multi-Stage Builds [https://docs.docker.com/develop/develop-images/multistage-build/](https://docs.docker.com/develop/develop-images/multistage-build/)
+- React
+  + React JS: [https://reactjs.org/](https://reactjs.org/)
+  + Material UI: [https://material-ui.com/](https://material-ui.com/)
+- Nodemon [https://nodemon.io/](https://nodemon.io/)
+- Express [https://expressjs.com/](https://expressjs.com/)
+- Nginx: [https://nginx.org/en/docs/](https://nginx.org/en/docs/)
+- D3: [https://d3js.org/](https://d3js.org/)

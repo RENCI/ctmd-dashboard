@@ -21,10 +21,10 @@ exports.list = (req, res) => {
     query = `SELECT DISTINCT
             CAST(proposal.proposal_id AS INT),
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-            proposal.prop_submit,
             name.description AS proposal_status,
             name2.description AS tic_name,
-            name3.description AS org_name
+            name3.description AS org_name,
+            proposal.prop_submit
         FROM proposal
         INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
@@ -34,7 +34,6 @@ exports.list = (req, res) => {
         .then(data => {
             data.forEach(proposal => {
                 proposal.submission_date = proposal.prop_submit.toDateString()
-                delete proposal.prop_submit
             })
             data.sort(compareIds)
             res.status(200).send(data)
@@ -117,6 +116,46 @@ exports.byTic = (req, res) => {
                     console.log('ERROR:', error)
                     res.status(500).send('There was an error fetching data.')
                 })
+        })
+}
+
+// /proposals/by-date
+exports.byDate = (req, res) => {
+    query = `SELECT DISTINCT
+            CAST(proposal.proposal_id AS INT),
+            proposal.prop_submit
+        FROM proposal
+        INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
+        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
+        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
+    db.any(query)
+        .then(data => {
+            data.forEach(proposal => {
+                const date = new Date(proposal.prop_submit)
+                delete proposal.prop_submit
+                const year = date.getFullYear()
+                let month = (date.getMonth() + 0)
+                if (month <= 9) month = `0${ month }`
+                let day = date.getDate()
+                if (day <= 9) day = `0${ day }`
+                proposal.day = `${ year }-${ month }-${ day }`
+            })
+            dates = data.map(({ day }) => { return day })
+            proposalsByDate = []
+            dates.forEach(date => {
+                const index = proposalsByDate.findIndex((prop) => prop.day === date)
+                if (index >= 0) {
+                    proposalsByDate[index].value += 1
+                } else {
+                    proposalsByDate.push({ day: date, value: 1})
+                }
+            })
+            res.status(200).send(proposalsByDate)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
         })
 }
 

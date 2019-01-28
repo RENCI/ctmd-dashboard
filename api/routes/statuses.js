@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const organizationsController = require('../controllers/Organizations')
+const statusesController = require('../controllers/statuses')
 
 // Routes beginning with "HOSTNAME/stages/..."
 
-router.route('/').get(organizationsController.list)
+router.route('/').get(statusesController.list)
 
 module.exports = router

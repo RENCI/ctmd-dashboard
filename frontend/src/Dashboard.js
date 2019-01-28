@@ -7,10 +7,13 @@ import {
     Menu as MenuIcon,
     Build as BuildIcon,
     Dashboard as DashboardIcon,
-    Layers as LayersIcon,
     Settings as SettingsIcon,
-    GroupWork as GroupWorkIcon,
+    Share as ShareIcon,
+    HourglassFull as HourglassFullIcon,
     ExitToApp as ExitToAppIcon,
+    Grade as GradeIcon,
+    Description as DescriptionIcon,
+    Assessment as AssessmentIcon,
     KeyboardArrowRight as KeyboardArrowRightIcon,
 } from '@material-ui/icons'
 
@@ -19,31 +22,23 @@ import { AuthConsumer } from './contexts/AuthContext'
 import ScrollToTop from './utils/ScrollToTop'
 
 import Heading from './components/Typography/Heading'
+import Subheading from './components/Typography/Subheading'
 import SideMenu from './components/Menus/SideMenu'
 import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
+import AllProposals from './views/Proposals/All'
 import ProposalsByStage from './views/Proposals/ByStage'
 import ApprovedProposals from './views/Proposals/Approved'
 import SubmittedProposals from './views/Proposals/Submitted'
-
-import ForecastsPage from './views/Forecasts'
-import PerformancePage from './views/Performance'
 import CollaborationsPage from './views/Analytics/Collaborations'
-import QueryBuilderPage from './views/Analytics/QueryBuilder'
 
 const drawerWidth = 240
 
 const styles = (theme) => ({
     root: {
         display: 'flex',
-    },
-    drawer: {
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
     },
     appBar: {
         marginLeft: drawerWidth,
@@ -54,7 +49,8 @@ const styles = (theme) => ({
     toolbar: {
         display: 'flex',
         paddingRight: 24,
-        ...theme.mixins.toolbar
+        backgroundColor: theme.palette.secondary.main,
+        backgroundImage: `linear-gradient(${ theme.palette.secondary.main }, ${ theme.palette.primary.main })`,
     },
     menuButton: {
         marginRight: 20,
@@ -62,17 +58,44 @@ const styles = (theme) => ({
             display: 'none',
         },
     },
+    title: {
+        // ...theme.mixins.debug,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: theme.spacing.unit,
+        transition: 'padding 250ms',
+        [theme.breakpoints.up('sm')]: {
+            padding: 2 * theme.spacing.unit,
+        },
+    },
     heading: {
         color: theme.palette.common.white,
+        flex: 1,
+    },
+    subheading: {
+        color: theme.palette.grey[200],
         flex: 1,
     },
     drawerPaper: {
         width: drawerWidth,
         backgroundColor: theme.palette.common.white,
     },
+    drawer: {
+        backgroundColor: theme.palette.extended.graphite,
+        [theme.breakpoints.up('sm')]: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
+    },
     main: {
         flexGrow: 1,
-        padding: theme.spacing.unit * 3,
+        padding: 2 * theme.spacing.unit,
+        paddingTop: 18 * theme.spacing.unit,
+        transition: 'padding-top 250ms',
+        [theme.breakpoints.up('sm')]: {
+            padding: 4 * theme.spacing.unit,
+            paddingTop: 20 * theme.spacing.unit,
+        },
     },
 })
 class Dashboard extends Component {
@@ -81,32 +104,31 @@ class Dashboard extends Component {
         this.state = {
             mobileOpen: false,
         }
+        // this object is passed to the SideMenu component to build the dashboard's side menu
         this.menuItems = [
             {
-                title: '',
                 items: [
                     { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
+                    { text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals', },
                 ],
             },
             {
-                title: 'Reports',
                 items: [
-                    { text: 'Proposals', icon: <LayersIcon/>, href: '/reports/proposals',
+                    { text: 'Reports', icon: <AssessmentIcon/>, href: '/reports/proposals',
                         submenu: [
                             { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
                             { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
                             { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                         ]
                     },
-                    { text: 'Forecasts', icon: <LayersIcon/>, href: '/reports/forecasts', },
-                    { text: 'Performance', icon: <LayersIcon/>, href: '/reports/performance', },
+                    { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
+                    { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', disabled: true, },
                 ],
             },
             {
-                title: 'Analytics',
                 items: [
-                    { text: 'Collaborations', icon: <GroupWorkIcon />, href: '/analytics/collaborations', },
-                    { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', },
+                    { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
+                    { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', disabled: true, },
                 ],
             },
         ]
@@ -141,9 +163,10 @@ class Dashboard extends Component {
                                         >
                                             <MenuIcon />
                                         </IconButton>
-                                        <Heading className={ classes.heading }>
-                                            Duke/Vanderbilt TIC Dashboard
-                                        </Heading>
+                                        <div className={ classes.title }>
+                                            <Heading className={ classes.heading }>Duke/Vanderbilt</Heading>
+                                            <Subheading className={ classes.subheading }>TIC Dashboard</Subheading>
+                                        </div>
                                         {
                                             context.authenticated === true
                                             ? <UserMenu menuItems={ userMenuItems }/>
@@ -184,13 +207,14 @@ class Dashboard extends Component {
                                     <ScrollToTop>
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>
+                                            
+                                            <Route path="/proposals" component={ AllProposals }/>
+                                            
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                            <Route path="/reports/forecasts" component={ ForecastsPage }/>
-                                            <Route path="/reports/performance" component={ PerformancePage }/>
+                                            
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
-                                            <Route path="/analytics/query-builder" component={ QueryBuilderPage }/>
                                             <Route path="/" component={ HomePage }/>
                                         </Switch>
                                     </ScrollToTop>

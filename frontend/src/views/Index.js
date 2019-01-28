@@ -1,85 +1,84 @@
 import React, { Component } from 'react'
+import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import { Grid, Card, CardContent } from '@material-ui/core'
-import ApexChart from 'react-apexcharts'
 
 import Heading from '../components/Typography/Heading'
+import Subheading from '../components/Typography/Subheading'
 import Paragraph from '../components/Typography/Paragraph'
 import Spinner from '../components/Spinner/Spinner'
+import Calendar from '../components/Charts/ProposalsCalendar'
+import TicBarChart from '../components/Charts/ProposalsByTic'
 
 const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
 const apiUrl = {
     proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByStage: apiRoot + 'proposals/by-stage',
+    proposalsByDate: apiRoot + 'proposals/by-date',
+    proposalStatuses: apiRoot + 'statuses',
 }
 
 const styles = (theme) => ({
     root: {
         // ...theme.mixins.debug
     },
-    container: {
-        margin: 4 * theme.spacing.unit,
-        display: 'block',
-        '&:last-child': { marginRight: 0, },
-    },
-    item: {
-    },
     card: {
-        marginRight: 2 * theme.spacing.unit,
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],
     },
-    chart: {
-        backgroundColor: theme.palette.extended.copper,
-        height: '200px',
+    chartContainer: {
+        padding: 4 * theme.spacing.unit,
+        width: 'calc(100vw - 48px)',
+        [theme.breakpoints.up('sm')]: {
+            width: 'calc(100vw - 240px - 86px)',
+        }
+    },
+    barChartContainer: {
+        height: '670px',
+    },
+    calendarContainer: {
+        height: `calc(100vw * 30/55 + 64px)`,
+        [theme.breakpoints.up('sm')]: {
+            height: `calc((100vw - 240px) * 26/55 + 64px)`,
+        }
     }
 })
 
 class HomePage extends Component {
-    state = {
-        proposalsByTic: [],
-        proposalsByStage: [],
+    constructor(props) {
+        super(props)
+        this.state = {
+            width: 0,
+            height: 0,
+            proposalsByTic: [],
+            proposalsByStage: [],
+            proposalsByDate: [],
+            proposalStatuses: [],
+        }
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
     }
 
-    chartOptions = (categories = []) => ({
-        fill: { colors: 'blue' },
-        plotOptions: {
-            bar: {
-                columnWidth: '90%',
-                dataLabels: { position: 'top', },
-            }
-        },
-        dataLabels: {
-            offsetY: -20,
-            style: {
-                fontSize: '12px',
-                colors: [this.props.theme.palette.primary.main],
-            }
-        },  
-        stroke: { width: 0, },
-        xaxis: {
-            labels: { show: categories.length > 0 ? true : false },
-            categories: categories,
-            axisTicks: { show: false, },
-            axisBorder: { show: false },
-        },
-        yaxis: {
-            show: false,
-        },
-        grid: { show: false, },
-    })
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight })
+    }
 
     componentDidMount() {
+        this.updateWindowDimensions()
+        window.addEventListener('resize', this.updateWindowDimensions)
         const promises = [
             axios.get(apiUrl.proposalsByTic),
             axios.get(apiUrl.proposalsByStage),
+            axios.get(apiUrl.proposalsByDate),
+            axios.get(apiUrl.proposalStatuses),
         ]
         Promise.all(promises)
             .then((response) => {
                 this.setState({
                     proposalsByTic: response[0].data,
                     proposalsByStage: response[1].data,
+                    proposalsByDate: response[2].data,
+                    proposalStatuses: response[3].data,
                 })
             })
             .catch(error => {
@@ -87,65 +86,60 @@ class HomePage extends Component {
             })
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+    
     render() {
+        const { width, height } = this.state
         const { classes, theme } = this.props
-        const { proposalsByTic, proposalsByStage } = this.state
+        const { proposalsByTic, proposalsByStage, proposalsByDate, proposalStatuses } = this.state
+        if (proposalsByDate.length > 0) {
+            proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value)
+        }
         return (
             <div className={ classes.root }>
-                <Heading>Dashboard Home</Heading>
-                
-                <br/>
+                <Card className={ classes.card } square={ true }>
+                    <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
+                        {
+                            (proposalsByTic) ? (
+                                <TicBarChart proposals={ proposalsByTic }
+                                    statuses={ proposalStatuses.map(({ description }) => description) }
+                                    colors={ Object.values(theme.palette.extended) }
+                                    width={ width } height={ height }
+                                />
+                            ) : (
+                                <Spinner />
+                            )
+                        }
+                    </CardContent>
+                </Card>
 
-                <Grid container>
-                    <Grid item sm={ 12 } md={ 6 } className={ classes.item }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Heading>Proposals By TIC</Heading>
-                            </CardContent>
-                            <CardContent>
-                                {
-                                    (proposalsByTic) ? (
-                                        <ApexChart type="bar" height="250"
-                                            options={ this.chartOptions(proposalsByTic.map(tic => tic.name.slice(0, -4))) }
-                                            series={ [{
-                                                name: "Proposals",
-                                                data: proposalsByTic.map(tic => tic.proposals.length),
-                                            }] }
-                                            width="100%"
-                                        />
-                                    ) : (
-                                        <Spinner />
-                                    )
-                                }
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item sm={ 12 } md={ 6 } className={ classes.item }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Heading>Proposals By Stage</Heading>
-                            </CardContent>
-                            <CardContent>
-                                {
-                                    (proposalsByStage) ? (
-                                        <ApexChart type="bar" height="250"
-                                            options={ this.chartOptions() }
-                                            series={ [{
-                                                name: "Proposals",
-                                                data: proposalsByStage.map(stage => stage.proposals.length),
-                                            }] }
-                                            width="100%"
-                                        />
-                                    ) : (
-                                        <Spinner />
-                                    )
-                                }
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                </Grid>
+                <Card className={ classnames(classes.card) } square={ true }>
+                    <CardContent className={ classnames(classes.chartContainer, classes.calendarContainer) }>
+                        <Subheading>
+                            {
+                                (proposalsByDate.length > 0) ? (
+                                        <span>
+                                            { proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value) }
+                                        </span>
+                                ) : null
+                            }
+                            &nbsp;Submitted Proposals Since 2016
+                        </Subheading>
+                        {
+                            (proposalsByDate) ? (
+                                    <Calendar proposals={ proposalsByDate }
+                                        fromDate="2017-01-01"
+                                        toDate="2018-12-31"
+                                        colors={ Object.values(theme.palette.extended).slice(1,6) }
+                                    />
+                            ) : (
+                                <Spinner />
+                            )
+                        }
+                    </CardContent>
+                </Card>
 
             </div>
         )
