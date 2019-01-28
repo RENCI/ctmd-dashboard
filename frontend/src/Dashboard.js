@@ -42,7 +42,7 @@ const styles = (theme) => ({
     },
     drawerPaper: {
         width: drawerWidth,
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: theme.palette.secondary.light,
     },
     drawer: {
         [theme.breakpoints.up('sm')]: {
@@ -50,21 +50,30 @@ const styles = (theme) => ({
             flexShrink: 0,
         },
     },
+    brand: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: theme.palette.common.white,
+        padding: '3rem',
+        textAlign: 'center',
+        color: theme.palette.extended.limestone,
+        fontFamily: 'EB Garamond',
+        fontSize: '200%',
+    },
     toolbar: {
+        ...theme.mixins.debug,
         display: 'flex',
         flexDirection: 'row',
         padding: 0,
+        margin: 0,
+        transition: 'margin-bottom 250ms',
         marginBottom: 4 * theme.spacing.unit,
-    },
-    title: {
-        color: theme.palette.primary.main,
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        [theme.breakpoints.up('md')]: {
-            flexDirection: 'row',
+        [theme.breakpoints.up('sm')]: {
+            marginBottom: 0,
         },
     },
+    flexer: { flex: 1, },
     menuButton: {
         marginRight: 20,
         [theme.breakpoints.up('sm')]: {
@@ -72,7 +81,6 @@ const styles = (theme) => ({
         },
     },
     main: {
-        ...theme.mixins.debug,
         backgroundColor: theme.palette.common.white,
         flexGrow: 1,
         padding: 2 * theme.spacing.unit,
@@ -84,6 +92,7 @@ const styles = (theme) => ({
         },
     },
 })
+
 class Dashboard extends Component {
     constructor(props) {
         super(props)
@@ -128,6 +137,15 @@ class Dashboard extends Component {
 
     render() {
         const { classes } = this.props
+        
+        const brand = (
+            <div className={ classes.brand }>
+                Duke<br/>
+                Vanderbilt<br/>
+                TIC
+            </div>
+        )
+
         return (
             <AuthConsumer>
                 {
@@ -140,18 +158,18 @@ class Dashboard extends Component {
                             <div className={ classes.layout }>
                                 <nav className={ classes.drawer }>
                                     <Hidden smUp implementation="css">
-                                        <Drawer open={ this.state.mobileOpen } variant="temporary"
-                                            container={ this.props.container }
-                                            anchor={ 'left' }
-                                            onClose={ this.handleDrawerToggle }
-                                            classes={{ paper: classes.drawerPaper, }}
+                                        <Drawer anchor={ 'left' } variant="temporary"
+                                            open={ this.state.mobileOpen } onClose={ this.handleDrawerToggle }
+                                            classes={{ paper: classes.drawerPaper, }} container={ this.props.container }
                                             ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
                                         >
+                                            { brand }
                                             <SideMenu menuItems={ this.menuItems }/>
                                         </Drawer>
                                     </Hidden>
                                     <Hidden xsDown implementation="css">
                                         <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
+                                            { brand }
                                             <SideMenu menuItems={ this.menuItems }/>
                                         </Drawer>
                                     </Hidden>
@@ -168,10 +186,7 @@ class Dashboard extends Component {
                                             >
                                                 <MenuIcon />
                                             </IconButton>
-                                            <div className={ classes.title }>
-                                                <Heading className={ classes.heading }>Duke/Vanderbilt</Heading>
-                                                <Heading className={ classes.subheading }>Trial Innovation Center</Heading>
-                                            </div>
+                                            <div className={ classes.flexer }>&nbsp;</div>
                                             { context.authenticated === true ? <UserMenu menuItems={ userMenuItems }/> : null }
                                         </Toolbar>
                                         <Switch>

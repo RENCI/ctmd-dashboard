@@ -12,10 +12,10 @@ const styles = ( theme ) => ({
 })
 
 const heading = ( props ) => {
-    const { classes } = props
+    const { classes, children } = props
     return (
         <Typography variant="h4" className={ classnames(classes.root, props.className) }>
-            { props.children }
+            { children }
         </Typography>
     )
 }

@@ -11,21 +11,20 @@ import {
 const styles = (theme) => ({
     sideBar: {
         backgroundColor: 'inherit',
-        paddingTop: 8 * theme.spacing.unit,
     },
     activeLink: {
-        backgroundColor: theme.palette.grey[300],
+        backgroundColor: theme.palette.primary.light,
+        '&:hover': {
+            backgroundColor: theme.palette.extended.granite,
+        },
     },
     itemLink: {
-        border: '1px solid #f00',
+        '&:hover': {
+            backgroundColor: theme.palette.primary.light,
+        },
     },
-    itemIcon: {
-        border: '1px solid #0f0',
-    },
-    itemText: {
-        border: '1px solid #00f',
-        color: theme.palette.common.white,
-    },
+    itemIcon: { },
+    itemText: { },
 })
 
 class sideBar extends Component {
