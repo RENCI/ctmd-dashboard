@@ -35,6 +35,7 @@ export default function() {
           //.attr("class", "d3-tip")
           .style("line-height", 1)
           .style("font-weight", "bold")
+          .style("font-size", "small")
           .style("padding", "12px")
           .style("background", "rgba(0, 0, 0, 0.8)")
           .style("color", "#fff")
@@ -131,7 +132,7 @@ export default function() {
       if (d) {
         // Update with any non-blank values
         d3.keys(c).forEach(function(key) {
-          if (c[key] !== "") {
+          if (c[key]) {
             d[key] = c[key];
           }
         });
