@@ -40,48 +40,11 @@ const styles = (theme) => ({
     root: {
         display: 'flex',
     },
-    appBar: {
-        marginLeft: drawerWidth,
-        [theme.breakpoints.up('sm')]: {
-            maxWidth: `calc(100% - ${ drawerWidth }px)`,
-        },
-    },
-    toolbar: {
-        display: 'flex',
-        paddingRight: 24,
-        backgroundColor: theme.palette.secondary.main,
-        backgroundImage: `linear-gradient(${ theme.palette.secondary.main }, ${ theme.palette.primary.main })`,
-    },
-    menuButton: {
-        marginRight: 20,
-        [theme.breakpoints.up('sm')]: {
-            display: 'none',
-        },
-    },
-    title: {
-        // ...theme.mixins.debug,
-        display: 'flex',
-        flexDirection: 'column',
-        padding: theme.spacing.unit,
-        transition: 'padding 250ms',
-        [theme.breakpoints.up('sm')]: {
-            padding: 2 * theme.spacing.unit,
-        },
-    },
-    heading: {
-        color: theme.palette.common.white,
-        flex: 1,
-    },
-    subheading: {
-        color: theme.palette.grey[200],
-        flex: 1,
-    },
     drawerPaper: {
         width: drawerWidth,
-        backgroundColor: theme.palette.common.white,
+        backgroundColor: theme.palette.primary.main,
     },
     drawer: {
-        backgroundColor: theme.palette.extended.graphite,
         [theme.breakpoints.up('sm')]: {
             width: drawerWidth,
             flexShrink: 0,
@@ -92,9 +55,40 @@ const styles = (theme) => ({
         padding: 2 * theme.spacing.unit,
         paddingTop: 18 * theme.spacing.unit,
         transition: 'padding-top 250ms',
+        backgroundColor: theme.palette.common.white,
         [theme.breakpoints.up('sm')]: {
             padding: 4 * theme.spacing.unit,
             paddingTop: 20 * theme.spacing.unit,
+        },
+    },
+    appBar: {
+        ...theme.mixins.debug,
+        backgroundColor: theme.palette.common.white,
+        padding: `${ 4 * theme.spacing.unit }px 0`,
+        marginLeft: drawerWidth,
+        [theme.breakpoints.up('sm')]: {
+            maxWidth: `calc(100% - ${ drawerWidth }px)`,
+        },
+    },
+    toolbar: {
+        display: 'flex',
+        paddingRight: 24,
+        // backgroundImage: `linear-gradient(${ theme.palette.secondary.main }, ${ theme.palette.primary.main })`,
+    },
+    heading: {
+        color: theme.palette.primary.main,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: theme.spacing.unit,
+        transition: 'padding 250ms',
+        [theme.breakpoints.up('sm')]: {
+            padding: 2 * theme.spacing.unit,
+        },
+    },
+    menuButton: {
+        marginRight: 20,
+        [theme.breakpoints.up('sm')]: {
+            display: 'none',
         },
     },
 })
@@ -153,7 +147,7 @@ class Dashboard extends Component {
                         return (
                             <div className={ classes.root }>
                                 <CssBaseline />
-                                <AppBar position="fixed" className={ classes.appBar }>
+                                <AppBar position="absolute" elevation={ 0 } className={ classes.appBar }>
                                     <Toolbar className={ classes.toolbar }>
                                         <IconButton
                                             color="inherit"
@@ -163,10 +157,7 @@ class Dashboard extends Component {
                                         >
                                             <MenuIcon />
                                         </IconButton>
-                                        <div className={ classes.title }>
-                                            <Heading className={ classes.heading }>Duke/Vanderbilt</Heading>
-                                            <Subheading className={ classes.subheading }>TIC Dashboard</Subheading>
-                                        </div>
+                                        <Heading className={ classes.heading }>Duke/Vanderbilt TIC Dashboard</Heading>
                                         {
                                             context.authenticated === true
                                             ? <UserMenu menuItems={ userMenuItems }/>

@@ -155,8 +155,8 @@ class HomePage extends Component {
                         {
                             (proposalsByDate) ? (
                                     <Calendar proposals={ proposalsByDate }
-                                        fromDate="2017-01-01T00:00:00.000Z"
-                                        toDate="2018-12-31T00:00:00.000Z"
+                                        fromDate="2016-01-01T12:00:00.000Z"
+                                        toDate="2018-12-31T12:00:00.000Z"
                                         colors={ Object.values(theme.palette.extended).slice(1,6) }
                                     />
                             ) : (
