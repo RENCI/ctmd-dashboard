@@ -51,18 +51,14 @@ const styles = (theme) => ({
         },
     },
     brand: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: theme.palette.common.white,
-        padding: '3rem',
-        textAlign: 'center',
-        color: theme.palette.extended.limestone,
+        border: `1px solid ${ theme.palette.primary.dark }`,
+        color: theme.palette.primary.dark,
         fontFamily: 'EB Garamond',
-        fontSize: '200%',
+        textAlign: 'center',
+        padding: theme.spacing.unit,
+        margin: 4 * theme.spacing.unit,
     },
     toolbar: {
-        ...theme.mixins.debug,
         display: 'flex',
         flexDirection: 'row',
         padding: 0,
@@ -140,9 +136,9 @@ class Dashboard extends Component {
         
         const brand = (
             <div className={ classes.brand }>
-                Duke<br/>
-                Vanderbilt<br/>
-                TIC
+                <div style={{ fontSize: '360%', }}>Duke</div>
+                <div style={{ fontSize: '180%', }}>Vanderbilt</div>
+                <div style={{ fontSize: '400%', }}>TIC</div>
             </div>
         )
 
@@ -186,7 +182,7 @@ class Dashboard extends Component {
                                             >
                                                 <MenuIcon />
                                             </IconButton>
-                                            <div className={ classes.flexer }>&nbsp;</div>
+                                            <div className={ classes.flexer }/>
                                             { context.authenticated === true ? <UserMenu menuItems={ userMenuItems }/> : null }
                                         </Toolbar>
                                         <Switch>
