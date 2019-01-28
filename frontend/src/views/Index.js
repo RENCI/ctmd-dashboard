@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Card, CardContent } from '@material-ui/core'
+import { Grid, Card, CardContent } from '@material-ui/core'
 
 import Subheading from '../components/Typography/Subheading'
 import { CircularLoader } from '../components/Progress/Progress'
@@ -93,6 +93,37 @@ class HomePage extends Component {
         }
         return (
             <div className={ classes.root }>
+
+                <Grid container spacing={ 16 }>
+                    <Grid item xs={ 12 } sm={ 4 }>
+                        <Card className={ classes.card } square={ true }>
+                            <CardContent>
+                                <Subheading>
+                                    { Math.floor(Math.random() * 50) } Proposals
+                                </Subheading>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={ 12 } sm={ 4 }>
+                        <Card className={ classes.card } square={ true }>
+                            <CardContent>
+                                <Subheading>
+                                    { Math.floor(Math.random() * 50) } Proposals
+                                </Subheading>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={ 12 } sm={ 4 }>
+                        <Card className={ classes.card } square={ true }>
+                            <CardContent>
+                                <Subheading>
+                                    { Math.floor(Math.random() * 50) } Proposals
+                                </Subheading>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+
                 <Card className={ classes.card } square={ true }>
                     <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
                         {
