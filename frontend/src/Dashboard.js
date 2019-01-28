@@ -140,28 +140,18 @@ class Dashboard extends Component {
                             <div className={ classes.layout }>
                                 <nav className={ classes.drawer }>
                                     <Hidden smUp implementation="css">
-                                        <Drawer
+                                        <Drawer open={ this.state.mobileOpen } variant="temporary"
                                             container={ this.props.container }
-                                            variant="temporary"
                                             anchor={ 'left' }
-                                            open={ this.state.mobileOpen }
                                             onClose={ this.handleDrawerToggle }
-                                            classes={{
-                                                paper: classes.drawerPaper,
-                                            }}
-                                            ModalProps={{
-                                                keepMounted: true, // Better open performance on mobile.
-                                            }}
+                                            classes={{ paper: classes.drawerPaper, }}
+                                            ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
                                         >
                                             <SideMenu menuItems={ this.menuItems }/>
                                         </Drawer>
                                     </Hidden>
                                     <Hidden xsDown implementation="css">
-                                        <Drawer
-                                            classes={{ paper: classes.drawerPaper }}
-                                            variant="permanent"
-                                            open
-                                        >
+                                        <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
                                             <SideMenu menuItems={ this.menuItems }/>
                                         </Drawer>
                                     </Hidden>
@@ -182,21 +172,14 @@ class Dashboard extends Component {
                                                 <Heading className={ classes.heading }>Duke/Vanderbilt</Heading>
                                                 <Heading className={ classes.subheading }>Trial Innovation Center</Heading>
                                             </div>
-                                            {
-                                                context.authenticated === true
-                                                ? <UserMenu menuItems={ userMenuItems }/>
-                                                : null
-                                            }
+                                            { context.authenticated === true ? <UserMenu menuItems={ userMenuItems }/> : null }
                                         </Toolbar>
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>
-                                            
                                             <Route path="/proposals" component={ AllProposals }/>
-                                            
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                            
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
                                             <Route path="/" component={ HomePage }/>
                                         </Switch>

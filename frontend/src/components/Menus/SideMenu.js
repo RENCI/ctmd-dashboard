@@ -15,7 +15,17 @@ const styles = (theme) => ({
     },
     activeLink: {
         backgroundColor: theme.palette.grey[300],
-    }
+    },
+    itemLink: {
+        border: '1px solid #f00',
+    },
+    itemIcon: {
+        border: '1px solid #0f0',
+    },
+    itemText: {
+        border: '1px solid #00f',
+        color: theme.palette.common.white,
+    },
 })
 
 class sideBar extends Component {
@@ -41,21 +51,21 @@ class sideBar extends Component {
                                         submenu.items.map((item) => {
                                             return item.hasOwnProperty('submenu') ? (
                                                 <Fragment key={ item.href }>
-                                                    <ListItem button onClick={ this.clickHandler } key={ item.href }>
-                                                        <ListItemIcon>{ item.icon }</ListItemIcon>
-                                                        <ListItemText primary={ item.text } />
+                                                    <ListItem button onClick={ this.clickHandler } key={ item.href } className={ classes.itemLink }>
+                                                        <ListItemIcon className={ classes.itemIcon }>{ item.icon }</ListItemIcon>
+                                                        <ListItemText className={ classes.itemText } primary={ item.text } />
                                                         { this.state.open ? <ExpandLessIcon /> : <ExpandMoreIcon /> }
                                                     </ListItem>
                                                     <Collapse in={ this.state.open } timeout="auto" unmountOnExit>
                                                         <List component="div">
                                                             {
-                                                                item.submenu.map( (item) => {
+                                                                item.submenu.map((item) => {
                                                                     return (
-                                                                        <ListItem button component={ NavLink } to={ item.path }
-                                                                            key={ item.text + item.path } activeClassName={ classes.activeLink } exact
+                                                                        <ListItem button component={ NavLink } to={ item.path } exact
+                                                                            key={ item.text + item.path } className={ classes.itemLink } activeClassName={ classes.activeLink }
                                                                         >
-                                                                            <ListItemIcon>{ item.icon }</ListItemIcon>
-                                                                            <ListItemText primary={ item.text } />
+                                                                            <ListItemIcon className={ classes.itemIcon }>{ item.icon }</ListItemIcon>
+                                                                            <ListItemText className={ classes.itemText } primary={ item.text } />
                                                                         </ListItem>
                                                                     )
                                                                 })
@@ -65,11 +75,11 @@ class sideBar extends Component {
                                                 </Fragment>
                                             ) : (
                                                 <ListItem component={ NavLink } to={ item.href } exact
-                                                    button key={ item.text } activeClassName={ classes.activeLink }
-                                                    disabled={ item.disabled }
+                                                    button key={ item.text } className={ classes.itemLink }
+                                                    activeClassName={ classes.activeLink } disabled={ item.disabled }
                                                 >
-                                                    <ListItemIcon>{ item.icon }</ListItemIcon>
-                                                    <ListItemText primary={ item.text } />
+                                                    <ListItemIcon className={ classes.itemIcon }>{ item.icon }</ListItemIcon>
+                                                    <ListItemText className={ classes.itemText } primary={ item.text } />
                                                 </ListItem>
                                             )
                                         })
