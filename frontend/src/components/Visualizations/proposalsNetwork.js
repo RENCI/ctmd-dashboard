@@ -35,6 +35,7 @@ export default function() {
           //.attr("class", "d3-tip")
           .style("line-height", 1)
           .style("font-weight", "bold")
+          .style("font-size", "small")
           .style("padding", "12px")
           .style("background", "rgba(0, 0, 0, 0.8)")
           .style("color", "#fff")
@@ -58,6 +59,10 @@ export default function() {
 
               case "tic":
                 return "TIC: " + d.name + "<br><br>" +
+                       "Proposals: " + d.proposals.length;
+
+              case "area":
+                return "Therapeutic area: " + d.name + "<br><br>" +
                        "Proposals: " + d.proposals.length;
 
               default:
@@ -107,6 +112,8 @@ export default function() {
   }
 
   function processData() {
+    console.log(data);
+
     // Filter any proposals without a TIC
     data = data.filter(function(d) {
       return d.tic_name;
@@ -131,7 +138,7 @@ export default function() {
       if (d) {
         // Update with any non-blank values
         d3.keys(c).forEach(function(key) {
-          if (c[key] !== "") {
+          if (c[key]) {
             d[key] = c[key];
           }
         });
@@ -150,13 +157,15 @@ export default function() {
     var pis = d3.map(),
         proposals = d3.map(),
         orgs = d3.map(),
-        tics = d3.map();
+        tics = d3.map(),
+        areas = d3.map();
 
     data.forEach(function(d) {
       addNode(d, pis, d.pi_name, "pi");
       addNode(d, proposals, d.proposal_id, "proposal");
       addNode(d, orgs, d.org_name, "org");
       addNode(d, tics, d.tic_name, "tic");
+      addNode(d, areas, d.therapeutic_area, "area");
     });
 
     // Now link
@@ -166,17 +175,20 @@ export default function() {
       var pi = pis.get(d.pi_name),
           proposal = proposals.get(d.proposal_id),
           org = orgs.get(d.org_name),
-          tic = tics.get(d.tic_name);
+          tic = tics.get(d.tic_name),
+          area = areas.get(d.therapeutic_area);
 
       addLink(pi, proposal);
       addLink(proposal, org);
       addLink(proposal, tic);
+      addLink(proposal, area);
     });
 
     var nodes = pis.values()
         .concat(proposals.values())
-        .concat(orgs.values()
-        .concat(tics.values()));
+        .concat(orgs.values())
+        .concat(tics.values())
+        .concat(areas.values());
 
     var nodeTypes = nodes.reduce(function(p, c) {
       if (p.indexOf(c.type) === -1) p.push(c.type);
@@ -218,6 +230,10 @@ export default function() {
             break;
 
           case "tic":
+            node.name = id;
+            break;
+
+          case "area":
             node.name = id;
             break;
 

@@ -224,21 +224,24 @@ exports.submittedServices = (req, res) => {
 // /proposals/network
 exports.proposalsNetwork = (req, res) => {
     query = `SELECT DISTINCT
-            CAST(proposal.proposal_id AS INT),
-            name.description AS proposal_status,
-            name2.description AS tic_name,
-            name3.description AS org_name,
-            CAST(proposal.protocol_status AS INT),
-            funding.anticipated_budget,
-            funding.funding_duration,
-            TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name
-        FROM proposal
-        INNER JOIN funding ON proposal.proposal_id=funding.proposal_id
-        INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) 
-        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
-        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR)
-        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' AND name3."column"='org_name';`
+         CAST(proposal.proposal_id AS INT),
+         name.description AS proposal_status,
+         name2.description AS tic_name,
+         name3.description AS org_name,
+         name4.description AS therapeutic_area,
+         CAST(proposal.protocol_status AS INT),
+         funding.anticipated_budget,
+         funding.funding_duration,
+         TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name
+     FROM proposal
+     INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+               INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+     INNER JOIN study ON proposal.proposal_id=study.proposal_id
+     INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
+     INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
+     INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR)
+     INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+     WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' AND name3."column"='org_name' AND name4."column"='theraputic_area' order by proposal_id;`
     db.any(query)
         .then(data => {
             data.sort(compareIds)
