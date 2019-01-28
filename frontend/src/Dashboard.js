@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Switch,  Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
-import { Drawer, Hidden, CssBaseline, AppBar, Toolbar, IconButton } from '@material-ui/core'
+import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
     Menu as MenuIcon,
     Build as BuildIcon,
@@ -37,7 +37,7 @@ import CollaborationsPage from './views/Analytics/Collaborations'
 const drawerWidth = 240
 
 const styles = (theme) => ({
-    root: {
+    layout: {
         display: 'flex',
     },
     drawerPaper: {
@@ -50,45 +50,37 @@ const styles = (theme) => ({
             flexShrink: 0,
         },
     },
-    main: {
-        flexGrow: 1,
-        padding: 2 * theme.spacing.unit,
-        paddingTop: 18 * theme.spacing.unit,
-        transition: 'padding-top 250ms',
-        backgroundColor: theme.palette.common.white,
-        [theme.breakpoints.up('sm')]: {
-            padding: 4 * theme.spacing.unit,
-            paddingTop: 20 * theme.spacing.unit,
-        },
-    },
-    appBar: {
-        ...theme.mixins.debug,
-        backgroundColor: theme.palette.common.white,
-        padding: `${ 4 * theme.spacing.unit }px 0`,
-        marginLeft: drawerWidth,
-        [theme.breakpoints.up('sm')]: {
-            maxWidth: `calc(100% - ${ drawerWidth }px)`,
-        },
-    },
     toolbar: {
         display: 'flex',
-        paddingRight: 24,
-        // backgroundImage: `linear-gradient(${ theme.palette.secondary.main }, ${ theme.palette.primary.main })`,
+        flexDirection: 'row',
+        padding: 0,
+        marginBottom: 4 * theme.spacing.unit,
     },
-    heading: {
+    title: {
         color: theme.palette.primary.main,
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        padding: theme.spacing.unit,
-        transition: 'padding 250ms',
-        [theme.breakpoints.up('sm')]: {
-            padding: 2 * theme.spacing.unit,
+        [theme.breakpoints.up('md')]: {
+            flexDirection: 'row',
         },
     },
     menuButton: {
         marginRight: 20,
         [theme.breakpoints.up('sm')]: {
             display: 'none',
+        },
+    },
+    main: {
+        ...theme.mixins.debug,
+        backgroundColor: theme.palette.common.white,
+        flexGrow: 1,
+        padding: 2 * theme.spacing.unit,
+        paddingTop: 0,
+        transition: 'padding 250ms',
+        [theme.breakpoints.up('sm')]: {
+            padding: 4 * theme.spacing.unit,
+            paddingTop: 0,
         },
     },
 })
@@ -145,26 +137,7 @@ class Dashboard extends Component {
                             { text: 'Logout', href: '/login', icon: <ExitToAppIcon />, onClick: context.logout },
                         ]
                         return (
-                            <div className={ classes.root }>
-                                <CssBaseline />
-                                <AppBar position="absolute" elevation={ 0 } className={ classes.appBar }>
-                                    <Toolbar className={ classes.toolbar }>
-                                        <IconButton
-                                            color="inherit"
-                                            aria-label="Open drawer"
-                                            onClick={ this.handleDrawerToggle }
-                                            className={ classes.menuButton }
-                                        >
-                                            <MenuIcon />
-                                        </IconButton>
-                                        <Heading className={ classes.heading }>Duke/Vanderbilt TIC Dashboard</Heading>
-                                        {
-                                            context.authenticated === true
-                                            ? <UserMenu menuItems={ userMenuItems }/>
-                                            : null
-                                        }
-                                    </Toolbar>
-                                </AppBar>
+                            <div className={ classes.layout }>
                                 <nav className={ classes.drawer }>
                                     <Hidden smUp implementation="css">
                                         <Drawer
@@ -194,8 +167,27 @@ class Dashboard extends Component {
                                     </Hidden>
                                 </nav>
                                 <main className={ classes.main }>
-                                    <div className={ classes.toolbar } />
+                                    <CssBaseline />
                                     <ScrollToTop>
+                                        <Toolbar className={ classes.toolbar }>
+                                            <IconButton
+                                                color="inherit"
+                                                aria-label="Open drawer"
+                                                onClick={ this.handleDrawerToggle }
+                                                className={ classes.menuButton }
+                                            >
+                                                <MenuIcon />
+                                            </IconButton>
+                                            <div className={ classes.title }>
+                                                <Heading className={ classes.heading }>Duke/Vanderbilt</Heading>
+                                                <Heading className={ classes.subheading }>Trial Innovation Center</Heading>
+                                            </div>
+                                            {
+                                                context.authenticated === true
+                                                ? <UserMenu menuItems={ userMenuItems }/>
+                                                : null
+                                            }
+                                        </Toolbar>
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>
                                             
