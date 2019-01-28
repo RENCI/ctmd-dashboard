@@ -2,11 +2,9 @@ import React, { Component } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Grid, Card, CardContent } from '@material-ui/core'
+import { Card, CardContent } from '@material-ui/core'
 
-import Heading from '../components/Typography/Heading'
 import Subheading from '../components/Typography/Subheading'
-import Paragraph from '../components/Typography/Paragraph'
 import Spinner from '../components/Spinner/Spinner'
 import Calendar from '../components/Charts/ProposalsCalendar'
 import TicBarChart from '../components/Charts/ProposalsByTic'
@@ -14,7 +12,6 @@ import TicBarChart from '../components/Charts/ProposalsByTic'
 const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
 const apiUrl = {
     proposalsByTic: apiRoot + 'proposals/by-tic',
-    proposalsByStage: apiRoot + 'proposals/by-stage',
     proposalsByDate: apiRoot + 'proposals/by-date',
     proposalStatuses: apiRoot + 'statuses',
 }
@@ -52,7 +49,6 @@ class HomePage extends Component {
             width: 0,
             height: 0,
             proposalsByTic: [],
-            proposalsByStage: [],
             proposalsByDate: [],
             proposalStatuses: [],
         }
@@ -68,7 +64,6 @@ class HomePage extends Component {
         window.addEventListener('resize', this.updateWindowDimensions)
         const promises = [
             axios.get(apiUrl.proposalsByTic),
-            axios.get(apiUrl.proposalsByStage),
             axios.get(apiUrl.proposalsByDate),
             axios.get(apiUrl.proposalStatuses),
         ]
@@ -76,9 +71,8 @@ class HomePage extends Component {
             .then((response) => {
                 this.setState({
                     proposalsByTic: response[0].data,
-                    proposalsByStage: response[1].data,
-                    proposalsByDate: response[2].data,
-                    proposalStatuses: response[3].data,
+                    proposalsByDate: response[1].data,
+                    proposalStatuses: response[2].data,
                 })
             })
             .catch(error => {
@@ -93,7 +87,7 @@ class HomePage extends Component {
     render() {
         const { width, height } = this.state
         const { classes, theme } = this.props
-        const { proposalsByTic, proposalsByStage, proposalsByDate, proposalStatuses } = this.state
+        const { proposalsByTic, proposalsByDate, proposalStatuses } = this.state
         if (proposalsByDate.length > 0) {
             proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value)
         }
