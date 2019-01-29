@@ -105,6 +105,21 @@ To mess with the API directly (in the browser or Postman, say), that is served t
 
 ### Production
 
+The production server will require basic authentication enforced by the server. For this, we'll need to copy the `.htpasswd.sample` file to `.htpasswd`, and its contents will container a username and a hashed password. See the sample file for an example. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`.
+
+An example of how one may use this is to navigate into `frontend/`, and execute `htpasswd -c ./.htpasswd username`, after which you would be prompted to enter a password twice.
+
+The entire interaction shows something like the following.
+
+```bash
+$ sudo htpasswd -c ./.htpasswd duketic
+New password: 
+Re-type new password: 
+Adding password for user duketic
+```
+
+Do all that before spinning up the containers.
+
 Start all three services using the production Docker Compose file, `docker-compose.prod.yml`:
 
 ```bash
