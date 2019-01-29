@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import * as d3 from 'd3';
 import proposalsNetwork from './proposalsNetwork';
+import proposalsSankey from './proposalsSankey';
 
 class ProposalsNetworkContainer extends Component {
     state = {
@@ -9,6 +10,7 @@ class ProposalsNetworkContainer extends Component {
     };
 
     network = proposalsNetwork();
+    sankey = proposalsSankey();
 
     async fetchData() {
         await axios.get(this.props.apiUrl)
@@ -34,16 +36,32 @@ class ProposalsNetworkContainer extends Component {
 
     drawVisualization(props, state) {
         this.network
-            .width(1000)
+            .width(800)
+            .height(800);
+
+        this.sankey
+            .width(800)
             .height(1000);
 
-        d3.select(this.div)
+        d3.select(this.networkDiv)
             .datum(state.proposals)
             .call(this.network);
+
+        d3.select(this.sankeyDiv)
+            .datum(state.proposals)
+            .call(this.sankey);
     }
 
     render() {
-        return <div ref={div => this.div = div}></div>;
+        let outerStyle = { display: "flex", flexWrap: "wrap" };
+        let innerStyle = { flex: "1 0 auto" };
+
+        return (
+            <div style={outerStyle}>
+                <div style={innerStyle} ref={div => this.networkDiv = div}></div>
+                <div style={innerStyle} ref={div => this.sankeyDiv = div}></div>
+            </div>
+        );
     }
 }
 
