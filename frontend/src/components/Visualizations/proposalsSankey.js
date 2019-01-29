@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
+import * as d3Sankey from 'd3-sankey';
 import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  var margin = { top: 5, left: 5, bottom: 5, right: 5 },
+  var margin = { top: 5, left: 10, bottom: 5, right: 25 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -15,17 +16,6 @@ export default function() {
       // Data
       data = [],
       network = {},
-
-      // Layout
-      force = d3.forceSimulation()
-          .force("link", d3.forceLink())
-          .on("tick", updateForce),
-
-      // Appearance
-      radiusRange = [4, 32],
-
-      // Scales
-      radiusScale = d3.scaleSqrt(),
 
       // Start with empty selections
       svg = d3.select(),
@@ -75,7 +65,7 @@ export default function() {
       dispatcher = d3.dispatch("highlightNode");
 
   // Create a closure containing the above variables
-  function proposalsNetwork(selection) {
+  function proposalsSankey(selection) {
     selection.each(function(d) {
       // Save data
       data = d;
@@ -89,13 +79,13 @@ export default function() {
 
       // Otherwise create the skeletal chart
       var svgEnter = svg.enter().append("svg")
-          .attr("class", "proposalsNetwork");
+          .attr("class", "proposalsSankey");
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      var groups = ["network", "labels", "legend"];
+      var groups = ["links", "nodes", "labels"];
 
       g.selectAll("g")
           .data(groups)
@@ -176,10 +166,16 @@ export default function() {
           tic = tics.get(d.tic_name),
           area = areas.get(d.therapeutic_area);
 
-      addLink(pi, proposal);
-      addLink(proposal, org);
-      addLink(proposal, tic);
-      addLink(proposal, area);
+      var order = [
+        tic, area, org, pi, proposal
+      ];
+
+      d3.pairs(order).forEach(function(d) {
+        addLink(d[0], d[1], proposal);
+      });
+
+      // Add final proposal
+      order[order.length - 1].proposals.push(proposal);
     });
 
     var nodes = pis.values()
@@ -193,6 +189,14 @@ export default function() {
       return p;
     }, []);
 
+    nodes = nodes.sort(function(a, b) {
+      return d3.descending(a.proposals.length, b.proposals.length);
+    });
+
+    links = links.sort(function(a, b) {
+      return d3.ascending(a.value, b.value);
+    });
+
     network = {
       nodes: nodes,
       nodeTypes: nodeTypes,
@@ -205,7 +209,6 @@ export default function() {
           type: type,
           id: id,
           proposals: [],
-          links: []
         };
 
         switch (type) {
@@ -243,74 +246,29 @@ export default function() {
       }
     }
 
-    function addLink(node1, node2) {
-      var link = {
-        source: node1,
-        target: node2,
-        type: node1.type + "_" + node2.type
-      };
+    function addLink(node1, node2, proposal) {
+      // Get link if already created
+      var link = links.filter(function(d) {
+        return d.source === node1 && d.target === node2;
+      });
 
-      // Keep track of proposals for ease when highlighting
-      if (node1.type === "proposal") {
-        addProposal(node1, node1);
-        addProposal(node2, node1);
+      if (link.length > 0) {
+        link = link[0];
+        link.value++;
       }
-      else if (node2.type === "proposal") {
-        addProposal(node1, node2);
-        addProposal(node2, node2);
+      else {
+        link = {
+          source: node1,
+          target: node2,
+          value: 1,
+          type: node1.type + "_" + node2.type
+        };
+
+        links.push(link);
       }
 
-      node1.links.push(link);
-      node2.links.push(link);
-      links.push(link);
+      node1.proposals.push(proposal);
     }
-
-    function addProposal(node, proposal) {
-      if (node.proposals.indexOf(proposal) === -1) node.proposals.push(proposal);
-    }
-  }
-
-  function updateForce() {
-    if (!network.nodes) return;
-
-    // Arrange proposals around tics
-    var r = radiusScale(1);
-
-    network.nodes.filter(function(d) {
-      return d.type === "proposal";
-    }).forEach(function(d) {
-      var tic = d.links.filter(function(d) {
-        return d.type === "proposal_tic";
-      })[0].target;
-
-      var vx = d.x - tic.x,
-          vy = d.y - tic.y,
-          dist = Math.sqrt(vx * vx + vy * vy);
-
-      vx /= dist;
-      vy /= dist;
-
-      var nr = tic.links.length * r / Math.PI;
-
-      d.x = tic.x + vx * nr;
-      d.y = tic.y + vy * nr;
-    });
-
-    svg.select(".network").selectAll(".node")
-        .attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        });
-
-    svg.select(".network").selectAll(".link")
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    svg.select(".labels").selectAll(".ticLabel")
-        .attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        });
   }
 
   function draw() {
@@ -318,107 +276,55 @@ export default function() {
     svg.attr("width", width)
         .attr("height", height);
 
-    var manyBodyStrength = -0.02 / network.nodes.length * width * height;
+    // Do Sankey layout
+    var sankey = d3Sankey.sankey()
+        .size([innerWidth(), innerHeight()])
+        .nodePadding(2)
+        .iterations(5000);
 
-    radiusScale
-        .domain([0, d3.max(network.nodes, function(d) {
-          return d.links.length;
-        })])
-        .range(radiusRange);
+    var {nodes, links} = sankey(network);
 
     // Color scale
     var nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10)
         .domain(network.nodeTypes);
 
-    // Set force directed network
-    force
-        .nodes(network.nodes)
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("manyBody", d3.forceManyBody().strength(manyBodyStrength))
-        .force("collide", d3.forceCollide().radius(nodeRadius))
-        .force("x", d3.forceX(width / 2))
-        .force("y", d3.forceY(height / 2))
-        .force("link").links(network.links);
-
-    force
-        .alpha(1)
-        .restart();
+    var linkOpacityScale = d3.scaleLinear()
+          .domain([1, d3.max(links, function(d) { return d.value; })])
+          .range([0.4, 1]);
 
     // Draw the visualization
     drawLinks();
     drawNodes();
     drawLabels();
-    drawLegend();
 
     function drawNodes() {
-      // Drag behavior, based on:
-      // http://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7
-      var dragNode = null;
-
-      var drag = d3.drag()
-          .on("start", function(d) {
-            if (!d3.event.active) {
-              force.alphaTarget(0.3).restart();
-            }
-
-            d.fx = d.x;
-            d.fy = d.y;
-
-            dragNode = d;
-
-            tip.show(d, this);
-          })
-          .on("drag", function(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-
-            tip.show(d, this);
-          })
-          .on("end", function(d) {
-            if (!d3.event.active) {
-              force.alphaTarget(0).alpha(1).restart();
-            }
-
-            d.fx = null;
-            d.fy = null;
-
-            dragNode = null;
-
-            highlightNode();
-
-            tip.hide();
-          });
-
       // Bind nodes
-      var node = svg.select(".network").selectAll(".node")
-          .data(network.nodes, function(d) {
+      var node = svg.select(".nodes").selectAll(".node")
+          .data(nodes, function(d) {
             return d.id;
           });
 
       // Node enter
-      var nodeEnter = node.enter().append("g")
+      node.enter().append("rect")
           .attr("class", "node")
+          .attr("rx", 2)
+          .attr("ry", 2)
           .on("mouseover", function(d) {
-            if (dragNode) return;
-
             highlightNode(d);
 
             tip.show(d, this);
           })
           .on("mouseout", function(d) {
-            if (dragNode) return;
-
             highlightNode();
 
             tip.hide();
           })
-          .call(drag);
-
-      nodeEnter.append("circle");
-
-      // Node update
-      nodeEnter.merge(node).select("circle")
-          .attr("r", nodeRadius);
+        .merge(node)
+          .attr("x", function(d) { return d.x0; })
+          .attr("y", function(d) { return d.y0; })
+          .attr("width", function(d) { return d.x1 - d.x0; })
+          .attr("height", function(d) { return d.y1 - d.y0; })
+          .attr("fill", nodeFill);
 
       // Node exit
       node.exit().remove();
@@ -428,46 +334,25 @@ export default function() {
       function highlightNode(d) {
         if (d) {
           // Change link appearance
-          svg.select(".network").selectAll(".link")
-              .style("stroke", function(e) {
-                return nodeLinkConnected(d, e) ? "#666" : "#eee";
+          svg.select(".links").selectAll(".link")
+              .style("stroke-opacity", function(e) {
+                return nodeLinkConnected(d, e) ? 1 : 0.1;
               })
               .filter(function(e) {
                 return nodeLinkConnected(d, e);
               }).raise();
 
           // Change node appearance
-          svg.select(".network").selectAll(".node").select("circle")
-              .style("fill", function(e) {
-                return nodesConnected(d, e) ? nodeFill(e) : "white";
-              })
-              .style("stroke", function(e) {
-                return nodesConnected(d, e) ? "black" : "#eee";
-              })
-              .filter(function(e) {
-                return nodesConnected(d, e);
-              }).raise();
+          svg.select(".nodes").selectAll(".node")
+              .style("fill-opacity", function(e) {
+                return nodesConnected(d, e) ? 1 : 0.1;
+              });
 
           // Change label appearance
-          svg.select(".labels").selectAll(".foreground")
-              .style("fill", function(e) {
-                return nodesConnected(d, e) ? "black" : "#ddd";
-              })
-              .filter(function(e) {
-                return nodesConnected(d, e);
-              }).raise();
-
-          // Sort links
-          svg.select(".network").selectAll(".link")
-              .filter(function(e) {
-                return nodeLinkConnected(d, e);
-              }).raise();
-
-          // Sort nodes
-          svg.select(".network").selectAll(".node")
-              .filter(function(e) {
-                return nodesConnected(d, e);
-              }).raise();
+          svg.select(".labels").selectAll(".nodeLabel")
+              .style("visibility", function(e) {
+                return nodesConnected(d, e) ? "visible" : "hidden";
+              });
 
           function nodesConnected(n1, n2) {
             for (var i = 0; i < n1.proposals.length; i++) {
@@ -478,25 +363,19 @@ export default function() {
           }
 
           function nodeLinkConnected(n, l) {
-            if (n.proposals.indexOf(l.source) !== -1) return true;
-            if (n.proposals.indexOf(l.target) !== -1) return true;
-
-            return false;
+            return nodesConnected(n, l.source) && nodesConnected(n, l.target);
           }
         }
         else {
           // Reset
-          svg.select(".network").selectAll(".link")
-              .style("stroke", "#666");
+          svg.select(".links").selectAll(".link")
+              .style("stroke-opacity", linkOpacity);
 
-          svg.select(".network").selectAll(".node").select("circle")
-              .style("fill", nodeFill)
-              .style("stroke", "black");
+          svg.select(".nodes").selectAll(".node")
+              .style("fill-opacity", 1);
 
-          svg.select(".labels").selectAll(".foreground")
-              .style("fill", "black");
-
-          svg.select(".network").selectAll(".node").raise();
+          svg.select(".labels").selectAll(".nodeLabel")
+              .style("visibility", labelVisibility);
         }
       }
 
@@ -507,35 +386,41 @@ export default function() {
 
     function drawLinks() {
       // Bind data for links
-      var link = svg.select(".network").selectAll(".link")
-          .data(network.links);
+      var link = svg.select(".links").selectAll(".link")
+          .data(links);
 
       // Link enter
-      link.enter().append("line")
+      link.enter().append("path")
           .attr("class", "link")
-          .style("fill", "none");
+          .attr("d", d3Sankey.sankeyLinkHorizontal())
+          .style("fill", "none")
+          .style("stroke", "#999")
+          .style("stroke-opacity", linkOpacity)
+          .style("stroke-width", function(d) { return d.width / 2; });
 
       // Link exit
       link.exit().remove();
     }
 
     function drawLabels() {
-      // Bind TIC data
-      var label = svg.select(".labels").selectAll(".ticLabel")
-          .data(network.nodes.filter(function(d) {
-            return d.type === "tic";
-          }), function(d) {
+      // Bind nodes
+      var label = svg.select(".labels").selectAll(".nodeLabel")
+          .data(nodes, function(d) {
             return d.id;
           });
 
       // Label enter
       var labelEnter = label.enter().append("g")
-          .attr("class", "ticLabel")
-          .style("text-anchor", "middle")
+          .attr("class", "nodeLabel")
           .style("font-size", "small")
           .style("font-weight", "bold")
+          .style("pointer-events", "none")
           .style("dominant-baseline", "middle")
-          .style("pointer-events", "none");
+          .style("visibility", labelVisibility)
+        .merge(label)
+          .attr("transform", function(d) {
+            return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
+          });
 
       labelEnter.append("text")
           .attr("class", "background")
@@ -557,69 +442,34 @@ export default function() {
       label.exit().remove();
     }
 
-    function drawLegend() {
-      let types = network.nodeTypes;
-
-      var r = radiusScale(1);
-
-      var yScale = d3.scaleBand()
-          .domain(types)
-          .range([r + 1, (r * 2.5) * (types.length + 1)]);
-
-      // Bind node type data
-      var node = svg.select(".legend")
-          .attr("transform", "translate(" + (r + 1) + ",0)")
-      .selectAll(".legendNode")
-          .data(types);
-
-      // Enter
-      var nodeEnter = node.enter().append("g")
-          .attr("class", "legendNode")
-          .attr("transform", function(d) {
-            return "translate(0," + yScale(d) + ")";
-          });
-
-      nodeEnter.append("circle")
-          .attr("r", r)
-          .style("fill", function(d) {
-            return nodeColorScale(d);
-          })
-          .style("stroke", "black");
-
-      nodeEnter.append("text")
-          .text(function(d) { return d; })
-          .attr("x", r * 1.5)
-          .style("font-size", "small")
-          .style("dominant-baseline", "middle");
-
-      // Node exit
-      node.exit().remove();
+    function linkOpacity(d) {
+      return linkOpacityScale(d.value);
     }
-  }
 
-  function nodeRadius(d) {
-    return d.type === "proposal" ? radiusScale(1) : radiusScale(d.links.length);
+    function labelVisibility(d) {
+      return d.proposals.length >= 5 ? "visible" : "hidden";
+    }
   }
 
   // Getters/setters
 
-  proposalsNetwork.width = function(_) {
+  proposalsSankey.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return proposalsNetwork;
+    return proposalsSankey;
   };
 
-  proposalsNetwork.height = function(_) {
+  proposalsSankey.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    return proposalsNetwork;
+    return proposalsSankey;
   };
 
   // For registering event callbacks
-  proposalsNetwork.on = function() {
+  proposalsSankey.on = function() {
     var value = dispatcher.on.apply(dispatcher, arguments);
-    return value === dispatcher ? proposalsNetwork : value;
+    return value === dispatcher ? proposalsSankey : value;
   };
 
-  return proposalsNetwork;
+  return proposalsSankey;
 }
