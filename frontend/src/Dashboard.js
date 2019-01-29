@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import PropTypes from 'prop-types'
-import { Switch,  Route } from 'react-router-dom'
+import { Switch, Route, Link } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
@@ -21,8 +22,6 @@ import { AuthConsumer } from './contexts/AuthContext'
 
 import ScrollToTop from './utils/ScrollToTop'
 
-import Heading from './components/Typography/Heading'
-import Subheading from './components/Typography/Subheading'
 import SideMenu from './components/Menus/SideMenu'
 import UserMenu from './components/Menus/UserMenu'
 
@@ -43,6 +42,17 @@ const styles = (theme) => ({
     drawerPaper: {
         width: drawerWidth,
         backgroundColor: theme.palette.secondary.light,
+        backgroundImage: `linear-gradient(
+            135deg,
+            ${theme.palette.secondary.light} 25%,
+            ${theme.palette.extended.shaleBlue} 25%,
+            ${theme.palette.extended.shaleBlue} 50%,
+            ${theme.palette.secondary.light} 50%,
+            ${theme.palette.secondary.light} 75%,
+            ${theme.palette.extended.shaleBlue} 75%,
+            ${theme.palette.extended.shaleBlue} 100%
+        )`,
+        backgroundSize: `5.66px 5.66px`,
     },
     drawer: {
         [theme.breakpoints.up('sm')]: {
@@ -55,8 +65,14 @@ const styles = (theme) => ({
         color: theme.palette.primary.dark,
         fontFamily: 'EB Garamond',
         textAlign: 'center',
-        padding: theme.spacing.unit,
+        padding: `${2 * theme.spacing.unit }px 0`,
         margin: 4 * theme.spacing.unit,
+        borderTopLeftRadius: 2 * theme.spacing.unit,
+        borderBottomRightRadius: 2 * theme.spacing.unit,
+        transition: 'background-color 250ms',
+        '&:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        }
     },
     toolbar: {
         display: 'flex',
@@ -64,6 +80,7 @@ const styles = (theme) => ({
         padding: 0,
         margin: 0,
         transition: 'margin-bottom 250ms',
+        marginTop: theme.spacing.unit,
         marginBottom: 4 * theme.spacing.unit,
         [theme.breakpoints.up('sm')]: {
             marginBottom: 0,
@@ -77,6 +94,8 @@ const styles = (theme) => ({
         },
     },
     main: {
+        // ...theme.mixins.debug,
+        height: '100vh',
         backgroundColor: theme.palette.common.white,
         flexGrow: 1,
         padding: 2 * theme.spacing.unit,
@@ -95,35 +114,41 @@ class Dashboard extends Component {
         this.state = {
             mobileOpen: false,
         }
-        // this object is passed to the SideMenu component to build the dashboard's side menu
-        this.menuItems = [
-            {
-                items: [
-                    { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
-                    { text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals', },
-                ],
-            },
-            {
-                items: [
-                    { text: 'Reports', icon: <AssessmentIcon/>, href: '/reports/proposals',
-                        submenu: [
-                            { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
-                            { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
-                            { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
-                        ]
-                    },
-                    { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
-                    { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', disabled: true, },
-                ],
-            },
-            {
-                items: [
-                    { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
-                    { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', disabled: true, },
-                ],
-            },
-        ]
     }
+
+    // this object is passed to the SideMenu component to build the dashboard's side menu
+    sideMenuItems = [
+        {
+            items: [
+                { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
+                { text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals', },
+            ],
+        },
+        {
+            items: [
+                { text: 'Reports', icon: <AssessmentIcon/>, href: '/reports/proposals',
+                    submenu: [
+                        { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
+                    ]
+                },
+                { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
+                { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', disabled: true, },
+            ],
+        },
+        {
+            items: [
+                { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
+                { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', disabled: true, },
+            ],
+        },
+    ]
+
+    userMenuItems = [
+        { text: 'Settings', href: '/settings', icon: <SettingsIcon /> },
+        { text: 'Logout', href: '/', icon: <ExitToAppIcon />, },
+    ]
     
     handleDrawerToggle = () => {
         this.setState({
@@ -136,9 +161,9 @@ class Dashboard extends Component {
         
         const brand = (
             <div className={ classes.brand }>
-                <div style={{ fontSize: '360%', }}>Duke</div>
-                <div style={{ fontSize: '180%', }}>Vanderbilt</div>
-                <div style={{ fontSize: '400%', }}>TIC</div>
+                <div style={{ fontSize: '360%', lineHeight: '4rem', }}>Duke</div>
+                <div style={{ fontSize: '180%', lineHeight: '2rem', }}>Vanderbilt</div>
+                <div style={{ fontSize: '400%', lineHeight: '4rem', }}>TIC</div>
             </div>
         )
 
@@ -146,10 +171,6 @@ class Dashboard extends Component {
             <AuthConsumer>
                 {
                     (context) => {
-                        const userMenuItems = [
-                            { text: 'Settings', href: '/settings', icon: <SettingsIcon /> },
-                            { text: 'Logout', href: '/login', icon: <ExitToAppIcon />, onClick: context.logout },
-                        ]
                         return (
                             <div className={ classes.layout }>
                                 <nav className={ classes.drawer }>
@@ -159,14 +180,14 @@ class Dashboard extends Component {
                                             classes={{ paper: classes.drawerPaper, }} container={ this.props.container }
                                             ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
                                         >
-                                            { brand }
-                                            <SideMenu menuItems={ this.menuItems }/>
+                                            <a href="/">{ brand }</a>
+                                            <SideMenu menuItems={ this.sideMenuItems }/>
                                         </Drawer>
                                     </Hidden>
                                     <Hidden xsDown implementation="css">
                                         <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
-                                            { brand }
-                                            <SideMenu menuItems={ this.menuItems }/>
+                                            <a href="/">{ brand }</a>
+                                            <SideMenu menuItems={ this.sideMenuItems }/>
                                         </Drawer>
                                     </Hidden>
                                 </nav>
@@ -183,7 +204,7 @@ class Dashboard extends Component {
                                                 <MenuIcon />
                                             </IconButton>
                                             <div className={ classes.flexer }/>
-                                            { context.authenticated === true ? <UserMenu menuItems={ userMenuItems }/> : null }
+                                            <UserMenu menuItems={ this.userMenuItems }/>
                                         </Toolbar>
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>

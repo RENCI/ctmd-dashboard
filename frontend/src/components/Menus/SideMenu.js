@@ -10,21 +10,20 @@ import {
 
 const styles = (theme) => ({
     sideBar: {
-        backgroundColor: 'inherit',
+        backgroundColor: 'transparent',
     },
     activeLink: {
-        backgroundColor: theme.palette.primary.light,
-        '&:hover': {
-            backgroundColor: theme.palette.extended.granite,
-        },
+        backgroundColor: theme.palette.extended.prussianBlue,
     },
     itemLink: {
         '&:hover': {
-            backgroundColor: theme.palette.primary.light,
+            backgroundColor: theme.palette.extended.prussianBlue,
         },
     },
     itemIcon: { },
-    itemText: { },
+    itemText: {
+        fontWeight: 'bold',
+    },
 })
 
 class sideBar extends Component {

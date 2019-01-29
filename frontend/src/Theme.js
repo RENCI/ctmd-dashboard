@@ -50,7 +50,7 @@ const theme = createMuiTheme({
     // text
     typography: {
         useNextVariants: true,
-        htmlFontSize: 18,
+        htmlFontSize: 14,
         h1: { fontFamily: 'EB Garamond', },
         h2: { fontFamily: 'EB Garamond', },
         h3: { fontFamily: 'EB Garamond', },

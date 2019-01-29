@@ -5,9 +5,12 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = ( theme ) => ({
     root: {
-        margin: theme.spacing.unit,
+        margin: `0 ${ 2 * theme.spacing.unit }`,
         color: theme.palette.primary.main,
         transition: 'margin 250ms',
+        [theme.breakpoints.up('sm')]: {
+            margin: 0,
+        }
     }
 })
 

@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Grid, Card, CardContent } from '@material-ui/core'
+import { Card, CardContent } from '@material-ui/core'
 
+import Heading from '../components/Typography/Heading'
 import Subheading from '../components/Typography/Subheading'
 import { CircularLoader } from '../components/Progress/Progress'
 import Calendar from '../components/Charts/ProposalsCalendar'
@@ -17,8 +18,11 @@ const apiUrl = {
 }
 
 const styles = (theme) => ({
-    root: {
+    page: {
         // ...theme.mixins.debug
+    },
+    pageTitle: {
+        marginBottom: 4 * theme.spacing.unit,
     },
     card: {
         marginBottom: 2 * theme.spacing.unit,
@@ -88,41 +92,12 @@ class HomePage extends Component {
         const { width, height } = this.state
         const { classes, theme } = this.props
         const { proposalsByTic, proposalsByDate, proposalStatuses } = this.state
-        if (proposalsByDate.length > 0) {
-            proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value)
-        }
         return (
-            <div className={ classes.root }>
+            <div className={ classes.page }>
 
-                <Grid container spacing={ 16 }>
-                    <Grid item xs={ 12 } sm={ 4 }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Subheading>
-                                    { Math.floor(Math.random() * 50) } Proposals
-                                </Subheading>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={ 12 } sm={ 4 }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Subheading>
-                                    { Math.floor(Math.random() * 50) } Proposals
-                                </Subheading>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={ 12 } sm={ 4 }>
-                        <Card className={ classes.card } square={ true }>
-                            <CardContent>
-                                <Subheading>
-                                    { Math.floor(Math.random() * 50) } Proposals
-                                </Subheading>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
+                <div className={ classes.pageTitle }>
+                    <Heading>Dashboard Home</Heading>
+                </div>
 
                 <Card className={ classes.card } square={ true }>
                     <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
