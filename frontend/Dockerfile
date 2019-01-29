@@ -11,7 +11,7 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 # Environment variables
 
 # Install and cache app dependencies
-COPY package*.json /usr/src/app/
+COPY package*.json ./
 RUN npm install
 
 expose 3000
