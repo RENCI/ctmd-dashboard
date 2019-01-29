@@ -39,6 +39,8 @@ app.use('/pis', require('./routes/pis'))
 app.use('/tics', require('./routes/tics'))
 // Organizations
 app.use('/organizations', require('./routes/organizations'))
+// Therapeutic Area
+app.use('/therapeutic-areas', require('./routes/therapeutic-areas'))
 
 // Endpoint List/Documentation
 app.use('/list', require('./routes/documentation'))

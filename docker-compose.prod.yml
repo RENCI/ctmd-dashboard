@@ -46,6 +46,7 @@ services:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/.htpasswd:/etc/nginx/.htpasswd
     environment:
       - NODE_ENV=production
     ports:
