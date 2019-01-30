@@ -29,8 +29,6 @@ class proposalsTable extends Component {
         return (
             <div>
                 <Heading>Proposals</Heading>
-                
-                <br/>
 
                 {
                     (proposals.length > 0)

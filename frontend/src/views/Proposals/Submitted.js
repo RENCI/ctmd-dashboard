@@ -34,8 +34,6 @@ class proposalsByApproval extends Component {
         return (
             <div>
                 <Heading>Submitted Proposals</Heading>
-
-                <br/>
                 
                 {
                     (proposals.length > 0 && services.length > 0)

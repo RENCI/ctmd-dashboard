@@ -35,8 +35,6 @@ class proposalsByApproval extends Component {
             <div>
                 <Heading>Approved Proposals</Heading>
 
-                <br/>
-                
                 {
                     (proposals.length > 0 && services.length > 0)
                     ? <ProposalsMatrix proposals={ proposals } services={ services }/>

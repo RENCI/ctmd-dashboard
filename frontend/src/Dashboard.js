@@ -10,7 +10,7 @@ import {
     Dashboard as DashboardIcon,
     Settings as SettingsIcon,
     Share as ShareIcon,
-    HourglassFull as HourglassFullIcon,
+    Timeline as TimelineIcon,
     ExitToApp as ExitToAppIcon,
     Grade as GradeIcon,
     Description as DescriptionIcon,
@@ -134,7 +134,7 @@ class Dashboard extends Component {
                         { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                     ]
                 },
-                { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
+                { text: 'Forecasts', icon: <TimelineIcon/>, href: '/reports/forecasts', disabled: true, },
                 { text: 'Metrics', icon: <GradeIcon/>, href: '/reports/metrics', },
             ],
         },
