@@ -12,10 +12,10 @@ $ git clone https://github.com/renciweb/tic.git
 
 ### Set up environment variables file
 
-Make an environment variables file named `.env`. There's a sample one in the repo that will work for development out of the box, so just rename that.
+Make an environment variables file named `.env`. There's a sample one in the repo that will work for development out of the box, so just copy that.
 
 ```bash
-$ mv .env.sample .env
+$ cp .env.sample .env
 ```
 
 ### Copy the existing database
@@ -86,7 +86,7 @@ react       |
 
 ```
 
-\* Note that the development `frontend` and `api` services start with React's development server and nodemon, respectively, allowing hot reloading, so there's really little need to ever rebuild during development.
+#### Possibly Useful Notes
 
 It's nice to leave your session attached to keep an eye on errors, but of course you want to rebuild and/or detach at times:
 
@@ -103,22 +103,36 @@ $ docker-compose up --build api db
 Point your browser to `http://localhost:3000` to see the dashboard.
 To mess with the API directly (in the browser or Postman, say), that is served to `http://localhost:3030`.
 
+#### Hot Reloading
+
+Note the development `frontend` and `api` services start with React's development server and nodemon, respectively, allowing hot reloading, so it's only necessary to rebuild during development if new packages are installed.
+
+#### Installing New Modules
+
+So if, for example, suppose you execute `npm install` the `d3` module from within the `frontend/` directory. Then next time `docker-compose up` is run, add the `--build` flag to get `d3` isntalled into the container when it spins up.
+
+Alternatively, you can log into the `react` container and rum `npm install` in the `/usr/src/app` directory while it's running.
+
 ### Production
 
-The production server will require basic authentication enforced by the server. For this, we'll need to copy the `.htpasswd.sample` file to `.htpasswd`, and its contents will container a username and a hashed password. See the sample file for an example. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`.
+#### Prerequisites
 
-An example of how one may use this is to navigate into `frontend/`, and execute `htpasswd -c ./.htpasswd username`, after which you would be prompted to enter a password twice.
+The production server will require basic authentication enforced by the server. For this, we'll need to copy the `frontend/.htpasswd.sample` file to `frontend/.htpasswd`, and its contents will contain a username and a hashed password. Use the sample file as an example. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`.
+
+An example of how one may use this is to navigate into `frontend/`, and execute `htpasswd -c ./.htpasswd [username]`, after which you would be prompted to enter a password twice.
 
 The entire interaction shows something like the following.
 
 ```bash
-$ sudo htpasswd -c ./.htpasswd duketic
+$ sudo htpasswd -c ./.htpasswd myusername
 New password: 
 Re-type new password: 
-Adding password for user duketic
+Adding password for user myusername
 ```
 
 Do all that before spinning up the containers.
+
+#### OK, Go
 
 Start all three services using the production Docker Compose file, `docker-compose.prod.yml`:
 
@@ -131,7 +145,7 @@ This serves the frontend to port `80` on the host, and is thus reachable simply 
 
 ## Tinkering within a Container
 
-To tinker and test various things, one can log into an individual container with the `exec`. For example, we often need to test and polish queries. To do so, we can attach to the `postgres` container with the command
+To tinker and test various things, one often needs to log into an individual container with `docker exec`--for example, to test and polish queries. To do so, we can attach to the `postgres` container with the following command.
 
 ```bash
 docker exec -it postgres bash
@@ -161,4 +175,5 @@ Links to some tools used in this project are below.
 - Nodemon [https://nodemon.io/](https://nodemon.io/)
 - Express [https://expressjs.com/](https://expressjs.com/)
 - Nginx: [https://nginx.org/en/docs/](https://nginx.org/en/docs/)
+- htpasswd: [https://httpd.apache.org/docs/2.4/programs/htpasswd.html](https://httpd.apache.org/docs/2.4/programs/htpasswd.html)
 - D3: [https://d3js.org/](https://d3js.org/)
