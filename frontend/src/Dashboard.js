@@ -31,6 +31,7 @@ import AllProposals from './views/Proposals/All'
 import ProposalsByStage from './views/Proposals/ByStage'
 import ApprovedProposals from './views/Proposals/Approved'
 import SubmittedProposals from './views/Proposals/Submitted'
+import MetricsPage from './views/Analytics/Metrics'
 import CollaborationsPage from './views/Analytics/Collaborations'
 
 const drawerWidth = 240
@@ -134,7 +135,7 @@ class Dashboard extends Component {
                     ]
                 },
                 { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
-                { text: 'Performance', icon: <GradeIcon/>, href: '/reports/performance', disabled: true, },
+                { text: 'Metrics', icon: <GradeIcon/>, href: '/reports/metrics', },
             ],
         },
         {
@@ -212,6 +213,7 @@ class Dashboard extends Component {
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
+                                            <Route path="/reports/metrics" component={ MetricsPage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
                                             <Route path="/" component={ HomePage }/>
                                         </Switch>
