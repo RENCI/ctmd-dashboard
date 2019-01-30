@@ -27,12 +27,12 @@ import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
-import AllProposals from './views/Proposals/All'
-import ProposalsByStage from './views/Proposals/ByStage'
-import ApprovedProposals from './views/Proposals/Approved'
-import SubmittedProposals from './views/Proposals/Submitted'
-import MetricsPage from './views/Analytics/Metrics'
-import CollaborationsPage from './views/Analytics/Collaborations'
+import AllProposals from './views/Proposals.js'
+import ProposalsByStage from './views/Reports/ByStage'
+import ApprovedProposals from './views/Reports/Approved'
+import SubmittedProposals from './views/Reports/Submitted'
+import MetricsPage from './views/Metrics'
+import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 240
 
