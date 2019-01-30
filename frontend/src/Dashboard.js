@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import PropTypes from 'prop-types'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
