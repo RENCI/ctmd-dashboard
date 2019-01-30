@@ -1,22 +1,22 @@
 import React from 'react'
-
+import { withStyles } from '@material-ui/core/styles'
+import MetricsForm from '../components/Forms/Metrics'
 import Heading from '../components/Typography/Heading'
 
-const classes = theme => ({
+const styles = (theme) => ({
     root: { },
 })
 
 const metricsPage = (props) => {
+    const { classes } = props
     return (
         <div className={ classes.root }>
         
             <Heading>Metrics</Heading>
 
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam rerum, alias quidem. Ratione dolorum, doloribus autem delectus, deserunt amet excepturi ipsa veniam vitae fugiat cum repudiandae consectetur exercitationem, accusantium cumque?
-            </p>
+            <MetricsForm />
         </div>
     )
 }
 
-export default metricsPage
+export default withStyles(styles)(metricsPage)
