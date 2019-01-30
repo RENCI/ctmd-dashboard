@@ -6,9 +6,7 @@ import Heading from '../../components/Typography/Heading'
 import ProposalsInEachStageTable from '../../components/Charts/ByStage/Table'
 import { CircularLoader } from '../../components/Progress/Progress'
 
-const stagesUrl = process.env.NODE_ENV === 'production'
-    ? 'https://pmd.renci.org/api/proposals/by-stage'
-    : 'http://localhost:3030/proposals/by-stage'
+const stagesUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/by-stage' : 'http://localhost:3030/proposals/by-stage'
 
 class proposalsByStage extends Component {
     state = {

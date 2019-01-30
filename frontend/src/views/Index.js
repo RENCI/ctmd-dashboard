@@ -21,9 +21,6 @@ const styles = (theme) => ({
     page: {
         // ...theme.mixins.debug
     },
-    pageTitle: {
-        marginBottom: 4 * theme.spacing.unit,
-    },
     card: {
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],

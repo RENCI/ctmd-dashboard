@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import PropTypes from 'prop-types'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
@@ -10,7 +9,7 @@ import {
     Dashboard as DashboardIcon,
     Settings as SettingsIcon,
     Share as ShareIcon,
-    HourglassFull as HourglassFullIcon,
+    Timeline as TimelineIcon,
     ExitToApp as ExitToAppIcon,
     Grade as GradeIcon,
     Description as DescriptionIcon,
@@ -27,12 +26,12 @@ import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
-import AllProposals from './views/Proposals/All'
-import ProposalsByStage from './views/Proposals/ByStage'
-import ApprovedProposals from './views/Proposals/Approved'
-import SubmittedProposals from './views/Proposals/Submitted'
-import MetricsPage from './views/Analytics/Metrics'
-import CollaborationsPage from './views/Analytics/Collaborations'
+import AllProposals from './views/Proposals.js'
+import ProposalsByStage from './views/Reports/ByStage'
+import ApprovedProposals from './views/Reports/Approved'
+import SubmittedProposals from './views/Reports/Submitted'
+import MetricsPage from './views/Metrics'
+import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 240
 
@@ -134,7 +133,7 @@ class Dashboard extends Component {
                         { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                     ]
                 },
-                { text: 'Forecasts', icon: <HourglassFullIcon/>, href: '/reports/forecasts', disabled: true, },
+                { text: 'Forecasts', icon: <TimelineIcon/>, href: '/reports/forecasts', disabled: true, },
                 { text: 'Metrics', icon: <GradeIcon/>, href: '/reports/metrics', },
             ],
         },
