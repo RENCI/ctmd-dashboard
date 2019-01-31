@@ -11,7 +11,7 @@ export default function() {
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Events
-      event = d3.dispatch("highlightNode"),
+      event = d3.dispatch("highlightProposals"),
 
       // Data
       data = [],
@@ -32,37 +32,45 @@ export default function() {
           .style("border-radius", "2px")
           .style("pointer-events", "none")
           .html(function(d) {
-            switch (d.type) {
-              case "pi":
-                return "PI: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+            if (d.source) {
+              // Link
+              return d.source.name + "→" + d.target.name + "<br><br>" +
+                     "Proposals: " + d.proposals.length;
+            }
+            else {
+              // Node
+              switch (d.type) {
+                case "pi":
+                  return "PI: " + d.name + "<br><br>" +
+                         "Proposals: " + d.proposals.length;
 
-              case "proposal":
-                return "Proposal: " + d.name + "<br><br>" +
-                       "Budget: " + d.budget + "<br>" +
-                       "Duration: " + d.duration + "<br>" +
-                       "Status: " + d.status;
+                case "proposal":
+                  return "Proposal: " + d.name + "<br><br>" +
+                         "Budget: " + d.budget + "<br>" +
+                         "Duration: " + d.duration + "<br>" +
+                         "Status: " + d.status;
 
-              case "org":
-                return "Organization: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                case "org":
+                  return "Organization: " + d.name + "<br><br>" +
+                         "Proposals: " + d.proposals.length;
 
-              case "tic":
-                return "TIC: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                case "tic":
+                  return "TIC: " + d.name + "<br><br>" +
+                         "Proposals: " + d.proposals.length;
 
-              case "area":
-                return "Therapeutic area: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                case "area":
+                  return "Therapeutic area: " + d.name + "<br><br>" +
+                         "Proposals: " + d.proposals.length;
 
-              default:
-                console.log("Invalid type: " + d.type);
-                return "";
+                default:
+                  console.log("Invalid type: " + d.type);
+                  return "";
+              }
             }
           }),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("highlightNode");
+      dispatcher = d3.dispatch("highlightProposals");
 
   // Create a closure containing the above variables
   function proposalsSankey(selection) {
@@ -174,7 +182,7 @@ export default function() {
         addLink(d[0], d[1], proposal);
       });
 
-      // Add final proposal
+      // Add proposal to final node
       order[order.length - 1].proposals.push(proposal);
     });
 
@@ -254,12 +262,14 @@ export default function() {
 
       if (link.length > 0) {
         link = link[0];
+        link.proposals.push(proposal)
         link.value++;
       }
       else {
         link = {
           source: node1,
           target: node2,
+          proposals: [proposal],
           value: 1,
           type: node1.type + "_" + node2.type
         };
@@ -310,12 +320,12 @@ export default function() {
           .attr("rx", 2)
           .attr("ry", 2)
           .on("mouseover", function(d) {
-            highlightNode(d);
+            highlightProposals(d);
 
             tip.show(d, this);
           })
           .on("mouseout", function(d) {
-            highlightNode();
+            highlightProposals();
 
             tip.hide();
           })
@@ -329,55 +339,9 @@ export default function() {
       // Node exit
       node.exit().remove();
 
-      highlightNode();
+      highlightProposals();
 
-      function highlightNode(d) {
-        if (d) {
-          // Change link appearance
-          svg.select(".links").selectAll(".link")
-              .style("stroke-opacity", function(e) {
-                return nodeLinkConnected(d, e) ? 1 : 0.1;
-              })
-              .filter(function(e) {
-                return nodeLinkConnected(d, e);
-              }).raise();
 
-          // Change node appearance
-          svg.select(".nodes").selectAll(".node")
-              .style("fill-opacity", function(e) {
-                return nodesConnected(d, e) ? 1 : 0.1;
-              });
-
-          // Change label appearance
-          svg.select(".labels").selectAll(".nodeLabel")
-              .style("visibility", function(e) {
-                return nodesConnected(d, e) ? "visible" : "hidden";
-              });
-
-          function nodesConnected(n1, n2) {
-            for (var i = 0; i < n1.proposals.length; i++) {
-              if (n2.proposals.indexOf(n1.proposals[i]) !== -1) return true;
-            }
-
-            return false;
-          }
-
-          function nodeLinkConnected(n, l) {
-            return nodesConnected(n, l.source) && nodesConnected(n, l.target);
-          }
-        }
-        else {
-          // Reset
-          svg.select(".links").selectAll(".link")
-              .style("stroke-opacity", linkOpacity);
-
-          svg.select(".nodes").selectAll(".node")
-              .style("fill-opacity", 1);
-
-          svg.select(".labels").selectAll(".nodeLabel")
-              .style("visibility", labelVisibility);
-        }
-      }
 
       function nodeFill(d) {
         return nodeColorScale(d.type);
@@ -392,11 +356,22 @@ export default function() {
       // Link enter
       link.enter().append("path")
           .attr("class", "link")
-          .attr("d", d3Sankey.sankeyLinkHorizontal())
           .style("fill", "none")
           .style("stroke", "#999")
           .style("stroke-opacity", linkOpacity)
-          .style("stroke-width", function(d) { return d.width / 2; });
+          .style("stroke-width", function(d) { return d.width / 2; })
+          .on("mouseover", function(d) {
+            highlightProposals(d);
+
+            tip.show(d, this);
+          })
+          .on("mouseout", function(d) {
+            highlightProposals();
+
+            tip.hide();
+          })
+        .merge(link)
+          .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link exit
       link.exit().remove();
@@ -448,6 +423,56 @@ export default function() {
 
     function labelVisibility(d) {
       return d.proposals.length >= 5 ? "visible" : "hidden";
+    }
+
+    function highlightProposals(item) {
+      let proposals = item ? item.proposals : null;
+
+      if (proposals) {
+        // Change link appearance
+        svg.select(".links").selectAll(".link")
+            .style("stroke-opacity", function(d) {
+              return linkConnected(d) ? 1 : 0.1;
+            })
+            .filter(function(d) {
+              return linkConnected(d);
+            }).raise();
+
+        // Change node appearance
+        svg.select(".nodes").selectAll(".node")
+            .style("fill-opacity", function(d) {
+              return nodeConnected(d) ? 1 : 0.1;
+            });
+
+        // Change label appearance
+        svg.select(".labels").selectAll(".nodeLabel")
+            .style("visibility", function(d) {
+              return nodeConnected(d) ? "visible" : "hidden";
+            });
+
+        function nodeConnected(d) {
+          for (var i = 0; i < proposals.length; i++) {
+            if (d.proposals.indexOf(proposals[i]) !== -1) return true;
+          }
+
+          return false;
+        }
+
+        function linkConnected(d) {
+          return nodeConnected(d.source) && nodeConnected(d);
+        }
+      }
+      else {
+        // Reset
+        svg.select(".links").selectAll(".link")
+            .style("stroke-opacity", linkOpacity);
+
+        svg.select(".nodes").selectAll(".node")
+            .style("fill-opacity", 1);
+
+        svg.select(".labels").selectAll(".nodeLabel")
+            .style("visibility", labelVisibility);
+      }
     }
   }
 
