@@ -5,7 +5,7 @@ import { Typography } from '@material-ui/core'
 const styles = ( theme ) => ({
     root: {
         color: theme.palette.grey[700],
-        margin: 2 * theme.spacing.unit,
+        margin: theme.spacing.unit,
     }
 })
 

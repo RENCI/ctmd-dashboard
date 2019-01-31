@@ -16,15 +16,22 @@ class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            authenticated: false,
+            authenticated: true,
         }
     }
     
+    logout = () => {
+        this.setState({ authenticated: false })
+    }
+
     render() {
         return (
             <Router basename={ '' }>
                 <MuiThemeProvider theme={ Theme }>
-                    <AuthProvider value={{ authenticated: this.state.authenticated }}>
+                    <AuthProvider value={{
+                        authenticated: this.state.authenticated,
+                        logout: this.logout,
+                    }}>
                         <Dashboard />
                     </AuthProvider>
                 </MuiThemeProvider>

@@ -4,8 +4,9 @@ import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import { Card, CardContent } from '@material-ui/core'
 
+import Heading from '../components/Typography/Heading'
 import Subheading from '../components/Typography/Subheading'
-import Spinner from '../components/Spinner/Spinner'
+import { CircularLoader } from '../components/Progress/Progress'
 import Calendar from '../components/Charts/ProposalsCalendar'
 import TicBarChart from '../components/Charts/ProposalsByTic'
 
@@ -17,7 +18,7 @@ const apiUrl = {
 }
 
 const styles = (theme) => ({
-    root: {
+    page: {
         // ...theme.mixins.debug
     },
     card: {
@@ -88,11 +89,13 @@ class HomePage extends Component {
         const { width, height } = this.state
         const { classes, theme } = this.props
         const { proposalsByTic, proposalsByDate, proposalStatuses } = this.state
-        if (proposalsByDate.length > 0) {
-            proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value)
-        }
         return (
-            <div className={ classes.root }>
+            <div className={ classes.page }>
+
+                <div className={ classes.pageTitle }>
+                    <Heading>Dashboard Home</Heading>
+                </div>
+
                 <Card className={ classes.card } square={ true }>
                     <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
                         {
@@ -103,7 +106,7 @@ class HomePage extends Component {
                                     width={ width } height={ height }
                                 />
                             ) : (
-                                <Spinner />
+                                <CircularLoader />
                             )
                         }
                     </CardContent>
@@ -124,12 +127,12 @@ class HomePage extends Component {
                         {
                             (proposalsByDate) ? (
                                     <Calendar proposals={ proposalsByDate }
-                                        fromDate="2017-01-01"
-                                        toDate="2018-12-31"
+                                        fromDate="2016-01-01T12:00:00.000Z"
+                                        toDate="2018-12-31T12:00:00.000Z"
                                         colors={ Object.values(theme.palette.extended).slice(1,6) }
                                     />
                             ) : (
-                                <Spinner />
+                                <CircularLoader />
                             )
                         }
                     </CardContent>

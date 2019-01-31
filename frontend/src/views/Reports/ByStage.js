@@ -4,11 +4,9 @@ import axios from 'axios'
 import Heading from '../../components/Typography/Heading'
 
 import ProposalsInEachStageTable from '../../components/Charts/ByStage/Table'
-import Spinner from '../../components/Spinner/Spinner'
+import { CircularLoader } from '../../components/Progress/Progress'
 
-const stagesUrl = process.env.NODE_ENV === 'production'
-    ? 'https://pmd.renci.org/api/proposals/by-stage'
-    : 'http://localhost:3030/proposals/by-stage'
+const stagesUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals/by-stage' : 'http://localhost:3030/proposals/by-stage'
 
 class proposalsByStage extends Component {
     state = {
@@ -38,7 +36,7 @@ class proposalsByStage extends Component {
                 {
                     stages.length > 0
                     ? <ProposalsInEachStageTable proposalsByStage={ this.state.stages }/>
-                    : <Spinner/>
+                    : <CircularLoader/>
                 }
             </div>
         )

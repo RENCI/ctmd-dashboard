@@ -18,10 +18,10 @@ const theme = createMuiTheme({
     // colors
     palette: {
         primary: {
-            main: '#001A57',
+            main: '#1c253b',
         },
         secondary: {
-            main: '#00539B',
+            main: '#324f69',
         },
         error: {
             main: '#cc3300',
@@ -50,7 +50,7 @@ const theme = createMuiTheme({
     // text
     typography: {
         useNextVariants: true,
-        htmlFontSize: 18,
+        htmlFontSize: 14,
         h1: { fontFamily: 'EB Garamond', },
         h2: { fontFamily: 'EB Garamond', },
         h3: { fontFamily: 'EB Garamond', },
