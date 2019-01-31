@@ -290,7 +290,7 @@ export default function() {
     var sankey = d3Sankey.sankey()
         .size([innerWidth(), innerHeight()])
         .nodePadding(2)
-        .iterations(5000);
+        .iterations(1000);
 
     var {nodes, links} = sankey(network);
 
@@ -319,6 +319,11 @@ export default function() {
           .attr("class", "node")
           .attr("rx", 2)
           .attr("ry", 2)
+          .attr("x", function(d) { return d.x0; })
+          .attr("y", function(d) { return d.y0; })
+          .attr("width", function(d) { return d.x1 - d.x0; })
+          .attr("height", function(d) { return d.y1 - d.y0; })
+          .style("fill", nodeFill)
           .on("mouseover", function(d) {
             highlightProposals(d);
 
@@ -328,20 +333,19 @@ export default function() {
             highlightProposals();
 
             tip.hide();
-          })
-        .merge(node)
+          });
+
+      // Node update
+      node.transition()
           .attr("x", function(d) { return d.x0; })
           .attr("y", function(d) { return d.y0; })
           .attr("width", function(d) { return d.x1 - d.x0; })
-          .attr("height", function(d) { return d.y1 - d.y0; })
-          .attr("fill", nodeFill);
+          .attr("height", function(d) { return d.y1 - d.y0; });
 
       // Node exit
       node.exit().remove();
 
       highlightProposals();
-
-
 
       function nodeFill(d) {
         return nodeColorScale(d.type);
@@ -360,6 +364,7 @@ export default function() {
           .style("stroke", "#999")
           .style("stroke-opacity", linkOpacity)
           .style("stroke-width", function(d) { return d.width / 2; })
+          .attr("d", d3Sankey.sankeyLinkHorizontal())
           .on("mouseover", function(d) {
             highlightProposals(d);
 
@@ -370,7 +375,9 @@ export default function() {
 
             tip.hide();
           })
-        .merge(link)
+
+      // Link update
+      link.transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link exit
@@ -392,7 +399,6 @@ export default function() {
           .style("pointer-events", "none")
           .style("dominant-baseline", "middle")
           .style("visibility", labelVisibility)
-        .merge(label)
           .attr("transform", function(d) {
             return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
           });
@@ -413,6 +419,12 @@ export default function() {
           })
           .style("fill", "black");
 
+      // Label update
+      label.transition()
+          .attr("transform", function(d) {
+            return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
+          });
+
       // Label exit
       label.exit().remove();
     }
@@ -430,22 +442,24 @@ export default function() {
 
       if (proposals) {
         // Change link appearance
-        svg.select(".links").selectAll(".link")
+        svg.select(".links").selectAll(".link").transition()
             .style("stroke-opacity", function(d) {
               return linkConnected(d) ? 1 : 0.1;
-            })
+            });
+
+        svg.select(".links").selectAll(".link")
             .filter(function(d) {
               return linkConnected(d);
             }).raise();
 
         // Change node appearance
-        svg.select(".nodes").selectAll(".node")
+        svg.select(".nodes").selectAll(".node").transition()
             .style("fill-opacity", function(d) {
               return nodeConnected(d) ? 1 : 0.1;
             });
 
         // Change label appearance
-        svg.select(".labels").selectAll(".nodeLabel")
+        svg.select(".labels").selectAll(".nodeLabel").transition()
             .style("visibility", function(d) {
               return nodeConnected(d) ? "visible" : "hidden";
             });
@@ -464,13 +478,13 @@ export default function() {
       }
       else {
         // Reset
-        svg.select(".links").selectAll(".link")
+        svg.select(".links").selectAll(".link").transition()
             .style("stroke-opacity", linkOpacity);
 
-        svg.select(".nodes").selectAll(".node")
+        svg.select(".nodes").selectAll(".node").transition()
             .style("fill-opacity", 1);
 
-        svg.select(".labels").selectAll(".nodeLabel")
+        svg.select(".labels").selectAll(".nodeLabel").transition()
             .style("visibility", labelVisibility);
       }
     }
