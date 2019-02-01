@@ -54,7 +54,8 @@ class ProposalsNetworkContainer extends Component {
     
     drawVisualization(props, state) {
         const minSankeyHeight = 1000;
-        const networkWidth = this.networkDiv.clientWidth;
+        // const networkWidth = this.networkDiv.clientWidth;
+        const networkWidth = this.state.width - 240;
         const networkHeight = networkWidth;
         const sankeyWidth = this.sankeyDiv.clientWidth;
         const sankeyHeight = Math.max(minSankeyHeight, sankeyWidth);
@@ -78,7 +79,7 @@ class ProposalsNetworkContainer extends Component {
 
     render() {
         let outerStyle = { display: "flex", flexWrap: "wrap", width: "100%"};
-        let innerStyle = { width: "800px", flex: "1 1 auto" };
+        let innerStyle = { width: `${ this.state.width - 240}px`, flex: "1 1 auto" };
         
         return (
             <div style={outerStyle}>
