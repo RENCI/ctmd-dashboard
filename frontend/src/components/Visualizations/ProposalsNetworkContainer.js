@@ -35,13 +35,19 @@ class ProposalsNetworkContainer extends Component {
     }
 
     drawVisualization(props, state) {
+        const minSankeyHeight = 1000;
+        const networkWidth = this.networkDiv.clientWidth;
+        const networkHeight = networkWidth;
+        const sankeyWidth = this.sankeyDiv.clientWidth;
+        const sankeyHeight = Math.max(minSankeyHeight, sankeyWidth);
+
         this.network
-            .width(800)
-            .height(800);
+            .width(networkWidth)
+            .height(networkHeight);
 
         this.sankey
-            .width(800)
-            .height(1000);
+            .width(sankeyWidth)
+            .height(sankeyHeight);
 
         d3.select(this.networkDiv)
             .datum(state.proposals)
@@ -53,8 +59,8 @@ class ProposalsNetworkContainer extends Component {
     }
 
     render() {
-        let outerStyle = { display: "flex", flexWrap: "wrap" };
-        let innerStyle = { flex: "1 0 auto" };
+        let outerStyle = { display: "flex", flexWrap: "wrap", width: "100%"};
+        let innerStyle = { width: "800px", flex: "1 1 auto" };
 
         return (
             <div style={outerStyle}>
