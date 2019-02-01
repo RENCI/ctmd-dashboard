@@ -5,12 +5,22 @@ import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
 
 class ProposalsNetworkContainer extends Component {
-    state = {
-        proposals: null,
-    };
+    constructor(props) {
+        super(props)
+        this.state = {
+            width: 0,
+            height: 0,
+            proposals: null,
+        }
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
+    }
 
     network = proposalsNetwork();
     sankey = proposalsSankey();
+
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight })
+    }
 
     async fetchData() {
         await axios.get(this.props.apiUrl)
@@ -20,20 +30,28 @@ class ProposalsNetworkContainer extends Component {
                 });
             })
             .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
+                console.error('Error:', error)
             });
     }
 
     componentWillMount = this.fetchData;
+    
+    componentDidMount() {
+        this.updateWindowDimensions()
+        window.addEventListener('resize', this.updateWindowDimensions)
+    }
 
     shouldComponentUpdate(props, state) {
         if (state.proposals) {
             this.drawVisualization(props, state);
         }
-
         return false;
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+    
     drawVisualization(props, state) {
         const minSankeyHeight = 1000;
         const networkWidth = this.networkDiv.clientWidth;
@@ -61,7 +79,7 @@ class ProposalsNetworkContainer extends Component {
     render() {
         let outerStyle = { display: "flex", flexWrap: "wrap", width: "100%"};
         let innerStyle = { width: "800px", flex: "1 1 auto" };
-
+        
         return (
             <div style={outerStyle}>
                 <div style={innerStyle} ref={div => this.networkDiv = div}></div>
