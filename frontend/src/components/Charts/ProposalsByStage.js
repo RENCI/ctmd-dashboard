@@ -1,16 +1,8 @@
 import React from "react"
 import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
-import Subheading from '../../Typography/Subheading'
-import ProposalChip from './ProposalChip'
-
-const keyGenerator = () => {
-    var text = ''
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    for (var i = 0; i < 5; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
-}
+import Subheading from '../Typography/Subheading'
+import Chip from '../Chip/Chip'
 
 const styles = (theme) => ({
     root: {
@@ -80,10 +72,15 @@ const barGraph = (props) => {
                     return (
                         <div className={ classnames(classes.row, classes.hightlightRow) } key={ stage.name } >
                             <div className={ classnames(classes.leftColumn, classes.rowLabel) }>
-                                { stage.name }
+                                { stage.name }<br/>
+                                <small>({ stage.proposals.length } Proposals)</small>
                             </div>
                             <div className={ classnames(classes.rightColumn, classes.rowData) }>
-                                { stage.proposals.map(proposal => <ProposalChip key={ keyGenerator() } proposal={ proposal }/>) }
+                                {
+                                    stage.proposals.map(proposal => (
+                                        <Chip key={ proposal.proposal_id } proposal={ proposal }/>
+                                    ))
+                                }
                             </div>
                         </div>
                     )

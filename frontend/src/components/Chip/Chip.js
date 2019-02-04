@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import Tooltip from '../Tooltip/Tooltip'
 import { Chip } from '@material-ui/core'
-import ProposalTooltip from '../../Tooltips/ProposalTooltip'
 
 const styles = (theme) => ({
     chip: {
@@ -18,13 +18,13 @@ const styles = (theme) => ({
     },
 })
 
-const proposalChip = (props) => {
+const chip = (props) => {
     const { classes, proposal } = props
     return (
-        <ProposalTooltip proposal={ proposal }>
-            <Chip label={ proposal.proposal_id } className={ classes.chip }/>
-        </ProposalTooltip>
+        <Tooltip proposal={ proposal }>
+            <Chip label={ proposal.short_name } className={ classes.chip }/>
+        </Tooltip>
     )
 }
 
-export default withStyles(styles)(proposalChip)
+export default withStyles(styles)(chip)

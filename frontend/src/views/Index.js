@@ -63,6 +63,7 @@ class HomePage extends Component {
     componentDidMount() {
         this.updateWindowDimensions()
         window.addEventListener('resize', this.updateWindowDimensions)
+        
         const promises = [
             axios.get(apiUrl.proposalsByTic),
             axios.get(apiUrl.proposalsByDate),

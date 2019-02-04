@@ -6,7 +6,6 @@ const styles = (theme) => ({
     table: {
         padding: 2 * theme.spacing.unit,
         overflowY: 'scroll',
-        maxHeight: 'calc(100vh - 190px)'
     },
 })
 
@@ -17,7 +16,8 @@ class ProposalsTable extends Component {
             <MaterialTable
                 className={ classes.table }
                 columns={ [
-                    { title: 'Proposal ID', field: 'proposal_id', type: 'numeric', },
+                    { title: 'Proposal ID', field: 'proposal_id', },
+                    { title: 'Proposal Name', field: 'short_name', },
                     { title: 'PI', field: 'pi_name', },
                     { title: 'Proposal Status', field: 'proposal_status', },
                     { title: 'TIC', field: 'tic_name', },

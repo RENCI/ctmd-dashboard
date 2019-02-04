@@ -11,10 +11,10 @@ import {
     Share as ShareIcon,
     Timeline as TimelineIcon,
     ExitToApp as ExitToAppIcon,
-    Grade as GradeIcon,
     Description as DescriptionIcon,
     Assessment as AssessmentIcon,
     KeyboardArrowRight as KeyboardArrowRightIcon,
+    LocationOn as LocationIcon
 } from '@material-ui/icons'
 
 import { AuthConsumer } from './contexts/AuthContext'
@@ -30,7 +30,7 @@ import AllProposals from './views/Proposals.js'
 import ProposalsByStage from './views/Reports/ByStage'
 import ApprovedProposals from './views/Reports/Approved'
 import SubmittedProposals from './views/Reports/Submitted'
-import MetricsPage from './views/Metrics'
+import SiteReportPage from './views/SiteReport'
 import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 240
@@ -134,7 +134,7 @@ class Dashboard extends Component {
                     ]
                 },
                 { text: 'Forecasts', icon: <TimelineIcon/>, href: '/reports/forecasts', disabled: true, },
-                { text: 'Metrics', icon: <GradeIcon/>, href: '/reports/metrics', },
+                { text: 'Site Report', icon: <LocationIcon/>, href: '/reports/site-report', },
             ],
         },
         {
@@ -212,7 +212,7 @@ class Dashboard extends Component {
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                            <Route path="/reports/metrics" component={ MetricsPage }/>
+                                             <Route path="/reports/site-report" component={ SiteReportPage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
                                             <Route path="/" component={ HomePage }/>
                                         </Switch>
