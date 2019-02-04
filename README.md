@@ -109,19 +109,19 @@ Note the development `frontend` and `api` services start with React's developmen
 
 #### Installing New Modules
 
-So if, for example, suppose you execute `npm install` the `d3` module from within the `frontend/` directory. Then next time `docker-compose up` is run, add the `--build` flag to get `d3` isntalled into the container when it spins up.
+If, for example, suppose you execute `npm install some-tool` to install a module (which would of course be done from within the `frontend/` directory), the next time `docker-compose up` is run, the `--build` flag will need to be used `some-tool` installed on the image before the container spins up.
 
-Alternatively, you can log into the `react` container and rum `npm install` in the `/usr/src/app` directory while it's running.
+Alternatively, you could log into the running `react` container and `npm install` it there, in the (default location) `/usr/src/app`.
 
 ### Production
 
 #### Prerequisites
 
-The production server will require basic authentication enforced by the server. For this, we'll need to copy the `frontend/.htpasswd.sample` file to `frontend/.htpasswd`, and its contents will contain a username and a hashed password. Use the sample file as an example. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`.
+The production server will employ basic http authentication. For this, we'll need to copy the `frontend/.htpasswd.sample` file to `frontend/.htpasswd`, and its contents will contain a username and a hashed password. Use the sample file as an example. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`.
 
-An example of how one may use this is to navigate into `frontend/`, and execute `htpasswd -c ./.htpasswd [username]`, after which you would be prompted to enter a password twice.
+To use this tool, navigate into `frontend/` and execute `htpasswd -c ./.htpasswd [username]`. Then you'll be prompted to enter a password twice.
 
-The entire interaction shows something like the following.
+The entire interaction shows output like the following.
 
 ```bash
 $ sudo htpasswd -c ./.htpasswd myusername
@@ -132,7 +132,9 @@ Adding password for user myusername
 
 Do all that before spinning up the containers.
 
-#### OK, Go
+\* Note: this is only required for production.
+
+#### OK, Let's Go
 
 Start all three services using the production Docker Compose file, `docker-compose.prod.yml`:
 
@@ -145,13 +147,13 @@ This serves the frontend to port `80` on the host, and is thus reachable simply 
 
 ## Tinkering within a Container
 
-To tinker and test various things, one often needs to log into an individual container with `docker exec`--for example, to test and polish queries. To do so, we can attach to the `postgres` container with the following command.
+To tinker and test various things, one often needs to log into an individual container with `docker exec`. This was mentioned earlier when describing the installation of new frontend modules. To do so, we can attach to the `postgres` container with the following command. Another reason to do this is to test and polish database queries, which could be accomplished by getting into the `postgres` container with the following command.
 
 ```bash
 docker exec -it postgres bash
 ```
 
-Then proceed normally, executing something like `psql duketic` to select the desired database---`duketic` in this case.
+Then proceed normally, executing something like `psql duketic` to select the desired database---`duketic` in this case. Then execute queries to your heart's content, `select * from proposal where false` is a fun one.
 
 ## Tear it Down
 
@@ -159,7 +161,7 @@ Then proceed normally, executing something like `psql duketic` to select the des
 $ docker-compose down
 ```
 
-\* Note: the postgres storage (at `/db/pgdata`) is made with root privileges. If the db image needs to be rebuilt (with a new `.sql` file perhaps), remove this directory: `$ sudo rm -r /db/pgdata`. Next time it builds, the new `.sql` file will be used to build the database.
+\* Note: the postgres storage (at `/db/pgdata`) is persisted on the host and is created with root privileges. If the `db` image needs to be rebuilt (with a new `.sql` file perhaps), remove this directory on your host machine `$ sudo rm -r /db/pgdata`. Next time it builds, the new `.sql` file will be used to build the database.
 
 ## Additional References
 
