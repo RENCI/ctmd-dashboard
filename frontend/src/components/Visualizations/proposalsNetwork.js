@@ -215,7 +215,7 @@ export default function() {
 
           case "proposal":
             // XXX: Name placeholder
-            node.name = id;
+            node.name = d.short_name;
             node.budget = d.anticipated_budget ? d.anticipated_budget : "NA";
             node.duration = d.funding_duration ? d.funding_duration : "NA";
             node.status = d.proposal_status ? d.proposal_status : "NA";

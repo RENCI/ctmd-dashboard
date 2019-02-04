@@ -5,12 +5,28 @@ import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
 
 class ProposalsNetworkContainer extends Component {
-    state = {
-        proposals: null,
-    };
+    constructor(props) {
+        super(props);
 
-    network = proposalsNetwork();
-    sankey = proposalsSankey();
+        this.network = proposalsNetwork();
+        this.sankey = proposalsSankey();
+
+        this.state = {
+            windowWidth: 0,
+            windowHeight: 0,
+            proposals: null
+        };
+
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+    }
+
+    updateWindowDimensions() {
+        // Should cause a re-render if the window size has changed
+        this.setState({
+            windowWidth: window.width,
+            windowHeight: window.height
+        });
+    }
 
     async fetchData() {
         await axios.get(this.props.apiUrl)
@@ -20,11 +36,16 @@ class ProposalsNetworkContainer extends Component {
                 });
             })
             .catch(error => {
-                console.error(`Error fetching data\nError ${error.response.status}: ${error.response.statusText}`)
+                console.error('Error:', error)
             });
     }
 
     componentWillMount = this.fetchData;
+
+    componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener('resize', this.updateWindowDimensions);
+    }
 
     shouldComponentUpdate(props, state) {
         if (state.proposals) {
@@ -34,14 +55,24 @@ class ProposalsNetworkContainer extends Component {
         return false;
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+
     drawVisualization(props, state) {
+        const minSankeyHeight = 1000;
+        const networkWidth = this.networkDiv.clientWidth;
+        const networkHeight = networkWidth;
+        const sankeyWidth = this.sankeyDiv.clientWidth;
+        const sankeyHeight = Math.max(minSankeyHeight, sankeyWidth);
+
         this.network
-            .width(800)
-            .height(800);
+            .width(networkWidth)
+            .height(networkHeight);
 
         this.sankey
-            .width(800)
-            .height(1000);
+            .width(sankeyWidth)
+            .height(sankeyHeight);
 
         d3.select(this.networkDiv)
             .datum(state.proposals)
@@ -53,8 +84,8 @@ class ProposalsNetworkContainer extends Component {
     }
 
     render() {
-        let outerStyle = { display: "flex", flexWrap: "wrap" };
-        let innerStyle = { flex: "1 0 auto" };
+        let outerStyle = { display: 'flex', flexWrap: 'wrap', width: '100%'};
+        let innerStyle = { width: '800px', flex: '1 1 auto' };
 
         return (
             <div style={outerStyle}>
