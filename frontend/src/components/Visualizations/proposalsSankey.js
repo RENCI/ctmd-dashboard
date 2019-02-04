@@ -398,7 +398,7 @@ export default function() {
           .style("font-weight", "bold")
           .style("pointer-events", "none")
           .style("dominant-baseline", "middle")
-          .style("visibility", labelVisibility)
+          .style("opacity", labelOpacity)
           .attr("transform", function(d) {
             return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
           });
@@ -433,8 +433,8 @@ export default function() {
       return linkOpacityScale(d.value);
     }
 
-    function labelVisibility(d) {
-      return d.proposals.length >= 5 ? "visible" : "hidden";
+    function labelOpacity(d) {
+      return d.proposals.length >= 5 ? 1 : 0;
     }
 
     function highlightProposals(item) {
@@ -455,13 +455,13 @@ export default function() {
         // Change node appearance
         svg.select(".nodes").selectAll(".node").transition()
             .style("fill-opacity", function(d) {
-              return nodeConnected(d) ? 1 : 0.1;
+              return nodeConnected(d) ? 1 : 0;
             });
 
         // Change label appearance
         svg.select(".labels").selectAll(".nodeLabel").transition()
-            .style("visibility", function(d) {
-              return nodeConnected(d) ? "visible" : "hidden";
+            .style("opacity", function(d) {
+              return nodeConnected(d) ? 1.0 : 0.0;
             });
 
         function nodeConnected(d) {
@@ -485,7 +485,7 @@ export default function() {
             .style("fill-opacity", 1);
 
         svg.select(".labels").selectAll(".nodeLabel").transition()
-            .style("visibility", labelVisibility);
+            .style("opacity", labelOpacity);
       }
     }
   }
