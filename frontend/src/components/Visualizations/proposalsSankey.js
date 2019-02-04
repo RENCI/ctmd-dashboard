@@ -4,7 +4,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  var margin = { top: 5, left: 10, bottom: 5, right: 25 },
+  var margin = { top: 5, left: 10, bottom: 5, right: 150 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -226,7 +226,7 @@ export default function() {
 
           case "proposal":
             // XXX: Name placeholder
-            node.name = id;
+            node.name = d.short_name;
             node.budget = d.anticipated_budget ? d.anticipated_budget : "NA";
             node.duration = d.funding_duration ? d.funding_duration : "NA";
             node.status = d.proposal_status ? d.proposal_status : "NA";
