@@ -3,7 +3,6 @@ import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import { Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core'
 import { Tooltip } from '@material-ui/core'
-import ProposalTooltip from '../Tooltips/ProposalTooltip'
 
 const styles = theme => ({
     root: { },
@@ -63,9 +62,7 @@ const proposalsMatrix = (props) => {
                         return (
                             <TableRow key={ proposal.proposal_id } className={ classes.bodyRow }>
                                 <TableCell padding="dense">
-                                    <ProposalTooltip proposal={ proposal }>
-                                        <div>{ proposal.proposal_id }</div>
-                                    </ProposalTooltip>
+                                    <div>{ proposal.proposal_id }</div>
                                 </TableCell>
                                 {
                                     services.map(service => {

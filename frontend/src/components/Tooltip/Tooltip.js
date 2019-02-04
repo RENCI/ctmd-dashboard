@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
+import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { Tooltip } from '@material-ui/core'
+import { Tooltip as MuiTooltip } from '@material-ui/core'
 import ListItem from './ListItem'
 
 const styles = (theme) => ({
@@ -30,6 +31,7 @@ const styles = (theme) => ({
         borderBottom: '1px solid ' + theme.palette.common.white,
         textTransform: 'uppercase',
         marginBottom: '1rem',
+        fontWeight: 'bold',
     },
     body: {
     },
@@ -38,11 +40,11 @@ const styles = (theme) => ({
     },
 })
 
-const proposalTooltip = (props) => {
+const tooltip = (props) => {
     const { classes, children, proposal } = props
     const tooltipContent = (
         <Fragment>
-            <div className={ classes.title }>Proposal { proposal.proposal_id}</div>
+            <div className={ classes.title }>{ proposal.short_name } (#{ proposal.proposal_id })</div>
             <div className={ classes.body }>
                 <ListItem title="PI" content={ proposal.pi_name }/>
                 <ListItem twoLines title="Submitting Organization" content={ proposal.org_name }/>
@@ -51,10 +53,14 @@ const proposalTooltip = (props) => {
         </Fragment>
     )
     return (
-        <Tooltip interactive placement="top" title={ tooltipContent } classes={{ tooltip: classes.tooltip, popper: classes.popper }}>
-            { children }
-        </Tooltip>
+        <MuiTooltip interactive placement="top" title={ tooltipContent } classes={{ tooltip: classes.tooltip, popper: classes.popper }}>
+            { props.children }
+        </MuiTooltip>
     )
 }
 
-export default withStyles(styles)(proposalTooltip)
+tooltip.propTypes = {
+    children: PropTypes.element.isRequired
+}
+
+export default withStyles(styles)(tooltip)
