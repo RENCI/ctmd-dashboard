@@ -109,17 +109,15 @@ Note the development `frontend` and `api` services start with React's developmen
 
 #### Installing New Modules
 
-If, for example, suppose you execute `npm install some-tool` to install a module (which would of course be done from within the `frontend/` directory), the next time `docker-compose up` is run, the `--build` flag will need to be used `some-tool` installed on the image before the container spins up.
+If, for example, you execute `npm install some-tool` to install a module (which would of course be done from within the `frontend/` directory), the next time `docker-compose up` is run, the `--build` flag will need to be used so that `some-tool` is installed on the image before the container spins up.
 
-Alternatively, you could log into the running `react` container and `npm install` it there, in the (default location) `/usr/src/app`.
+Alternatively, you could circumvent this by logging into the running `react` container and `npm install` it there in (the default location) `/usr/src/app`.
 
 ### Production
 
 #### Prerequisites
 
-The production server will employ basic http authentication. For this, we'll need to copy the `frontend/.htpasswd.sample` file to `frontend/.htpasswd`, and its contents will contain a username and a hashed password. Use the sample file as an example. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`.
-
-To use this tool, navigate into `frontend/` and execute `htpasswd -c ./.htpasswd [username]`. Then you'll be prompted to enter a password twice.
+The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. You can copy the sampel password file `frontend/.htpasswd.sample` to that location. Its contains usernames and hashed passwords, as the sample file illustrates. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`. To use `htpasswd`, navigate into `frontend/` and execute `htpasswd -c ./.htpasswd [username]`. Then you'll be prompted to enter a password twice.
 
 The entire interaction shows output like the following.
 
@@ -177,5 +175,6 @@ Links to some tools used in this project are below.
 - Nodemon [https://nodemon.io/](https://nodemon.io/)
 - Express [https://expressjs.com/](https://expressjs.com/)
 - Nginx: [https://nginx.org/en/docs/](https://nginx.org/en/docs/)
+- HTTP Authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)
 - htpasswd: [https://httpd.apache.org/docs/2.4/programs/htpasswd.html](https://httpd.apache.org/docs/2.4/programs/htpasswd.html)
 - D3: [https://d3js.org/](https://d3js.org/)
