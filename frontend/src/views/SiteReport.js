@@ -15,7 +15,7 @@ const sample_sites = [
     { id: 5, name: 'HindSite', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda labore, accusantium, accusamus laborum ut vitae architecto ipsum officiis consectetur non quos esse maiores hic perferendis harum nam iusto distinctio provident.', },
 ]
 
-const siteReportPage = (props) => {
+const SiteReportPage = (props) => {
     const { classes } = props
     return (
         <div className={ classes.root }>
@@ -28,4 +28,4 @@ const siteReportPage = (props) => {
     )
 }
 
-export default withStyles(styles)(siteReportPage)
+export default withStyles(styles)(SiteReportPage)

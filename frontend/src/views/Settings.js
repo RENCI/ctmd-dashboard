@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import Heading from '../components/Typography/Heading'
 import Paragraph from '../components/Typography/Paragraph'
 
-const loginPage = (props) => {
+const SettingsPage = (props) => {
     return (
         <Fragment>
             <Heading>Settings</Heading>
@@ -17,4 +17,4 @@ const loginPage = (props) => {
     )
 }
 
-export default loginPage
+export default SettingsPage
