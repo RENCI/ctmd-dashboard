@@ -14,7 +14,8 @@ import {
     Description as DescriptionIcon,
     Assessment as AssessmentIcon,
     KeyboardArrowRight as KeyboardArrowRightIcon,
-    LocationOn as LocationIcon
+    LocationOn as LocationIcon,
+    Star as MetricsIcon
 } from '@material-ui/icons'
 
 import { AuthConsumer } from './contexts/AuthContext'
@@ -31,6 +32,7 @@ import ProposalsByStage from './views/Reports/ByStage'
 import ApprovedProposals from './views/Reports/Approved'
 import SubmittedProposals from './views/Reports/Submitted'
 import SiteReportPage from './views/SiteReport'
+import StudyMetricsPage from './views/StudyMetrics'
 import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 240
@@ -96,7 +98,7 @@ const styles = (theme) => ({
     main: {
         // ...theme.mixins.debug,
         height: '100vh',
-        backgroundColor: theme.palette.common.white,
+        backgroundColor: 'transparent',
         flexGrow: 1,
         padding: 2 * theme.spacing.unit,
         paddingTop: 0,
@@ -133,8 +135,9 @@ class Dashboard extends Component {
                         { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
                     ]
                 },
-                { text: 'Forecasts', icon: <TimelineIcon/>, href: '/reports/forecasts', disabled: true, },
-                { text: 'Site Report', icon: <LocationIcon/>, href: '/reports/site-report', },
+                { text: 'Forecasts', icon: <TimelineIcon/>, href: '/forecasts', disabled: true, },
+                { text: 'Site Report', icon: <LocationIcon/>, href: '/site-report', },
+                { text: 'Study Metrics', icon: <MetricsIcon/>, href: '/study-metrics', },
             ],
         },
         {
@@ -212,7 +215,8 @@ class Dashboard extends Component {
                                             <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
                                             <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
                                             <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
-                                             <Route path="/reports/site-report" component={ SiteReportPage }/>
+                                            <Route path="/site-report" component={ SiteReportPage }/>
+                                            <Route path="/study-metrics" component={ StudyMetricsPage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
                                             <Route path="/" component={ HomePage }/>
                                         </Switch>

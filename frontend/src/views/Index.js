@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
@@ -43,27 +43,21 @@ const styles = (theme) => ({
     }
 })
 
-class HomePage extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            width: 0,
-            height: 0,
-            proposalsByTic: [],
-            proposalsByDate: [],
-            proposalStatuses: [],
-        }
-        this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
-    }
+const HomePage = (props) => {
+    const [width, setWidth] = useState(0)
+    const [height, setHeight] = useState(0)
+    const [proposalsByTic, setProposalsByTic] = useState([])
+    const [proposalsByDate, setProposalsByDate] = useState([])
+    const [proposalStatuses, setProposalStatuses] = useState([])
+    const { classes, theme } = props
 
-    updateWindowDimensions() {
-        this.setState({ width: window.innerWidth, height: window.innerHeight })
-    }
 
-    componentDidMount() {
-        this.updateWindowDimensions()
-        window.addEventListener('resize', this.updateWindowDimensions)
-        
+    useEffect(() => {
+        window.addEventListener('resize', updateWindowDimensions)
+        return window.removeEventListener('resize', updateWindowDimensions)
+    })
+
+    useEffect(() => {
         const promises = [
             axios.get(apiUrl.proposalsByTic),
             axios.get(apiUrl.proposalsByDate),
@@ -71,77 +65,65 @@ class HomePage extends Component {
         ]
         Promise.all(promises)
             .then((response) => {
-                this.setState({
-                    proposalsByTic: response[0].data,
-                    proposalsByDate: response[1].data,
-                    proposalStatuses: response[2].data,
-                })
+                setProposalsByTic(response[0].data)
+                setProposalsByDate(response[1].data)
+                setProposalStatuses(response[2].data)
             })
-            .catch(error => {
-                console.log('Error', error)
-            })
+            .catch(error => console.log('Error', error))
+    }, [])
+        
+    const updateWindowDimensions = () => {
+        setWidth(window.innerWidth)
+        setHeight(window.innerHeight)
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateWindowDimensions);
-    }
-    
-    render() {
-        const { width, height } = this.state
-        const { classes, theme } = this.props
-        const { proposalsByTic, proposalsByDate, proposalStatuses } = this.state
-        return (
-            <div className={ classes.page }>
+    return (
+        <div className={ classes.page }>
 
-                <div className={ classes.pageTitle }>
-                    <Heading>Dashboard Home</Heading>
-                </div>
-
-                <Card className={ classes.card } square={ true }>
-                    <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
-                        {
-                            (proposalsByTic) ? (
-                                <TicBarChart proposals={ proposalsByTic }
-                                    statuses={ proposalStatuses.map(({ description }) => description) }
-                                    colors={ Object.values(theme.palette.extended) }
-                                    width={ width } height={ height }
-                                />
-                            ) : (
-                                <CircularLoader />
-                            )
-                        }
-                    </CardContent>
-                </Card>
-
-                <Card className={ classnames(classes.card) } square={ true }>
-                    <CardContent className={ classnames(classes.chartContainer, classes.calendarContainer) }>
-                        <Subheading>
-                            {
-                                (proposalsByDate.length > 0) ? (
-                                        <span>
-                                            { proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value) }
-                                        </span>
-                                ) : null
-                            }
-                            &nbsp;Submitted Proposals Since 2016
-                        </Subheading>
-                        {
-                            (proposalsByDate) ? (
-                                    <Calendar proposals={ proposalsByDate }
-                                        fromDate="2016-01-01T12:00:00.000Z"
-                                        toDate="2018-12-31T12:00:00.000Z"
-                                        colors={ Object.values(theme.palette.extended).slice(1,6) }
-                                    />
-                            ) : (
-                                <CircularLoader />
-                            )
-                        }
-                    </CardContent>
-                </Card>
-
+            <div className={ classes.pageTitle }>
+                <Heading>Dashboard Home</Heading>
             </div>
-        )
-    }
+
+            <Card className={ classes.card } square={ true }>
+                <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
+                    {
+                        (proposalsByTic.length > 0) ? (
+                            <TicBarChart proposals={ proposalsByTic }
+                                statuses={ proposalStatuses.map(({ description }) => description) }
+                                colors={ Object.values(theme.palette.extended) }
+                                width={ width } height={ height }
+                            />
+                        ) : <CircularLoader />
+                    }
+                </CardContent>
+            </Card>
+
+            <Card className={ classnames(classes.card) } square={ true }>
+                <CardContent className={ classnames(classes.chartContainer, classes.calendarContainer) }>
+                    <Subheading>
+                        {
+                            (proposalsByDate.length > 0) ? (
+                                <span>
+                                    { proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value) }
+                                </span>
+                            ) : null
+                        }
+                        &nbsp;Submitted Proposals Since 2016
+                    </Subheading>
+                    {
+                        (proposalsByDate.length > 0) ? (
+                            <Calendar proposals={ proposalsByDate }
+                                fromDate="2016-01-01T12:00:00.000Z"
+                                toDate="2018-12-31T12:00:00.000Z"
+                                colors={ Object.values(theme.palette.extended).slice(1,6) }
+                            />
+                        ) : <CircularLoader />
+                    }
+                </CardContent>
+            </Card>
+
+        </div>
+    )
 }
 
 export default withStyles(styles, { withTheme: true })(HomePage)
