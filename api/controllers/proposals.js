@@ -25,18 +25,19 @@ exports.list = (req, res) => {
             name.description AS proposal_status,
             name2.description AS tic_name,
             name3.description AS org_name,
-            proposal.prop_submit
+            name4.description AS therapeutic_area
         FROM proposal
-        INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
+        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
+        INNER JOIN study ON proposal.proposal_id=study.proposal_id
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
         INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
+        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+        WHERE name."column"='protocol_status'
+          AND name2."column"='tic_ric_assign_v2'
+          AND name4."column"='theraputic_area'
+        ORDER BY proposal_id;`
     db.any(query)
         .then(data => {
-            data.forEach(proposal => {
-                proposal.submission_date = proposal.prop_submit.toDateString()
-            })
-            data.sort(compareIds)
             res.status(200).send(data)
         })
         .catch(error => {
@@ -246,7 +247,7 @@ exports.proposalsNetwork = (req, res) => {
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
         INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR)
         INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' AND name3."column"='org_name' AND name4."column"='theraputic_area' order by proposal_id;`
+        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' AND name3."column"='org_name' AND name4."column"='theraputic_area' ORDER BY proposal_id;`
     db.any(query)
         .then(data => {
             data.sort(compareIds)
