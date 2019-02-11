@@ -8,9 +8,6 @@ class ProposalsNetworkContainer extends Component {
     constructor(props) {
         super(props);
 
-        this.network = proposalsNetwork();
-        this.sankey = proposalsSankey();
-
         this.state = {
             windowWidth: 0,
             windowHeight: 0,
@@ -18,6 +15,14 @@ class ProposalsNetworkContainer extends Component {
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        this.sankeyHighlightProposals = this.sankeyHighlightProposals.bind(this);
+        this.networkHighlightProposals = this.networkHighlightProposals.bind(this);
+
+        this.network = proposalsNetwork()
+            .on("highlightProposals", this.networkHighlightProposals);
+
+        this.sankey = proposalsSankey()
+            .on("highlightProposals", this.sankeyHighlightProposals);
     }
 
     updateWindowDimensions() {
@@ -26,6 +31,14 @@ class ProposalsNetworkContainer extends Component {
             windowWidth: window.width,
             windowHeight: window.height
         });
+    }
+
+    networkHighlightProposals(proposals) {
+      this.sankey.highlightProposals(proposals);
+    }
+
+    sankeyHighlightProposals(proposals) {
+      this.network.highlightProposals(proposals);
     }
 
     async fetchData() {
