@@ -415,6 +415,8 @@ export default function() {
             highlightProposals();
 
             tip.hide();
+
+            dispatcher.call("highlightProposals", this, null);
           })
           .call(drag);
 
