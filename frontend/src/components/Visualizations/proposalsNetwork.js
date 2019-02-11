@@ -10,7 +10,7 @@ export default function() {
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Events
-      event = d3.dispatch("highlightNode"),
+      event = d3.dispatch("highlightProposals"),
 
       // Data
       data = [],
@@ -25,6 +25,7 @@ export default function() {
       radiusRange = [4, 32],
 
       // Scales
+      nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10),
       radiusScale = d3.scaleSqrt(),
 
       // Start with empty selections
@@ -72,7 +73,7 @@ export default function() {
           }),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("highlightNode");
+      dispatcher = d3.dispatch("highlightProposals");
 
   // Create a closure containing the above variables
   function proposalsNetwork(selection) {
@@ -327,8 +328,7 @@ export default function() {
         .range(radiusRange);
 
     // Color scale
-    var nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10)
-        .domain(network.nodeTypes);
+    nodeColorScale.domain(network.nodeTypes);
 
     // Set force directed network
     force
@@ -384,7 +384,7 @@ export default function() {
 
             dragNode = null;
 
-            highlightNode();
+            highlightProposals();
 
             tip.hide();
           });
@@ -401,14 +401,18 @@ export default function() {
           .on("mouseover", function(d) {
             if (dragNode) return;
 
-            highlightNode(d);
+            var ids = d.proposals.map(function(d) { return d.id; });
+
+            highlightProposals(ids);
 
             tip.show(d, this);
+
+            dispatcher.call("highlightProposals", this, ids);
           })
           .on("mouseout", function(d) {
             if (dragNode) return;
 
-            highlightNode();
+            highlightProposals();
 
             tip.hide();
           })
@@ -423,86 +427,7 @@ export default function() {
       // Node exit
       node.exit().remove();
 
-      highlightNode();
-
-      function highlightNode(d) {
-        if (d) {
-          // Change link appearance
-          svg.select(".network").selectAll(".link")
-              .style("stroke", function(e) {
-                return nodeLinkConnected(d, e) ? "#666" : "#eee";
-              })
-              .filter(function(e) {
-                return nodeLinkConnected(d, e);
-              }).raise();
-
-          // Change node appearance
-          svg.select(".network").selectAll(".node").select("circle")
-              .style("fill", function(e) {
-                return nodesConnected(d, e) ? nodeFill(e) : "white";
-              })
-              .style("stroke", function(e) {
-                return nodesConnected(d, e) ? "black" : "#eee";
-              })
-              .filter(function(e) {
-                return nodesConnected(d, e);
-              }).raise();
-
-          // Change label appearance
-          svg.select(".labels").selectAll(".foreground")
-              .style("fill", function(e) {
-                return nodesConnected(d, e) ? "black" : "#ddd";
-              })
-              .filter(function(e) {
-                return nodesConnected(d, e);
-              }).raise();
-
-          // Sort links
-          svg.select(".network").selectAll(".link")
-              .filter(function(e) {
-                return nodeLinkConnected(d, e);
-              }).raise();
-
-          // Sort nodes
-          svg.select(".network").selectAll(".node")
-              .filter(function(e) {
-                return nodesConnected(d, e);
-              }).raise();
-
-          function nodesConnected(n1, n2) {
-            for (var i = 0; i < n1.proposals.length; i++) {
-              if (n2.proposals.indexOf(n1.proposals[i]) !== -1) return true;
-            }
-
-            return false;
-          }
-
-          function nodeLinkConnected(n, l) {
-            if (n.proposals.indexOf(l.source) !== -1) return true;
-            if (n.proposals.indexOf(l.target) !== -1) return true;
-
-            return false;
-          }
-        }
-        else {
-          // Reset
-          svg.select(".network").selectAll(".link")
-              .style("stroke", "#666");
-
-          svg.select(".network").selectAll(".node").select("circle")
-              .style("fill", nodeFill)
-              .style("stroke", "black");
-
-          svg.select(".labels").selectAll(".foreground")
-              .style("fill", "black");
-
-          svg.select(".network").selectAll(".node").raise();
-        }
-      }
-
-      function nodeFill(d) {
-        return nodeColorScale(d.type);
-      }
+      highlightProposals();
     }
 
     function drawLinks() {
@@ -597,8 +522,84 @@ export default function() {
     }
   }
 
+  function nodeFill(d) {
+    return nodeColorScale(d.type);
+  }
+
   function nodeRadius(d) {
     return d.type === "proposal" ? radiusScale(1) : radiusScale(d.links.length);
+  }
+
+  function highlightProposals(proposals) {
+    if (proposals && proposals.length) {
+      // Change link appearance
+      svg.select(".network").selectAll(".link")
+          .style("stroke", function(d) {
+            return linkConnected(d) ? "#666" : "#eee";
+          })
+          .filter(function(d) {
+            return linkConnected(d);
+          }).raise();
+
+      // Change node appearance
+      svg.select(".network").selectAll(".node").select("circle")
+          .style("fill", function(d) {
+            return nodeConnected(d) ? nodeFill(d) : "white";
+          })
+          .style("stroke", function(d) {
+            return nodeConnected(d) ? "black" : "#eee";
+          })
+          .filter(function(d) {
+            return nodeConnected(d);
+          }).raise();
+
+      // Change label appearance
+      svg.select(".labels").selectAll(".foreground")
+          .style("fill", function(d) {
+            return nodeConnected(d) ? "black" : "#ddd";
+          })
+          .filter(function(d) {
+            return nodeConnected(d);
+          }).raise();
+
+      // Sort links
+      svg.select(".network").selectAll(".link")
+          .filter(function(d) {
+            return linkConnected(d);
+          }).raise();
+
+      // Sort nodes
+      svg.select(".network").selectAll(".node")
+          .filter(function(d) {
+            return nodeConnected(d);
+          }).raise();
+
+      function nodeConnected(d) {
+        for (var i = 0; i < d.proposals.length; i++) {
+          if (proposals.indexOf(d.proposals[i].id) !== -1) return true;
+        }
+
+        return false;
+      }
+
+      function linkConnected(d) {
+        return nodeConnected(d.source) && nodeConnected(d.target);
+      }
+    }
+    else {
+      // Reset
+      svg.select(".network").selectAll(".link")
+          .style("stroke", "#666");
+
+      svg.select(".network").selectAll(".node").select("circle")
+          .style("fill", nodeFill)
+          .style("stroke", "black");
+
+      svg.select(".labels").selectAll(".foreground")
+          .style("fill", "black");
+
+      svg.select(".network").selectAll(".node").raise();
+    }
   }
 
   // Getters/setters
@@ -612,6 +613,11 @@ export default function() {
   proposalsNetwork.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return proposalsNetwork;
+  };
+
+  proposalsNetwork.highlightProposals = function(_) {
+    highlightProposals(_);
     return proposalsNetwork;
   };
 

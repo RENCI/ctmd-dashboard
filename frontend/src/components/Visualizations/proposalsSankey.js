@@ -17,6 +17,9 @@ export default function() {
       data = [],
       network = {},
 
+      // Scales
+      linkOpacityScale = d3.scaleLinear(),
+
       // Start with empty selections
       svg = d3.select(),
 
@@ -298,7 +301,7 @@ export default function() {
     var nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10)
         .domain(network.nodeTypes);
 
-    var linkOpacityScale = d3.scaleLinear()
+    linkOpacityScale
           .domain([1, d3.max(links, function(d) { return d.value; })])
           .range([0.4, 1]);
 
@@ -325,14 +328,20 @@ export default function() {
           .attr("height", function(d) { return d.y1 - d.y0; })
           .style("fill", nodeFill)
           .on("mouseover", function(d) {
-            highlightProposals(d);
+            var ids = d.proposals.map(function(d) { return d.id; });
+
+            highlightProposals(ids);
 
             tip.show(d, this);
+
+            dispatcher.call("highlightProposals", this, ids);
           })
           .on("mouseout", function(d) {
             highlightProposals();
 
             tip.hide();
+
+            dispatcher.call("highlightProposals", this, null);
           });
 
       // Node update
@@ -366,14 +375,20 @@ export default function() {
           .style("stroke-width", function(d) { return d.width / 2; })
           .attr("d", d3Sankey.sankeyLinkHorizontal())
           .on("mouseover", function(d) {
-            highlightProposals(d);
+            var ids = d.proposals.map(function(d) { return d.id; });
+
+            highlightProposals(ids);
 
             tip.show(d, this);
+
+            dispatcher.call("highlightProposals", this, ids);
           })
           .on("mouseout", function(d) {
             highlightProposals();
 
             tip.hide();
+
+            dispatcher.call("highlightProposals", this, null);
           })
 
       // Link update
@@ -428,65 +443,63 @@ export default function() {
       // Label exit
       label.exit().remove();
     }
+  }
 
-    function linkOpacity(d) {
-      return linkOpacityScale(d.value);
-    }
+  function linkOpacity(d) {
+    return linkOpacityScale(d.value);
+  }
 
-    function labelOpacity(d) {
-      return d.proposals.length >= 5 ? 1 : 0;
-    }
+  function labelOpacity(d) {
+    return d.proposals.length >= 5 ? 1 : 0;
+  }
 
-    function highlightProposals(item) {
-      let proposals = item ? item.proposals : null;
+  function highlightProposals(proposals) {
+    if (proposals && proposals.length > 0) {
+      // Change link appearance
+      svg.select(".links").selectAll(".link").transition()
+          .style("stroke-opacity", function(d) {
+            return linkConnected(d) ? 1 : 0.1;
+          });
 
-      if (proposals) {
-        // Change link appearance
-        svg.select(".links").selectAll(".link").transition()
-            .style("stroke-opacity", function(d) {
-              return linkConnected(d) ? 1 : 0.1;
-            });
+      svg.select(".links").selectAll(".link")
+          .filter(function(d) {
+            return linkConnected(d);
+          }).raise();
 
-        svg.select(".links").selectAll(".link")
-            .filter(function(d) {
-              return linkConnected(d);
-            }).raise();
+      // Change node appearance
+      svg.select(".nodes").selectAll(".node").transition()
+          .style("fill-opacity", function(d) {
+            return nodeConnected(d) ? 1 : 0;
+          });
 
-        // Change node appearance
-        svg.select(".nodes").selectAll(".node").transition()
-            .style("fill-opacity", function(d) {
-              return nodeConnected(d) ? 1 : 0;
-            });
+      // Change label appearance
+      svg.select(".labels").selectAll(".nodeLabel").transition()
+          .style("opacity", function(d) {
+            return nodeConnected(d) ? 1.0 : 0.0;
+          });
 
-        // Change label appearance
-        svg.select(".labels").selectAll(".nodeLabel").transition()
-            .style("opacity", function(d) {
-              return nodeConnected(d) ? 1.0 : 0.0;
-            });
-
-        function nodeConnected(d) {
-          for (var i = 0; i < proposals.length; i++) {
-            if (d.proposals.indexOf(proposals[i]) !== -1) return true;
-          }
-
-          return false;
+      function nodeConnected(d) {
+        for (var i = 0; i < d.proposals.length; i++) {
+          if (proposals.indexOf(d.proposals[i].id) !== -1) return true;
         }
 
-        function linkConnected(d) {
-          return nodeConnected(d.source) && nodeConnected(d);
-        }
+        return false;
       }
-      else {
-        // Reset
-        svg.select(".links").selectAll(".link").transition()
-            .style("stroke-opacity", linkOpacity);
 
-        svg.select(".nodes").selectAll(".node").transition()
-            .style("fill-opacity", 1);
-
-        svg.select(".labels").selectAll(".nodeLabel").transition()
-            .style("opacity", labelOpacity);
+      function linkConnected(d) {
+        return nodeConnected(d.source) && nodeConnected(d);
       }
+    }
+    else {
+      // Reset
+      svg.select(".links").selectAll(".link").transition()
+          .style("stroke-opacity", linkOpacity);
+
+      svg.select(".nodes").selectAll(".node").transition()
+          .style("fill-opacity", 1);
+
+      svg.select(".labels").selectAll(".nodeLabel").transition()
+          .style("opacity", labelOpacity);
     }
   }
 
@@ -501,6 +514,11 @@ export default function() {
   proposalsSankey.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return proposalsSankey;
+  };
+
+  proposalsSankey.highlightProposals = function(_) {
+    highlightProposals(_);
     return proposalsSankey;
   };
 
