@@ -1,8 +1,29 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
+import classnames from 'classnames'
+import { withStyles } from '@material-ui/core/styles'
+import {
+    FormControl, FormHelperText,
+    InputLabel, OutlinedInput,
+    Select, MenuItem
+} from '@material-ui/core';
 import * as d3 from 'd3';
 import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
+
+const styles = (theme) => ({
+    form: {
+        ...theme.mixins.debug,
+    },
+    formControl: {
+        margin: `${ 2 * theme.spacing.unit }px 0`,
+    },
+    formControlLabel: {
+        // flex: 1,
+    },
+    select: {}
+});
 
 class ProposalsNetworkContainer extends Component {
     constructor(props) {
@@ -11,10 +32,14 @@ class ProposalsNetworkContainer extends Component {
         this.state = {
             windowWidth: 0,
             windowHeight: 0,
-            proposals: null
+            proposals: null,
+            statuses: [],
+            status: "none",
+            labelWidth: 0
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        this.handleStatusSelect = this.handleStatusSelect.bind(this);
         this.sankeyHighlightProposals = this.sankeyHighlightProposals.bind(this);
         this.networkHighlightProposals = this.networkHighlightProposals.bind(this);
 
@@ -33,6 +58,14 @@ class ProposalsNetworkContainer extends Component {
         });
     }
 
+    handleStatusSelect(event) {
+      let status = event.target.value;
+
+      this.setState({
+          status: status
+      });
+    }
+
     networkHighlightProposals(proposals) {
       this.sankey.highlightProposals(proposals);
     }
@@ -46,6 +79,11 @@ class ProposalsNetworkContainer extends Component {
             .then(response => {
                 this.setState({
                     proposals: response.data,
+                    statuses: response.data.reduce((p, c) => {
+                        let status = c.proposal_status;
+                        if (p.indexOf(status) === -1) p.push(status);
+                        return p;
+                    }, [])
                 });
             })
             .catch(error => {
@@ -58,6 +96,10 @@ class ProposalsNetworkContainer extends Component {
     componentDidMount() {
         this.updateWindowDimensions();
         window.addEventListener('resize', this.updateWindowDimensions);
+
+        this.setState({
+            labelWidth: ReactDOM.findDOMNode(this.InputLabelRef).offsetWidth
+        });
     }
 
     shouldComponentUpdate(props, state) {
@@ -65,7 +107,8 @@ class ProposalsNetworkContainer extends Component {
             this.drawVisualization(props, state);
         }
 
-        return false;
+        //return false;
+        return true;
     }
 
     componentWillUnmount() {
@@ -94,19 +137,57 @@ class ProposalsNetworkContainer extends Component {
         d3.select(this.sankeyDiv)
             .datum(state.proposals)
             .call(this.sankey);
+
+        let proposals = state.proposals.filter(proposal =>
+          proposal.proposal_status === state.status
+        ).map(proposal => proposal.proposal_id);
+
+        this.network.highlightProposals(proposals);
+        this.sankey.highlightProposals(proposals);
     }
 
     render() {
+        const { classes } = this.props;
+
         let outerStyle = { display: 'flex', flexWrap: 'wrap', width: '100%'};
         let innerStyle = { width: '800px', flex: '1 1 auto' };
 
+        let statusItems = this.state.statuses.map((status, i) =>
+            <MenuItem key={i} value={status}>{status}</MenuItem>
+        );
+
         return (
-            <div style={outerStyle}>
-                <div style={innerStyle} ref={div => this.networkDiv = div}></div>
-                <div style={innerStyle} ref={div => this.sankeyDiv = div}></div>
+            <div>
+                <FormControl variant="outlined" fullWidth className={ classes.formControl }>
+                    <InputLabel htmlFor="status" ref={ ref => { this.InputLabelRef = ref } }>
+                        Status
+                    </InputLabel>
+                    <Select
+                        className={ classes.select }
+                        value={this.state.status}
+                        onChange={this.handleStatusSelect}
+                        input={
+                            <OutlinedInput
+                                labelWidth={ this.state.labelWidth }
+                                name="status"
+                                id="status"
+                            />
+                        }
+                    >
+                        {statusItems}
+                    </Select>
+                    <FormHelperText>
+                        Specify proposal status to highlight.
+                    </FormHelperText>
+                </FormControl>
+
+                <div style={outerStyle}>
+                    <div style={innerStyle} ref={div => this.networkDiv = div}></div>
+                    <div style={innerStyle} ref={div => this.sankeyDiv = div}></div>
+                </div>
             </div>
         );
     }
 }
 
-export default ProposalsNetworkContainer;
+export default withStyles(styles)(ProposalsNetworkContainer)

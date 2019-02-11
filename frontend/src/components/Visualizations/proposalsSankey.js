@@ -364,7 +364,9 @@ export default function() {
     function drawLinks() {
       // Bind data for links
       var link = svg.select(".links").selectAll(".link")
-          .data(links);
+          .data(links, function(d) {
+            return d.source.id + "_" + d.target.id;
+          });
 
       // Link enter
       link.enter().append("path")
