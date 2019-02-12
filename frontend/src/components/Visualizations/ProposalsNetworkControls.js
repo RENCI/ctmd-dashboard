@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles';
 import {
     FormControl, FormHelperText,
     InputLabel, OutlinedInput,
@@ -35,59 +35,53 @@ function getStatusItems(proposals) {
     );
 }
 
-class ProposalsNetworkControls extends Component {
-    state = {
-        status: defaultStatus,
-        labelWidth: 0
-    };
+function ProposalsNetworkControls(props) {
+    const [status, setStatus] = useState(defaultStatus);
+    const [labelWidth, setLabelWidth] = useState(0);
 
-    handleStatusSelect = event => {
+    const inputLabelRef = useRef(null);
+
+    const { classes, proposals, onChange } = props;
+
+    useEffect(() => {
+        setLabelWidth(ReactDOM.findDOMNode(inputLabelRef.current).offsetWidth);
+    });
+
+    function handleStatusSelect(event) {
         let status = event.target.value;
 
-        this.setState({
-            status: status
-        });
+        setStatus(status);
 
-        this.props.onChange("status", event);
+        onChange("status", event);
     };
 
-    componentDidMount() {
-        this.setState({
-            labelWidth: ReactDOM.findDOMNode(this.InputLabelRef).offsetWidth
-        });
-    }
+    // Memoize this?
+    let statusItems = getStatusItems(proposals);
 
-    render() {
-        const { classes, proposals } = this.props;
-
-        // Memoize this?
-        let statusItems = getStatusItems(proposals);
-
-        return (
-            <FormControl variant="outlined" fullWidth className={ classes.formControl }>
-                <InputLabel htmlFor="status" ref={ ref => { this.InputLabelRef = ref } }>
-                    Status
-                </InputLabel>
-                <Select
-                    className={ classes.select }
-                    value={ this.state.status }
-                    onChange={ this.handleStatusSelect }
-                    input={
-                        <OutlinedInput
-                            labelWidth={ this.state.labelWidth }
-                            name="status"
-                            id="status"
-                        />
-                    }
-                >
-                    {statusItems}
-                </Select>
-                <FormHelperText>
-                    Specify proposal status to highlight.
-                </FormHelperText>
-            </FormControl>
-        );
-    }
+    return (
+        <FormControl variant="outlined" fullWidth className={ classes.formControl }>
+            <InputLabel htmlFor="status" ref={ inputLabelRef }>
+                Status
+            </InputLabel>
+            <Select
+                className={ classes.select }
+                value={ status }
+                onChange={ handleStatusSelect }
+                input={
+                    <OutlinedInput
+                        labelWidth={ labelWidth }
+                        name="status"
+                        id="status"
+                    />
+                }
+            >
+                {statusItems}
+            </Select>
+            <FormHelperText>
+                Specify proposal status to highlight.
+            </FormHelperText>
+        </FormControl>
+    );
 }
 
 ProposalsNetworkControls.propTypes = {
