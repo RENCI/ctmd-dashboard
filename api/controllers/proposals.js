@@ -22,6 +22,7 @@ exports.list = (req, res) => {
     query = `SELECT DISTINCT
             CAST(proposal.proposal_id AS INT),
             proposal.short_name,
+            proposal.prop_submit,
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
             name.description AS proposal_status,
             name2.description AS tic_name,
@@ -39,6 +40,9 @@ exports.list = (req, res) => {
         ORDER BY proposal_id;`
     db.any(query)
         .then(data => {
+            data.forEach(proposal => {
+                proposal.submission_date = proposal.prop_submit.toDateString()
+            })
             res.status(200).send(data)
         })
         .catch(error => {
