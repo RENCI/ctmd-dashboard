@@ -6,11 +6,8 @@ export default function() {
   var margin = { top: 5, left: 5, bottom: 5, right: 5 },
       width = 800,
       height = 800,
-      innerWidth = function() { return width - margin.left - margin.right; },
-      innerHeight = function() { return height - margin.top - margin.bottom; },
-
-      // Events
-      event = d3.dispatch("highlightProposals"),
+      //innerWidth = function() { return width - margin.left - margin.right; },
+      //innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
       data = [],

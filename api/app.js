@@ -27,8 +27,6 @@ app.use(routeLogger)
 
 // Proposals
 app.use('/proposals', require('./routes/proposals'))
-// Proposal Stages
-app.use('/stages', require('./routes/stages'))
 // Proposal Statuses
 app.use('/statuses', require('./routes/statuses'))
 // Services

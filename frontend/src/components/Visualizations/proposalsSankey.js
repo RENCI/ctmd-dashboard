@@ -10,9 +10,6 @@ export default function() {
       innerWidth = function() { return width - margin.left - margin.right; },
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
-      // Events
-      event = d3.dispatch("highlightProposals"),
-
       // Data
       data = [],
       network = {},
