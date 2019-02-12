@@ -9,15 +9,10 @@ import {
 } from '@material-ui/core';
 
 const styles = (theme) => ({
-    form: {
-        ...theme.mixins.debug,
-    },
     formControl: {
         margin: `${ 2 * theme.spacing.unit }px 0`,
     },
-    formControlLabel: {
-        // flex: 1,
-    },
+    formControlLabel: {},
     select: {}
 });
 
