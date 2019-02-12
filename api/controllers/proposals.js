@@ -1,5 +1,5 @@
 const db = require('../config/database')
-// const { compareIds } = require('../utils/helpers') 
+// const { compareIds } = require('../utils/helpers')
 
 // Controllers
 //////////////
@@ -22,14 +22,15 @@ exports.list = (req, res) => {
     query = `SELECT DISTINCT
             CAST(proposal.proposal_id AS INT),
             proposal.short_name,
+            proposal.prop_submit,
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
             name.description AS proposal_status,
             name2.description AS tic_name,
             name3.description AS org_name,
             name4.description AS therapeutic_area
         FROM proposal
-        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
         INNER JOIN study ON proposal.proposal_id=study.proposal_id
+        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
         INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
         INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
@@ -39,6 +40,9 @@ exports.list = (req, res) => {
         ORDER BY proposal_id;`
     db.any(query)
         .then(data => {
+            data.forEach(proposal => {
+                proposal.submission_date = proposal.prop_submit.toDateString()
+            })
             res.status(200).send(data)
         })
         .catch(error => {
@@ -174,7 +178,7 @@ exports.approvedServices = (req, res) => {
                 proposal.proposal_id = parseInt(proposal.proposal_id)
                 const proposalIndex = newData.findIndex(q => q.proposal_id === proposal.proposal_id)
                 if (proposalIndex >= 0) {
-                    newData[proposalIndex].services_approved.push(proposal.service_approved) 
+                    newData[proposalIndex].services_approved.push(proposal.service_approved)
                 } else {
                     newData.push({
                         proposal_id: proposal.proposal_id,
@@ -206,7 +210,7 @@ exports.submittedServices = (req, res) => {
                 prop.proposal_id = parseInt(prop.proposal_id)
                 const propIndex = newData.findIndex(q => q.proposal_id === prop.proposal_id)
                 if (propIndex >= 0) {
-                    newData[propIndex].new_service_selection.push(prop.new_service_selection) 
+                    newData[propIndex].new_service_selection.push(prop.new_service_selection)
                 } else {
                     newData.push({
                         proposal_id: prop.proposal_id,
