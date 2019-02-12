@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -55,8 +55,7 @@ function ProposalsNetworkControls(props) {
         onChange("status", event);
     };
 
-    // Memoize this?
-    let statusItems = getStatusItems(proposals);
+    const statusItems = useMemo(() => getStatusItems(proposals), [proposals]);
 
     return (
         <FormControl variant="outlined" fullWidth className={ classes.formControl }>
