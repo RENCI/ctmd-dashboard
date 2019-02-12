@@ -45,7 +45,7 @@ function ProposalsNetworkControls(props) {
 
     useEffect(() => {
         setLabelWidth(ReactDOM.findDOMNode(inputLabelRef.current).offsetWidth);
-    });
+    }, [inputLabelRef]);
 
     function handleStatusSelect(event) {
         let status = event.target.value;
