@@ -83,8 +83,8 @@ class ProposalsNetworkVisualizations extends Component {
                 .call(this.sankey);
         }
 
-        this.network.highlightProposals(props.selectedProposals);
-        this.sankey.highlightProposals(props.selectedProposals);
+        this.network.selectProposals(props.selectedProposals);
+        this.sankey.selectProposals(props.selectedProposals);
     }
 
     render() {

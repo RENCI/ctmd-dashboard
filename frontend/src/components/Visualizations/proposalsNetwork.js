@@ -12,6 +12,7 @@ export default function() {
       // Data
       data = [],
       network = {},
+      selectedProposals = [],
 
       // Layout
       force = d3.forceSimulation()
@@ -400,6 +401,10 @@ export default function() {
 
             var ids = d.proposals.map(function(d) { return d.id; });
 
+            if (selectedProposals.length > 0 && !ids.reduce(function(p, c) {
+              return p || selectedProposals.indexOf(c) !== -1;
+            }, false)) return;
+
             highlightProposals(ids);
 
             tip.show(d, this);
@@ -530,7 +535,18 @@ export default function() {
   }
 
   function highlightProposals(proposals) {
-    if (proposals && proposals.length) {
+    if (!proposals) proposals = [];
+
+    if (selectedProposals.length > 0 && proposals.length > 0) {
+      proposals = selectedProposals.filter(function(proposal) {
+        return proposals.indexOf(proposal) !== -1;
+      });
+    }
+    else {
+      proposals = selectedProposals.concat(proposals);
+    }
+
+    if (proposals.length > 0) {
       // Change link appearance
       svg.select(".network").selectAll(".link")
           .style("stroke", function(d) {
@@ -617,6 +633,12 @@ export default function() {
 
   proposalsNetwork.highlightProposals = function(_) {
     highlightProposals(_);
+    return proposalsNetwork;
+  };
+
+  proposalsNetwork.selectProposals = function(_) {
+    selectedProposals = _.length ? _ : [];
+    highlightProposals();
     return proposalsNetwork;
   };
 
