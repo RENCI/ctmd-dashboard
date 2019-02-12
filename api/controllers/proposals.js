@@ -29,8 +29,8 @@ exports.list = (req, res) => {
             name3.description AS org_name,
             name4.description AS therapeutic_area
         FROM proposal
-        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
         INNER JOIN study ON proposal.proposal_id=study.proposal_id
+        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
         INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
         INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
         INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
