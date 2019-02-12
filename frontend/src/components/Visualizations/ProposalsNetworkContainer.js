@@ -1,112 +1,50 @@
-import React, { Component } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
-import * as d3 from 'd3';
-import proposalsNetwork from './proposalsNetwork';
-import proposalsSankey from './proposalsSankey';
+import Controls from './ProposalsNetworkControls';
+import Visualizations from './ProposalsNetworkVisualizations';
 
-class ProposalsNetworkContainer extends Component {
-    constructor(props) {
-        super(props);
+function  ProposalsNetworkContainer(props) {
+    const [proposals, setProposals] = useState([]);
+    const [selectedProposals, setSelectedProposals] = useState([]);
 
-        this.state = {
-            windowWidth: 0,
-            windowHeight: 0,
-            proposals: null
-        };
-
-        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-        this.sankeyHighlightProposals = this.sankeyHighlightProposals.bind(this);
-        this.networkHighlightProposals = this.networkHighlightProposals.bind(this);
-
-        this.network = proposalsNetwork()
-            .on("highlightProposals", this.networkHighlightProposals);
-
-        this.sankey = proposalsSankey()
-            .on("highlightProposals", this.sankeyHighlightProposals);
-    }
-
-    updateWindowDimensions() {
-        // Should cause a re-render if the window size has changed
-        this.setState({
-            windowWidth: window.width,
-            windowHeight: window.height
-        });
-    }
-
-    networkHighlightProposals(proposals) {
-      this.sankey.highlightProposals(proposals);
-    }
-
-    sankeyHighlightProposals(proposals) {
-      this.network.highlightProposals(proposals);
-    }
-
-    async fetchData() {
-        await axios.get(this.props.apiUrl)
+    async function fetchData() {
+        await axios.get(props.apiUrl)
             .then(response => {
-                this.setState({
-                    proposals: response.data,
-                });
+                setProposals(response.data);
             })
             .catch(error => {
                 console.error('Error:', error)
             });
     }
 
-    componentWillMount = this.fetchData;
+    useEffect(() => {
+      fetchData();
+    }, []);
 
-    componentDidMount() {
-        this.updateWindowDimensions();
-        window.addEventListener('resize', this.updateWindowDimensions);
-    }
+    function handleControlChange(name, event) {
+        switch (name) {
+            case 'status':
+                let status = event.target.value;
 
-    shouldComponentUpdate(props, state) {
-        if (state.proposals) {
-            this.drawVisualization(props, state);
+                setSelectedProposals(proposals.filter(proposal =>
+                    proposal.proposal_status === status
+                ).map(proposal => proposal.proposal_id));
+
+                break;
+            default:
         }
-
-        return false;
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateWindowDimensions);
-    }
-
-    drawVisualization(props, state) {
-        const minSankeyHeight = 1000;
-        const networkWidth = this.networkDiv.clientWidth;
-        const networkHeight = networkWidth;
-        const sankeyWidth = this.sankeyDiv.clientWidth;
-        const sankeyHeight = Math.max(minSankeyHeight, sankeyWidth);
-
-        this.network
-            .width(networkWidth)
-            .height(networkHeight);
-
-        this.sankey
-            .width(sankeyWidth)
-            .height(sankeyHeight);
-
-        d3.select(this.networkDiv)
-            .datum(state.proposals)
-            .call(this.network);
-
-        d3.select(this.sankeyDiv)
-            .datum(state.proposals)
-            .call(this.sankey);
-    }
-
-    render() {
-        let outerStyle = { display: 'flex', flexWrap: 'wrap', width: '100%'};
-        let innerStyle = { width: '800px', flex: '1 1 auto' };
-
-        return (
-            <div style={outerStyle}>
-                <div style={innerStyle} ref={div => this.networkDiv = div}></div>
-                <div style={innerStyle} ref={div => this.sankeyDiv = div}></div>
-            </div>
-        );
-    }
+    return (
+        <Fragment>
+            <Controls
+                proposals={ proposals }
+                onChange={ handleControlChange } />
+            <Visualizations
+                proposals={ proposals }
+                selectedProposals={ selectedProposals } />
+        </Fragment>
+    );
 }
 
-export default ProposalsNetworkContainer;
+export default ProposalsNetworkContainer

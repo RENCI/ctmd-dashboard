@@ -23,7 +23,6 @@ exports.list = (req, res) => {
             CAST(proposal.proposal_id AS INT),
             proposal.short_name,
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-            proposal.prop_submit,
             name.description AS proposal_status,
             name2.description AS tic_name,
             name3.description AS org_name,
@@ -39,11 +38,8 @@ exports.list = (req, res) => {
           AND name4."column"='theraputic_area'
         ORDER BY proposal_id;`
     db.any(query)
-        .then(proposals => {
-            proposals.forEach(proposal => {
-                proposal.submission_date = proposal.prop_submit.toDateString()
-            })
-            res.status(200).send(proposals)
+        .then(data => {
+            res.status(200).send(data)
         })
         .catch(error => {
             console.log('ERROR:', error)
