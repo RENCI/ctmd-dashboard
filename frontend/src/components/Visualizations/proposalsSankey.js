@@ -31,7 +31,7 @@ export default function() {
           .style("background", "rgba(0, 0, 0, 0.8)")
           .style("color", "#fff")
           .style("border-radius", "2px")
-          .style("pointer-events", "none")
+          .style("pointer-events", "noe")
           .html(function(d) {
             if (d.source) {
               // Link
@@ -61,6 +61,10 @@ export default function() {
 
                 case "area":
                   return "Therapeutic area: " + d.name + "<br><br>" +
+                         "Proposals: " + d.proposals.length;
+
+                case "status":
+                  return "Status: " + d.name + "<br><br>" +
                          "Proposals: " + d.proposals.length;
 
                 default:
@@ -155,7 +159,8 @@ export default function() {
         proposals = d3.map(),
         orgs = d3.map(),
         tics = d3.map(),
-        areas = d3.map();
+        areas = d3.map(),
+        statuses = d3.map();
 
     data.forEach(function(d) {
       addNode(d, pis, d.pi_name, "pi");
@@ -163,6 +168,7 @@ export default function() {
       addNode(d, orgs, d.org_name, "org");
       addNode(d, tics, d.tic_name, "tic");
       addNode(d, areas, d.therapeutic_area, "area");
+      addNode(d, statuses, d.proposal_status, "status");
     });
 
     // Now link
@@ -173,10 +179,11 @@ export default function() {
           proposal = proposals.get(d.proposal_id),
           org = orgs.get(d.org_name),
           tic = tics.get(d.tic_name),
-          area = areas.get(d.therapeutic_area);
+          area = areas.get(d.therapeutic_area),
+          status = statuses.get(d.proposal_status);
 
       var order = [
-        tic, area, org, pi, proposal
+        tic, area, org, status, pi, proposal
       ];
 
       d3.pairs(order).forEach(function(d) {
@@ -191,7 +198,8 @@ export default function() {
         .concat(proposals.values())
         .concat(orgs.values())
         .concat(tics.values())
-        .concat(areas.values());
+        .concat(areas.values())
+        .concat(statuses.values());
 
     var nodeTypes = nodes.reduce(function(p, c) {
       if (p.indexOf(c.type) === -1) p.push(c.type);
@@ -243,6 +251,10 @@ export default function() {
             break;
 
           case "area":
+            node.name = id;
+            break;
+
+          case "status":
             node.name = id;
             break;
 

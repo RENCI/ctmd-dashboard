@@ -1,5 +1,5 @@
 const db = require('../config/database')
-// const { compareIds } = require('../utils/helpers') 
+// const { compareIds } = require('../utils/helpers')
 
 // Controllers
 //////////////
@@ -178,7 +178,7 @@ exports.approvedServices = (req, res) => {
                 proposal.proposal_id = parseInt(proposal.proposal_id)
                 const proposalIndex = newData.findIndex(q => q.proposal_id === proposal.proposal_id)
                 if (proposalIndex >= 0) {
-                    newData[proposalIndex].services_approved.push(proposal.service_approved) 
+                    newData[proposalIndex].services_approved.push(proposal.service_approved)
                 } else {
                     newData.push({
                         proposal_id: proposal.proposal_id,
@@ -210,7 +210,7 @@ exports.submittedServices = (req, res) => {
                 prop.proposal_id = parseInt(prop.proposal_id)
                 const propIndex = newData.findIndex(q => q.proposal_id === prop.proposal_id)
                 if (propIndex >= 0) {
-                    newData[propIndex].new_service_selection.push(prop.new_service_selection) 
+                    newData[propIndex].new_service_selection.push(prop.new_service_selection)
                 } else {
                     newData.push({
                         proposal_id: prop.proposal_id,
