@@ -64,7 +64,7 @@ const proposalsMatrix = (props) => {
                                 <TableCell padding="dense">{ proposal.proposal_id }</TableCell>
                                 {
                                     services.map(service => {
-                                        return (proposal.new_service_selection.indexOf(service.id) >= 0)
+                                        return (proposal.new_service_selection.indexOf(service.description) >= 0)
                                         ? <Tooltip title={
                                                 <div style={{ textAlign: 'center' }}>
                                                     <div><strong>Proposal { proposal.proposal_id }</strong></div>
