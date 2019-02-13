@@ -97,6 +97,12 @@ $ docker-compose up --build -d
 Or only start a couple services, specify them explicitly:
 
 ```bash
+$ docker-compose up api
+```
+
+The above command starts the `api` and its dependency, the `db`. You can also just build specific images.
+
+```bash
 $ docker-compose up --build api db
 ```
 
@@ -151,9 +157,11 @@ To tinker and test various things, one often needs to log into an individual con
 docker exec -it postgres bash
 ```
 
-Then proceed normally, executing something like `psql duketic` to select the desired database---`duketic` in this case. Then execute queries to your heart's content, `select * from proposal where false` is a fun one.
+Then proceed normally, executing something like `psql duketic` to select the desired database---`duketic` in this case. Then execute queries to your heart's content, `select * from proposal where false;` is a fun one.
 
 ## Tear it Down
+
+If you started without the detach flag, `-d`, you can stop the containers running with `CTRL+C`, and Docker will clean up after itself. If you ran things in detched mode (_with_ the `-d` flag), then bring everything down with the following command. 
 
 ```bash
 $ docker-compose down
