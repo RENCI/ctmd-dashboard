@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import { Card, CardContent } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 
 import Heading from '../components/Typography/Heading'
 import Subheading from '../components/Typography/Subheading'
 import { CircularLoader } from '../components/Progress/Progress'
 import Calendar from '../components/Charts/ProposalsCalendar'
 import TicBarChart from '../components/Charts/ProposalsByTic'
+import StatusBarChart from '../components/Charts/ProposalsByStatus'
 
 const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
 const apiUrl = {
     proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByDate: apiRoot + 'proposals/by-date',
-    proposalStatuses: apiRoot + 'statuses',
+    proposalsByStatus: apiRoot + 'proposals/by-stage',
+    statuses: apiRoot + 'statuses',
+    tics: apiRoot + 'tics',
 }
 
 const styles = (theme) => ({
@@ -30,52 +34,59 @@ const styles = (theme) => ({
         width: 'calc(100vw - 48px)',
         [theme.breakpoints.up('sm')]: {
             width: 'calc(100vw - 240px - 86px)',
-        }
+        },
     },
     barChartContainer: {
-        height: '670px',
+        height: '700px',
+        position: 'relative',
     },
     calendarContainer: {
         height: `calc(100vw * 30/55 + 64px)`,
         [theme.breakpoints.up('sm')]: {
             height: `calc((100vw - 240px) * 26/55 + 64px)`,
         }
-    }
+    },
+    groupingButtonsContainer: {
+        textAlign: 'right',
+        position: 'absolute',
+        bottom: 3 * theme.spacing.unit,
+        right: 1 * theme.spacing.unit,
+    },
+    groupingButton: {
+        margin: `0 ${ theme.spacing.unit }px`
+    },
 })
 
 const HomePage = (props) => {
+    const { classes, theme } = props
     const [width, setWidth] = useState(0)
-    const [height, setHeight] = useState(0)
+    const [grouping, setGrouping] = useState('tic')
     const [proposalsByTic, setProposalsByTic] = useState([])
     const [proposalsByDate, setProposalsByDate] = useState([])
-    const [proposalStatuses, setProposalStatuses] = useState([])
-    const { classes, theme } = props
-
-
-    useEffect(() => {
-        window.addEventListener('resize', updateWindowDimensions)
-        return window.removeEventListener('resize', updateWindowDimensions)
-    })
+    const [proposalsByStatus, setProposalsByStatus] = useState([])
+    const [statuses, setStatuses] = useState([])
+    const [tics, setTics] = useState([])
 
     useEffect(() => {
         const promises = [
             axios.get(apiUrl.proposalsByTic),
             axios.get(apiUrl.proposalsByDate),
-            axios.get(apiUrl.proposalStatuses),
+            axios.get(apiUrl.proposalsByStatus),
+            axios.get(apiUrl.statuses),
+            axios.get(apiUrl.tics),
         ]
         Promise.all(promises)
             .then((response) => {
                 setProposalsByTic(response[0].data)
                 setProposalsByDate(response[1].data)
-                setProposalStatuses(response[2].data)
+                setProposalsByStatus(response[2].data)
+                setStatuses(response[3].data)
+                setTics(response[4].data)
             })
             .catch(error => console.log('Error', error))
     }, [])
         
-    const updateWindowDimensions = () => {
-        setWidth(window.innerWidth)
-        setHeight(window.innerHeight)
-    }
+    const handleGroupingToggle = (status) => setGrouping(status)
 
     return (
         <div className={ classes.page }>
@@ -87,14 +98,40 @@ const HomePage = (props) => {
             <Card className={ classes.card } square={ true }>
                 <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
                     {
-                        (proposalsByTic.length > 0) ? (
-                            <TicBarChart proposals={ proposalsByTic }
-                                statuses={ proposalStatuses.map(({ description }) => description) }
-                                colors={ Object.values(theme.palette.extended) }
-                                width={ width } height={ height }
-                            />
-                        ) : <CircularLoader />
+                        grouping === 'tic' ? (
+                            // grouping === 'tic'
+                            (proposalsByTic.length > 0) ? (
+                                <TicBarChart proposals={ proposalsByTic }
+                                    statuses={ statuses.map(({ description }) => description) }
+                                    colors={ Object.values(theme.palette.extended) }
+                                />
+                            ) : <CircularLoader />
+                        ) : (
+                            // grouping === 'status'
+                            (proposalsByStatus.length > 0) ? (
+                                <StatusBarChart proposals={ proposalsByStatus }
+                                    tics={ tics.map(({ description }) => description) }
+                                    colors={ Object.values(theme.palette.extended).splice(0, 4) }
+                                />
+                            ) : <CircularLoader />
+                        )
                     }
+                    <div className={ classes.groupingButtonsContainer }>
+                        <Button
+                            className={ classes.groupingButton }
+                            variant="contained"
+                            size="small"
+                            color={ grouping === 'tic' ? 'secondary' : 'default' }
+                            onClick={ () => handleGroupingToggle('tic') }
+                        >Group by TIC/RIC</Button>
+                        <Button
+                            className={ classes.groupingButton }
+                            variant="contained"
+                            size="small"
+                            color={ grouping === 'status' ? 'secondary' : 'default' }
+                            onClick={ () => handleGroupingToggle('status') }
+                        >Group by Status</Button>
+                    </div>
                 </CardContent>
             </Card>
 

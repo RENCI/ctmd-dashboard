@@ -26,25 +26,24 @@ const tooltip = (event) => {
     )
 }
 
-const proposalsGroupedByTicAndStatus = (props) => {
-    const { proposals, statuses, colors, width } = props
-    console.log(width)
-    const proposalGroups = proposals.map((tic) => {
+const proposalsGroupedByStatusThenTic = (props) => {
+    const { proposals, tics, colors, width } = props
+    const proposalGroups = proposals.map((status) => {
         return {
-            name: tic.name,
-            ...tic.proposals.countBy('proposal_status'),
+            name: status.name,
+            ...status.proposals.countBy('tic_name'),
         }
     })
     return (
         <ResponsiveBar
             data={ proposalGroups }
-            keys={ statuses }
+            keys={ tics }
             indexBy="name"
             margin={{
                 "top": 0,
                 "right": 32,
                 "bottom": 0,
-                "left": 100
+                "left": 275
             }}
             padding={ 0.05 }
             groupMode="stacked"
@@ -104,7 +103,8 @@ const proposalsGroupedByTicAndStatus = (props) => {
             animate={ true }
             motionStiffness={ 90 }
             motionDamping={ 15 }
-            legends={ [{
+            legends={ width < 1000 ? [] : (
+                [{
                     "dataFrom": "keys",
                     "anchor": "top-right",
                     "direction": "column",
@@ -125,10 +125,11 @@ const proposalsGroupedByTicAndStatus = (props) => {
                             }
                         }
                     ]
-                }] }
+                }]
+            )}
             tooltip={ tooltip }
         />
     )
 }
 
-export default proposalsGroupedByTicAndStatus
+export default proposalsGroupedByStatusThenTic
