@@ -42,6 +42,9 @@ class ProposalsNetworkVisualizations extends Component {
 
     componentDidMount() {
         this.updateWindowDimensions();
+
+        this.drawVisualization(this.props);
+
         window.addEventListener('resize', this.updateWindowDimensions);
     }
 
@@ -50,14 +53,12 @@ class ProposalsNetworkVisualizations extends Component {
     }
 
     shouldComponentUpdate(props, state) {
-        if (props.proposals.length > 0) {
-            this.drawVisualization(props, state);
-        }
+        this.drawVisualization(props, this.props);
 
         return false;
     }
 
-    drawVisualization(props, state) {
+    drawVisualization(newProps, oldProps) {
         const minSankeyHeight = 1000;
         const networkWidth = this.networkDiv.clientWidth;
         const networkHeight = networkWidth;
@@ -72,19 +73,19 @@ class ProposalsNetworkVisualizations extends Component {
             .width(sankeyWidth)
             .height(sankeyHeight);
 
-        if (props.proposals !== this.props.proposals) {
+        if (!oldProps || newProps.proposals !== oldProps.proposals) {
             // Bind new data
             d3.select(this.networkDiv)
-                .datum(props.proposals)
+                .datum(newProps.proposals)
                 .call(this.network);
 
             d3.select(this.sankeyDiv)
-                .datum(props.proposals)
+                .datum(newProps.proposals)
                 .call(this.sankey);
         }
 
-        this.network.selectProposals(props.selectedProposals);
-        this.sankey.selectProposals(props.selectedProposals);
+        this.network.selectProposals(newProps.selectedProposals);
+        this.sankey.selectProposals(newProps.selectedProposals);
     }
 
     render() {
