@@ -28,7 +28,6 @@ const tooltip = (event) => {
 
 const proposalsGroupedByTicAndStatus = (props) => {
     const { proposals, statuses, colors, width } = props
-    console.log(width)
     const proposalGroups = proposals.map((tic) => {
         return {
             name: tic.name,
@@ -105,27 +104,27 @@ const proposalsGroupedByTicAndStatus = (props) => {
             motionStiffness={ 90 }
             motionDamping={ 15 }
             legends={ [{
-                    "dataFrom": "keys",
-                    "anchor": "top-right",
-                    "direction": "column",
-                    "justify": false,
-                    "translateX": 32,
-                    "translateY": 0,
-                    "itemsSpacing": 2,
-                    "itemWidth": 20,
-                    "itemHeight": 20,
-                    "itemDirection": "right-to-left",
-                    "itemOpacity": 0.75,
-                    "symbolSize": 20,
-                    "effects": [
-                        {
-                            "on": "hover",
-                            "style": {
-                                "itemOpacity": 1.0
-                            }
+                "dataFrom": "keys",
+                "anchor": "top-right",
+                "direction": "column",
+                "justify": false,
+                "translateX": 32,
+                "translateY": 0,
+                "itemsSpacing": 2,
+                "itemWidth": 20,
+                "itemHeight": 20,
+                "itemDirection": "right-to-left",
+                "itemOpacity": 0.75,
+                "symbolSize": 20,
+                "effects": [
+                    {
+                        "on": "hover",
+                        "style": {
+                            "itemOpacity": 1.0
                         }
-                    ]
-                }] }
+                    }
+                ]
+            }] }
             tooltip={ tooltip }
         />
     )

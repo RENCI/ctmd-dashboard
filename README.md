@@ -1,4 +1,4 @@
-# TIC
+# Dashboard
 
 ## Prep
 
@@ -7,7 +7,7 @@
 Fork or clone this repo.
 
 ```bash
-$ git clone https://github.com/renciweb/tic.git
+$ git clone https://github.com/renci/dashboard.git
 ```
 
 ### Set up environment variables file
