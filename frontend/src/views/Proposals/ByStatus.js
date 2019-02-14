@@ -80,6 +80,7 @@ const ProposalsByStatus = (props) => {
                     { title: 'Proposal Name', field: 'short_name', },
                     { title: 'TIC', field: 'tic_name', },
                     { title: 'Organization', field: 'org_name', },
+                    { title: 'Therapeutic Area', field: 'therapeutic_area', },
                     { title: 'Submission Date', field: 'prop_submit', type: 'datetime', render: ({submission_date}) => <span>{ submission_date }</span>},
                 ] }
                 data={ proposals }

@@ -32,6 +32,7 @@ import ProposalsByOrganization from './views/Proposals/ByOrganization'
 import ProposalsByTic from './views/Proposals/ByTic'
 import ProposalsByStatus from './views/Proposals/ByStatus'
 import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
+import ProposalsByDate from './views/Proposals/ByDate'
 import ProposalsApprovedServices from './views/Proposals/Approved'
 import ProposalsSubmittedServices from './views/Proposals/Submitted'
 import SiteReportPage from './views/SiteReport'
@@ -137,6 +138,7 @@ class Dashboard extends Component {
                         { text: 'By TIC/RIC', path: '/proposals/tic', icon: <KeyboardArrowRightIcon/> },
                         { text: 'By Status', path: '/proposals/status', icon: <KeyboardArrowRightIcon/> },
                         { text: 'By Domain', path: '/proposals/therapeutic-area', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'By Date', path: '/proposals/date', icon: <KeyboardArrowRightIcon/> },
                         { text: 'Approved', path: '/proposals/approved-services', icon: <KeyboardArrowRightIcon/> },
                         { text: 'Submitted', path: '/proposals/submitted-services', icon: <KeyboardArrowRightIcon/> },
                     ]
@@ -222,6 +224,7 @@ class Dashboard extends Component {
                                             <Route path="/proposals/tic" component={ ProposalsByTic }/>
                                             <Route path="/proposals/status" component={ ProposalsByStatus }/>
                                             <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
+                                            <Route path="/proposals/date" component={ ProposalsByDate }/>
                                             <Route path="/proposals/approved-services" component={ ProposalsApprovedServices }/>
                                             <Route path="/proposals/submitted-services" component={ ProposalsSubmittedServices }/>
                                             <Route path="/site-report" component={ SiteReportPage }/>
