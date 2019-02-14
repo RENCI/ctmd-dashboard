@@ -91,6 +91,47 @@ exports.byStatus = (req, res) => {
         })
 }
 
+// /proposals/by-submitted-service
+exports.bySubmittedService = (req, res) => {
+    let query = `SELECT description AS name
+        FROM name
+        WHERE "column"='new_service_selection' ORDER BY index;`
+    db.any(query)
+        .then(services => {
+            services.forEach(service => { service.proposals = [] })
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    name4.description AS new_service_selection,
+                    funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN proposal_new_service_selection ON proposal.proposal_id = proposal_new_service_selection.proposal_id
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
+                INNER JOIN name name4 ON name4.id=proposal_new_service_selection.new_service_selection AND name4."column"='new_service_selection';`
+            db.any(query)
+                .then(data => {
+                    data.forEach(proposal => {
+                        const index = services.findIndex(service => service.name === proposal.new_service_selection)
+                        if (index >= 0) services[index].proposals.push(proposal)
+                    })
+                    res.status(200).send(services)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                    res.status(500).send('There was an error fetching data.')
+                })
+        })
+}
+
 // /proposals/by-tic
 exports.byTic = (req, res) => {
     let query = `SELECT index, description AS name FROM name WHERE "column"='tic_ric_assign_v2' ORDER BY index;`

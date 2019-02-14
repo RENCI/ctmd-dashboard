@@ -6,6 +6,7 @@ const proposalsController = require('../controllers/proposals')
 
 router.route('/').get(proposalsController.list)
 router.route('/:id(\\d+)').get(proposalsController.getOne)
+router.route('/by-submitted-service').get(proposalsController.bySubmittedService)
 router.route('/by-status').get(proposalsController.byStatus)
 router.route('/by-tic').get(proposalsController.byTic)
 router.route('/by-organization').get(proposalsController.byOrganization)
