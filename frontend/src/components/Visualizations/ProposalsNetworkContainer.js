@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
 import Controls from './ProposalsNetworkControls';
 import Visualizations from './ProposalsNetworkVisualizations';
+import { CircularLoader } from '../Progress/Progress';
 
 function  ProposalsNetworkContainer(props) {
     const [proposals, setProposals] = useState([]);
@@ -36,14 +37,16 @@ function  ProposalsNetworkContainer(props) {
     }
 
     return (
-        <Fragment>
-            <Controls
-                proposals={ proposals }
-                onChange={ handleControlChange } />
-            <Visualizations
-                proposals={ proposals }
-                selectedProposals={ selectedProposals } />
-        </Fragment>
+        proposals.length > 0 ?
+            <Fragment>
+                <Controls
+                    proposals={ proposals }
+                    onChange={ handleControlChange } />
+                <Visualizations
+                    proposals={ proposals }
+                    selectedProposals={ selectedProposals } />
+            </Fragment>
+        : <CircularLoader />
     );
 }
 
