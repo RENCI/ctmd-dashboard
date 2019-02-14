@@ -75,7 +75,7 @@ export default function() {
           }),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("highlightProposals");
+      dispatcher = d3.dispatch("highlightProposals", "selectProposals");
 
   // Create a closure containing the above variables
   function proposalsSankey(selection) {
@@ -92,7 +92,10 @@ export default function() {
 
       // Otherwise create the skeletal chart
       var svgEnter = svg.enter().append("svg")
-          .attr("class", "proposalsSankey");
+          .attr("class", "proposalsSankey")
+          .on("click", function() {
+            dispatcher.call("selectProposals", this, null);
+          });
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -338,24 +341,29 @@ export default function() {
           .attr("height", function(d) { return d.y1 - d.y0; })
           .style("fill", nodeFill)
           .on("mouseover", function(d) {
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            if (selectedProposals.length > 0 && !ids.reduce(function(p, c) {
-              return p || selectedProposals.indexOf(c) !== -1;
-            }, false)) return;
-
-            highlightProposals(ids);
+            if (!active(d)) return;
 
             tip.show(d, this);
 
+            var ids = d.proposals.map(function(d) { return d.id; });
+
             dispatcher.call("highlightProposals", this, ids);
           })
-          .on("mouseout", function(d) {
+          .on("mouseout", function() {
             highlightProposals();
 
             tip.hide();
 
             dispatcher.call("highlightProposals", this, null);
+          })
+          .on("click", function(d) {
+            d3.event.stopPropagation();
+
+            if (!active(d)) return;
+
+            var ids = d.proposals.map(function(d) { return d.id; });
+
+            dispatcher.call("selectProposals", this, ids);
           });
 
       // Node update
@@ -391,25 +399,28 @@ export default function() {
           .style("stroke-width", function(d) { return d.width / 2; })
           .attr("d", d3Sankey.sankeyLinkHorizontal())
           .on("mouseover", function(d) {
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            if (selectedProposals.length > 0 && !ids.reduce(function(p, c) {
-              return p || selectedProposals.indexOf(c) !== -1;
-            }, false)) return;
-
-            highlightProposals(ids);
+            if (!active(d)) return;
 
             tip.show(d, this);
+
+            var ids = d.proposals.map(function(d) { return d.id; });
 
             dispatcher.call("highlightProposals", this, ids);
           })
           .on("mouseout", function(d) {
-            highlightProposals();
-
             tip.hide();
 
             dispatcher.call("highlightProposals", this, null);
           })
+          .on("click", function(d) {
+            d3.event.stopPropagation();
+
+            if (!active(d)) return;
+
+            var ids = d.proposals.map(function(d) { return d.id; });
+
+            dispatcher.call("selectProposals", this, ids);
+          });
 
       // Link update
       link.transition()
@@ -471,6 +482,12 @@ export default function() {
 
   function labelOpacity(d) {
     return d.proposals.length >= 5 ? 1 : 0;
+  }
+
+  function active(d) {
+    return selectedProposals.length == 0 || d.proposals.reduce(function(p, c) {
+      return p || selectedProposals.indexOf(c.id) !== -1;
+    }, false);
   }
 
   function highlightProposals(proposals) {

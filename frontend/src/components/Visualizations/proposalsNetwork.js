@@ -71,7 +71,7 @@ export default function() {
           }),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("highlightProposals");
+      dispatcher = d3.dispatch("highlightProposals", "selectProposals");
 
   // Create a closure containing the above variables
   function proposalsNetwork(selection) {
@@ -88,7 +88,10 @@ export default function() {
 
       // Otherwise create the skeletal chart
       var svgEnter = svg.enter().append("svg")
-          .attr("class", "proposalsNetwork");
+          .attr("class", "proposalsNetwork")
+          .on("click", function() {
+            dispatcher.call("selectProposals", this, null);
+          });
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -399,26 +402,29 @@ export default function() {
           .on("mouseover", function(d) {
             if (dragNode) return;
 
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            if (selectedProposals.length > 0 && !ids.reduce(function(p, c) {
-              return p || selectedProposals.indexOf(c) !== -1;
-            }, false)) return;
-
-            highlightProposals(ids);
+            if (!active(d)) return;
 
             tip.show(d, this);
 
+            var ids = d.proposals.map(function(d) { return d.id; });
+
             dispatcher.call("highlightProposals", this, ids);
           })
-          .on("mouseout", function(d) {
+          .on("mouseout", function() {
             if (dragNode) return;
-
-            highlightProposals();
 
             tip.hide();
 
             dispatcher.call("highlightProposals", this, null);
+          })
+          .on("click", function(d) {
+            d3.event.stopPropagation();
+
+            if (!active(d)) return;
+
+            var ids = d.proposals.map(function(d) { return d.id; });
+
+            dispatcher.call("selectProposals", this, ids);
           })
           .call(drag);
 
@@ -532,6 +538,12 @@ export default function() {
 
   function nodeRadius(d) {
     return d.type === "proposal" ? radiusScale(1) : radiusScale(d.links.length);
+  }
+
+  function active(d) {
+    return selectedProposals.length == 0 || d.proposals.reduce(function(p, c) {
+      return p || selectedProposals.indexOf(c.id) !== -1;
+    }, false);
   }
 
   function highlightProposals(proposals) {
