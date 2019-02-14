@@ -6,7 +6,7 @@ import { CircularLoader } from '../Progress/Progress';
 
 function  ProposalsNetworkContainer(props) {
     const [proposals, setProposals] = useState([]);
-    const [selectedProposals, setSelectedProposals] = useState([]);
+    const [filteredProposals, setFilteredProposals] = useState([]);
 
     async function fetchData() {
         await axios.get(props.apiUrl)
@@ -27,7 +27,7 @@ function  ProposalsNetworkContainer(props) {
             case 'status':
                 let status = event.target.value;
 
-                setSelectedProposals(proposals.filter(proposal =>
+                setFilteredProposals(proposals.filter(proposal =>
                     proposal.proposal_status === status
                 ).map(proposal => proposal.proposal_id));
 
@@ -44,7 +44,7 @@ function  ProposalsNetworkContainer(props) {
                     onChange={ handleControlChange } />
                 <Visualizations
                     proposals={ proposals }
-                    selectedProposals={ selectedProposals } />
+                    filteredProposals={ filteredProposals } />
             </Fragment>
         : <CircularLoader />
     );

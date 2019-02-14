@@ -4,24 +4,41 @@ import * as d3 from 'd3';
 import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
 
+function combine(a, b) {
+    if (a.length > 0 && b.length > 0) {
+        return a.filter(function(item) {
+            return b.indexOf(item) !== -1;
+        });
+    }
+    else if (a.length > 0) {
+        return a.slice();
+    }
+    else {
+      return b.slice();
+    }
+}
+
 class ProposalsNetworkVisualizations extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             windowWidth: 0,
-            windowHeight: 0
+            windowHeight: 0,
+            selectedProposals: []
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-        this.sankeyHighlightProposals = this.sankeyHighlightProposals.bind(this);
-        this.networkHighlightProposals = this.networkHighlightProposals.bind(this);
+        this.highlightProposals = this.highlightProposals.bind(this);
+        this.selectProposals = this.selectProposals.bind(this);
 
         this.network = proposalsNetwork()
-            .on("highlightProposals", this.networkHighlightProposals);
+            .on("highlightProposals", this.highlightProposals)
+            .on("selectProposals", this.selectProposals);
 
         this.sankey = proposalsSankey()
-            .on("highlightProposals", this.sankeyHighlightProposals);
+            .on("highlightProposals", this.highlightProposals)
+            .on("selectProposals", this.selectProposals);
     }
 
     updateWindowDimensions() {
@@ -32,18 +49,21 @@ class ProposalsNetworkVisualizations extends Component {
         });
     }
 
-    networkHighlightProposals(proposals) {
+    highlightProposals(proposals) {
+        this.network.highlightProposals(proposals);
         this.sankey.highlightProposals(proposals);
     }
 
-    sankeyHighlightProposals(proposals) {
-        this.network.highlightProposals(proposals);
+    selectProposals(proposals) {
+        this.setState({
+          selectedProposals: !proposals ? [] : combine(this.state.selectedProposals, proposals)
+        });
     }
 
     componentDidMount() {
         this.updateWindowDimensions();
 
-        this.drawVisualization(this.props);
+        this.drawVisualization(this.props, null, this.state);
 
         window.addEventListener('resize', this.updateWindowDimensions);
     }
@@ -53,12 +73,12 @@ class ProposalsNetworkVisualizations extends Component {
     }
 
     shouldComponentUpdate(props, state) {
-        this.drawVisualization(props, this.props);
+        this.drawVisualization(props, this.props, state);
 
         return false;
     }
 
-    drawVisualization(newProps, oldProps) {
+    drawVisualization(newProps, oldProps, state) {
         const minSankeyHeight = 1000;
         const networkWidth = this.networkDiv.clientWidth;
         const networkHeight = networkWidth;
@@ -84,8 +104,10 @@ class ProposalsNetworkVisualizations extends Component {
                 .call(this.sankey);
         }
 
-        this.network.selectProposals(newProps.selectedProposals);
-        this.sankey.selectProposals(newProps.selectedProposals);
+        const combined = combine(newProps.filteredProposals, state.selectedProposals);
+
+        this.network.selectProposals(combined);
+        this.sankey.selectProposals(combined);
     }
 
     render() {
@@ -103,7 +125,7 @@ class ProposalsNetworkVisualizations extends Component {
 
 ProposalsNetworkVisualizations.propTypes = {
     proposals: PropTypes.arrayOf(PropTypes.object).isRequired,
-    selectedProposals: PropTypes.arrayOf(PropTypes.number).isRequired
+    filteredProposals: PropTypes.arrayOf(PropTypes.number).isRequired
 };
 
 export default ProposalsNetworkVisualizations
