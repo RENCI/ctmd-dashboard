@@ -4,26 +4,6 @@ const db = require('../config/database')
 // Controllers
 //////////////
 
-const proposalsQuery = `SELECT DISTINCT
-        CAST(proposal.proposal_id AS INT),
-        proposal.short_name,
-        proposal.prop_submit,
-        TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-        name.description AS proposal_status,
-        name2.description AS tic_name,
-        name3.description AS org_name,
-        name4.description AS therapeutic_area
-    FROM proposal
-    INNER JOIN study ON proposal.proposal_id=study.proposal_id
-    INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
-    INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-    INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-    INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-    WHERE name."column"='protocol_status'
-      AND name2."column"='tic_ric_assign_v2'
-      AND name4."column"='theraputic_area'
-    ORDER BY proposal_id;`
-
 // /proposals/:id(\\d+)
 exports.getOne = (req, res) => {
     query = `SELECT * FROM proposal WHERE proposal_id=${ req.params.id };`
@@ -39,7 +19,26 @@ exports.getOne = (req, res) => {
 
 // /proposals
 exports.list = (req, res) => {
-    db.any(proposalsQuery)
+    query = `SELECT DISTINCT
+            CAST(proposal.proposal_id AS INT),
+            proposal.short_name,
+            proposal.prop_submit,
+            TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
+            name.description AS proposal_status,
+            name2.description AS tic_name,
+            name3.description AS org_name,
+            name4.description AS therapeutic_area
+        FROM proposal
+        INNER JOIN study ON proposal.proposal_id=study.proposal_id
+        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
+        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
+        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+        WHERE name."column"='protocol_status'
+          AND name2."column"='tic_ric_assign_v2'
+          AND name4."column"='theraputic_area'
+        ORDER BY proposal_id;`
+    db.any(query)
         .then(data => {
             data.forEach(proposal => {
                 proposal.submission_date = proposal.prop_submit.toDateString()
@@ -60,7 +59,23 @@ exports.byStatus = (req, res) => {
     db.any(query)
         .then(statuses => {
             statuses.forEach(status => { status.proposals = [] })
-            db.any(proposalsQuery)
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    proposal.prop_submit,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name';`
+            db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
                         proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
@@ -81,10 +96,28 @@ exports.bySubmittedService = (req, res) => {
     let query = `SELECT description AS name
         FROM name
         WHERE "column"='new_service_selection' ORDER BY index;`
-    db.any(proposalsQuery)
+    db.any(query)
         .then(services => {
             services.forEach(service => { service.proposals = [] })
-            db.any(proposalsQuery)
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    name4.description AS new_service_selection,
+                    funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN proposal_new_service_selection ON proposal.proposal_id = proposal_new_service_selection.proposal_id
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
+                INNER JOIN name name4 ON name4.id=proposal_new_service_selection.new_service_selection AND name4."column"='new_service_selection';`
+            db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
                         const index = services.findIndex(service => service.name === proposal.new_service_selection)
@@ -101,15 +134,33 @@ exports.bySubmittedService = (req, res) => {
 
 // /proposals/by-tic
 exports.byTic = (req, res) => {
-    let query = `SELECT description AS name FROM name WHERE "column"='tic_ric_assign_v2' ORDER BY index;`
+    let query = `SELECT index, description AS name FROM name WHERE "column"='tic_ric_assign_v2' ORDER BY index;`
     db.any(query)
         .then(tics => {
             tics.forEach(tic => { tic.proposals = [] })
-            db.any(proposalsQuery)
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    proposal.prop_submit,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name",
+                    proposal.tic_ric_assign_v2,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    name.description AS proposal_status,
+                    CAST(proposal.protocol_status AS INT), funding.anticipated_budget, funding.funding_duration
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) and name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name';`
+            db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
+                        // console.log(proposal)
                         proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
-                        const index = tics.findIndex(tic => tic.name === proposal.tic_name)
+                        const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
+                        proposal.tic_ric_assign_v2 = parseInt(proposal.tic_ric_assign_v2)
                         if (index >= 0) tics[index].proposals.push(proposal)
                     })
                     res.status(200).send(tics)
@@ -127,7 +178,23 @@ exports.byOrganization = (req, res) => {
     db.any(organizationQuery)
         .then(organizations => {
             organizations.forEach(organization => { organization.proposals = [] })
-            db.any(proposalsQuery)
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    proposal.prop_submit,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name';`
+            db.any(query)
                 .then(proposals => {
                     proposals.forEach(proposal => {
                         proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
@@ -149,7 +216,26 @@ exports.byTherapeuticArea = (req, res) => {
     db.any(areasQuery)
         .then(areas => {
             areas.forEach(area => { area.proposals = [] })
-            db.any(proposalsQuery)
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    proposal.prop_submit,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    name4.description AS therapeutic_area
+                FROM proposal
+                INNER JOIN study ON proposal.proposal_id=study.proposal_id
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
+                INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
+                INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+                WHERE name."column"='protocol_status'
+                  AND name2."column"='tic_ric_assign_v2'
+                  AND name4."column"='theraputic_area'
+                ORDER BY proposal_id;`
+            db.any(query)
                 .then(proposals => {
                     proposals.forEach(proposal => {
                         proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
@@ -179,8 +265,9 @@ exports.byDate = (req, res) => {
     db.any(query)
         .then(data => {
             data.forEach(proposal => {
-                // Convert day to YYYY-MM-DD format -- slice off first 10 characters -- and kill the long timestamp
+                // Convert day to YYYY-MM-DD format
                 proposal.day = proposal.prop_submit.substring(0, 10)
+                // Kill the long timestamp
                 delete proposal.prop_submit
             })
             dates = data.map(({ day }) => day)
