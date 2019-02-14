@@ -16,7 +16,7 @@ const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org
 const apiUrl = {
     proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByDate: apiRoot + 'proposals/by-date',
-    proposalsByStatus: apiRoot + 'proposals/by-stage',
+    proposalsByStatus: apiRoot + 'proposals/by-status',
     statuses: apiRoot + 'statuses',
     tics: apiRoot + 'tics',
 }
@@ -45,6 +45,9 @@ const styles = (theme) => ({
         [theme.breakpoints.up('sm')]: {
             height: `calc((100vw - 240px) * 26/55 + 64px)`,
         }
+    },
+    pieChartContainer: {
+        height: '700px',
     },
     groupingButtonsContainer: {
         textAlign: 'right',

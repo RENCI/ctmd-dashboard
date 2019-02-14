@@ -27,10 +27,13 @@ import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
-import AllProposals from './views/Proposals.js'
-import ProposalsByStage from './views/Reports/ByStage'
-import ApprovedProposals from './views/Reports/Approved'
-import SubmittedProposals from './views/Reports/Submitted'
+import ProposalsAll from './views/Proposals/All'
+import ProposalsByOrganization from './views/Proposals/ByOrganization'
+import ProposalsByTic from './views/Proposals/ByTic'
+import ProposalsByStatus from './views/Proposals/ByStatus'
+import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
+import ProposalsApprovedServices from './views/Proposals/Approved'
+import ProposalsSubmittedServices from './views/Proposals/Submitted'
 import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
 import CollaborationsPage from './views/Collaborations'
@@ -123,16 +126,19 @@ class Dashboard extends Component {
         {
             items: [
                 { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
-                { text: 'Proposals', icon: <DescriptionIcon />, href: '/proposals', },
             ],
         },
         {
             items: [
-                { text: 'Reports', icon: <AssessmentIcon/>, href: '/reports/proposals',
+                { text: 'Proposals', icon: <AssessmentIcon/>, href: '/proposals',
                     submenu: [
-                        { text: 'Approved', path: '/reports/proposals/approved', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'Submitted', path: '/reports/proposals/submitted', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'By Stage', path: '/reports/proposals/stage', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'All', path: '/proposals', icon: <KeyboardArrowRightIcon />, },
+                        { text: 'By Organization', path: '/proposals/organization', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'By TIC/RIC', path: '/proposals/tic', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'By Status', path: '/proposals/status', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'By Domain', path: '/proposals/therapeutic-area', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'Approved', path: '/proposals/approved-services', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'Submitted', path: '/proposals/submitted-services', icon: <KeyboardArrowRightIcon/> },
                     ]
                 },
                 { text: 'Forecasts', icon: <TimelineIcon/>, href: '/forecasts', disabled: true, },
@@ -211,10 +217,13 @@ class Dashboard extends Component {
                                         </Toolbar>
                                         <Switch>
                                             <Route exact path="/settings" component={ SettingsPage }/>
-                                            <Route path="/proposals" component={ AllProposals }/>
-                                            <Route path="/reports/proposals/approved" component={ ApprovedProposals }/>
-                                            <Route path="/reports/proposals/submitted" component={ SubmittedProposals }/>
-                                            <Route path="/reports/proposals/stage" component={ ProposalsByStage }/>
+                                            <Route exact path="/proposals" component={ ProposalsAll }/>
+                                            <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
+                                            <Route path="/proposals/tic" component={ ProposalsByTic }/>
+                                            <Route path="/proposals/status" component={ ProposalsByStatus }/>
+                                            <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
+                                            <Route path="/proposals/approved-services" component={ ProposalsApprovedServices }/>
+                                            <Route path="/proposals/submitted-services" component={ ProposalsSubmittedServices }/>
                                             <Route path="/site-report" component={ SiteReportPage }/>
                                             <Route path="/study-metrics" component={ StudyMetricsPage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>

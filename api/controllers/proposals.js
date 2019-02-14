@@ -51,17 +51,18 @@ exports.list = (req, res) => {
         })
 }
 
-// /proposals/by-stage
-exports.byStage = (req, res) => {
+// /proposals/by-status
+exports.byStatus = (req, res) => {
     let query = `SELECT description AS name
         FROM name
         WHERE "column"='protocol_status' ORDER BY index;`
     db.any(query)
-        .then(stages => {
-            stages.forEach(stage => { stage.proposals = [] })
+        .then(statuses => {
+            statuses.forEach(status => { status.proposals = [] })
             query = `SELECT DISTINCT
                     CAST(proposal.proposal_id AS INT),
                     proposal.short_name,
+                    proposal.prop_submit,
                     name.description AS proposal_status,
                     name2.description AS tic_name,
                     name3.description AS org_name,
@@ -77,10 +78,11 @@ exports.byStage = (req, res) => {
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
-                        const index = stages.findIndex(stage => stage.name === proposal.proposal_status)
-                        if (index >= 0) stages[index].proposals.push(proposal)
+                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
+                        const index = statuses.findIndex(status => status.name === proposal.proposal_status)
+                        if (index >= 0) statuses[index].proposals.push(proposal)
                     })
-                    res.status(200).send(stages)
+                    res.status(200).send(statuses)
                 })
                 .catch(error => {
                     console.log('ERROR:', error)
@@ -98,6 +100,7 @@ exports.byTic = (req, res) => {
             query = `SELECT DISTINCT
                     CAST(proposal.proposal_id AS INT),
                     proposal.short_name,
+                    proposal.prop_submit,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name",
                     proposal.tic_ric_assign_v2,
                     name2.description AS tic_name,
@@ -114,11 +117,91 @@ exports.byTic = (req, res) => {
                 .then(data => {
                     data.forEach(proposal => {
                         // console.log(proposal)
+                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
                         const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
                         proposal.tic_ric_assign_v2 = parseInt(proposal.tic_ric_assign_v2)
                         if (index >= 0) tics[index].proposals.push(proposal)
                     })
                     res.status(200).send(tics)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                    res.status(500).send('There was an error fetching data.')
+                })
+        })
+}
+
+// /proposals/by-organization
+exports.byOrganization = (req, res) => {
+    const organizationQuery = `SELECT description AS name FROM name WHERE "column"='org_name' ORDER BY index;`
+    db.any(organizationQuery)
+        .then(organizations => {
+            organizations.forEach(organization => { organization.proposals = [] })
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    proposal.prop_submit,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    funding.anticipated_budget, funding.funding_duration,
+                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
+                FROM proposal
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name';`
+            db.any(query)
+                .then(proposals => {
+                    proposals.forEach(proposal => {
+                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
+                        const index = organizations.findIndex(organization => organization.name === proposal.org_name)
+                        if (index >= 0) organizations[index].proposals.push(proposal)
+                    })
+                    res.status(200).send(organizations)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                    res.status(500).send('There was an error fetching data.')
+                })
+        })
+}
+
+// /proposals/by-therapeutic-area
+exports.byTherapeuticArea = (req, res) => {
+    const areasQuery = `SELECT description AS name FROM name WHERE "column"='theraputic_area' ORDER BY index;`
+    db.any(areasQuery)
+        .then(areas => {
+            areas.forEach(area => { area.proposals = [] })
+            query = `SELECT DISTINCT
+                    CAST(proposal.proposal_id AS INT),
+                    proposal.short_name,
+                    proposal.prop_submit,
+                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
+                    name.description AS proposal_status,
+                    name2.description AS tic_name,
+                    name3.description AS org_name,
+                    name4.description AS therapeutic_area
+                FROM proposal
+                INNER JOIN study ON proposal.proposal_id=study.proposal_id
+                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
+                INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
+                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
+                INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+                WHERE name."column"='protocol_status'
+                  AND name2."column"='tic_ric_assign_v2'
+                  AND name4."column"='theraputic_area'
+                ORDER BY proposal_id;`
+            db.any(query)
+                .then(proposals => {
+                    proposals.forEach(proposal => {
+                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
+                        const index = areas.findIndex(area => area.name === proposal.therapeutic_area)
+                        if (index >= 0) areas[index].proposals.push(proposal)
+                    })
+                    res.status(200).send(areas)
                 })
                 .catch(error => {
                     console.log('ERROR:', error)
