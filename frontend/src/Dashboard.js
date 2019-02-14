@@ -101,7 +101,7 @@ const styles = (theme) => ({
     },
     main: {
         // ...theme.mixins.debug,
-        height: '100vh',
+        minHeight: '100vh',
         backgroundColor: 'transparent',
         flexGrow: 1,
         padding: 2 * theme.spacing.unit,

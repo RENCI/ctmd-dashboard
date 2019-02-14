@@ -174,25 +174,28 @@ const ProposalsByDate = (props) => {
                 <PresetSelector selectionHandler={ selectPreset }/>
             </div>
 
-            <MaterialTable
-                className={ classes.table }
-                columns={ [
-                    { title: 'Proposal ID', field: 'proposal_id', },
-                    { title: 'Proposal Name', field: 'short_name', },
-                    { title: 'TIC', field: 'tic_name', },
-                    { title: 'Organization', field: 'org_name', },
-                    { title: 'Therapeutic Area', field: 'therapeutic_area', },
-                    { title: 'Submission Date', field: 'prop_submit', type: 'datetime', render: ({submission_date}) => <span>{ submission_date }</span>},
-                ] }
-                data={ displayedProposals }
-                options={{
-                    columnsButton: true,
-                    exportButton: true,
-                    pageSize: 15,
-                    pageSizeOptions: [15, 25, 50],
-                }}
-                title=""
-            />
+            {
+                (proposals.length > 0) ? (
+                    <Card className={ classnames(classes.card) } square={ true }>
+                        <CardContent className={ classes.table } component={ MaterialTable }
+                            columns={ [
+                                { title: 'Proposal ID', field: 'proposal_id', },
+                                { title: 'Proposal Name', field: 'short_name', },
+                                { title: 'TIC', field: 'tic_name', },
+                                { title: 'Organization', field: 'org_name', },
+                                { title: 'Submission Date', field: 'prop_submit', type: 'datetime', render: ({submission_date}) => <span>{ submission_date }</span>},
+                            ] }
+                            data={ displayedProposals }
+                            options={{
+                                columnsButton: true,
+                                exportButton: true,
+                                paging: false,
+                            }}
+                            title=""
+                        />
+                    </Card>
+                ) : null
+            }
 
         </div>
     )
