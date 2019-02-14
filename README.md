@@ -7,7 +7,7 @@
 Fork or clone this repo.
 
 ```bash
-$ git clone https://github.com/renciweb/dashboard.git
+$ git clone https://github.com/renci/dashboard.git
 ```
 
 ### Set up environment variables file
