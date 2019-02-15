@@ -28,9 +28,10 @@ const ProposalsTable = (props) => {
             options={{
                 columnsButton: true,
                 exportButton: true,
+                filtering: true,
+                paging: props.paging,
                 pageSize: 15,
                 pageSizeOptions: [15, 25, 50],
-                filtering: true,
             }}
             title=""
         />

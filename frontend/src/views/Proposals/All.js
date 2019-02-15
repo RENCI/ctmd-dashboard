@@ -20,7 +20,10 @@ const proposalsTable = (props) => {
             <Heading>Proposals</Heading>
             {
                 (proposals.length > 0)
-                ? <ProposalsTable proposals={ proposals }/>
+                ? <ProposalsTable
+                    proposals={ proposals }
+                    paging={ true }
+                />
                 : <CircularLoader/>
             }
         </div>
