@@ -16,4 +16,17 @@ router.route('/approved-services').get(proposalsController.approvedServices)
 router.route('/submitted-services').get(proposalsController.submittedServices)
 router.route('/network').get(proposalsController.proposalsNetwork)
 
+router.route('/submitted-for-services/count').get(proposalsController.countBySubmittedForServices)
+router.route('/submitted-for-services/count/by-institution').get(proposalsController.countBySubmittedForAServiceByInstitution)
+router.route('/submitted-for-services/count/by-tic').get(proposalsController.countByTic)
+router.route('/submitted-for-services/count/by-therapeutic-area').get(proposalsController.countByTherapeuticArea)
+router.route('/submitted-for-services/count/by-year').get(proposalsController.countByYear)
+router.route('/submitted-for-services/count/by-month').get(proposalsController.countByMonth)
+
+router.route('/resubmissions').get(proposalsController.resubmissions)
+router.route('/resubmissions/count').get(proposalsController.countResubmissions)
+router.route('/resubmissions/count/by-institution').get(proposalsController.countResubmissionsByInstitution)
+router.route('/resubmissions/count/by-tic').get(proposalsController.countResubmissionsByTic)
+router.route('/resubmissions/count/by-therapeutic-area').get(proposalsController.countResubmissionsByTherapeuticArea)
+
 module.exports = router
