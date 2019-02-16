@@ -33,8 +33,8 @@ import ProposalsByTic from './views/Proposals/ByTic'
 import ProposalsByStatus from './views/Proposals/ByStatus'
 import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
 import ProposalsByDate from './views/Proposals/ByDate'
-import ProposalsApprovedServices from './views/Proposals/Approved'
-import ProposalsSubmittedServices from './views/Proposals/Submitted'
+import ProposalsResubmitted from './views/Proposals/Resubmitted'
+import ProposalsSubmittedForServices from './views/Proposals/SubmittedForServices'
 import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
 import CollaborationsPage from './views/Collaborations'
@@ -139,8 +139,8 @@ class Dashboard extends Component {
                         { text: 'By Status', path: '/proposals/status', icon: <KeyboardArrowRightIcon/> },
                         { text: 'By Domain', path: '/proposals/therapeutic-area', icon: <KeyboardArrowRightIcon/> },
                         { text: 'By Date', path: '/proposals/date', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'Approved', path: '/proposals/approved-services', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'Submitted', path: '/proposals/submitted-services', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'Submitted For Services', path: '/proposals/submitted-for-services', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'Resubmissions', path: '/proposals/resubmissions', icon: <KeyboardArrowRightIcon/> },
                     ]
                 },
                 { text: 'Forecasts', icon: <TimelineIcon/>, href: '/forecasts', disabled: true, },
@@ -225,8 +225,8 @@ class Dashboard extends Component {
                                             <Route path="/proposals/status" component={ ProposalsByStatus }/>
                                             <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
                                             <Route path="/proposals/date" component={ ProposalsByDate }/>
-                                            <Route path="/proposals/approved-services" component={ ProposalsApprovedServices }/>
-                                            <Route path="/proposals/submitted-services" component={ ProposalsSubmittedServices }/>
+                                            <Route path="/proposals/submitted-for-services" component={ ProposalsSubmittedForServices }/>
+                                            <Route path="/proposals/resubmissions" component={ ProposalsResubmitted }/>
                                             <Route path="/site-report" component={ SiteReportPage }/>
                                             <Route path="/study-metrics" component={ StudyMetricsPage }/>
                                             <Route path="/analytics/collaborations" component={ CollaborationsPage }/>

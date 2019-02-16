@@ -70,7 +70,7 @@ exports.byStatus = (req, res) => {
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
                 INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
                 INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
                 LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
@@ -110,7 +110,7 @@ exports.bySubmittedService = (req, res) => {
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
                 INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
                 INNER JOIN proposal_new_service_selection ON proposal.proposal_id = proposal_new_service_selection.proposal_id
                 INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
@@ -149,7 +149,7 @@ exports.byTic = (req, res) => {
                     name.description AS proposal_status,
                     CAST(proposal.protocol_status AS INT), funding.anticipated_budget, funding.funding_duration
                 FROM proposal
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
                 INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
                 INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) and name."column"='protocol_status'
                 LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
@@ -189,7 +189,7 @@ exports.byOrganization = (req, res) => {
                     proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
                     TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
                 FROM proposal
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
                 INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
                 INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
                 LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
@@ -365,7 +365,7 @@ exports.proposalsNetwork = (req, res) => {
             funding.funding_duration,
             TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name
         FROM proposal
-        INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument is null and funding.redcap_repeat_instrument is null
+        INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
         INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
         INNER JOIN study ON proposal.proposal_id=study.proposal_id
         INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
@@ -383,3 +383,303 @@ exports.proposalsNetwork = (req, res) => {
             res.status(500).send('There was an error fetching data.')
         })
 }
+
+// Submitted for Services
+/////////////////////////
+
+// /proposals/count/submitted-for-services/
+exports.countSubmittedForServices = (req, res) => {
+    query = `SELECT CAST(COUNT(*) AS INT)
+        FROM proposal
+        WHERE conso_or_services='2';`
+    db.any(query)
+        .then(data => res.status(200).send(data[0]))
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count/submitted-for-services/by-institution
+exports.countSubmittedForServicesByInstitution = (req, res) => {
+    query = `SELECT name2.description AS org_name, CAST(COUNT(*) AS INT)
+        FROM proposal
+        INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name AS varchar)
+            AND name2."column"='org_name'
+        WHERE proposal.redcap_repeat_instrument is null
+            AND proposal.redcap_repeat_instance is null
+            AND proposal.conso_or_services='2'
+        GROUP BY name2.description;`
+    db.any(query)
+        .then(data => res.status(200).send(data))
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count/submitted-for-services/by-tic
+exports.countSubmittedForServicesByTic = (req, res) => {
+    query = `SELECT name2.description AS tic_name, CAST(COUNT(*) AS INT)
+        FROM proposal
+        INNER JOIN name AS name2 ON name2.index=cast(proposal.tic_ric_assign_v2 AS varchar)
+            AND name2."column"='tic_ric_assign_v2'
+        WHERE proposal.redcap_repeat_instrument is null
+            AND proposal.redcap_repeat_instance is null
+            AND proposal.conso_or_services='2'
+        GROUP BY name2.description;`
+    db.any(query)
+        .then(data => res.status(200).send(data))
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count/submitted-for-services/by-therapeutic-area
+exports.countSubmittedForServicesByTherapeuticArea = (req, res) => {
+    query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
+        FROM proposal
+        INNER JOIN study ON proposal.proposal_id=study.proposal_id
+        INNER JOIN name AS name2 ON name2.index=cast(study.theraputic_area AS varchar)
+            AND name2."column"='theraputic_area'
+        WHERE proposal.redcap_repeat_instrument is null
+            AND proposal.redcap_repeat_instance is null
+            AND proposal.conso_or_services='2'
+        GROUP BY name2.description;`
+    db.any(query)
+        .then(data => res.status(200).send(data))
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count/submitted-for-services/by-year
+exports.countSubmittedForServicesByYear = (req, res) => {
+    query = `SELECT extract(year from prop_submit) AS year, CAST(COUNT(*) AS INT)
+        FROM proposal
+        WHERE proposal.redcap_repeat_instrument IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND proposal.conso_or_services='2'
+        GROUP BY year
+        ORDER BY year;`
+    db.any(query)
+        .then(data => res.status(200).send(data))
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count/submitted-for-services/by-month
+exports.countSubmittedForServicesByMonth = (req, res) => {
+    query = `SELECT extract(month from prop_submit) AS month, CAST(COUNT(*) AS INT)
+        FROM proposal
+        WHERE proposal.redcap_repeat_instrument IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND proposal.conso_or_services='2'
+        GROUP BY month
+        ORDER BY month;`
+    db.any(query)
+        .then(data => res.status(200).send(data))
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// Resubmissions
+////////////////
+
+// /proposals/resubmissions
+exports.resubmissions = (req, res) => {
+    query = `SELECT
+            proposal.proposal_id, name2.description AS services_approved,service_services_approved,
+            name3.description AS funding,
+            funding.funding
+        FROM proposal
+        INNER JOIN service ON proposal.proposal_id=service.proposal_id
+        INNER JOIN funding ON funding.proposal_id=service.proposal_id
+        INNER JOIN service_services_approved ON proposal.proposal_id=service_services_approved.proposal_id
+        INNER JOIN name AS name3 on name3.index=cast(funding.funding as varchar)
+            AND name3."column"='funding'
+        INNER JOIN name AS name2 on name2.id=service_services_approved.services_approved
+            AND name2."column"='services_approved'
+        WHERE proposal.redcap_repeat_instrument IS NULL
+            AND service.redcap_repeat_instrument IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND service.redcap_repeat_instance IS NULL
+            AND funding.redcap_repeat_instrument IS NULL
+            AND funding.redcap_repeat_instance IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND proposal.redcap_repeat_instrument IS NULL
+            AND proposal.protocol_status='21'
+        ORDER BY proposal.proposal_id;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count
+exports.countResubmissions = (req, res) => {
+    query = `SELECT CAST(COUNT(*) AS INT)
+        FROM proposal
+        WHERE proposal.protocol_status='21';`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count
+exports.countResubmissionsByInstitution = (req, res) => {
+    query = `SELECT name2.description as org_name, CAST(COUNT(*) AS INT)
+        FROM proposal
+        INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name as varchar)
+            AND name2."column"='org_name'
+        WHERE proposal.redcap_repeat_instrument IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND proposal.protocol_status='21'
+        GROUP BY name2.description;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count
+exports.countResubmissionsByTic = (req, res) => {
+    query = `SELECT name2.description as tic_ric_assign, CAST(COUNT(*) AS INT)
+        FROM proposal
+        INNER JOIN name AS name2 ON name2.index=cast(proposal.tic_ric_assign_v2 as varchar)
+            AND name2."column"='tic_ric_assign_v2'
+        WHERE proposal.redcap_repeat_instrument IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND proposal.protocol_status='21'
+        GROUP BY name2.description;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count
+exports.countResubmissionsByTherapeuticArea = (req, res) => {
+    query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
+        FROM proposal
+        INNER JOIN study ON proposal.proposal_id=study.proposal_id
+        INNER JOIN name AS name2 ON name2.index=cast(study.theraputic_area as varchar)
+            AND name2."column"='theraputic_area'
+        WHERE proposal.redcap_repeat_instrument IS NULL
+            AND proposal.redcap_repeat_instance IS NULL
+            AND proposal.protocol_status='21'
+        GROUP BY name2.description;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+//
+////////////
+
+// /proposals/approved-for-services/count
+exports.countApprovedFormServicesBySubmittedForServices = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-institution
+exports.countApprovedFormServicesByInstitution = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-tic
+exports.countApprovedFormServicesByTic = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-therapeutic-area
+exports.countApprovedFormServicesByTherapeuticArea = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-year
+exports.countApprovedFormServicesByYear = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-month
+exports.countApprovedFormServicesByMonth = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+

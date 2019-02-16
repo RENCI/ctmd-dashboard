@@ -16,4 +16,24 @@ router.route('/approved-services').get(proposalsController.approvedServices)
 router.route('/submitted-services').get(proposalsController.submittedServices)
 router.route('/network').get(proposalsController.proposalsNetwork)
 
+router.route('/submitted-for-services/count').get(proposalsController.countSubmittedForServices)
+router.route('/submitted-for-services/count/by-institution').get(proposalsController.countSubmittedForServicesByInstitution)
+router.route('/submitted-for-services/count/by-tic').get(proposalsController.countSubmittedForServicesByTic)
+router.route('/submitted-for-services/count/by-therapeutic-area').get(proposalsController.countSubmittedForServicesByTherapeuticArea)
+router.route('/submitted-for-services/count/by-year').get(proposalsController.countSubmittedForServicesByYear)
+router.route('/submitted-for-services/count/by-month').get(proposalsController.countSubmittedForServicesByMonth)
+
+router.route('/resubmissions').get(proposalsController.resubmissions)
+router.route('/resubmissions/count').get(proposalsController.countResubmissions)
+router.route('/resubmissions/count/by-institution').get(proposalsController.countResubmissionsByInstitution)
+router.route('/resubmissions/count/by-tic').get(proposalsController.countResubmissionsByTic)
+router.route('/resubmissions/count/by-therapeutic-area').get(proposalsController.countResubmissionsByTherapeuticArea)
+
+router.route('approved-for-services/count').get(proposalsController.countApprovedFormServicesBySubmittedForServices)
+router.route('approved-for-services/count/by-institution').get(proposalsController.countApprovedFormServicesByInstitution)
+router.route('approved-for-services/count/by-tic').get(proposalsController.countApprovedFormServicesByTic)
+router.route('approved-for-services/count/by-therapeutic-area').get(proposalsController.countApprovedFormServicesByTherapeuticArea)
+router.route('approved-for-services/count/by-year').get(proposalsController.countApprovedFormServicesByYear)
+router.route('approved-for-services/count/by-month').get(proposalsController.countApprovedFormServicesByMonth)
+
 module.exports = router
