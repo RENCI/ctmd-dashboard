@@ -388,7 +388,7 @@ exports.proposalsNetwork = (req, res) => {
 /////////////////////////
 
 // /proposals/count/submitted-for-services/
-exports.countBySubmittedForServices = (req, res) => {
+exports.countSubmittedForServices = (req, res) => {
     query = `SELECT CAST(COUNT(*) AS INT)
         FROM proposal
         WHERE conso_or_services='2';`
@@ -401,7 +401,7 @@ exports.countBySubmittedForServices = (req, res) => {
 }
 
 // /proposals/count/submitted-for-services/by-institution
-exports.countBySubmittedForAServiceByInstitution = (req, res) => {
+exports.countSubmittedForServicesByInstitution = (req, res) => {
     query = `SELECT name2.description AS org_name, CAST(COUNT(*) AS INT)
         FROM proposal
         INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name AS varchar)
@@ -419,7 +419,7 @@ exports.countBySubmittedForAServiceByInstitution = (req, res) => {
 }
 
 // /proposals/count/submitted-for-services/by-tic
-exports.countByTic = (req, res) => {
+exports.countSubmittedForServicesByTic = (req, res) => {
     query = `SELECT name2.description AS tic_name, CAST(COUNT(*) AS INT)
         FROM proposal
         INNER JOIN name AS name2 ON name2.index=cast(proposal.tic_ric_assign_v2 AS varchar)
@@ -437,7 +437,7 @@ exports.countByTic = (req, res) => {
 }
 
 // /proposals/count/submitted-for-services/by-therapeutic-area
-exports.countByTherapeuticArea = (req, res) => {
+exports.countSubmittedForServicesByTherapeuticArea = (req, res) => {
     query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
         FROM proposal
         INNER JOIN study ON proposal.proposal_id=study.proposal_id
@@ -456,7 +456,7 @@ exports.countByTherapeuticArea = (req, res) => {
 }
 
 // /proposals/count/submitted-for-services/by-year
-exports.countByYear = (req, res) => {
+exports.countSubmittedForServicesByYear = (req, res) => {
     query = `SELECT extract(year from prop_submit) AS year, CAST(COUNT(*) AS INT)
         FROM proposal
         WHERE proposal.redcap_repeat_instrument IS NULL
@@ -473,7 +473,7 @@ exports.countByYear = (req, res) => {
 }
 
 // /proposals/count/submitted-for-services/by-month
-exports.countByMonth = (req, res) => {
+exports.countSubmittedForServicesByMonth = (req, res) => {
     query = `SELECT extract(month from prop_submit) AS month, CAST(COUNT(*) AS INT)
         FROM proposal
         WHERE proposal.redcap_repeat_instrument IS NULL
@@ -592,6 +592,87 @@ exports.countResubmissionsByTherapeuticArea = (req, res) => {
             AND proposal.redcap_repeat_instance IS NULL
             AND proposal.protocol_status='21'
         GROUP BY name2.description;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+//
+////////////
+
+// /proposals/approved-for-services/count
+exports.countApprovedFormServicesBySubmittedForServices = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-institution
+exports.countApprovedFormServicesByInstitution = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-tic
+exports.countApprovedFormServicesByTic = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-therapeutic-area
+exports.countApprovedFormServicesByTherapeuticArea = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-year
+exports.countApprovedFormServicesByYear = (req, res) => {
+    query = ``
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/approved-for-services/count/by-month
+exports.countApprovedFormServicesByMonth = (req, res) => {
+    query = ``
     db.any(query)
         .then(data => {
             res.status(200).send(data)

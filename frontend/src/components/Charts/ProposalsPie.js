@@ -1,15 +1,6 @@
 import React, { Fragment } from 'react'
 import { ResponsivePie } from '@nivo/pie'
 
-Array.prototype.countBy = function(prop) {
-    return this.reduce(function(groups, item) {
-        const val = item[prop]
-        groups[val] = groups[val] || 0
-        groups[val] += 1
-        return groups
-    }, {})
-}
-
 const tooltip = (event) => {
     const { id, value, label, color } = event
     return (
@@ -25,12 +16,12 @@ const tooltip = (event) => {
     )
 }
 
-const ProposalsByOrganization = (props) => {
+const ProposalsPieChart = (props) => {
     const { proposals, colors, clickHandler } = props
-    const proposalGroups = proposals.map((organization) => {
+    const proposalGroups = proposals.map(group => {
         return {
-            id: organization.name,
-            value: organization.proposals.length,
+            id: group.name,
+            value: group.proposals.length,
         }
     })
     return (
@@ -88,4 +79,4 @@ const ProposalsByOrganization = (props) => {
     )
 }
 
-export default ProposalsByOrganization
+export default ProposalsPieChart

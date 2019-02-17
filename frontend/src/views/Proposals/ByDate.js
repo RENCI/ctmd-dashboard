@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
 import classnames from 'classnames'
+import { ApiContext } from '../../contexts/ApiContext'
 import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import OrgPieChart from '../../components/Charts/ProposalsPie'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -9,11 +10,6 @@ import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
 import Paragraph from '../../components/Typography/Paragraph'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    proposals: apiRoot + 'proposals',
-}
 
 const styles = (theme) => ({
     page: {
@@ -96,9 +92,10 @@ const ProposalsByDate = (props) => {
         start: '2016-01-01',
         end: '2019-12-31',
     })
+    const api = useContext(ApiContext)
 
     useEffect(() => {
-        axios.get(apiUrl.proposals)
+        axios.get(api.proposals)
             .then((response) => {
                 setProposals(response.data)
                 setDisplayedProposals(response.data)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
@@ -12,14 +12,7 @@ import Calendar from '../components/Charts/ProposalsCalendar'
 import TicBarChart from '../components/Charts/ProposalsByTic'
 import StatusBarChart from '../components/Charts/ProposalsByStatus'
 
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    proposalsByTic: apiRoot + 'proposals/by-tic',
-    proposalsByDate: apiRoot + 'proposals/by-date',
-    proposalsByStatus: apiRoot + 'proposals/by-status',
-    statuses: apiRoot + 'statuses',
-    tics: apiRoot + 'tics',
-}
+import { ApiContext } from '../contexts/ApiContext'
 
 const styles = (theme) => ({
     page: {
@@ -69,14 +62,15 @@ const HomePage = (props) => {
     const [proposalsByStatus, setProposalsByStatus] = useState([])
     const [statuses, setStatuses] = useState([])
     const [tics, setTics] = useState([])
+    const api = useContext(ApiContext)
 
     useEffect(() => {
         const promises = [
-            axios.get(apiUrl.proposalsByTic),
-            axios.get(apiUrl.proposalsByDate),
-            axios.get(apiUrl.proposalsByStatus),
-            axios.get(apiUrl.statuses),
-            axios.get(apiUrl.tics),
+            axios.get(api.proposalsByTic),
+            axios.get(api.proposalsByDate),
+            axios.get(api.proposalsByStatus),
+            axios.get(api.statuses),
+            axios.get(api.tics),
         ]
         Promise.all(promises)
             .then((response) => {
