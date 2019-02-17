@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
@@ -17,8 +17,6 @@ import {
     LocationOn as LocationIcon,
     Star as MetricsIcon
 } from '@material-ui/icons'
-
-import { AuthConsumer } from './contexts/AuthContext'
 
 import ScrollToTop from './utils/ScrollToTop'
 
@@ -114,16 +112,12 @@ const styles = (theme) => ({
     },
 })
 
-class Dashboard extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            mobileOpen: false,
-        }
-    }
+const Dashboard = props => {
+    const { classes } = props
+    const [mobileOpen, setMobileOpen] = useState()
 
     // this object is passed to the SideMenu component to build the dashboard's side menu
-    sideMenuItems = [
+    const sideMenuItems = [
         {
             items: [
                 { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
@@ -156,95 +150,78 @@ class Dashboard extends Component {
         },
     ]
 
-    userMenuItems = [
+    const userMenuItems = [
         { text: 'Settings', href: '/settings', icon: <SettingsIcon /> },
         { text: 'Logout', href: '/', icon: <ExitToAppIcon />, },
     ]
     
-    handleDrawerToggle = () => {
-        this.setState({
-            mobileOpen: !this.state.mobileOpen,
-        });
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen)
     }
 
-    render() {
-        const { classes } = this.props
         
-        const brand = (
-            <div className={ classes.brand }>
-                <div style={{ fontSize: '360%', lineHeight: '4rem', }}>Duke</div>
-                <div style={{ fontSize: '180%', lineHeight: '2rem', }}>Vanderbilt</div>
-                <div style={{ fontSize: '400%', lineHeight: '4rem', }}>TIC</div>
-            </div>
-        )
+    const brand = (
+        <div className={ classes.brand }>
+            <div style={{ fontSize: '360%', lineHeight: '4rem', }}>Duke</div>
+            <div style={{ fontSize: '180%', lineHeight: '2rem', }}>Vanderbilt</div>
+            <div style={{ fontSize: '400%', lineHeight: '4rem', }}>TIC</div>
+        </div>
+    )
 
-        return (
-            <AuthConsumer>
-                {
-                    (context) => {
-                        return (
-                            <div className={ classes.layout }>
-                                <nav className={ classes.drawer }>
-                                    <Hidden smUp implementation="css">
-                                        <Drawer anchor={ 'left' } variant="temporary"
-                                            open={ this.state.mobileOpen } onClose={ this.handleDrawerToggle }
-                                            classes={{ paper: classes.drawerPaper, }} container={ this.props.container }
-                                            ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
-                                        >
-                                            <a href="/">{ brand }</a>
-                                            <SideMenu menuItems={ this.sideMenuItems }/>
-                                        </Drawer>
-                                    </Hidden>
-                                    <Hidden xsDown implementation="css">
-                                        <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
-                                            <a href="/">{ brand }</a>
-                                            <SideMenu menuItems={ this.sideMenuItems }/>
-                                        </Drawer>
-                                    </Hidden>
-                                </nav>
-                                <main className={ classes.main }>
-                                    <CssBaseline />
-                                    <ScrollToTop>
-                                        <Toolbar className={ classes.toolbar }>
-                                            <IconButton
-                                                color="inherit"
-                                                aria-label="Open drawer"
-                                                onClick={ this.handleDrawerToggle }
-                                                className={ classes.menuButton }
-                                            >
-                                                <MenuIcon />
-                                            </IconButton>
-                                            <div className={ classes.flexer }/>
-                                            <UserMenu menuItems={ this.userMenuItems }/>
-                                        </Toolbar>
-                                        <Switch>
-                                            <Route exact path="/settings" component={ SettingsPage }/>
-                                            <Route exact path="/proposals" component={ ProposalsAll }/>
-                                            <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
-                                            <Route path="/proposals/tic" component={ ProposalsByTic }/>
-                                            <Route path="/proposals/status" component={ ProposalsByStatus }/>
-                                            <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
-                                            <Route path="/proposals/date" component={ ProposalsByDate }/>
-                                            <Route path="/proposals/submitted-for-services" component={ ProposalsSubmittedForServices }/>
-                                            <Route path="/proposals/resubmissions" component={ ProposalsResubmitted }/>
-                                            <Route path="/site-report" component={ SiteReportPage }/>
-                                            <Route path="/study-metrics" component={ StudyMetricsPage }/>
-                                            <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
-                                            <Route path="/" component={ HomePage }/>
-                                        </Switch>
-                                    </ScrollToTop>
-                                </main>
-                            </div>
-                        )
-                    }
-                }
-            </AuthConsumer>
-        )
-    }
-}
-
-Dashboard.propTypes = {
-    classes: PropTypes.object.isRequired,
+    return (
+        <div className={ classes.layout }>
+            <nav className={ classes.drawer }>
+                <Hidden smUp implementation="css">
+                    <Drawer anchor={ 'left' } variant="temporary"
+                        open={ mobileOpen } onClose={ handleDrawerToggle }
+                        classes={{ paper: classes.drawerPaper, }} container={ props.container }
+                        ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
+                    >
+                        <a href="/">{ brand }</a>
+                        <SideMenu menuItems={ sideMenuItems }/>
+                    </Drawer>
+                </Hidden>
+                <Hidden xsDown implementation="css">
+                    <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
+                        <a href="/">{ brand }</a>
+                        <SideMenu menuItems={ sideMenuItems }/>
+                    </Drawer>
+                </Hidden>
+            </nav>
+            <main className={ classes.main }>
+                <CssBaseline />
+                <ScrollToTop>
+                    <Toolbar className={ classes.toolbar }>
+                        <IconButton
+                            color="inherit"
+                            aria-label="Open drawer"
+                            onClick={ handleDrawerToggle }
+                            className={ classes.menuButton }
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <div className={ classes.flexer }/>
+                        <UserMenu menuItems={ userMenuItems }/>
+                    </Toolbar>
+                    <Switch>
+                        <Route exact path="/settings" component={ SettingsPage }/>
+                        <Route exact path="/proposals" component={ ProposalsAll }/>
+                        <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
+                        <Route path="/proposals/tic" component={ ProposalsByTic }/>
+                        <Route path="/proposals/status" component={ ProposalsByStatus }/>
+                        <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
+                        <Route path="/proposals/date" component={ ProposalsByDate }/>
+                        <Route path="/proposals/submitted-for-services" component={ ProposalsSubmittedForServices }/>
+                        <Route path="/proposals/resubmissions" component={ ProposalsResubmitted }/>
+                        <Route path="/site-report" component={ SiteReportPage }/>
+                        <Route path="/study-metrics" component={ StudyMetricsPage }/>
+                        <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
+                        <Route path="/" component={ HomePage }/>
+                    </Switch>
+                </ScrollToTop>
+            </main>
+        </div>
+    )
 }
 
 export default withStyles(styles)(Dashboard)

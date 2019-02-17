@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
+import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
 import classnames from 'classnames'
 import { Card, CardContent } from '@material-ui/core'
@@ -8,12 +9,6 @@ import OrgPieChart from '../../components/Charts/ProposalsPie'
 import { CircularLoader } from '../../components/Progress/Progress'
 import Subheading from '../../components/Typography/Subheading'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    proposals: apiRoot + 'proposals',
-    proposalsByStatus: apiRoot + 'proposals/by-status',
-}
 
 const styles = (theme) => ({
     page: {
@@ -42,6 +37,7 @@ const ProposalsByStatus = (props) => {
     const { classes, theme } = props
     const [proposalsByStatus, setProposalsByStatus] = useState([])
     const [proposals, setProposals] = useState([])
+    const api = useContext(ApiContext)
     
     const selectProposals = ({ id }) => {
         const index = proposalsByStatus.findIndex(status => status.name === id)
@@ -49,8 +45,8 @@ const ProposalsByStatus = (props) => {
     }
 
     useEffect(() => {
-        axios.get(apiUrl.proposalsByStatus)
-            .then((response) => setProposalsByStatus(response.data))
+        axios.get(api.proposalsByStatus)
+            .then(response => setProposalsByStatus(response.data))
             .catch(error => console.log('Error', error))
     }, [])
 

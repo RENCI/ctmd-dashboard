@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
+import { ApiContext } from '../../contexts/ApiContext'
 import classnames from 'classnames'
 import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import OrgPieChart from '../../components/Charts/ProposalsPie'
@@ -9,15 +10,6 @@ import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
 import Paragraph from '../../components/Typography/Paragraph'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    resubmissions: apiRoot + 'proposals/resubmissions',
-    resubmissionsCount: apiRoot + 'proposals/resubmissions/count',
-    resubmissionsCountByInstitution: apiRoot + 'proposals/resubmissions/count/by-institution',
-    resubmissionsCountByTic: apiRoot + 'proposals/resubmissions/count/by-tic',
-    resubmissionsCountByTherapeuticArea: apiRoot + 'proposals/resubmissions/count/by-therapeutic-area',
-}
 
 const styles = (theme) => ({
     page: {
@@ -37,16 +29,17 @@ const Resubmissions = (props) => {
     const { classes, theme } = props
     const [resubmissions, setResubmissions] = useState(null)
     const [resubmissionCounts, setResubmissionCounts] = useState(null)
+    const api = useContext(ApiContext)
 
     useEffect(() => {
-        axios.get(apiUrl.resubmissions)
-            .then((response) => setResubmissions(response[0].data))
+        axios.get(api.resubmissions)
+            .then(response => setResubmissions(response[0].data))
             .catch(error => console.log('Error', error))
         const resubmissionCountPromises = [
-            axios.get(apiUrl.resubmissionsCount),
-            axios.get(apiUrl.resubmissionsCountByInstitution),
-            axios.get(apiUrl.resubmissionsCountByTic),
-            axios.get(apiUrl.resubmissionsCountByTherapeuticArea),
+            axios.get(api.resubmissionsCount),
+            axios.get(api.resubmissionsCountByInstitution),
+            axios.get(api.resubmissionsCountByTic),
+            axios.get(api.resubmissionsCountByTherapeuticArea),
         ]
         Promise.all(resubmissionCountPromises)
             .then((response) => {

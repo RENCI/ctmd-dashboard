@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
+import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
 import classnames from 'classnames'
 import { Card, CardContent } from '@material-ui/core'
@@ -8,11 +9,6 @@ import OrgPieChart from '../../components/Charts/ProposalsPie'
 import { CircularLoader } from '../../components/Progress/Progress'
 import Subheading from '../../components/Typography/Subheading'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    proposalsByTherapeuticArea: apiRoot + 'proposals/by-therapeutic-area',
-}
 
 const styles = (theme) => ({
     page: {
@@ -42,6 +38,7 @@ const ProposalsByTherapeuticArea = (props) => {
     const { classes, theme } = props
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState([])
     const [proposals, setProposals] = useState([])
+    const api = useContext(ApiContext)
     
     const selectProposals = ({ id }) => {
         const index = proposalsByTherapeuticArea.findIndex(status => status.name === id)
@@ -49,8 +46,8 @@ const ProposalsByTherapeuticArea = (props) => {
     }
 
     useEffect(() => {
-        axios.get(apiUrl.proposalsByTherapeuticArea)
-            .then((response) => setProposalsByTherapeuticArea(response.data))
+        axios.get(api.proposalsByTherapeuticArea)
+            .then(response => setProposalsByTherapeuticArea(response.data))
             .catch(error => console.log('Error', error))
     }, [])
 

@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { AuthProvider } from './contexts/AuthContext'
-import Dashboard from './Dashboard'
-
 import { BrowserRouter as Router } from 'react-router-dom'
 import Theme from './Theme'
+import Dashboard from './Dashboard'
 import { MuiThemeProvider } from '@material-ui/core/styles'
-
+import { ApiContext, endpoints } from './contexts/ApiContext'
 const styles = (theme) => ({
     root: { },
 })
@@ -27,14 +25,11 @@ class App extends Component {
     render() {
         return (
             <Router basename={ '' }>
-                <MuiThemeProvider theme={ Theme }>
-                    <AuthProvider value={{
-                        authenticated: this.state.authenticated,
-                        logout: this.logout,
-                    }}>
+                <ApiContext.Provider value={ endpoints }>
+                    <MuiThemeProvider theme={ Theme }>
                         <Dashboard />
-                    </AuthProvider>
-                </MuiThemeProvider>
+                    </MuiThemeProvider>
+                </ApiContext.Provider>
             </Router>
         )
     }

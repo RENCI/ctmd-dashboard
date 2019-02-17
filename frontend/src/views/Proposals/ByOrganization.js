@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
+import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
 import classnames from 'classnames'
 import { Card, CardContent } from '@material-ui/core'
@@ -8,12 +9,6 @@ import OrgPieChart from '../../components/Charts/ProposalsPie'
 import { CircularLoader } from '../../components/Progress/Progress'
 import Subheading from '../../components/Typography/Subheading'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    proposals: apiRoot + 'proposals',
-    proposalsByOrganization: apiRoot + 'proposals/by-organization',
-}
 
 const styles = (theme) => ({
     page: {
@@ -43,6 +38,7 @@ const ProposalsByOrganization = (props) => {
     const { classes, theme } = props
     const [proposalsByOrganization, setProposalsByOrganization] = useState([])
     const [proposals, setProposals] = useState([])
+    const api = useContext(ApiContext)
     
     const selectProposals = ({ id }) => {
         const index = proposalsByOrganization.findIndex(organization => organization.name === id)
@@ -50,7 +46,7 @@ const ProposalsByOrganization = (props) => {
     }
 
     useEffect(() => {
-        axios.get(apiUrl.proposalsByOrganization)
+        axios.get(api.proposalsByOrganization)
             .then((response) => setProposalsByOrganization(response.data))
             .catch(error => console.log('Error', error))
     }, [])

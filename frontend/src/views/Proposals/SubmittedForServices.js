@@ -1,22 +1,13 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
+import { ApiContext } from '../../contexts/ApiContext'
 import classnames from 'classnames'
 import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import { CircularLoader } from '../../components/Progress/Progress'
 import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
 import { ResponsiveBar } from '@nivo/bar'
-
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'https://pmd.renci.org/api/' : 'http://localhost:3030/'
-const apiUrl = {
-    overall: apiRoot + 'proposals/submitted-for-services/count',
-    countByInstitution: apiRoot + 'proposals/submitted-for-services/count/by-institution',
-    countByTic: apiRoot + 'proposals/submitted-for-services/count/by-tic',
-    countByTherapeuticArea: apiRoot + 'proposals/submitted-for-services/count/by-therapeutic-area',
-    countByYear: apiRoot + 'proposals/submitted-for-services/count/by-year',
-    countByMonth: apiRoot + 'proposals/submitted-for-services/count/by-month',
-}
 
 const styles = (theme) => ({
     page: {
@@ -35,15 +26,16 @@ const styles = (theme) => ({
 const SubmittedForServices = (props) => {
     const { classes, theme } = props
     const [submissionCounts, setSubmissionCounts] = useState(null)
+    const api = useContext(ApiContext)
 
     useEffect(() => {
         const submissionCountPromises = [
-            axios.get(apiUrl.overall),
-            axios.get(apiUrl.countByInstitution),
-            axios.get(apiUrl.countByTic),
-            axios.get(apiUrl.countByTherapeuticArea),
-            axios.get(apiUrl.countByYear),
-            axios.get(apiUrl.countByMonth),
+            axios.get(api.overall),
+            axios.get(api.countByInstitution),
+            axios.get(api.countByTic),
+            axios.get(api.countByTherapeuticArea),
+            axios.get(api.countByYear),
+            axios.get(api.countByMonth),
         ]
         Promise.all(submissionCountPromises)
             .then((response) => {

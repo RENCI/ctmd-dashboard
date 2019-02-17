@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 import Heading from '../../components/Typography/Heading'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 import { CircularLoader } from '../../components/Progress/Progress'
-
-const proposalsUrl = process.env.NODE_ENV === 'production' ? 'https://pmd.renci.org/api/proposals' : 'http://localhost:3030/proposals'
+import { ApiContext } from '../../contexts/ApiContext'
 
 const proposalsTable = (props) => {
     const [proposals, setProposals] = useState([])
+    const api = useContext(ApiContext)
 
     useEffect(() => {
-        axios.get(proposalsUrl)
+        axios.get(api.proposals)
             .then((response) => setProposals(response.data))
             .catch(error => { console.error('Error:', error) })
     }, [])
