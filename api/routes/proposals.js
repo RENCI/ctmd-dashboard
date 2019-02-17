@@ -29,11 +29,11 @@ router.route('/resubmissions/count/by-institution').get(proposalsController.coun
 router.route('/resubmissions/count/by-tic').get(proposalsController.countResubmissionsByTic)
 router.route('/resubmissions/count/by-therapeutic-area').get(proposalsController.countResubmissionsByTherapeuticArea)
 
-router.route('approved-for-services/count').get(proposalsController.countApprovedFormServicesBySubmittedForServices)
-router.route('approved-for-services/count/by-institution').get(proposalsController.countApprovedFormServicesByInstitution)
-router.route('approved-for-services/count/by-tic').get(proposalsController.countApprovedFormServicesByTic)
-router.route('approved-for-services/count/by-therapeutic-area').get(proposalsController.countApprovedFormServicesByTherapeuticArea)
-router.route('approved-for-services/count/by-year').get(proposalsController.countApprovedFormServicesByYear)
-router.route('approved-for-services/count/by-month').get(proposalsController.countApprovedFormServicesByMonth)
+router.route('approved-for-services/count').get(proposalsController.countApprovedForServices)
+router.route('approved-for-services/count/by-institution').get(proposalsController.countApprovedForServicesByInstitution)
+router.route('approved-for-services/count/by-tic').get(proposalsController.countApprovedForServicesByTic)
+router.route('approved-for-services/count/by-therapeutic-area').get(proposalsController.countApprovedForServicesByTherapeuticArea)
+router.route('approved-for-services/count/by-year').get(proposalsController.countApprovedForServicesByYear)
+router.route('approved-for-services/count/by-month').get(proposalsController.countApprovedForServicesByMonth)
 
 module.exports = router

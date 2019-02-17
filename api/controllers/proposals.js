@@ -606,7 +606,7 @@ exports.countResubmissionsByTherapeuticArea = (req, res) => {
 ////////////
 
 // /proposals/approved-for-services/count
-exports.countApprovedFormServicesBySubmittedForServices = (req, res) => {
+exports.countApprovedForServices = (req, res) => {
     query = ``
     db.any(query)
         .then(data => {
@@ -619,7 +619,7 @@ exports.countApprovedFormServicesBySubmittedForServices = (req, res) => {
 }
 
 // /proposals/approved-for-services/count/by-institution
-exports.countApprovedFormServicesByInstitution = (req, res) => {
+exports.countApprovedForServicesByInstitution = (req, res) => {
     query = ``
     db.any(query)
         .then(data => {
@@ -632,7 +632,7 @@ exports.countApprovedFormServicesByInstitution = (req, res) => {
 }
 
 // /proposals/approved-for-services/count/by-tic
-exports.countApprovedFormServicesByTic = (req, res) => {
+exports.countApprovedForServicesByTic = (req, res) => {
     query = ``
     db.any(query)
         .then(data => {
@@ -645,7 +645,7 @@ exports.countApprovedFormServicesByTic = (req, res) => {
 }
 
 // /proposals/approved-for-services/count/by-therapeutic-area
-exports.countApprovedFormServicesByTherapeuticArea = (req, res) => {
+exports.countApprovedForServicesByTherapeuticArea = (req, res) => {
     query = ``
     db.any(query)
         .then(data => {
@@ -658,7 +658,7 @@ exports.countApprovedFormServicesByTherapeuticArea = (req, res) => {
 }
 
 // /proposals/approved-for-services/count/by-year
-exports.countApprovedFormServicesByYear = (req, res) => {
+exports.countApprovedForServicesByYear = (req, res) => {
     query = ``
     db.any(query)
         .then(data => {
@@ -671,7 +671,7 @@ exports.countApprovedFormServicesByYear = (req, res) => {
 }
 
 // /proposals/approved-for-services/count/by-month
-exports.countApprovedFormServicesByMonth = (req, res) => {
+exports.countApprovedForServicesByMonth = (req, res) => {
     query = ``
     db.any(query)
         .then(data => {
