@@ -2,12 +2,11 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
-import classnames from 'classnames'
-import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
-import { CircularLoader } from '../../components/Progress/Progress'
 import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
+import { Card, CardContent } from '@material-ui/core'
 import { ResponsiveBar } from '@nivo/bar'
+import { CircularLoader } from '../../components/Progress/Progress'
 
 const styles = (theme) => ({
     page: {

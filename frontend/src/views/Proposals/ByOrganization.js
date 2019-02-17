@@ -5,9 +5,9 @@ import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
 import classnames from 'classnames'
 import { Card, CardContent } from '@material-ui/core'
-import OrgPieChart from '../../components/Charts/ProposalsPie'
-import { CircularLoader } from '../../components/Progress/Progress'
 import Subheading from '../../components/Typography/Subheading'
+import ProposalsPieChart from '../../components/Charts/ProposalsPie'
+import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 
 const styles = (theme) => ({
@@ -60,7 +60,7 @@ const ProposalsByOrganization = (props) => {
                     <Subheading>Submitting Organizations</Subheading>
                     {
                         (proposalsByOrganization.length > 0)
-                        ? <OrgPieChart
+                        ? <ProposalsPieChart
                             proposals={ proposalsByOrganization }
                             colors={ Object.values(theme.palette.extended).splice(0, 9) }
                             clickHandler={ selectProposals }

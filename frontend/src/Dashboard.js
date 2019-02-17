@@ -1,5 +1,4 @@
-import React, { useState, useContext } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
@@ -11,7 +10,6 @@ import {
     Share as ShareIcon,
     Timeline as TimelineIcon,
     ExitToApp as ExitToAppIcon,
-    Description as DescriptionIcon,
     Assessment as AssessmentIcon,
     KeyboardArrowRight as KeyboardArrowRightIcon,
     LocationOn as LocationIcon,

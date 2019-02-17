@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import classnames from 'classnames'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
-import classnames from 'classnames'
-import { Card, CardContent } from '@material-ui/core'
-import OrgPieChart from '../../components/Charts/ProposalsPie'
-import { CircularLoader } from '../../components/Progress/Progress'
 import Subheading from '../../components/Typography/Subheading'
+import { Card, CardContent } from '@material-ui/core'
+import ProposalsPieChart from '../../components/Charts/ProposalsPie'
+import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 
 const styles = (theme) => ({
@@ -58,7 +58,7 @@ const ProposalsByStatus = (props) => {
                 <CardContent className={ classnames(classes.chartContainer, classes.pieChartContainer) }>
                     {
                         (proposalsByStatus.length > 0)
-                        ? <OrgPieChart
+                        ? <ProposalsPieChart
                             proposals={ proposalsByStatus }
                             colors={ Object.values(theme.palette.extended).splice(0, 9) }
                             clickHandler={ selectProposals }

@@ -4,12 +4,11 @@ import axios from 'axios'
 import classnames from 'classnames'
 import { ApiContext } from '../../contexts/ApiContext'
 import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
-import OrgPieChart from '../../components/Charts/ProposalsPie'
-import { CircularLoader } from '../../components/Progress/Progress'
 import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
 import Paragraph from '../../components/Typography/Paragraph'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
+import { CircularLoader } from '../../components/Progress/Progress'
 
 const styles = (theme) => ({
     page: {

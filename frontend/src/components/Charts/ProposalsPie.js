@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { ResponsivePie } from '@nivo/pie'
 
 const tooltip = (event) => {
-    const { id, value, label, color } = event
+    const { id, value, color } = event
     return (
         <Fragment>
             <div style ={{ display: 'flex', }}>

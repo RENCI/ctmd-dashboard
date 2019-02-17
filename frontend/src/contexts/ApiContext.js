@@ -9,7 +9,6 @@ export const endpoints = {
     proposalsByDate: apiRoot + 'proposals/by-date',
     proposalsByStatus: apiRoot + 'proposals/by-status',
     proposalsByOrganization: apiRoot + 'proposals/by-organization',
-    proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByTherapeuticArea: apiRoot + 'proposals/by-therapeutic-area',
     overall: apiRoot + 'proposals/submitted-for-services/count',
     countByInstitution: apiRoot + 'proposals/submitted-for-services/count/by-institution',

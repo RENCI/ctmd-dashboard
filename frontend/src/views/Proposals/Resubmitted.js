@@ -1,32 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
-import classnames from 'classnames'
-import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
-import OrgPieChart from '../../components/Charts/ProposalsPie'
-import { CircularLoader } from '../../components/Progress/Progress'
 import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
-import Paragraph from '../../components/Typography/Paragraph'
-import ProposalsTable from '../../components/Charts/ProposalsTable'
-
-const styles = (theme) => ({
-    page: {
-        // ...theme.mixins.debug
-    },
-    card: {
-        marginBottom: 2 * theme.spacing.unit,
-        backgroundColor: theme.palette.grey[100],
-    },
-    table: {
-        padding: 2 * theme.spacing.unit,
-        overflowY: 'scroll',
-    },
-})
+import { CircularLoader } from '../../components/Progress/Progress'
 
 const Resubmissions = (props) => {
-    const { classes, theme } = props
     const [resubmissions, setResubmissions] = useState(null)
     const [resubmissionCounts, setResubmissionCounts] = useState(null)
     const api = useContext(ApiContext)
@@ -82,4 +61,4 @@ const Resubmissions = (props) => {
     )
 }
 
-export default withStyles(styles, { withTheme: true })(Resubmissions)
+export default Resubmissions

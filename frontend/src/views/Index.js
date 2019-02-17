@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
@@ -55,7 +55,6 @@ const styles = (theme) => ({
 
 const HomePage = (props) => {
     const { classes, theme } = props
-    const [width, setWidth] = useState(0)
     const [grouping, setGrouping] = useState('tic')
     const [proposalsByTic, setProposalsByTic] = useState([])
     const [proposalsByDate, setProposalsByDate] = useState([])

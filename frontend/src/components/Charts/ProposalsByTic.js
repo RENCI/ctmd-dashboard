@@ -27,7 +27,7 @@ const tooltip = (event) => {
 }
 
 const proposalsGroupedByTicAndStatus = (props) => {
-    const { proposals, statuses, colors, width } = props
+    const { proposals, statuses, colors } = props
     const proposalGroups = proposals.map((tic) => {
         return {
             name: tic.name,

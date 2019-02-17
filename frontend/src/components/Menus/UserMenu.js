@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState } from 'react'
 import { Menu, ListItemIcon, ListItemText, IconButton, MenuItem } from '@material-ui/core'
 import { NavLink } from 'react-router-dom'
 import { AccountCircle as AccountIcon } from '@material-ui/icons'
