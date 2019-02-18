@@ -541,7 +541,7 @@ export default function() {
   }
 
   function active(d) {
-    return selectedProposals.length == 0 || d.proposals.reduce(function(p, c) {
+    return selectedProposals.length === 0 || d.proposals.reduce(function(p, c) {
       return p || selectedProposals.indexOf(c.id) !== -1;
     }, false);
   }

@@ -37,14 +37,18 @@ export default function() {
             if (d.source) {
               // Link
               return d.source.name + "→" + d.target.name + "<br><br>" +
-                     "Proposals: " + d.proposals.length;
+                     "Proposals: " + d.proposals.length +
+                     (selectedNodes.length > 0 ?
+                     "<br>Selected proposals: " + selectionOverlap(d) : "");
             }
             else {
               // Node
               switch (d.type) {
                 case "pi":
                   return "PI: " + d.name + "<br><br>" +
-                         "Proposals: " + d.proposals.length;
+                         "Proposals: " + d.proposals.length +
+                         (selectedNodes.length > 0 ?
+                         "<br>Selected proposals: " + selectionOverlap(d) : "");
 
                 case "proposal":
                   return "Proposal: " + d.name + "<br><br>" +
@@ -54,19 +58,27 @@ export default function() {
 
                 case "org":
                   return "Organization: " + d.name + "<br><br>" +
-                         "Proposals: " + d.proposals.length;
+                         "Proposals: " + d.proposals.length +
+                         (selectedNodes.length > 0 ?
+                         "<br>Selected proposals: " + selectionOverlap(d) : "");
 
                 case "tic":
                   return "TIC: " + d.name + "<br><br>" +
-                         "Proposals: " + d.proposals.length;
+                         "Proposals: " + d.proposals.length +
+                         (selectedNodes.length > 0 ?
+                         "<br>Selected proposals: " + selectionOverlap(d) : "");
 
                 case "area":
                   return "Therapeutic area: " + d.name + "<br><br>" +
-                         "Proposals: " + d.proposals.length;
+                         "Proposals: " + d.proposals.length +
+                         (selectedNodes.length > 0 ?
+                         "<br>Selected proposals: " + selectionOverlap(d) : "");
 
                 case "status":
                   return "Status: " + d.name + "<br><br>" +
-                         "Proposals: " + d.proposals.length;
+                         "Proposals: " + d.proposals.length +
+                         (selectedNodes.length > 0 ?
+                         "<br>Selected proposals: " + selectionOverlap(d) : "");
 
                 default:
                   console.log("Invalid type: " + d.type);
@@ -429,7 +441,7 @@ export default function() {
       function fill(d) {
         return nodeColorScale(d.type);
       }
-    }    
+    }
 
     function selectNode(d) {
       let i = selectedNodesIndexOf(d);
@@ -566,9 +578,7 @@ export default function() {
   }
 
   function active(d) {
-    return selectedProposals.length == 0 || d.proposals.reduce(function(p, c) {
-      return p || selectedProposals.indexOf(c.id) !== -1;
-    }, false);
+    return selectedProposals.length === 0 || selectionOverlap(d) > 0;
   }
 
   function selectedNodesIndexOf(d) {
@@ -578,6 +588,13 @@ export default function() {
     }
 
     return -1;
+  }
+
+  function selectionOverlap(d) {
+    return d.proposals.reduce(function(p, c) {
+      if (selectedProposals.indexOf(c.id) !== -1) p++;
+      return p;
+    }, 0);
   }
 
   function isNodeSelected(d) {
