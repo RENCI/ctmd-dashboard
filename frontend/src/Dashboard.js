@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
@@ -113,7 +113,7 @@ const styles = (theme) => ({
 const Dashboard = props => {
     const { classes } = props
     const [mobileOpen, setMobileOpen] = useState()
-    
+
     // this object is passed to the SideMenu component to build the dashboard's side menu
     const sideMenuItems = [
         {
