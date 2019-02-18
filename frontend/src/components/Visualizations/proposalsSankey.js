@@ -318,7 +318,7 @@ export default function() {
 
     linkOpacityScale
           .domain([1, d3.max(links, function(d) { return d.value; })])
-          .range([0.4, 1]);
+          .range([0.4, 0.9]);
 
     // Draw the visualization
     drawLinks();
@@ -429,38 +429,33 @@ export default function() {
       function fill(d) {
         return nodeColorScale(d.type);
       }
+    }    
 
-      function selectNode(d) {
-        let i = selectedNodesIndexOf(d);
+    function selectNode(d) {
+      let i = selectedNodesIndexOf(d);
 
-        if (i === -1) selectedNodes.push({
-          type: d.type,
-          id: d.id
-        });
-      }
+      if (i === -1) selectedNodes.push({
+        type: d.type,
+        id: d.id
+      });
+    }
 
-      function deselectNode(d) {
-        let i = selectedNodesIndexOf(d);
+    function deselectNode(d) {
+      let i = selectedNodesIndexOf(d);
 
-        if (i !== -1) selectedNodes.splice(i, 1);
-      }
+      if (i !== -1) selectedNodes.splice(i, 1);
     }
 
     function drawLinks() {
       // Bind data for links
-      var link = svg.select(".links").selectAll(".link")
+      let link = svg.select(".links").selectAll(".link")
           .data(links, function(d) {
             return d.source.id + "_" + d.target.id;
           });
 
       // Link enter
-      link.enter().append("path")
+      let linkEnter = link.enter().append("g")
           .attr("class", "link")
-          .style("fill", "none")
-          .style("stroke", "#999")
-          .style("stroke-opacity", linkOpacity)
-          .style("stroke-width", function(d) { return d.width / 2; })
-          .attr("d", d3Sankey.sankeyLinkHorizontal())
           .on("mouseover", function(d) {
             if (!active(d)) return;
 
@@ -480,13 +475,36 @@ export default function() {
 
             if (!active(d)) return;
 
+            isNodeSelected(d.source) ? deselectNode(d.source) : selectNode(d.source);
+            isNodeSelected(d.target) ? deselectNode(d.target) : selectNode(d.target);
+
             var ids = d.proposals.map(function(d) { return d.id; });
 
             dispatcher.call("selectProposals", this, ids);
           });
 
+      linkEnter.append("path")
+          .attr("class", "background")
+          .style("fill", "none")
+          .style("stroke", "#999")
+          .style("stroke-opacity", linkOpacity)
+          .style("stroke-width", function(d) { return d.width / 2; })
+          .attr("d", d3Sankey.sankeyLinkHorizontal())
+
+      linkEnter.append("path")
+          .attr("class", "foreground")
+          .style("fill", "none")
+          .style("stroke", "#999")
+          .style("stroke-opacity", 0.9)
+          .style("stroke-width", 0)
+          .attr("d", d3Sankey.sankeyLinkHorizontal());
+
       // Link update
-      link.transition()
+      link.select(".background").transition()
+          .attr("d", d3Sankey.sankeyLinkHorizontal())
+          .style("stroke-width", function(d) { return d.width / 2; });
+
+      link.select(".foreground").transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link exit
@@ -582,25 +600,32 @@ export default function() {
 
     if (proposals.length > 0) {
       // Change link appearance
-      svg.select(".links").selectAll(".link").transition()
+      let link = svg.select(".links").selectAll(".link");
+
+      link.select(".background").transition()
           .style("stroke-opacity", function(d) {
-            return linkConnected(d) ? 0.9 : 0.1;
+            return linkConnected(d) ? 0.5 : 0.1;
           });
 
-      svg.select(".links").selectAll(".link")
-          .filter(function(d) {
-            return linkConnected(d);
-          }).raise();
+      link.select(".foreground").transition()
+          .style("stroke-width", function(d) {
+            let o = overlap(d) / d.proposals.length;
+            return d.width / 2 * o;
+          });
+
+      link.filter(function(d) {
+        return linkConnected(d);
+      }).raise();
 
       // Change node appearance
-      let nodes = svg.select(".nodes").selectAll(".node");
+      let node = svg.select(".nodes").selectAll(".node");
 
-      nodes.select(".background").transition()
+      node.select(".background").transition()
           .style("fill-opacity", function(d) {
             return nodeConnected(d) ? 0.5 : 0.1;
           });
 
-      nodes.select(".foreground").transition()
+      node.select(".foreground").transition()
           .attr("y", function(d) {
             let o = 1 - overlap(d) / d.proposals.length;
             return d.y0 + (d.y1 - d.y0) * o / 2;
@@ -610,7 +635,7 @@ export default function() {
             return (d.y1 - d.y0) * o;
           });
 
-      nodes.select(".border")
+      node.select(".border")
           .style("stroke", function(d) {
             return isNodeSelected(d) ? "black" : "none";
           });
@@ -642,12 +667,17 @@ export default function() {
     }
     else {
       // Reset
-      svg.select(".links").selectAll(".link").transition()
+      let link = svg.select(".links").selectAll(".link");
+
+      link.select(".background").transition()
           .style("stroke-opacity", linkOpacity);
 
-      let nodes = svg.select(".nodes").selectAll(".node");
+      link.select(".foreground").transition()
+          .style("stroke-width", 0);
 
-      nodes.select(".foreground").transition()
+      let node = svg.select(".nodes").selectAll(".node");
+
+      node.select(".foreground").transition()
           .attr("y", function(d) {
             return d.y0;
           })
@@ -655,7 +685,7 @@ export default function() {
             return d.y1 - d.y0;
           });
 
-      nodes.select(".border")
+      node.select(".border")
           .style("stroke", "none");
 
       svg.select(".labels").selectAll(".nodeLabel").transition()
