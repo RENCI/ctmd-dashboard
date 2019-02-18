@@ -350,8 +350,6 @@ export default function() {
       let nodeEnter = node.enter().append("g")
           .attr("class", "node")
           .on("mouseover", function(d) {
-            if (!active(d)) return;
-
             tip.show(d, this);
 
             var ids = d.proposals.map(function(d) { return d.id; });
@@ -365,8 +363,6 @@ export default function() {
           })
           .on("click", function(d) {
             d3.event.stopPropagation();
-
-            if (!active(d)) return;
 
             isNodeSelected(d) ? deselectNode(d) : selectNode(d);
 
@@ -469,8 +465,6 @@ export default function() {
       let linkEnter = link.enter().append("g")
           .attr("class", "link")
           .on("mouseover", function(d) {
-            if (!active(d)) return;
-
             tip.show(d, this);
 
             var ids = d.proposals.map(function(d) { return d.id; });
@@ -484,8 +478,6 @@ export default function() {
           })
           .on("click", function(d) {
             d3.event.stopPropagation();
-
-            if (!active(d)) return;
 
             isNodeSelected(d.source) ? deselectNode(d.source) : selectNode(d.source);
             isNodeSelected(d.target) ? deselectNode(d.target) : selectNode(d.target);
@@ -617,7 +609,10 @@ export default function() {
 
     if (proposals.length > 0) {
       // Change link appearance
-      let link = svg.select(".links").selectAll(".link");
+      let link = svg.select(".links").selectAll(".link")
+          .style("pointer-events", function(d) {
+            return active(d) ? null : "none";
+          });
 
       link.select(".background").transition()
           .style("stroke-opacity", function(d) {
@@ -635,7 +630,10 @@ export default function() {
       }).raise();
 
       // Change node appearance
-      let node = svg.select(".nodes").selectAll(".node");
+      let node = svg.select(".nodes").selectAll(".node")
+          .style("pointer-events", function(d) {
+            return active(d) ? null : "none";
+          });
 
       node.select(".background").transition()
           .style("fill-opacity", function(d) {
