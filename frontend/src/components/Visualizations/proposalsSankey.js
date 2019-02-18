@@ -14,6 +14,7 @@ export default function() {
       data = [],
       network = {},
       selectedProposals = [],
+      selectedNodes = [],
 
       // Scales
       linkOpacityScale = d3.scaleLinear(),
@@ -94,6 +95,7 @@ export default function() {
       var svgEnter = svg.enter().append("svg")
           .attr("class", "proposalsSankey")
           .on("click", function() {
+            selectedNodes = [];
             dispatcher.call("selectProposals", this, null);
           });
 
@@ -324,22 +326,17 @@ export default function() {
     drawLabels();
 
     function drawNodes() {
+      let r = 2;
+
       // Bind nodes
-      var node = svg.select(".nodes").selectAll(".node")
+      let node = svg.select(".nodes").selectAll(".node")
           .data(nodes, function(d) {
             return d.id;
           });
 
       // Node enter
-      node.enter().append("rect")
+      let nodeEnter = node.enter().append("g")
           .attr("class", "node")
-          .attr("rx", 2)
-          .attr("ry", 2)
-          .attr("x", function(d) { return d.x0; })
-          .attr("y", function(d) { return d.y0; })
-          .attr("width", function(d) { return d.x1 - d.x0; })
-          .attr("height", function(d) { return d.y1 - d.y0; })
-          .style("fill", nodeFill)
           .on("mouseover", function(d) {
             if (!active(d)) return;
 
@@ -350,8 +347,6 @@ export default function() {
             dispatcher.call("highlightProposals", this, ids);
           })
           .on("mouseout", function() {
-            highlightProposals();
-
             tip.hide();
 
             dispatcher.call("highlightProposals", this, null);
@@ -361,25 +356,93 @@ export default function() {
 
             if (!active(d)) return;
 
+            isNodeSelected(d) ? deselectNode(d) : selectNode(d);
+
             var ids = d.proposals.map(function(d) { return d.id; });
 
             dispatcher.call("selectProposals", this, ids);
           });
 
+      nodeEnter.append("rect")
+          .attr("class", "background")
+          .attr("rx", r)
+          .attr("ry", r)
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height)
+          .style("fill", fill);
+
+      nodeEnter.append("rect")
+          .attr("class", "foreground")
+          .attr("rx", r)
+          .attr("ry", r)
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height)
+          .style("fill", fill);
+
+      nodeEnter.append("rect")
+          .attr("class", "border")
+          .attr("rx", r)
+          .attr("ry", r)
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height)
+          .style("fill", "none")
+          .style("stroke-width", 2);
+
       // Node update
-      node.transition()
-          .attr("x", function(d) { return d.x0; })
-          .attr("y", function(d) { return d.y0; })
-          .attr("width", function(d) { return d.x1 - d.x0; })
-          .attr("height", function(d) { return d.y1 - d.y0; });
+      node.select(".background,.border").transition()
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height);
+
+      node.select(".foreground").transition()
+          .attr("x", x)
+          .attr("width", width);
 
       // Node exit
       node.exit().remove();
 
       highlightProposals();
 
-      function nodeFill(d) {
+      function x(d) {
+        return d.x0;
+      }
+
+      function y(d) {
+        return d.y0;
+      }
+
+      function width(d) {
+        return d.x1 - d.x0;
+      }
+
+      function height(d) {
+        return d.y1 - d.y0;
+      }
+
+      function fill(d) {
         return nodeColorScale(d.type);
+      }
+
+      function selectNode(d) {
+        let i = selectedNodesIndexOf(d);
+
+        if (i === -1) selectedNodes.push({
+          type: d.type,
+          id: d.id
+        });
+      }
+
+      function deselectNode(d) {
+        let i = selectedNodesIndexOf(d);
+
+        if (i !== -1) selectedNodes.splice(i, 1);
       }
     }
 
@@ -490,6 +553,19 @@ export default function() {
     }, false);
   }
 
+  function selectedNodesIndexOf(d) {
+    for (let i = 0; i < selectedNodes.length; i++) {
+      let node = selectedNodes[i];
+      if (node.type === d.type && node.id === d.id) return i;
+    }
+
+    return -1;
+  }
+
+  function isNodeSelected(d) {
+    return selectedNodesIndexOf(d) !== -1;
+  }
+
   function highlightProposals(proposals) {
     if (!proposals) proposals = [];
 
@@ -517,9 +593,26 @@ export default function() {
           }).raise();
 
       // Change node appearance
-      svg.select(".nodes").selectAll(".node").transition()
+      let nodes = svg.select(".nodes").selectAll(".node");
+
+      nodes.select(".background").transition()
           .style("fill-opacity", function(d) {
-            return nodeConnected(d) ? 1 : 0.1;
+            return nodeConnected(d) ? 0.5 : 0.1;
+          });
+
+      nodes.select(".foreground").transition()
+          .attr("y", function(d) {
+            let o = 1 - overlap(d) / d.proposals.length;
+            return d.y0 + (d.y1 - d.y0) * o / 2;
+          })
+          .attr("height", function(d) {
+            let o = overlap(d) / d.proposals.length;
+            return (d.y1 - d.y0) * o;
+          });
+
+      nodes.select(".border")
+          .style("stroke", function(d) {
+            return isNodeSelected(d) ? "black" : "none";
           });
 
       // Change label appearance
@@ -528,8 +621,15 @@ export default function() {
             return nodeConnected(d) ? 1.0 : 0.0;
           });
 
+      function overlap(d) {
+        return d.proposals.reduce(function(p, c) {
+          if (proposals.indexOf(c.id) !== -1) p++;
+          return p;
+        }, 0);
+      }
+
       function nodeConnected(d) {
-        for (var i = 0; i < d.proposals.length; i++) {
+        for (let i = 0; i < d.proposals.length; i++) {
           if (proposals.indexOf(d.proposals[i].id) !== -1) return true;
         }
 
@@ -545,8 +645,18 @@ export default function() {
       svg.select(".links").selectAll(".link").transition()
           .style("stroke-opacity", linkOpacity);
 
-      svg.select(".nodes").selectAll(".node").transition()
-          .style("fill-opacity", 1);
+      let nodes = svg.select(".nodes").selectAll(".node");
+
+      nodes.select(".foreground").transition()
+          .attr("y", function(d) {
+            return d.y0;
+          })
+          .attr("height", function(d) {
+            return d.y1 - d.y0;
+          });
+
+      nodes.select(".border")
+          .style("stroke", "none");
 
       svg.select(".labels").selectAll(".nodeLabel").transition()
           .style("opacity", labelOpacity);
