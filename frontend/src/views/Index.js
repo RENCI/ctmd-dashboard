@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid, Card, CardContent } from '@material-ui/core'
 import { Button } from '@material-ui/core'
 import Heading from '../components/Typography/Heading'
@@ -13,10 +13,8 @@ import ProposalsCalendar from '../components/Charts/ProposalsCalendar'
 
 import { ApiContext } from '../contexts/ApiContext'
 
-const styles = (theme) => ({
-    page: {
-        // ...theme.mixins.debug
-    },
+const useStyles = makeStyles(theme => ({
+    page: { },
     card: {
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],
@@ -50,16 +48,17 @@ const styles = (theme) => ({
     groupingButton: {
         margin: `0 ${ theme.spacing.unit }px`
     },
-})
+}))
 
 const HomePage = (props) => {
-    const { classes, theme } = props
     const [proposalsByTic, setProposalsByTic] = useState()
     const [proposalsByDate, setProposalsByDate] = useState()
     const [proposalsByStatus, setProposalsByStatus] = useState()
     const [statuses, setStatuses] = useState()
     const [tics, setTics] = useState()
     const api = useContext(ApiContext)
+    const theme = useTheme()
+    const classes = useStyles()
 
     useEffect(() => {
         const promises = [
@@ -87,8 +86,8 @@ const HomePage = (props) => {
                 <Heading>Dashboard Home</Heading>
             </div>
 
-            <Grid container spacing={ 16 }>
-                <Grid item xs={ 12 } sm={ 11 } xl={ 5 }>
+            <Grid container spacing={ 2 * theme.spacing.unit }>
+                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
                     {
                         (proposalsByTic && statuses)
                             ? <ProposalsByTicBarChart proposalsByTic={ proposalsByTic } statuses={ statuses.map(({ description }) => description) }/>
@@ -96,7 +95,7 @@ const HomePage = (props) => {
                     }
                 </Grid>
 
-                <Grid item xs={ 12 } sm={ 11 } xl={ 5 }>
+                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
                     {
                         (proposalsByStatus && tics)
                             ? <ProposalsByStatusBarChart proposalsByStatus={ proposalsByStatus } tics={ tics.map(({ description }) => description) }/>
@@ -104,7 +103,7 @@ const HomePage = (props) => {
                     }
                 </Grid>
 
-                <Grid item xs={ 12 } sm={ 11 } xl={ 6 }>
+                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
                     {
                         (proposalsByDate)
                             ? <ProposalsCalendar proposalsByDate={ proposalsByDate }/>
@@ -117,4 +116,4 @@ const HomePage = (props) => {
     )
 }
 
-export default withStyles(styles, { withTheme: true })(HomePage)
+export default HomePage

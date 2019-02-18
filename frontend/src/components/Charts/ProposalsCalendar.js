@@ -59,7 +59,7 @@ const ProposalsCalendar = props => {
                     to={ `${ year }-12-31T12:00:00.000Z` }
                     direction="horizontal"
                     emptyColor="#eee"
-                    margin={{ top: 32, right: 0, bottom: 0, left: 32, }}
+                    margin={{ top: 16, right: 16, bottom: 0, left: 32, }}
                     yearSpacing={ 40 }
                     monthBorderColor="#fff"
                     monthLegendOffset={ 10 }

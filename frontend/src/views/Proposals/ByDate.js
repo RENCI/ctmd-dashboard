@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 import axios from 'axios'
 import classnames from 'classnames'
 import { ApiContext } from '../../contexts/ApiContext'
-import { Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
+import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import Subheading from '../../components/Typography/Subheading'
 import Paragraph from '../../components/Typography/Paragraph'
@@ -134,53 +134,58 @@ const ProposalsByDate = (props) => {
         <div>
             <Heading>Proposals by Date</Heading>
             
-            <div className={ classes.datePickersContainer }>
-                <div>
-                    <TextField
-                        id="startDate"
-                        label="FROM"
-                        type="date"
-                        value={ dates.start }
-                        className={ classes.dateField }
-                        InputLabelProps={{ shrink: true, }}
-                        onChange={ handleChange('start') }
-                    />
-                </div>
+            <Grid container spacing={ 16 }>
+                <Grid item xs={ 12 }>
+                    <Card>
+                        <CardContent className={ classes.datePickersContainer }>
+                            <div>
+                                <TextField
+                                    id="startDate"
+                                    label="FROM"
+                                    type="date"
+                                    value={ dates.start }
+                                    className={ classes.dateField }
+                                    InputLabelProps={{ shrink: true, }}
+                                    onChange={ handleChange('start') }
+                                />
+                            </div>
 
-                <div>
-                    <TextField
-                        id="endDate"
-                        label="TO"
-                        type="date"
-                        value={ dates.end }
-                        className={ classes.dateField }
-                        InputLabelProps={{ shrink: true, }}
-                        onChange={ handleChange('end') }
-                    />
-                </div>
+                            <div>
+                                <TextField
+                                    id="endDate"
+                                    label="TO"
+                                    type="date"
+                                    value={ dates.end }
+                                    className={ classes.dateField }
+                                    InputLabelProps={{ shrink: true, }}
+                                    onChange={ handleChange('end') }
+                                />
+                            </div>
 
-                <Button
-                    className={ classes.filterButton }
-                    variant="contained"
-                    size="small"
-                    color="secondary"
-                    onClick={ selectProposals }
-                >Filter</Button>
+                            <Button
+                                className={ classes.filterButton }
+                                variant="contained"
+                                size="small"
+                                color="secondary"
+                                onClick={ selectProposals }
+                            >Filter</Button>
 
-                <PresetSelector selectionHandler={ selectPreset }/>
-            </div>
-
-            {
-                (proposals.length > 0) ? (
-                    <Card className={ classnames(classes.card) } square={ true }>
-                        <CardContent component={ ProposalsTable }
-                            className={ classes.table }
-                            proposals={ displayedProposals }
-                            paging={ false }
-                        />
+                            <PresetSelector selectionHandler={ selectPreset }/>
+                        </CardContent>
                     </Card>
-                ) : null
-            }
+                </Grid>
+                <Grid item xs={ 12 }>
+                    {
+                        proposals
+                            ? <ProposalsTable
+                                className={ classes.table }
+                                proposals={ displayedProposals }
+                                paging={ false }
+                            />
+                            : null
+                    }
+                </Grid>
+            </Grid>
 
         </div>
     )

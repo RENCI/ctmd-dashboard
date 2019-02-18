@@ -1,31 +1,10 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-const theme = createMuiTheme({
-    // mixins
-    mixins: {
-        container: {
-            width: '100%',
-            maxWidth: '900px',
-            margin: '0 auto',
-        },
-        debug: {
-            border: '1px solid #fcc',
-            '& *': {
-                border: '1px solid #fcc',
-            }
-        }
-    },
-    // colors
+let theme = createMuiTheme({
     palette: {
-        primary: {
-            main: '#1c253b',
-        },
-        secondary: {
-            main: '#324f69',
-        },
-        error: {
-            main: '#cc3300',
-        },
+        primary: { main: '#1c253b' },
+        secondary: { main: '#324f69' },
+        error: { main: '#cc3300' },
         extended: {
             copper: '#C84E00',
             persimmon: '#E89923',
@@ -47,10 +26,9 @@ const theme = createMuiTheme({
             limestone: '#E5E5E5',
         },
     },
-    // text
     typography: {
         useNextVariants: true,
-        htmlFontSize: 14,
+        htmlFontSize: 18,
         h1: { fontFamily: 'EB Garamond', },
         h2: { fontFamily: 'EB Garamond', },
         h3: { fontFamily: 'EB Garamond', },
@@ -60,12 +38,61 @@ const theme = createMuiTheme({
         body1: { fontFamily: 'Roboto', lineHeight: '1.75rem', },
         body2: { fontFamily: 'Roboto', lineHeight: '1.5rem', }, // paragraph gets this by default
     },
-    shape: {
-        borderRadius: 0,
-    },
-    spacing: {
-        unit: 8,
+    shape: { borderRadius: 8 },
+    spacing: { unit: 8 },
+    mixins: {
+        container: {
+            width: '100%',
+            maxWidth: '900px',
+            margin: '0 auto',
+        },
+        debug: {
+            border: '1px solid #fcc',
+            '& *': {
+                border: '1px solid #fcc',
+            }
+        }
     },
 })
+
+theme = {
+    ...theme,
+    overrides: {
+        MuiToolbar: {
+            // root: {
+            //     backgroundColor: theme.palette.common.white,
+            //     borderBottomLeftRadius: theme.shape.borderRadius,
+            //     borderBottomRightRadius: theme.shape.borderRadius,
+            //     boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12)',
+            // }
+        },
+        MuiPaper: {
+            borderRadius: theme.shape.borderRadius,
+        },
+        MuiCard:{
+            root: {
+                padding: 2 * theme.spacing.unit,
+                backgroundColor: theme.palette.common.white,
+                borderRadius: theme.shape.borderRadius,
+            }
+        },
+        MuiDrawer: {
+            paper: {
+                backgroundColor: theme.palette.common.white,
+                // backgroundImage: `linear-gradient(
+                //     135deg,
+                //     ${theme.palette.secondary.light} 25%,
+                //     ${theme.palette.extended.shaleBlue} 25%,
+                //     ${theme.palette.extended.shaleBlue} 50%,
+                //     ${theme.palette.secondary.light} 50%,
+                //     ${theme.palette.secondary.light} 75%,
+                //     ${theme.palette.extended.shaleBlue} 75%,
+                //     ${theme.palette.extended.shaleBlue} 100%
+                // )`,
+                // backgroundSize: `5.66px 5.66px`,
+            },
+        },
+    }
+}
 
 export default theme

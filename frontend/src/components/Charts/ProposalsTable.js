@@ -1,19 +1,10 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
 import MaterialTable from 'material-table'
 
-const styles = (theme) => ({
-    table: {
-        padding: 2 * theme.spacing.unit,
-        overflowY: 'scroll',
-    },
-})
-
 const ProposalsTable = (props) => {
-    const { classes, proposals } = props
+    const { proposals } = props
     return (
         <MaterialTable
-            className={ classes.table }
             columns={ [
                 { title: 'Proposal ID', field: 'proposal_id', },
                 { title: 'Proposal Name', field: 'short_name', },
@@ -38,4 +29,4 @@ const ProposalsTable = (props) => {
     )
 }
 
-export default withStyles(styles)(ProposalsTable)
+export default ProposalsTable

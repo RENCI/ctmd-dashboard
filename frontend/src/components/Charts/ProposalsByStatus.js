@@ -31,14 +31,14 @@ const proposalsGroupedByStatusThenTic = (props) => {
     const { proposalsByStatus, tics } = props
     const proposalGroups = proposalsByStatus.map(status => ({ name: status.name, ...status.proposals.countBy('tic_name') }))
     return (
-        <Card style={{ padding: '32px' }}>
+        <Card>
             <CardHeader title="Grouped by Status" subheader="" />
             <CardContent style={{ height: '450px' }}>
                 <ResponsiveBar
                     data={ proposalGroups }
                     keys={ tics }
                     indexBy='name'
-                    margin={{ top: 0, right: 32, bottom: 0, left: 275 }}
+                    margin={{ top: 0, right: 32, bottom: 0, left: 265 }}
                     padding={ 0.05 }
                     groupMode='stacked'
                     layout='horizontal'
