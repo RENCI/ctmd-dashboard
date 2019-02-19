@@ -1,6 +1,7 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 import { ResponsiveCalendar } from '@nivo/calendar'
-import { Card, CardHeader, CardContent, Button } from '@material-ui/core'
+import { Card, CardHeader, CardContent, Button, Menu, MenuItem } from '@material-ui/core'
+import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 
 const tooltip = (event) => {
     const { day, value } = event
@@ -12,8 +13,24 @@ const tooltip = (event) => {
     )
 }
 
-const calendar = (props) => {
-    const { proposals, fromDate, toDate, colors } = props
+const ProposalsCalendar = props => {
+    const { proposalsByDate } = props
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const [year, setYear] = useState((new Date()).getFullYear())
+
+    const handleClick = event => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const handleSelect = event => {
+        setYear(event.target.value);
+        setAnchorEl(null)
+    }
+    
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
+
     return (
         <Card>
             <CardHeader
@@ -55,4 +72,4 @@ const calendar = (props) => {
     )
 }
 
-export default calendar
+export default ProposalsCalendar

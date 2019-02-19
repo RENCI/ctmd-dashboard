@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react'
+import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { ResponsiveBar } from '@nivo/bar'
 
 Array.prototype.countBy = function(prop) {
@@ -35,7 +36,7 @@ const proposalsGroupedByTicAndStatus = (props) => {
         }
     })
     return (
-        <Card square={ false }>
+        <Card>
             <CardHeader title="Grouped by TIC/RIC" subheader="" />
             <CardContent style={{ height: '450px' }}>
                 <ResponsiveBar
