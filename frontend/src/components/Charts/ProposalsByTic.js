@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
-import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { ResponsiveBar } from '@nivo/bar'
+import { Card, CardHeader, CardContent } from '@material-ui/core'
 
 Array.prototype.countBy = function(prop) {
     return this.reduce(function(groups, item) {
@@ -11,7 +11,7 @@ Array.prototype.countBy = function(prop) {
     }, {})
 }
 
-const tooltip = (event) => {
+const tooltip = event => {
     const { id, value, indexValue, color } = event
     return (
         <Fragment>
@@ -27,16 +27,12 @@ const tooltip = (event) => {
     )
 }
 
-const proposalsGroupedByTicAndStatus = (props) => {
-    const { proposals, statuses, colors } = props
-    const proposalGroups = proposals.map((tic) => {
-        return {
-            name: tic.name,
-            ...tic.proposals.countBy('proposal_status'),
-        }
-    })
+const proposalsGroupedByTicThenStatus = props => {
+    const { proposalsByTic, statuses } = props
+    const proposalGroups = proposalsByTic.map(tic => ({ name: tic.name, ...tic.proposals.countBy('proposal_status') }))
+
     return (
-        <Card>
+        <Card square={ false }>
             <CardHeader title="Grouped by TIC/RIC" subheader="" />
             <CardContent style={{ height: '450px' }}>
                 <ResponsiveBar
@@ -94,4 +90,4 @@ const proposalsGroupedByTicAndStatus = (props) => {
     )
 }
 
-export default proposalsGroupedByTicAndStatus
+export default proposalsGroupedByTicThenStatus
