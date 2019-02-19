@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
@@ -8,10 +8,8 @@ import { Card, CardContent } from '@material-ui/core'
 import { ResponsiveBar } from '@nivo/bar'
 import { CircularLoader } from '../../components/Progress/Progress'
 
-const styles = (theme) => ({
-    page: {
-        // ...theme.mixins.debug
-    },
+const useStyles = makeStyles(theme => ({
+    page: { },
     card: {
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],
@@ -20,10 +18,10 @@ const styles = (theme) => ({
         padding: 2 * theme.spacing.unit,
         overflowY: 'scroll',
     },
-})
+}))
 
 const SubmittedForServices = (props) => {
-    const { classes, theme } = props
+    const classes = useStyles()
     const [submissionCounts, setSubmissionCounts] = useState(null)
     const api = useContext(ApiContext)
 
@@ -52,12 +50,12 @@ const SubmittedForServices = (props) => {
 
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     const defaultBarChartAttributes = {
-        layout: "vertical",
+        layout: 'vertical',
         margin: { top: 64, right: 32, bottom: 64, left: 96 },
         padding: 0.3,
-        colors: Object.values(theme.palette.extended),
-        colorBy: "value",
-        borderColor: "inherit:darker(1.6)",
+        colors: 'nivo',
+        colorBy: 'value',
+        borderColor: 'inherit:darker(1.6)',
         axisTop: false,
         axisRight: false,
         enableGridY: false,
@@ -79,7 +77,7 @@ const SubmittedForServices = (props) => {
         },
         labelSkipWidth: 12,
         labelSkipHeight: 12,
-        labelTextColor: "inherit:darker(1.6)",
+        labelTextColor: 'inherit:darker(1.6)',
         animate: true,
         motionStiffness: 90,
         motionDamping: 15,
@@ -157,4 +155,4 @@ const SubmittedForServices = (props) => {
     )
 }
 
-export default withStyles(styles, { withTheme: true })(SubmittedForServices)
+export default SubmittedForServices

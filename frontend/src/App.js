@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import Theme from './Theme'
 import Dashboard from './Dashboard'
@@ -8,7 +7,7 @@ import { ApiContext, endpoints } from './contexts/ApiContext'
 
 const App = props => {
     return (
-        <Router basename={ '' }>
+        <Router>
             <ApiContext.Provider value={ endpoints }>
                 <ThemeProvider theme={ Theme }>
                     <Dashboard />

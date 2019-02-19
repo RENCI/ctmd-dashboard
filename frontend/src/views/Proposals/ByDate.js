@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
-import classnames from 'classnames'
 import { ApiContext } from '../../contexts/ApiContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
-import Subheading from '../../components/Typography/Subheading'
-import Paragraph from '../../components/Typography/Paragraph'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 import { CircularLoader } from '../../components/Progress/Progress'
 
-const styles = (theme) => ({
-    page: {
-        // ...theme.mixins.debug
-    },
+const useStyles = makeStyles(theme => ({
+    page: { },
     card: {
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],
@@ -36,55 +31,52 @@ const styles = (theme) => ({
         padding: 2 * theme.spacing.unit,
         overflowY: 'scroll',
     },
-})
+}))
 
-const PresetSelector = withStyles(styles)((
-    (props) => {
-        const { classes, selectionHandler } = props
-        const [anchorEl, setAnchorEl] = useState(null)
-        const [selection, setSelection] = useState(null)
+const PresetSelector = (props) => {
+    const { selectionHandler } = props
+    const [anchorEl, setAnchorEl] = useState(null)
 
-        const handleClick = (event) => {
-            setAnchorEl(event.currentTarget)
-        }
-
-        const handleClose = () => {
-            setAnchorEl(null)
-        }
-
-        return (
-            <div>
-                <Button
-                    aria-owns={ anchorEl ? 'fy-presets-menu' : undefined }
-                    aria-haspopup="true"
-                    onClick={ handleClick }
-                >
-                    Presets
-                </Button>
-                <Menu
-                    id="fy-presets-menu"
-                    anchorEl={ anchorEl }
-                    open={ Boolean(anchorEl) }
-                    onClose={ handleClose }
-                >
-                    {
-                        ['2017', '2018', '2019'].map(year => {
-                            const presetName = `fy${ year }`
-                            return (
-                                <MenuItem key={ presetName } onClick={ selectionHandler(presetName) }>
-                                    Fiscal Year { year }
-                                </MenuItem>
-                            )
-                        })
-                    }
-                </Menu>
-            </div>
-        )
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget)
     }
-))
+
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
+
+    return (
+        <div>
+            <Button
+                aria-owns={ anchorEl ? 'fy-presets-menu' : undefined }
+                aria-haspopup="true"
+                onClick={ handleClick }
+            >
+                Presets
+            </Button>
+            <Menu
+                id="fy-presets-menu"
+                anchorEl={ anchorEl }
+                open={ Boolean(anchorEl) }
+                onClose={ handleClose }
+            >
+                {
+                    ['2017', '2018', '2019'].map(year => {
+                        const presetName = `fy${ year }`
+                        return (
+                            <MenuItem key={ presetName } onClick={ selectionHandler(presetName) }>
+                                Fiscal Year { year }
+                            </MenuItem>
+                        )
+                    })
+                }
+            </Menu>
+        </div>
+    )
+}
 
 const ProposalsByDate = (props) => {
-    const { classes, theme } = props
+    const classes = useStyles()
     const [proposals, setProposals] = useState([])
     const [displayedProposals, setDisplayedProposals] = useState([])
     const [dates, setDates] = useState({
@@ -175,15 +167,7 @@ const ProposalsByDate = (props) => {
                     </Card>
                 </Grid>
                 <Grid item xs={ 12 }>
-                    {
-                        proposals
-                            ? <ProposalsTable
-                                className={ classes.table }
-                                proposals={ displayedProposals }
-                                paging={ false }
-                            />
-                            : null
-                    }
+                    <ProposalsTable proposals={ proposals } paging={ false } />
                 </Grid>
             </Grid>
 
@@ -191,4 +175,4 @@ const ProposalsByDate = (props) => {
     )
 }
 
-export default withStyles(styles, { withTheme: true })(ProposalsByDate)
+export default ProposalsByDate

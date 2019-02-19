@@ -1,11 +1,6 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
 import SiteReportForm from '../components/Forms/SiteReport'
 import Heading from '../components/Typography/Heading'
-
-const styles = (theme) => ({
-    root: { },
-})
 
 const sample_sites = [
     { id: 1, name: 'Out of Site', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur laboriosam deserunt, vitae consequatur delectus cumque nam debitis molestias repudiandae suscipit ullam, tempore, minima culpa ipsa quas. Cum et, corporis expedita.', },
@@ -15,10 +10,9 @@ const sample_sites = [
     { id: 5, name: 'HindSite', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda labore, accusantium, accusamus laborum ut vitae architecto ipsum officiis consectetur non quos esse maiores hic perferendis harum nam iusto distinctio provident.', },
 ]
 
-const SiteReportPage = (props) => {
-    const { classes } = props
+const SiteReportPage = props => {
     return (
-        <div className={ classes.root }>
+        <div>
         
             <Heading>Site Report Card</Heading>
 
@@ -28,4 +22,4 @@ const SiteReportPage = (props) => {
     )
 }
 
-export default withStyles(styles)(SiteReportPage)
+export default SiteReportPage

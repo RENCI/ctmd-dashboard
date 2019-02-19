@@ -67,7 +67,6 @@ theme = {
             // }
         },
         MuiPaper: {
-            borderRadius: theme.shape.borderRadius,
         },
         MuiCard:{
             root: {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
     Menu as MenuIcon,
@@ -37,7 +37,7 @@ import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 300
 
-const styles = (theme) => ({
+const useStyles = makeStyles(theme => ({
     layout: {
         display: 'flex',
     },
@@ -81,7 +81,7 @@ const styles = (theme) => ({
     },
     main: {
         minHeight: '100vh',
-        backgroundColor: theme.palette.extended.hatteras,
+        backgroundColor: theme.palette.extended.limestone,
         flexGrow: 1,
         padding: 2 * theme.spacing.unit,
         paddingTop: 0,
@@ -91,10 +91,10 @@ const styles = (theme) => ({
             paddingTop: 0,
         },
     },
-})
+}))
 
 const Dashboard = props => {
-    const { classes } = props
+    const classes = useStyles()
     const [mobileOpen, setMobileOpen] = useState()
 
     // this object is passed to the SideMenu component to build the dashboard's side menu
@@ -205,4 +205,4 @@ const Dashboard = props => {
     )
 }
 
-export default withStyles(styles)(Dashboard)
+export default Dashboard
