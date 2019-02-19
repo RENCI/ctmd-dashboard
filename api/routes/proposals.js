@@ -36,4 +36,6 @@ router.route('approved-for-services/count/by-therapeutic-area').get(proposalsCon
 router.route('approved-for-services/count/by-year').get(proposalsController.countApprovedForServicesByYear)
 router.route('approved-for-services/count/by-month').get(proposalsController.countApprovedForServicesByMonth)
 
+router.route('/count-days/submission-to-approval').get(proposalsController.daysBetweenSubmissionAndApproval)
+
 module.exports = router
