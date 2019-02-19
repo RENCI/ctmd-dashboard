@@ -9,15 +9,14 @@ import {
 } from '@material-ui/icons'
 
 const styles = (theme) => ({
-    sideBar: {
-        backgroundColor: 'transparent',
-    },
+    sideBar: { },
     activeLink: {
-        backgroundColor: theme.palette.extended.prussianBlue,
+        backgroundColor: theme.palette.extended.hatteras,
+        color: theme.palette.extended.shaleBlue,
     },
     itemLink: {
         '&:hover': {
-            backgroundColor: theme.palette.extended.prussianBlue,
+            backgroundColor: theme.palette.extended.hatteras,
         },
     },
     itemIcon: { },
@@ -83,7 +82,6 @@ const SideBar = (props) => {
                     )
                 })
             }
-            <Divider />
         </div>
     )
 }

@@ -4,15 +4,15 @@ import { withStyles } from '@material-ui/core/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
     Menu as MenuIcon,
-    Build as BuildIcon,
+    Build as QueryBuilderIcon,
     Dashboard as DashboardIcon,
     Settings as SettingsIcon,
-    Share as ShareIcon,
-    Timeline as TimelineIcon,
-    ExitToApp as ExitToAppIcon,
-    Assessment as AssessmentIcon,
-    KeyboardArrowRight as KeyboardArrowRightIcon,
-    LocationOn as LocationIcon,
+    Share as CollaborationsIcon,
+    Timeline as ForecastsIcon,
+    ExitToApp as LogoutIcon,
+    Assessment as ProposalsIcon,
+    KeyboardArrowRight as SubItemIcon,
+    LocationOn as SiteReportIcon,
     Star as MetricsIcon
 } from '@material-ui/icons'
 
@@ -35,7 +35,7 @@ import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
 import CollaborationsPage from './views/Collaborations'
 
-const drawerWidth = 240
+const drawerWidth = 300
 
 const styles = (theme) => ({
     layout: {
@@ -43,18 +43,6 @@ const styles = (theme) => ({
     },
     drawerPaper: {
         width: drawerWidth,
-        backgroundColor: theme.palette.secondary.light,
-        backgroundImage: `linear-gradient(
-            135deg,
-            ${theme.palette.secondary.light} 25%,
-            ${theme.palette.extended.shaleBlue} 25%,
-            ${theme.palette.extended.shaleBlue} 50%,
-            ${theme.palette.secondary.light} 50%,
-            ${theme.palette.secondary.light} 75%,
-            ${theme.palette.extended.shaleBlue} 75%,
-            ${theme.palette.extended.shaleBlue} 100%
-        )`,
-        backgroundSize: `5.66px 5.66px`,
     },
     drawer: {
         [theme.breakpoints.up('sm')]: {
@@ -63,8 +51,8 @@ const styles = (theme) => ({
         },
     },
     brand: {
-        border: `1px solid ${ theme.palette.primary.dark }`,
-        color: theme.palette.primary.dark,
+        border: `1px solid ${ theme.palette.extended.shaleBlue }`,
+        color: theme.palette.extended.shaleBlue,
         fontFamily: 'EB Garamond',
         textAlign: 'center',
         padding: `${2 * theme.spacing.unit }px 0`,
@@ -82,11 +70,7 @@ const styles = (theme) => ({
         padding: 0,
         margin: 0,
         transition: 'margin-bottom 250ms',
-        marginTop: theme.spacing.unit,
         marginBottom: 4 * theme.spacing.unit,
-        [theme.breakpoints.up('sm')]: {
-            marginBottom: 0,
-        },
     },
     flexer: { flex: 1, },
     menuButton: {
@@ -96,9 +80,8 @@ const styles = (theme) => ({
         },
     },
     main: {
-        // ...theme.mixins.debug,
         minHeight: '100vh',
-        backgroundColor: 'transparent',
+        backgroundColor: theme.palette.extended.hatteras,
         flexGrow: 1,
         padding: 2 * theme.spacing.unit,
         paddingTop: 0,
@@ -123,34 +106,34 @@ const Dashboard = props => {
         },
         {
             items: [
-                { text: 'Proposals', icon: <AssessmentIcon/>, href: '/proposals',
+                { text: 'Proposals', icon: <ProposalsIcon/>, href: '/proposals',
                     submenu: [
-                        { text: 'All', path: '/proposals', icon: <KeyboardArrowRightIcon />, },
-                        { text: 'By Organization', path: '/proposals/organization', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'By TIC/RIC', path: '/proposals/tic', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'By Status', path: '/proposals/status', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'By Domain', path: '/proposals/therapeutic-area', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'By Date', path: '/proposals/date', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'Submitted For Services', path: '/proposals/submitted-for-services', icon: <KeyboardArrowRightIcon/> },
-                        { text: 'Resubmissions', path: '/proposals/resubmissions', icon: <KeyboardArrowRightIcon/> },
+                        { text: 'All', path: '/proposals', icon: <SubItemIcon />, },
+                        { text: 'By Organization', path: '/proposals/organization', icon: <SubItemIcon/> },
+                        { text: 'By TIC/RIC', path: '/proposals/tic', icon: <SubItemIcon/> },
+                        { text: 'By Status', path: '/proposals/status', icon: <SubItemIcon/> },
+                        { text: 'By Domain', path: '/proposals/therapeutic-area', icon: <SubItemIcon/> },
+                        { text: 'By Date', path: '/proposals/date', icon: <SubItemIcon/> },
+                        { text: 'Submitted For Services', path: '/proposals/submitted-for-services', icon: <SubItemIcon/> },
+                        { text: 'Resubmissions', path: '/proposals/resubmissions', icon: <SubItemIcon/> },
                     ]
                 },
-                { text: 'Forecasts', icon: <TimelineIcon/>, href: '/forecasts', disabled: true, },
-                { text: 'Site Report', icon: <LocationIcon/>, href: '/site-report', },
+                { text: 'Forecasts', icon: <ForecastsIcon/>, href: '/forecasts', disabled: true, },
+                { text: 'Site Report', icon: <SiteReportIcon/>, href: '/site-report', },
                 { text: 'Study Metrics', icon: <MetricsIcon/>, href: '/study-metrics', },
             ],
         },
         {
             items: [
-                { text: 'Collaborations', icon: <ShareIcon />, href: '/analytics/collaborations', },
-                { text: 'QueryBuilder', icon: <BuildIcon />, href: '/analytics/query-builder', disabled: true, },
+                { text: 'Collaborations', icon: <CollaborationsIcon />, href: '/analytics/collaborations', },
+                { text: 'QueryBuilder', icon: <QueryBuilderIcon />, href: '/analytics/query-builder', disabled: true, },
             ],
         },
     ]
 
     const userMenuItems = [
         { text: 'Settings', href: '/settings', icon: <SettingsIcon /> },
-        { text: 'Logout', href: '/', icon: <ExitToAppIcon />, },
+        { text: 'Logout', href: '/', icon: <LogoutIcon />, },
     ]
     
     const handleDrawerToggle = () => {

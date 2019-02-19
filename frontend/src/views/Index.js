@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react'
 import classnames from 'classnames'
 import axios from 'axios'
-import { withStyles } from '@material-ui/core/styles'
-import { Card, CardContent } from '@material-ui/core'
+import { makeStyles, useTheme } from '@material-ui/styles'
+import { Grid, Card, CardContent } from '@material-ui/core'
 import { Button } from '@material-ui/core'
-
 import Heading from '../components/Typography/Heading'
 import Subheading from '../components/Typography/Subheading'
 import { CircularLoader } from '../components/Progress/Progress'
-import Calendar from '../components/Charts/ProposalsCalendar'
-import TicBarChart from '../components/Charts/ProposalsByTic'
-import StatusBarChart from '../components/Charts/ProposalsByStatus'
+import ProposalsByTicBarChart from '../components/Charts/ProposalsByTic'
+import ProposalsByStatusBarChart from '../components/Charts/ProposalsByStatus'
+import ProposalsCalendar from '../components/Charts/ProposalsCalendar'
 
 import { ApiContext } from '../contexts/ApiContext'
 
-const styles = (theme) => ({
-    page: {
-        // ...theme.mixins.debug
-    },
+const useStyles = makeStyles(theme => ({
+    page: { },
     card: {
         marginBottom: 2 * theme.spacing.unit,
         backgroundColor: theme.palette.grey[100],
@@ -51,17 +48,17 @@ const styles = (theme) => ({
     groupingButton: {
         margin: `0 ${ theme.spacing.unit }px`
     },
-})
+}))
 
 const HomePage = (props) => {
-    const { classes, theme } = props
-    const [grouping, setGrouping] = useState('tic')
-    const [proposalsByTic, setProposalsByTic] = useState([])
-    const [proposalsByDate, setProposalsByDate] = useState([])
-    const [proposalsByStatus, setProposalsByStatus] = useState([])
-    const [statuses, setStatuses] = useState([])
-    const [tics, setTics] = useState([])
+    const [proposalsByTic, setProposalsByTic] = useState()
+    const [proposalsByDate, setProposalsByDate] = useState()
+    const [proposalsByStatus, setProposalsByStatus] = useState()
+    const [statuses, setStatuses] = useState()
+    const [tics, setTics] = useState()
     const api = useContext(ApiContext)
+    const theme = useTheme()
+    const classes = useStyles()
 
     useEffect(() => {
         const promises = [
@@ -81,8 +78,6 @@ const HomePage = (props) => {
             })
             .catch(error => console.log('Error', error))
     }, [])
-        
-    const handleGroupingToggle = (status) => setGrouping(status)
 
     return (
         <div className={ classes.page }>
@@ -91,72 +86,34 @@ const HomePage = (props) => {
                 <Heading>Dashboard Home</Heading>
             </div>
 
-            <Card className={ classes.card } square={ true }>
-                <CardContent className={ classnames(classes.chartContainer, classes.barChartContainer) }>
+            <Grid container spacing={ 2 * theme.spacing.unit }>
+                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
                     {
-                        grouping === 'tic' ? (
-                            // grouping === 'tic'
-                            (proposalsByTic.length > 0) ? (
-                                <TicBarChart proposals={ proposalsByTic }
-                                    statuses={ statuses.map(({ description }) => description) }
-                                    colors={ Object.values(theme.palette.extended) }
-                                />
-                            ) : <CircularLoader />
-                        ) : (
-                            // grouping === 'status'
-                            (proposalsByStatus.length > 0) ? (
-                                <StatusBarChart proposals={ proposalsByStatus }
-                                    tics={ tics.map(({ description }) => description) }
-                                    colors={ Object.values(theme.palette.extended).splice(0, 4) }
-                                />
-                            ) : <CircularLoader />
-                        )
+                        (proposalsByTic && statuses)
+                            ? <ProposalsByTicBarChart proposalsByTic={ proposalsByTic } statuses={ statuses.map(({ description }) => description) }/>
+                            : <CircularLoader />
                     }
-                    <div className={ classes.groupingButtonsContainer }>
-                        <Button
-                            className={ classes.groupingButton }
-                            variant="contained"
-                            size="small"
-                            color={ grouping === 'tic' ? 'secondary' : 'default' }
-                            onClick={ () => handleGroupingToggle('tic') }
-                        >Group by TIC/RIC</Button>
-                        <Button
-                            className={ classes.groupingButton }
-                            variant="contained"
-                            size="small"
-                            color={ grouping === 'status' ? 'secondary' : 'default' }
-                            onClick={ () => handleGroupingToggle('status') }
-                        >Group by Status</Button>
-                    </div>
-                </CardContent>
-            </Card>
+                </Grid>
 
-            <Card className={ classnames(classes.card) } square={ true }>
-                <CardContent className={ classnames(classes.chartContainer, classes.calendarContainer) }>
-                    <Subheading>
-                        {
-                            (proposalsByDate.length > 0) ? (
-                                <span>
-                                    { proposalsByDate.map(({ value }) => value).reduce((value, count) => count + value) }
-                                </span>
-                            ) : null
-                        }
-                        &nbsp;Submitted Proposals Since 2016
-                    </Subheading>
+                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
                     {
-                        (proposalsByDate.length > 0) ? (
-                            <Calendar proposals={ proposalsByDate }
-                                fromDate="2016-01-01T12:00:00.000Z"
-                                toDate="2018-12-31T12:00:00.000Z"
-                                colors={ Object.values(theme.palette.extended).slice(1,6) }
-                            />
-                        ) : <CircularLoader />
+                        (proposalsByStatus && tics)
+                            ? <ProposalsByStatusBarChart proposalsByStatus={ proposalsByStatus } tics={ tics.map(({ description }) => description) }/>
+                            : <CircularLoader />
                     }
-                </CardContent>
-            </Card>
+                </Grid>
+
+                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
+                    {
+                        (proposalsByDate)
+                            ? <ProposalsCalendar proposalsByDate={ proposalsByDate }/>
+                            : <CircularLoader />
+                    }
+                </Grid>
+            </Grid>
 
         </div>
     )
 }
 
-export default withStyles(styles, { withTheme: true })(HomePage)
+export default HomePage

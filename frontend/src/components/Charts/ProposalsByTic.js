@@ -35,98 +35,61 @@ const proposalsGroupedByTicAndStatus = (props) => {
         }
     })
     return (
-        <ResponsiveBar
-            data={ proposalGroups }
-            keys={ statuses }
-            indexBy="name"
-            margin={{
-                "top": 0,
-                "right": 32,
-                "bottom": 0,
-                "left": 100
-            }}
-            padding={ 0.05 }
-            groupMode="stacked"
-            layout="horizontal"
-            height={ 600 }
-            colors={ colors }
-            colorBy="id"
-            defs={[
-                {
-                    "id": "dots",
-                    "type": "patternDots",
-                    "background": "inherit",
-                    "color": "#38bcb2",
-                    "size": 4,
-                    "padding": 1,
-                    "stagger": true
-                },
-                {
-                    "id": "lines",
-                    "type": "patternLines",
-                    "background": "inherit",
-                    "color": "#eed312",
-                    "rotation": -45,
-                    "lineWidth": 6,
-                    "spacing": 10
-                }
-            ]}
-            fill={[
-                {
-                    "match": {
-                        "id": "fries"
-                    },
-                    "id": "dots"
-                },
-                {
-                    "match": {
-                        "id": "sandwich"
-                    },
-                    "id": "lines"
-                }
-            ]}
-            borderColor="inherit:darker(1.6)"
-            axisBottom={ null }
-            axisLeft={{
-                "tickSize": 5,
-                "tickPadding": 5,
-                "tickRotation": 0,
-                "legend": "",
-                "legendPosition": "middle",
-                "legendOffset": -40
-            }}
-            enableGridX={ false }
-            enableGridY={ false }
-            labelSkipWidth={ 12 }
-            labelSkipHeight={ 12 }
-            labelTextColor="inherit:darker(1.6)"
-            animate={ true }
-            motionStiffness={ 90 }
-            motionDamping={ 15 }
-            legends={ [{
-                "dataFrom": "keys",
-                "anchor": "top-right",
-                "direction": "column",
-                "justify": false,
-                "translateX": 32,
-                "translateY": 0,
-                "itemsSpacing": 2,
-                "itemWidth": 20,
-                "itemHeight": 20,
-                "itemDirection": "right-to-left",
-                "itemOpacity": 0.75,
-                "symbolSize": 20,
-                "effects": [
-                    {
-                        "on": "hover",
-                        "style": {
-                            "itemOpacity": 1.0
-                        }
-                    }
-                ]
-            }] }
-            tooltip={ tooltip }
-        />
+        <Card square={ false }>
+            <CardHeader title="Grouped by TIC/RIC" subheader="" />
+            <CardContent style={{ height: '450px' }}>
+                <ResponsiveBar
+                    data={ proposalGroups }
+                    keys={ statuses }
+                    indexBy="name"
+                    margin={{ top: 0, right: 64, bottom: 50, left: 0 }}
+                    padding={ 0.05 }
+                    groupMode="stacked"
+                    layout="vertical"
+                    height={ 400 }
+                    colors="nivo"
+                    colorBy="id"
+                    borderColor="inherit:darker(1.6)"
+                    axisLeft={ null }
+                    axisBottom={{
+                        'tickSize': 5,
+                        'tickPadding': 5,
+                        'tickRotation': 0,
+                        'legend': '',
+                        'legendPosition': 'middle',
+                        'legendOffset': -40
+                    }}
+                    enableGridX={ false }
+                    enableGridY={ false }
+                    labelSkipWidth={ 12 }
+                    labelSkipHeight={ 12 }
+                    labelTextColor="inherit:darker(1.6)"
+                    animate={ true }
+                    motionStiffness={ 90 }
+                    motionDamping={ 15 }
+                    legends={ [{
+                        enableLabel: false,
+                        dataFrom: 'keys',
+                        anchor: 'top-right',
+                        direction: 'column',
+                        justify: false,
+                        translateX: 64,
+                        translateY: 0,
+                        itemsSpacing: 1,
+                        itemWidth: 20,
+                        itemHeight: 20,
+                        itemDirection: 'right-to-left',
+                        itemOpacity: 0.75,
+                        symbolSize: 20,
+                        effects: [{
+                            on: 'hover',
+                            style: { itemOpacity: 1.0 }
+                        }]
+                    }] }
+                    tooltip={ tooltip }
+                />
+            </CardContent>
+        </Card>
     )
 }
 
