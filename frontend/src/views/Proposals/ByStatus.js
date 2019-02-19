@@ -51,7 +51,6 @@ const ProposalsByStatus = (props) => {
                                 (proposalsByStatus.length > 0)
                                 ? <ProposalsPieChart
                                     proposals={ proposalsByStatus }
-                                    colors={ Object.values(theme.palette.extended).splice(0, 9) }
                                     clickHandler={ selectProposals }
                                 />
                                 : <CircularLoader />

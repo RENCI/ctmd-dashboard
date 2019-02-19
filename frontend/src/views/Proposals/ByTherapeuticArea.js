@@ -51,7 +51,6 @@ const ProposalsByTherapeuticArea = (props) => {
                                 proposalsByTherapeuticArea
                                 ? <ProposalsPieChart
                                     proposals={ proposalsByTherapeuticArea }
-                                    colors={ Object.values(theme.palette.extended).splice(0, 9) }
                                     clickHandler={ selectProposals }
                                 />
                                 : <CircularLoader />

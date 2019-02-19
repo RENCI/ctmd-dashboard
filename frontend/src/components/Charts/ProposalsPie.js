@@ -17,7 +17,7 @@ const tooltip = (event) => {
 }
 
 const ProposalsPieChart = (props) => {
-    const { proposals, colors, clickHandler } = props
+    const { proposals, clickHandler } = props
     const proposalGroups = proposals.map(group => {
         return {
             id: group.name,
@@ -36,7 +36,7 @@ const ProposalsPieChart = (props) => {
             innerRadius={ 0.5 }
             padAngle={ 0.7 }
             cornerRadius={ 3 }
-            colors={ colors }
+            colors="nivo"
             colorBy="id"
             borderWidth={ 1 }
             borderColor="inherit:darker(0.2)"
