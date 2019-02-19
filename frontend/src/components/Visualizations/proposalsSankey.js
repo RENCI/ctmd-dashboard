@@ -369,6 +369,9 @@ export default function() {
             var ids = d.proposals.map(function(d) { return d.id; });
 
             dispatcher.call("selectProposals", this, ids);
+
+            tip.hide();
+            tip.show(d, this);
           });
 
       nodeEnter.append("rect")
@@ -479,12 +482,21 @@ export default function() {
           .on("click", function(d) {
             d3.event.stopPropagation();
 
-            isNodeSelected(d.source) ? deselectNode(d.source) : selectNode(d.source);
-            isNodeSelected(d.target) ? deselectNode(d.target) : selectNode(d.target);
+            if (isNodeSelected(d.source) && isNodeSelected(d.target)) {
+              deselectNode(d.source);
+              deselectNode(d.target);
+            }
+            else {
+              selectNode(d.source);
+              selectNode(d.target);
+            }
 
             var ids = d.proposals.map(function(d) { return d.id; });
 
             dispatcher.call("selectProposals", this, ids);
+
+            tip.hide();
+            tip.show(d, this);
           });
 
       linkEnter.append("path")
@@ -492,7 +504,7 @@ export default function() {
           .style("fill", "none")
           .style("stroke", "#999")
           .style("stroke-opacity", linkOpacity)
-          .style("stroke-width", function(d) { return d.width / 2; })
+          .style("stroke-width", strokeWidth)
           .attr("d", d3Sankey.sankeyLinkHorizontal())
 
       linkEnter.append("path")
@@ -506,13 +518,17 @@ export default function() {
       // Link update
       link.select(".background").transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal())
-          .style("stroke-width", function(d) { return d.width / 2; });
+          .style("stroke-width", strokeWidth);
 
       link.select(".foreground").transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link exit
       link.exit().remove();
+
+      function strokeWidth(d) {
+        return d.width / 2;
+      }
     }
 
     function drawLabels() {
