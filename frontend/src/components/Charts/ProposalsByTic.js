@@ -49,12 +49,12 @@ const proposalsGroupedByTicThenStatus = props => {
                     borderColor="inherit:darker(1.6)"
                     axisLeft={ null }
                     axisBottom={{
-                        'tickSize': 5,
-                        'tickPadding': 5,
-                        'tickRotation': 0,
-                        'legend': '',
-                        'legendPosition': 'middle',
-                        'legendOffset': -40
+                        tickSize: 5,
+                        tickPadding: 5,
+                        tickRotation: 0,
+                        legend: '',
+                        legendPosition: 'middle',
+                        legendOffset: -40
                     }}
                     enableGridX={ false }
                     enableGridY={ false }

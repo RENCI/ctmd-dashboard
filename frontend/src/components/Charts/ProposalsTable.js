@@ -1,5 +1,6 @@
 import React from 'react'
 import MaterialTable from 'material-table'
+import { Paper } from '@material-ui/core'
 
 const ProposalsTable = (props) => {
     const { proposals } = props
@@ -17,10 +18,10 @@ const ProposalsTable = (props) => {
             ] }
             data={ proposals }
             options={{
+                paging: props.paging,
                 columnsButton: true,
                 exportButton: true,
                 filtering: true,
-                paging: props.paging,
                 pageSize: 15,
                 pageSizeOptions: [15, 25, 50],
             }}

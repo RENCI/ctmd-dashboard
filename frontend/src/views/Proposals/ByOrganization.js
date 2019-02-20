@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useContext } from 'react'
+import React, { Fragment, useState, useEffect, useContext, useRef } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
@@ -14,6 +14,7 @@ import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 import ChartTypeMenu from '../../components/Menus/ChartType'
+
 const useStyles = makeStyles(theme => ({
     page: { },
     chartContainer: {
@@ -26,13 +27,22 @@ const ProposalsByOrganization = props => {
     const [proposalsByOrganization, setProposalsByOrganization] = useState()
     const [proposals, setProposals] = useState()
     const [chartType, setChartType] = useState('pie')
+    // const [width, setWidth] = useState(0)
     const api = useContext(ApiContext)
+    const pageContent = useRef(null)
     
     useEffect(() => {
         axios.get(api.proposalsByOrganization)
-            .then((response) => setProposalsByOrganization(response.data))
+            .then(response => setProposalsByOrganization(response.data))
             .catch(error => console.log('Error', error))
     }, [])
+
+    // useEffect(() => {
+    //     const handleResize = setWidth(pageContent.current.clientWidth)
+    //     window.addEventListener('resize', handleResize)
+    //     console.log(width)
+    //     return window.removeEventListener('resize', handleResize)
+    // }, [])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByOrganization.findIndex(organization => organization.name === id)
@@ -44,7 +54,7 @@ const ProposalsByOrganization = props => {
     }
 
     return (
-        <div>
+        <div ref={ pageContent }>
             <Heading>Proposals by Submitting Institution</Heading>
 
             <Grid container spacing={ 16 }>
@@ -52,16 +62,9 @@ const ProposalsByOrganization = props => {
                     <Card>
                         <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
                         <CardContent className={ classes.chartContainer }>
-                            {
-                                proposalsByOrganization && chartType === 'pie'
-                                    ? <ProposalsPieChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } />
-                                    : <CircularLoader />
-                            }
-                            {
-                                proposalsByOrganization && chartType === 'bar'
-                                    ? <ProposalsBarChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } />
-                                    : <CircularLoader />
-                            }
+                            { proposalsByOrganization && chartType === 'pie' && <ProposalsPieChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } />}
+                            { proposalsByOrganization && chartType === 'bar' && <ProposalsBarChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } /> }
+                            { !proposalsByOrganization && <CircularLoader /> }
                         </CardContent>
                     </Card>
                 </Grid>

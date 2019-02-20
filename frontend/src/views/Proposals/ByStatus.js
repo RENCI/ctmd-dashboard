@@ -13,19 +13,19 @@ import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
+import ChartTypeMenu from '../../components/Menus/ChartType'
 
 const useStyles = makeStyles(theme => ({
     page: { },
-    pieChartContainer: {
+    chartContainer: {
         height: '700px',
     },
 }))
 
-const ProposalsByStatus = (props) => {
+const ProposalsByStatus = props => {
     const classes = useStyles()
-    const [proposalsByStatus, setProposalsByStatus] = useState([])
-    const [proposals, setProposals] = useState([])
-    const [anchorEl, setAnchorEl] = React.useState(null)
+    const [proposalsByStatus, setProposalsByStatus] = useState()
+    const [proposals, setProposals] = useState()
     const [chartType, setChartType] = useState('pie')
     const api = useContext(ApiContext)
     
@@ -39,51 +39,23 @@ const ProposalsByStatus = (props) => {
         const index = proposalsByStatus.findIndex(status => status.name === id)
         setProposals(proposalsByStatus[index].proposals)
     }
-
-    const handleMenuClick = event => {
-        setAnchorEl(event.currentTarget)
-    }
-
-    const handleMenuClose = () => {
-        setAnchorEl(null)
-    }
-
+    
     const handleSelectGraphType = (event, type) => {
         setChartType(type)
-        setAnchorEl(null)
     }
 
     return (
         <div>
-            <Heading>Proposals by Current Status</Heading>
+            <Heading>Proposals by Status</Heading>
 
             <Grid container spacing={ 16 }>
                 <Grid item xs={ 12 }>
                     <Card>
-                        <CardHeader
-                            action={
-                                <Fragment>
-                                    <IconButton variant="text" color="primary"
-                                        aria-owns={ anchorEl ? 'graph-type-menu' : undefined }
-                                        aria-haspopup="true"
-                                        onClick={ handleMenuClick }
-                                    ><MoreIcon/></IconButton>
-                                    <Menu id="graph-type-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleMenuClose }>
-                                        <MenuItem value="pie" selected={ chartType === 'pie'} onClick={ event => handleSelectGraphType(event, 'pie') }>Pie</MenuItem>
-                                        <MenuItem value="bar" selected={ chartType === 'bar'} onClick={ event => handleSelectGraphType(event, 'bar') }>Bar</MenuItem>
-                                    </Menu>
-                                </Fragment>
-                            }
-                        />
-                        <CardContent className={ classes.pieChartContainer }>
-                            {
-                                (proposalsByStatus.length > 0)
-                                ? <ProposalsPieChart
-                                    proposals={ proposalsByStatus }
-                                    clickHandler={ selectProposals }
-                                />
-                                : <CircularLoader />
-                            }
+                        <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
+                        <CardContent className={ classes.chartContainer }>
+                            { proposalsByStatus && chartType === 'pie' && <ProposalsPieChart proposals={ proposalsByStatus } clickHandler={ selectProposals } /> }
+                            { proposalsByStatus && chartType === 'bar' && <ProposalsBarChart proposals={ proposalsByStatus } clickHandler={ selectProposals } /> }
+                            { !proposalsByStatus && <CircularLoader /> }
                         </CardContent>
                     </Card>
                 </Grid>

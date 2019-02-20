@@ -1,27 +1,21 @@
-import React, { Fragment } from 'react'
-import { ResponsiveBar } from '@nivo/bar'
-
+import React from 'react'
+import ChartTooltip from './ChartTooltip'
+import { Bar } from '@nivo/bar'
 
 const ProposalsBarChart = props => {
     const { proposals, clickHandler } = props
     const proposalGroups = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
-    const tooltip = ({ id, value, color }) => {
-        return (
-            <Fragment>
-                <div style ={{ display: 'flex', }}>
-                    <div style={{ display: 'inline', backgroundColor: color, width: '2.4rem', height: '2.4rem', marginRight: '0.5rem', }}>&nbsp;</div>
-                    <div style={{ flex: 1, lineHeight: '1.2rem', }}>
-                        <div><strong>{ id }</strong></div>
-                        <div>{ value } Proposal{ value !==  1 ? 's' : null }</div>
-                    </div>
-                </div>
-            </Fragment>
-        )
-    }
+
     return (
-        <ResponsiveBar
+        <Bar
+            height={ 500 }
+            width={ 500 }
             data={ proposalGroups }
-            tooltip={ tooltip }
+            layout="horizontal"
+            // For some reason, nivo pie chart works fine and shows the `id` property fine,
+            // but the bar chart has id: "value" for every group.
+            // This is a fix for that: reassign id to be the value of `indexValue`.
+            tooltip={ ({id, value, color, indexValue}) => ChartTooltip({ id: indexValue, value, color }) } 
             onClick={ clickHandler }
             colors="nivo"
             colorBy="id"
