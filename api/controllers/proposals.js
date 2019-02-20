@@ -731,3 +731,78 @@ exports.daysBetweenSubmissionAndApproval = (req, res) => {
             res.status(500).send('There was an error fetching data.')
         })
 }
+
+
+// /proposals/count-days/approval-to-grant-submission
+exports.daysBetweenApprovalAndGrantSubmission = (req, res) => {
+    const query = `SELECT
+            CAST(proposal2.proposal_id AS INT),
+            proposal2.short_name,
+            name2.description AS tic_name,
+            name3.description AS org_name,
+            name4.description AS therapeutic_area,
+            proposal2.grant_sub_complete,
+            meeting_date_2,
+            name.description AS proposal_status,
+            DATE_PART('day', proposal2.grant_sub_complete :: timestamp - meeting_date_2:: timestamp) AS day_count
+        FROM (SELECT *, COALESCE(proposal.tic_ric_assign_v2, proposal.tic_ric_assign) AS tic_ric_assign2 from proposal) proposal2
+        INNER JOIN vote ON proposal2.proposal_id = vote.proposal_id
+        INNER JOIN name ON name.index=CAST(proposal2.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+        INNER JOIN name name2 ON name2.index=CAST(proposal2.tic_ric_assign2 AS VARCHAR)
+        INNER JOIN name name3 ON name3.index=CAST(proposal2.org_name AS VARCHAR)
+        INNER JOIN study ON proposal2.proposal_id=study.proposal_id
+        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+        WHERE proposal2.protocol_status IN ('7', '25')
+        AND proposal2.redcap_repeat_instrument IS NULL
+        AND proposal2.redcap_repeat_instance IS NULL
+        AND meeting_date_2 IS NOT NULL
+        AND name2."column"='tic_ric_assign_v2'
+        AND name3."column"='org_name'
+        AND name4."column"='theraputic_area'
+        ORDER BY proposal2.proposal_id;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
+
+// /proposals/count-days/tin-submission-to-grant-submission
+exports.daysBetweenTinSubmissionAndGrantSubmission = (req, res) => {
+    const query = `SELECT
+            CAST(proposal2.proposal_id AS INT),
+            proposal2.short_name,
+            name2.description AS tic_name,
+            name3.description AS org_name,
+            name4.description AS therapeutic_area,
+            proposal2.grant_sub_complete,
+            proposal2.prop_submit,
+            name.description AS proposal_status,
+            DATE_PART('day', proposal2.grant_sub_complete :: timestamp - proposal2.prop_submit:: timestamp) AS day_count
+        FROM (SELECT *, COALESCE(proposal.tic_ric_assign_v2, proposal.tic_ric_assign) AS tic_ric_assign2 from proposal) proposal2
+        INNER JOIN vote ON proposal2.proposal_id = vote.proposal_id
+        INNER JOIN name ON name.index=CAST(proposal2.protocol_status AS VARCHAR) AND name."column"='protocol_status'
+        INNER JOIN name name2 ON name2.index=CAST(proposal2.tic_ric_assign2 AS VARCHAR)
+        INNER JOIN name name3 ON name3.index=CAST(proposal2.org_name AS VARCHAR)
+        INNER JOIN study ON proposal2.proposal_id=study.proposal_id
+        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
+        WHERE proposal2.protocol_status IN ('7', '25')
+        AND proposal2.redcap_repeat_instrument IS NULL
+        AND proposal2.redcap_repeat_instance IS NULL
+        AND proposal2.prop_submit IS NOT NULL
+        AND name2."column"='tic_ric_assign_v2'
+        AND name3."column"='org_name'
+        AND name4."column"='theraputic_area'
+        ORDER BY proposal2.proposal_id;`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
+}
