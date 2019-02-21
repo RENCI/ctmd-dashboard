@@ -3,8 +3,10 @@ import ChartTooltip from './ChartTooltip'
 import { ResponsivePie } from '@nivo/pie'
 
 const ProposalsPieChart = props => {
-    const { proposals, clickHandler, height } = props
+    const { proposals, clickHandler, height, sorting } = props
     const proposalGroups = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
+    if (sorting === 'alpha') proposalGroups.sort((a, b) => a.id > b.id ? -1 : 1)
+    if (sorting === 'value') proposalGroups.sort((a, b) => a.value < b.value ? -1 : 1)
 
     return (
         <div style={{ height: height }}>
@@ -15,7 +17,7 @@ const ProposalsPieChart = props => {
                 onClick={ clickHandler }
                 colors="nivo"
                 colorBy="id"
-                margin={{ top: 0, right: 0, bottom: 32, left: 0 }}
+                margin={{ top: 16, right: 0, bottom: 32, left: 0 }}
                 innerRadius={ 0.5 }
                 padAngle={ 0.7 }
                 cornerRadius={ 3 }

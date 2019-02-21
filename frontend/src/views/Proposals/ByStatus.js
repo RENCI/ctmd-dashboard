@@ -13,7 +13,7 @@ import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-import ChartTypeMenu from '../../components/Menus/ChartType'
+import ChartOptions from '../../components/Menus/ChartOptions'
 
 const useStyles = makeStyles(theme => ({
     page: { },
@@ -27,6 +27,7 @@ const ProposalsByStatus = props => {
     const [proposalsByStatus, setProposalsByStatus] = useState()
     const [proposals, setProposals] = useState()
     const [chartType, setChartType] = useState('pie')
+    const [chartSorting, setChartSorting] = useState('alpha')
     const api = useContext(ApiContext)
     
     useEffect(() => {
@@ -40,9 +41,8 @@ const ProposalsByStatus = props => {
         setProposals(proposalsByStatus[index].proposals)
     }
     
-    const handleSelectGraphType = (event, type) => {
-        setChartType(type)
-    }
+    const handleSelectGraphType = (event, type) => setChartType(type)
+    const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
 
     return (
         <div>
@@ -52,17 +52,20 @@ const ProposalsByStatus = props => {
 
                 <Grid item xs={ 12 }>
                     <Card>
-                        <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
+                        <CardHeader action={
+                            <ChartOptions
+                                sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
+                                typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
+                            />
+                        } />
                         <CardContent>
                             {
-                                proposalsByStatus
-                                && chartType === 'pie'
-                                && <ProposalsPieChart proposals={ proposalsByStatus } clickHandler={ selectProposals } height={ 600 } />
+                                proposalsByStatus && chartType === 'pie'
+                                && <ProposalsPieChart proposals={ proposalsByStatus } clickHandler={ selectProposals } height={ 600 } sorting={ chartSorting } />
                             }
                             {
-                                proposalsByStatus
-                                && chartType === 'bar'
-                                && <ProposalsBarChart proposals={ proposalsByStatus } clickHandler={ selectProposals } height={ 600 } />
+                                proposalsByStatus && chartType === 'bar'
+                                && <ProposalsBarChart proposals={ proposalsByStatus } clickHandler={ selectProposals } height={ 700 } sorting={ chartSorting } />
                             }
                             { !proposalsByStatus && <CircularLoader /> }
                         </CardContent>

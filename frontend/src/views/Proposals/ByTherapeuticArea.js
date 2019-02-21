@@ -13,7 +13,7 @@ import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-import ChartTypeMenu from '../../components/Menus/ChartType'
+import ChartOptions from '../../components/Menus/ChartOptions'
 
 const useStyles = makeStyles(theme => ({
     page: { },
@@ -27,6 +27,7 @@ const ProposalsByTherapeuticArea = props => {
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState()
     const [proposals, setProposals] = useState()
     const [chartType, setChartType] = useState('pie')
+    const [chartSorting, setChartSorting] = useState('alpha')
     const api = useContext(ApiContext)
     
     useEffect(() => {
@@ -41,9 +42,8 @@ const ProposalsByTherapeuticArea = props => {
         setProposals(proposalsByTherapeuticArea[index].proposals)
     }
     
-    const handleSelectGraphType = (event, type) => {
-        setChartType(type)
-    }
+    const handleSelectGraphType = (event, type) => setChartType(type)
+    const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
 
     return (
         <div>
@@ -53,17 +53,20 @@ const ProposalsByTherapeuticArea = props => {
 
                 <Grid item xs={ 12 }>
                     <Card>
-                        <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
+                        <CardHeader action={
+                            <ChartOptions
+                                sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
+                                typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
+                            />
+                        } />
                         <CardContent className={ classes.chartContainer }>
                             {
-                                proposalsByTherapeuticArea
-                                && chartType === 'pie'
-                                && <ProposalsPieChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } height={ 600 } />
+                                proposalsByTherapeuticArea && chartType === 'pie'
+                                && <ProposalsPieChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } height={ 600 } sorting={ chartSorting } />
                             }
                             {
-                                proposalsByTherapeuticArea
-                                && chartType === 'bar'
-                                && <ProposalsBarChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } height={ 600 } />
+                                proposalsByTherapeuticArea && chartType === 'bar'
+                                && <ProposalsBarChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } height={ 700 } sorting={ chartSorting } />
                             }
                             { !proposalsByTherapeuticArea && <CircularLoader /> }
                         </CardContent>
