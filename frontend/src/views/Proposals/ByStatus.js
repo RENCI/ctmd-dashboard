@@ -48,7 +48,8 @@ const ProposalsByStatus = props => {
         <div>
             <Heading>Proposals by Status</Heading>
 
-            <Grid container spacing={ 16 }>
+            <Grid container>
+
                 <Grid item xs={ 12 }>
                     <Card>
                         <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
@@ -59,9 +60,11 @@ const ProposalsByStatus = props => {
                         </CardContent>
                     </Card>
                 </Grid>
+                
                 <Grid item xs={ 12 }>
                     <ProposalsTable proposals={ proposals } paging={ false } />
                 </Grid>
+
             </Grid>
 
         </div>

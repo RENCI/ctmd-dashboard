@@ -27,7 +27,6 @@ const ProposalsByOrganization = props => {
     const [proposalsByOrganization, setProposalsByOrganization] = useState()
     const [proposals, setProposals] = useState()
     const [chartType, setChartType] = useState('pie')
-    // const [width, setWidth] = useState(0)
     const api = useContext(ApiContext)
     const pageContent = useRef(null)
     
@@ -36,13 +35,6 @@ const ProposalsByOrganization = props => {
             .then(response => setProposalsByOrganization(response.data))
             .catch(error => console.log('Error', error))
     }, [])
-
-    // useEffect(() => {
-    //     const handleResize = setWidth(pageContent.current.clientWidth)
-    //     window.addEventListener('resize', handleResize)
-    //     console.log(width)
-    //     return window.removeEventListener('resize', handleResize)
-    // }, [])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByOrganization.findIndex(organization => organization.name === id)
@@ -57,7 +49,8 @@ const ProposalsByOrganization = props => {
         <div ref={ pageContent }>
             <Heading>Proposals by Submitting Institution</Heading>
 
-            <Grid container spacing={ 16 }>
+            <Grid container>
+
                 <Grid item xs={ 12 }>
                     <Card>
                         <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
@@ -68,9 +61,11 @@ const ProposalsByOrganization = props => {
                         </CardContent>
                     </Card>
                 </Grid>
+
                 <Grid item xs={ 12 }>
                     <ProposalsTable proposals={ proposals } paging={ false } />
                 </Grid>
+
             </Grid>
 
         </div>

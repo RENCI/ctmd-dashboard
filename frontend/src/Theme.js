@@ -68,6 +68,11 @@ theme = {
         },
         MuiPaper: {
         },
+        MuiGrid: {
+            item: {
+                marginBottom: 2 * theme.spacing.unit,
+            }
+        },
         MuiCard:{
             root: {
                 padding: 2 * theme.spacing.unit,
