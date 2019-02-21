@@ -6,9 +6,7 @@ const ProposalsTable = (props) => {
     const { proposals } = props
     return (
         <MaterialTable
-            components={{
-                Toolbar: props => <MTableToolbar {...props} />,
-            }}
+            components={{ }}
             columns={ [
                 { title: 'Proposal ID', field: 'proposal_id', },
                 { title: 'Proposal Name', field: 'short_name', },
