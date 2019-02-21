@@ -1,6 +1,5 @@
 import React from 'react'
-import MaterialTable, { MTableToolbar } from 'material-table'
-import { Paper } from '@material-ui/core'
+import MaterialTable from 'material-table'
 
 const ProposalsTable = (props) => {
     const { proposals } = props

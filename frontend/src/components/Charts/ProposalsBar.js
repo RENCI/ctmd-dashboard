@@ -3,7 +3,9 @@ import ChartTooltip from './ChartTooltip'
 import { ResponsiveBar } from '@nivo/bar'
 
 const ProposalsBarChart = props => {
-    const { proposals, clickHandler, height, sorting } = props
+    const {
+        proposals, height, sorting, // clickHandler
+    } = props
     const proposalGroups = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
     proposalGroups.sort((a, b) => a.id > b.id ? -1 : 1)
     if (sorting === 'value') proposalGroups.sort((a, b) => a.value < b.value ? -1 : 1)
@@ -14,7 +16,7 @@ const ProposalsBarChart = props => {
             <ResponsiveBar
                 height={ height - 32 }
                 data={ proposalGroups }
-                // onClick={ clickHandler }
+                // onClick={ clickHandler } // temp patch for issue #23
                 layout="horizontal"
                 // For some reason, nivo pie chart works fine and shows the `id` property fine,
                 // but the bar chart has id: "value" for every group.

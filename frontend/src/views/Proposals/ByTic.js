@@ -1,29 +1,16 @@
-import React, { Fragment, useState, useEffect, useContext } from 'react'
-import { makeStyles } from '@material-ui/styles'
+import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
-import { Grid, Card, CardHeader, CardContent, Menu, MenuItem, IconButton } from '@material-ui/core'
-import {
-    MoreVert as MoreIcon,
-    Sort as SizeSortIcon,
-    SortByAlpha as AlphaSortIcon,
-} from '@material-ui/icons'
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
 
-const useStyles = makeStyles(theme => ({
-    page: { },
-    chartContainer: {
-        height: '700px',
-    },
-}))
 
 const ProposalsByTic = props => {
-    const classes = useStyles()
     const [proposalsByTic, setProposalsByTic] = useState()
     const [proposals, setProposals] = useState()
     const [chartType, setChartType] = useState('pie')

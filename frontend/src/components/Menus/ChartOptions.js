@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from 'react'
+import React from 'react'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import { Menu, MenuItem, IconButton, Tooltip } from '@material-ui/core'
+import { Tooltip } from '@material-ui/core'
 import { 
     Sort as ValueSortIcon, SortByAlpha as AlphaSortIcon,
     PieChart as PieChartIcon, BarChart as BarChartIcon

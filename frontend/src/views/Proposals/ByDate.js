@@ -5,7 +5,6 @@ import { ApiContext } from '../../contexts/ApiContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
-import { CircularLoader } from '../../components/Progress/Progress'
 
 const useStyles = makeStyles(theme => ({
     page: { },
@@ -167,7 +166,7 @@ const ProposalsByDate = (props) => {
                     </Card>
                 </Grid>
                 <Grid item xs={ 12 }>
-                    <ProposalsTable proposals={ proposals } paging={ false } />
+                    <ProposalsTable proposals={ displayedProposals } paging={ false } />
                 </Grid>
             </Grid>
 
