@@ -53,9 +53,17 @@ const ProposalsByTic = props => {
                 <Grid item xs={ 12 }>
                     <Card>
                         <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
-                        <CardContent className={ classes.chartContainer }>
-                            { proposalsByTic && chartType === 'pie' && <ProposalsPieChart proposals={ proposalsByTic } clickHandler={ selectProposals } /> }
-                            { proposalsByTic && chartType === 'bar' && <ProposalsBarChart proposals={ proposalsByTic } clickHandler={ selectProposals } /> }
+                        <CardContent>
+                            {
+                                proposalsByTic
+                                && chartType === 'pie'
+                                && <ProposalsPieChart proposals={ proposalsByTic } clickHandler={ selectProposals } height={ 600 } />
+                            }
+                            {
+                                proposalsByTic
+                                && chartType === 'bar'
+                                && <ProposalsBarChart proposals={ proposalsByTic } clickHandler={ selectProposals } height={ 200 } />
+                            }
                             { !proposalsByTic && <CircularLoader /> }
                         </CardContent>
                     </Card>

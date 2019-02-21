@@ -55,8 +55,16 @@ const ProposalsByTherapeuticArea = props => {
                     <Card>
                         <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
                         <CardContent className={ classes.chartContainer }>
-                            { proposalsByTherapeuticArea && chartType === 'pie' && <ProposalsPieChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } /> }
-                            { proposalsByTherapeuticArea && chartType === 'bar' && <ProposalsBarChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } /> }
+                            {
+                                proposalsByTherapeuticArea
+                                && chartType === 'pie'
+                                && <ProposalsPieChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } height={ 600 } />
+                            }
+                            {
+                                proposalsByTherapeuticArea
+                                && chartType === 'bar'
+                                && <ProposalsBarChart proposals={ proposalsByTherapeuticArea } clickHandler={ selectProposals } height={ 600 } />
+                            }
                             { !proposalsByTherapeuticArea && <CircularLoader /> }
                         </CardContent>
                     </Card>

@@ -17,16 +17,13 @@ import ChartTypeMenu from '../../components/Menus/ChartType'
 
 const useStyles = makeStyles(theme => ({
     page: { },
-    chartContainer: {
-        height: '700px',
-    },
 }))
 
 const ProposalsByOrganization = props => {
     const classes = useStyles()
     const [proposalsByOrganization, setProposalsByOrganization] = useState()
     const [proposals, setProposals] = useState()
-    const [chartType, setChartType] = useState('pie')
+    const [chartType, setChartType] = useState('bar')
     const api = useContext(ApiContext)
     const pageContent = useRef(null)
     
@@ -54,9 +51,17 @@ const ProposalsByOrganization = props => {
                 <Grid item xs={ 12 }>
                     <Card>
                         <CardHeader action={ <ChartTypeMenu selectHandler={ handleSelectGraphType } currentValue={ chartType } /> } />
-                        <CardContent className={ classes.chartContainer }>
-                            { proposalsByOrganization && chartType === 'pie' && <ProposalsPieChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } />}
-                            { proposalsByOrganization && chartType === 'bar' && <ProposalsBarChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } /> }
+                        <CardContent>
+                            {
+                                proposalsByOrganization
+                                && chartType === 'pie'
+                                && <ProposalsPieChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } height={ 600 } />
+                            }
+                            {
+                                proposalsByOrganization
+                                && chartType === 'bar'
+                                && <ProposalsBarChart proposals={ proposalsByOrganization } clickHandler={ selectProposals } height={ 700 } />
+                            }
                             { !proposalsByOrganization && <CircularLoader /> }
                         </CardContent>
                     </Card>

@@ -23,6 +23,7 @@ const ProposalsTable = (props) => {
                 columnsButton: true,
                 exportButton: true,
                 filtering: true,
+                grouping: true,
                 pageSize: 15,
                 pageSizeOptions: [15, 25, 50],
             }}
