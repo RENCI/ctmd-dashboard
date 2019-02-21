@@ -1,11 +1,14 @@
 import React from 'react'
-import MaterialTable from 'material-table'
+import MaterialTable, { MTableToolbar } from 'material-table'
 import { Paper } from '@material-ui/core'
 
 const ProposalsTable = (props) => {
     const { proposals } = props
     return (
         <MaterialTable
+            components={{
+                Toolbar: props => <MTableToolbar {...props} />,
+            }}
             columns={ [
                 { title: 'Proposal ID', field: 'proposal_id', },
                 { title: 'Proposal Name', field: 'short_name', },
