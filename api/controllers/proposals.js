@@ -6,7 +6,7 @@ const db = require('../config/database')
 
 // /proposals/:id(\\d+)
 exports.getOne = (req, res) => {
-    const query = `SELECT * FROM proposal WHERE proposal_id=${ req.params.id };`
+    const query = `SELECT * FROM "Proposal" WHERE "ProposalId"=${ req.params.id };`
     db.any(query)
         .then(data => {
             res.status(200).send(data)
@@ -17,31 +17,96 @@ exports.getOne = (req, res) => {
         })
 }
 
+const query = `SELECT "Proposal"."ProposalID",                  
+            "Proposal"."ShortTitle",
+            "Proposal"."dateSubmitted",                                                                                                      
+            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
+            name.description AS proposalStatus,
+            name2.description AS assignToInstitution,
+            name3.description AS submitterInstitution,
+            name4.description AS therapeuticArea,
+            "ProposalFunding"."totalBudget",
+            "ProposalFunding"."fundingPeriod",
+            "ProposalFunding"."fundingStart",
+            "PATMeeting"."meetingDate",
+            "ProtocolTimelines_estimated"."plannedGrantSubmissionDate"
+        FROM "Proposal"
+        INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
+        INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
+        LEFT JOIN "AssignProposal" ON "Proposal"."ProposalID" = "AssignProposal"."ProposalID"
+        INNER JOIN "ProposalFunding" ON "Proposal"."ProposalID" = "ProposalFunding"."ProposalID"
+        LEFT JOIN "PATMeeting" ON "Proposal"."ProposalID" = "PATMeeting"."ProposalID"
+        LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
+        INNER JOIN name ON name.index = "Proposal"."proposalStatus" AND name."column" = 'proposalStatus'
+        LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
+        INNER JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
+        INNER JOIN name name4 ON name4.index = "ProposalDetails"."therapeuticArea" AND name4."column" = 'therapeuticArea'
+        ORDER BY "ProposalID";`
+
+const query2 = `SELECT "Proposal"."ProposalID",                  
+                        "Proposal"."ShortTitle",
+                        "Proposal"."dateSubmitted",                                                                                                      
+                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
+                        name.description AS proposalStatus,
+                        name2.description AS assignToInstitution,
+                        name3.description AS submitterInstitution,
+                        name4.description AS therapeuticArea,
+                        name5.description AS newServiceSelection,
+                        "ProposalFunding"."totalBudget",
+                        "ProposalFunding"."fundingPeriod",
+                        "ProposalFunding"."fundingStart",
+                        "PATMeeting"."meetingDate",
+                        "ProtocolTimelines_estimated"."plannedGrantSubmissionDate"
+                    FROM "Proposal"
+                    INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
+                    INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
+                    LEFT JOIN "AssignProposal" ON "Proposal"."ProposalID" = "AssignProposal"."ProposalID"
+                    INNER JOIN "ProposalFunding" ON "Proposal"."ProposalID" = "ProposalFunding"."ProposalID"
+                    LEFT JOIN "PATMeeting" ON "Proposal"."ProposalID" = "PATMeeting"."ProposalID"
+                    LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
+                    INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID"
+                    INNER JOIN name ON name.index="Proposal"."proposalStatus" AND name."column"='proposalStatus'
+                    LEFT JOIN name name2 ON name2.index="AssignProposal"."assignToInstitution" AND name2."column"='assignToInstitution'
+                    INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
+                    INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
+                    INNER JOIN name name5 ON name5.id="Proposal_NewServiceSelection"."serviceSelection" AND name5."column"='serviceSelection'
+                    ORDER BY "ProposalID";`
+
+const query3 = `SELECT "Proposal"."ProposalID",                  
+                        "Proposal"."ShortTitle",
+                        "Proposal"."dateSubmitted",                                                                                                      
+                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
+                        name.description AS proposalStatus,
+                        name2.description AS assignToInstitution,
+                        name3.description AS submitterInstitution,
+                        name4.description AS therapeuticArea,
+                        name5.description AS servicesApproved,
+                        "ProposalFunding"."totalBudget",
+                        "ProposalFunding"."fundingPeriod",
+                        "ProposalFunding"."fundingStart",
+                        "PATMeeting"."meetingDate",
+                        "ProtocolTimelines_estimated"."plannedGrantSubmissionDate"
+                    FROM "Proposal"
+                    INNER JOIN "Submitter" ON "Proposal"."ProposalID"="Submitter"."ProposalID"
+                    INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID"="ProposalDetails"."ProposalID"
+                    LEFT JOIN "AssignProposal" ON "Proposal"."ProposalID"="AssignProposal"."ProposalID"
+                    INNER JOIN "ProposalFunding" ON "Proposal"."ProposalID" = "ProposalFunding"."ProposalID"
+                    LEFT JOIN "PATMeeting" ON "Proposal"."ProposalID" = "PATMeeting"."ProposalID"
+                    LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
+                    INNER JOIN "Proposal_ServicesApproved" ON "Proposal"."ProposalID" = "Proposal_ServicesApproved"."ProposalID"
+                    INNER JOIN name ON name.index="Proposal"."proposalStatus" AND name."column"='proposalStatus'
+                    LEFT JOIN name name2 ON name2.index="AssignProposal"."assignToInstitution" AND name2."column"='assignToInstitution'
+                    INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
+                    INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
+                    INNER JOIN name name5 ON name5.id="Proposal_ServicesApproved"."servicesApproved" AND name5."column"='servicesApproved'
+                    ORDER BY "ProposalID";`
+
 // /proposals
 exports.list = (req, res) => {
-    const query = `SELECT DISTINCT
-            CAST(proposal.proposal_id AS INT),
-            proposal.short_name,
-            proposal.prop_submit,
-            TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-            name.description AS proposal_status,
-            name2.description AS tic_name,
-            name3.description AS org_name,
-            name4.description AS therapeutic_area
-        FROM proposal
-        INNER JOIN study ON proposal.proposal_id=study.proposal_id
-        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
-        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-        WHERE name."column"='protocol_status'
-          AND name2."column"='tic_ric_assign_v2'
-          AND name4."column"='theraputic_area'
-        ORDER BY proposal_id;`
     db.any(query)
         .then(data => {
             data.forEach(proposal => {
-                proposal.submission_date = proposal.prop_submit.toDateString()
+                proposal.submission_date = proposal.dateSubmitted.toDateString()
             })
             res.status(200).send(data)
         })
@@ -55,35 +120,15 @@ exports.list = (req, res) => {
 exports.byStatus = (req, res) => {
     let statusQuery = `SELECT description AS name
         FROM name
-        WHERE "column"='protocol_status' ORDER BY index;`
+        WHERE "column"='proposalStatus' ORDER BY index;`
     db.any(statusQuery)
         .then(statuses => {
             statuses.forEach(status => { status.proposals = [] })
-            const query = `SELECT DISTINCT
-                    CAST(proposal.proposal_id AS INT),
-                    proposal.short_name,
-                    proposal.prop_submit,
-                    name.description AS proposal_status,
-                    name2.description AS tic_name,
-                    name3.description AS org_name,
-                    name4.description AS therapeutic_area,
-                    funding.anticipated_budget, funding.funding_duration,
-                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
-                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
-                FROM proposal
-                INNER JOIN study ON proposal.proposal_id=study.proposal_id
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
-                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
-                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-                INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-                WHERE name4."column"='theraputic_area';`
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
-                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
-                        const index = statuses.findIndex(status => status.name === proposal.proposal_status)
+                        proposal.submission_date = proposal.dateSubmitted ? proposal.dateSubmitted.toDateString() : null
+                        const index = statuses.findIndex(status => status.name === proposal.proposalStatus)
                         if (index >= 0) statuses[index].proposals.push(proposal)
                     })
                     res.status(200).send(statuses)
@@ -99,32 +144,14 @@ exports.byStatus = (req, res) => {
 exports.bySubmittedService = (req, res) => {
     let serviceQuery = `SELECT description AS name
         FROM name
-        WHERE "column"='new_service_selection' ORDER BY index;`
+        WHERE "column"='serviceSelection' ORDER BY index;`
     db.any(serviceQuery)
         .then(services => {
             services.forEach(service => { service.proposals = [] })
-            const query = `SELECT DISTINCT
-                    CAST(proposal.proposal_id AS INT),
-                    proposal.short_name,
-                    name.description AS proposal_status,
-                    name2.description AS tic_name,
-                    name3.description AS org_name,
-                    name4.description AS new_service_selection,
-                    funding.anticipated_budget, funding.funding_duration,
-                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
-                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
-                FROM proposal
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
-                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-                INNER JOIN proposal_new_service_selection ON proposal.proposal_id = proposal_new_service_selection.proposal_id
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
-                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-                INNER JOIN name name4 ON name4.id=proposal_new_service_selection.new_service_selection AND name4."column"='new_service_selection';`
-            db.any(query)
+            db.any(query2)
                 .then(data => {
                     data.forEach(proposal => {
-                        const index = services.findIndex(service => service.name === proposal.new_service_selection)
+                        const index = services.findIndex(service => service.name === proposal.serviceSelection)
                         if (index >= 0) services[index].proposals.push(proposal)
                     })
                     res.status(200).send(services)
@@ -138,35 +165,15 @@ exports.bySubmittedService = (req, res) => {
 
 // /proposals/by-tic
 exports.byTic = (req, res) => {
-    let ticQuery = `SELECT index, description AS name FROM name WHERE "column"='tic_ric_assign_v2' ORDER BY index;`
+    let ticQuery = `SELECT index, description AS name FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
     db.any(ticQuery)
         .then(tics => {
             tics.forEach(tic => { tic.proposals = [] })
-            const query = `SELECT DISTINCT
-                    CAST(proposal.proposal_id AS INT),
-                    proposal.short_name,
-                    proposal.prop_submit,
-                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name",
-                    proposal.tic_ric_assign_v2,
-                    name2.description AS tic_name,
-                    name3.description AS org_name,
-                    name4.description AS therapeutic_area,
-                    name.description AS proposal_status,
-                    CAST(proposal.protocol_status AS INT), funding.anticipated_budget, funding.funding_duration
-                FROM proposal
-                INNER JOIN study ON proposal.proposal_id=study.proposal_id
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
-                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) and name."column"='protocol_status'
-                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-                INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-                WHERE name4."column"='theraputic_area';`
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
                         // console.log(proposal)
-                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
+                        proposal.submission_date = proposal.dateSubmitted ? proposal.dateSubmitted.toDateString() : null
                         const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
                         proposal.tic_ric_assign_v2 = parseInt(proposal.tic_ric_assign_v2)
                         if (index >= 0) tics[index].proposals.push(proposal)
@@ -182,30 +189,10 @@ exports.byTic = (req, res) => {
 
 // /proposals/by-organization
 exports.byOrganization = (req, res) => {
-    const organizationQuery = `SELECT description AS name FROM name WHERE "column"='org_name' ORDER BY index;`
+    const organizationQuery = `SELECT description AS name FROM name WHERE "column"='submitterInstitution' ORDER BY index;`
     db.any(organizationQuery)
         .then(organizations => {
             organizations.forEach(organization => { organization.proposals = [] })
-            const query = `SELECT DISTINCT
-                    CAST(proposal.proposal_id AS INT),
-                    proposal.short_name,
-                    proposal.prop_submit,
-                    name.description AS proposal_status,
-                    name2.description AS tic_name,
-                    name3.description AS org_name,
-                    name4.description AS therapeutic_area,
-                    funding.anticipated_budget, funding.funding_duration,
-                    proposal.redcap_repeat_instrument, proposal.redcap_repeat_instance,
-                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS "pi_name"
-                FROM proposal
-                INNER JOIN study ON proposal.proposal_id=study.proposal_id
-                INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
-                INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR) AND name."column"='protocol_status'
-                LEFT JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-                INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-                WHERE name4."column"='theraputic_area';`
             db.any(query)
                 .then(proposals => {
                     proposals.forEach(proposal => {
@@ -224,29 +211,10 @@ exports.byOrganization = (req, res) => {
 
 // /proposals/by-therapeutic-area
 exports.byTherapeuticArea = (req, res) => {
-    const areasQuery = `SELECT description AS name FROM name WHERE "column"='theraputic_area' ORDER BY index;`
+    const areasQuery = `SELECT description AS name FROM name WHERE "column"='therapeuticArea' ORDER BY index;`
     db.any(areasQuery)
         .then(areas => {
             areas.forEach(area => { area.proposals = [] })
-            const query = `SELECT DISTINCT
-                    CAST(proposal.proposal_id AS INT),
-                    proposal.short_name,
-                    proposal.prop_submit,
-                    TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name,
-                    name.description AS proposal_status,
-                    name2.description AS tic_name,
-                    name3.description AS org_name,
-                    name4.description AS therapeutic_area
-                FROM proposal
-                INNER JOIN study ON proposal.proposal_id=study.proposal_id
-                INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
-                INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-                INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-                INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-                WHERE name."column"='protocol_status'
-                  AND name2."column"='tic_ric_assign_v2'
-                  AND name4."column"='theraputic_area'
-                ORDER BY proposal_id;`
             db.any(query)
                 .then(proposals => {
                     proposals.forEach(proposal => {
@@ -265,15 +233,6 @@ exports.byTherapeuticArea = (req, res) => {
 
 // /proposals/by-date
 exports.byDate = (req, res) => {
-    const query = `SELECT DISTINCT
-            CAST(proposal.proposal_id AS INT),
-            proposal.short_name,
-            CAST(proposal.prop_submit AS VARCHAR)
-        FROM proposal
-        INNER JOIN name ON name.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
-        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR) AND name2."column"='tic_ric_assign_v2'
-        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR) AND name3."column"='org_name'
-        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2';`
     db.any(query)
         .then(data => {
             data.forEach(proposal => {
@@ -302,12 +261,7 @@ exports.byDate = (req, res) => {
 
 // /proposals/approved-services
 exports.approvedServices = (req, res) => {
-    const query = `SELECT DISTINCT vote.proposal_id, vote.meeting_date, name.description AS service_approved
-        FROM vote
-        INNER JOIN service_services_approved ON vote.proposal_id=service_services_approved.proposal_id
-        INNER JOIN name ON name.id=service_services_approved.services_approved
-        WHERE vote.meeting_date IS NOT NULL ORDER BY vote.proposal_id;`
-    db.any(query)
+    db.any(query3)
         .then(data => {
             let newData = []
             data.forEach(proposal => {
@@ -334,12 +288,7 @@ exports.approvedServices = (req, res) => {
 
 // /proposals/submitted-services
 exports.submittedServices = (req, res) => {
-    const query = `SELECT DISTINCT vote.proposal_id, vote.meeting_date, name.description AS new_service_selection
-        FROM vote
-        INNER JOIN proposal_new_service_selection ON vote.proposal_id=proposal_new_service_selection.proposal_id
-        INNER JOIN name ON name.id=proposal_new_service_selection.new_service_selection
-        WHERE vote.meeting_date IS NOT NULL ORDER BY vote.proposal_id;`
-    db.any(query)
+    db.any(query2)
         .then(data => {
             let newData = []
             data.forEach(prop => {
@@ -365,27 +314,6 @@ exports.submittedServices = (req, res) => {
 
 // /proposals/network
 exports.proposalsNetwork = (req, res) => {
-    const query = `SELECT DISTINCT
-            CAST(proposal.proposal_id AS INT),
-            proposal.short_name,
-            name.description AS proposal_status,
-            name2.description AS tic_name,
-            name3.description AS org_name,
-            name4.description AS therapeutic_area,
-            CAST(proposal.protocol_status AS INT),
-            funding.anticipated_budget,
-            funding.funding_duration,
-            TRIM(CONCAT(proposal.pi_firstname, ' ', proposal.pi_lastname)) AS pi_name
-        FROM proposal
-        INNER JOIN funding ON proposal.proposal_id=funding.proposal_id and proposal.redcap_repeat_instrument IS NULL and funding.redcap_repeat_instrument is null
-        INNER JOIN "PI" ON "PI".pi_firstname=proposal.pi_firstname AND "PI".pi_lastname=proposal.pi_lastname
-        INNER JOIN study ON proposal.proposal_id=study.proposal_id
-        INNER JOIN name ON name.index=CAST(proposal.protocol_status AS VARCHAR)
-        INNER JOIN name name2 ON name2.index=CAST(proposal.tic_ric_assign_v2 AS VARCHAR)
-        INNER JOIN name name3 ON name3.index=CAST(proposal.org_name AS VARCHAR)
-        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-        WHERE name."column"='protocol_status' AND name2."column"='tic_ric_assign_v2' AND name3."column"='org_name' AND name4."column"='theraputic_area'
-        ORDER BY proposal_id;`
     db.any(query)
         .then(data => {
             res.status(200).send(data)
@@ -506,28 +434,7 @@ exports.countSubmittedForServicesByMonth = (req, res) => {
 
 // /proposals/resubmissions
 exports.resubmissions = (req, res) => {
-    const query = `SELECT
-            proposal.proposal_id, name2.description AS services_approved,service_services_approved,
-            name3.description AS funding,
-            funding.funding
-        FROM proposal
-        INNER JOIN service ON proposal.proposal_id=service.proposal_id
-        INNER JOIN funding ON funding.proposal_id=service.proposal_id
-        INNER JOIN service_services_approved ON proposal.proposal_id=service_services_approved.proposal_id
-        INNER JOIN name AS name3 on name3.index=cast(funding.funding as varchar)
-            AND name3."column"='funding'
-        INNER JOIN name AS name2 on name2.id=service_services_approved.services_approved
-            AND name2."column"='services_approved'
-        WHERE proposal.redcap_repeat_instrument IS NULL
-            AND service.redcap_repeat_instrument IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND service.redcap_repeat_instance IS NULL
-            AND funding.redcap_repeat_instrument IS NULL
-            AND funding.redcap_repeat_instance IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND proposal.redcap_repeat_instrument IS NULL
-            AND proposal.protocol_status='21'
-        ORDER BY proposal.proposal_id;`
+    // filter by status 21
     db.any(query)
         .then(data => {
             res.status(200).send(data)
@@ -697,31 +604,7 @@ exports.countApprovedForServicesByMonth = (req, res) => {
 
 // /proposals/count-days/submission-to-approval
 exports.daysBetweenSubmissionAndApproval = (req, res) => {
-    const query = `SELECT 
-            CAST(proposal2.proposal_id AS INT),
-            proposal2.short_name,
-            name2.description AS tic_name,
-            name3.description AS org_name,
-            name4.description AS therapeutic_area,
-            proposal2.prop_submit,
-            meeting_date_2,
-            name.description AS proposal_status,
-            DATE_PART('day', meeting_date_2 :: timestamp - proposal2.prop_submit :: timestamp) AS day_count
-        FROM (SELECT *, COALESCE(proposal.tic_ric_assign_v2, proposal.tic_ric_assign) AS tic_ric_assign2 from proposal) proposal2  
-        INNER JOIN vote ON proposal2.proposal_id = vote.proposal_id
-        INNER JOIN name ON name.index=CAST(proposal2.protocol_status AS VARCHAR) AND name."column"='protocol_status'
-        INNER JOIN name name2 ON name2.index=CAST(proposal2.tic_ric_assign2 AS VARCHAR)
-        INNER JOIN name name3 ON name3.index=CAST(proposal2.org_name AS VARCHAR)
-        INNER JOIN study ON proposal2.proposal_id=study.proposal_id
-        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-        WHERE proposal2.protocol_status NOT IN ('3', '40')
-          AND proposal2.redcap_repeat_instrument IS NULL
-          AND proposal2.redcap_repeat_instance IS NULL
-          AND meeting_date_2 IS NOT NULL
-          AND name2."column"='tic_ric_assign_v2'
-          AND name3."column"='org_name'
-          AND name4."column"='theraputic_area'
-        ORDER BY proposal2.proposal_id;`
+    // calculate days between meeting_date_2 and prop_submit, filter by protocol_status NOT IN ('3', '40')
     db.any(query)
         .then(data => {
             res.status(200).send(data)
@@ -735,31 +618,7 @@ exports.daysBetweenSubmissionAndApproval = (req, res) => {
 
 // /proposals/count-days/approval-to-grant-submission
 exports.daysBetweenApprovalAndGrantSubmission = (req, res) => {
-    const query = `SELECT
-            CAST(proposal2.proposal_id AS INT),
-            proposal2.short_name,
-            name2.description AS tic_name,
-            name3.description AS org_name,
-            name4.description AS therapeutic_area,
-            proposal2.grant_sub_complete,
-            meeting_date_2,
-            name.description AS proposal_status,
-            DATE_PART('day', proposal2.grant_sub_complete :: timestamp - meeting_date_2:: timestamp) AS day_count
-        FROM (SELECT *, COALESCE(proposal.tic_ric_assign_v2, proposal.tic_ric_assign) AS tic_ric_assign2 from proposal) proposal2
-        INNER JOIN vote ON proposal2.proposal_id = vote.proposal_id
-        INNER JOIN name ON name.index=CAST(proposal2.protocol_status AS VARCHAR) AND name."column"='protocol_status'
-        INNER JOIN name name2 ON name2.index=CAST(proposal2.tic_ric_assign2 AS VARCHAR)
-        INNER JOIN name name3 ON name3.index=CAST(proposal2.org_name AS VARCHAR)
-        INNER JOIN study ON proposal2.proposal_id=study.proposal_id
-        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-        WHERE proposal2.protocol_status IN ('7', '25')
-        AND proposal2.redcap_repeat_instrument IS NULL
-        AND proposal2.redcap_repeat_instance IS NULL
-        AND meeting_date_2 IS NOT NULL
-        AND name2."column"='tic_ric_assign_v2'
-        AND name3."column"='org_name'
-        AND name4."column"='theraputic_area'
-        ORDER BY proposal2.proposal_id;`
+    // calculate days between grant_sub_complete and meeting_date_2, filter by protocol_status IN ('7', '25')
     db.any(query)
         .then(data => {
             res.status(200).send(data)
@@ -772,31 +631,7 @@ exports.daysBetweenApprovalAndGrantSubmission = (req, res) => {
 
 // /proposals/count-days/tin-submission-to-grant-submission
 exports.daysBetweenTinSubmissionAndGrantSubmission = (req, res) => {
-    const query = `SELECT
-            CAST(proposal2.proposal_id AS INT),
-            proposal2.short_name,
-            name2.description AS tic_name,
-            name3.description AS org_name,
-            name4.description AS therapeutic_area,
-            proposal2.grant_sub_complete,
-            proposal2.prop_submit,
-            name.description AS proposal_status,
-            DATE_PART('day', proposal2.grant_sub_complete :: timestamp - proposal2.prop_submit:: timestamp) AS day_count
-        FROM (SELECT *, COALESCE(proposal.tic_ric_assign_v2, proposal.tic_ric_assign) AS tic_ric_assign2 from proposal) proposal2
-        INNER JOIN vote ON proposal2.proposal_id = vote.proposal_id
-        INNER JOIN name ON name.index=CAST(proposal2.protocol_status AS VARCHAR) AND name."column"='protocol_status'
-        INNER JOIN name name2 ON name2.index=CAST(proposal2.tic_ric_assign2 AS VARCHAR)
-        INNER JOIN name name3 ON name3.index=CAST(proposal2.org_name AS VARCHAR)
-        INNER JOIN study ON proposal2.proposal_id=study.proposal_id
-        INNER JOIN name name4 ON name4.index=CAST(study.theraputic_area AS VARCHAR)
-        WHERE proposal2.protocol_status IN ('7', '25')
-        AND proposal2.redcap_repeat_instrument IS NULL
-        AND proposal2.redcap_repeat_instance IS NULL
-        AND proposal2.prop_submit IS NOT NULL
-        AND name2."column"='tic_ric_assign_v2'
-        AND name3."column"='org_name'
-        AND name4."column"='theraputic_area'
-        ORDER BY proposal2.proposal_id;`
+    // calculate days between grant_sub_complete and prop_submit, filter by protocol_status IN ('7', '25')
     db.any(query)
         .then(data => {
             res.status(200).send(data)

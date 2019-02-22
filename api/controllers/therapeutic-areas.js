@@ -1,7 +1,7 @@
 const db = require('../config/database')
 
 exports.list = (req, res) => {
-    query = `SELECT CAST(index AS INT), description FROM name WHERE "column"='theraputic_area' ORDER BY index;`
+    query = `SELECT CAST(index AS INT), description FROM name WHERE "column"='therapeuticArea' ORDER BY index;`
     db.any(query)
         .then(areas => {
             res.status(200).send(areas)
