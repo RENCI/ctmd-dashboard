@@ -1,7 +1,7 @@
 const db = require('../config/database')
 
 exports.approvalServices = (req, res) => {
-    query = `SELECT index, id, description FROM name WHERE "column"='services_approved' ORDER BY index;`
+    query = `SELECT CAST(index AS INT), id, description FROM name WHERE "column"='servicesApproved' ORDER BY index;`
     db.any(query)
         .then(services => {
             services.forEach(service => {
@@ -16,7 +16,7 @@ exports.approvalServices = (req, res) => {
 }
 
 exports.submissionServices = (req, res) => {
-    query = `SELECT index, id, description FROM name WHERE "column"='new_service_selection' ORDER BY index;`
+    query = `SELECT CAST(index AS INT), id, description FROM name WHERE "column"='serviceSelection' ORDER BY index;`
     db.any(query)
         .then(services => {
             services.forEach(service => {
