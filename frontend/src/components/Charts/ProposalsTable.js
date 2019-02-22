@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
-import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
+import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
 import Subheading from '../Typography/Subheading'
 import {
     AccountBox as PiIcon,
@@ -17,77 +17,91 @@ import {
 
 const useStyles = makeStyles(theme => ({
     panel: {
-        // ...theme.mixins.debug,
         padding: `${ 2 * theme.spacing.unit }px ${ 4 * theme.spacing.unit }px`,
         backgroundColor: theme.palette.common.white,
     },
-    panelHeader: {
+    header: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingBottom: 2 * theme.spacing.unit,
         marginBottom: 2 * theme.spacing.unit,
         borderBottom: `1px solid ${ theme.palette.grey[300] }`,
     },
-    panelVisualizationColumn: {
-        borderLeft: `1px solid ${ theme.palette.grey[300] }`,
-        padding: 2 * theme.spacing.unit,
+    title: {
+        padding: `${ 2 * theme.spacing.unit }px 0`,
+        color: theme.palette.secondary.main,
+        fontWeight: 'bold',
+        letterSpacing: '1px',
+    },
+    proposalId: { },
+    column1: {
+        borderRight: `1px solid ${ theme.palette.grey[300] }`,
+    },
+    column2: {
+        borderRight: `1px solid ${ theme.palette.grey[300] }`,
+    },
+    column3: {},
+    timelineRow: {
+        borderTop: `1px solid ${ theme.palette.grey[300] }`,
     },
 }))
 
 const ProposalDetailPanel = props => {
-    const { proposal_id, short_name, pi_name, org_name, tic_name, submission_date, therapeutic_area, proposal_status, anticipated_budget, funding_duration } = props
+    const { proposal_id, short_name, pi_name, org_name, tic_name, submission_date, therapeutic_area, proposal_status, anticipated_budget, funding_duration, prop_submit } = props
     const classes = useStyles()
     return (
         <Grid container className={ classes.panel }>
-            <Grid item xs={ 12 } className={ classes.panelHeader }>
-                <Subheading>{ short_name }</Subheading>
-                <span>#{ proposal_id }</span>
+            <Grid item xs={ 12 } className={ classes.header }>
+                <Typography variant="h5" className={ classes.title }>{ short_name }</Typography>
+                <span className={ classes.proposalId }>#{ proposal_id }</span>
             </Grid>
-            <Grid item xs={ 2 }>
+            <Grid item xs={ 4 } className={ classes.column1 }>
                 <List dense>
                     <ListItem>
-                        <ListItemIcon><PiIcon /></ListItemIcon>
+                        <Tooltip title="PI" aria-label="PI"><ListItemIcon><PiIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ pi_name } />
                     </ListItem>
                     <ListItem>
-                        <ListItemIcon><CalendarIcon /></ListItemIcon>
-                        <ListItemText primary={ submission_date } />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemIcon><TherapeuticAreaIcon /></ListItemIcon>
-                        <ListItemText primary={ therapeutic_area } />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemIcon><InstitutionIcon /></ListItemIcon>
+                        <Tooltip title="Submitting Institution" aria-label="Submitting Institution"><ListItemIcon><InstitutionIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ org_name } />
                     </ListItem>
                 </List>
             </Grid>
-            <Grid item xs={ 2 }>
+            <Grid item xs={ 4 } className={ classes.column2 }>
                 <List dense>
                     <ListItem>
-                        <ListItemIcon><TicIcon /></ListItemIcon>
+                        <Tooltip title="Assigned TIC/RIC" aria-label="Assigned TIC/RIC"><ListItemIcon><TicIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ tic_name } />
                     </ListItem>
                     <ListItem>
-                        <ListItemIcon><ProposalStatusIcon /></ListItemIcon>
+                        <Tooltip title="Therapeutic Area" aria-label="Therapeutic Area"><ListItemIcon><TherapeuticAreaIcon /></ListItemIcon></Tooltip>
+                        <ListItemText primary={ therapeutic_area } />
+                    </ListItem>
+                </List>
+            </Grid>
+            <Grid item xs={ 4 } className={ classes.column3 }>
+                <List dense>
+                    <ListItem>
+                        <Tooltip title="Proposal Status" aria-label="Proposal Status"><ListItemIcon><ProposalStatusIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ proposal_status } />
                     </ListItem>
                     <ListItem>
-                        <ListItemIcon><BudgetIcon /></ListItemIcon>
+                        <Tooltip title="Budget" aria-label="Budget"><ListItemIcon><BudgetIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ anticipated_budget } />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemIcon><FundingDurationIcon /></ListItemIcon>
                         <ListItemText primary={ funding_duration } />
                     </ListItem>
                 </List>
             </Grid>
-            <Grid item xs={ 6 } className={ classes.panelVisualizationColumn }>
-                <div>
-                    Some visualization. Perhaps days elapsed between submission, approval, etc.
-                </div>
+            <Grid item xs={ 12 } className={ classes.timelineRow }>
+                <List dense>
+                    <ListItem>
+                        <Tooltip title="Submission and Approval Dates" aria-label="Submission and Approval Dates"><ListItemIcon><CalendarIcon /></ListItemIcon></Tooltip>
+                        <ListItemText primary="Submission Date" secondary={ new Date(prop_submit).toDateString() }/>
+                        <ListItemText primary="Approval Date" secondary="--/--/----"/>
+                        <ListItemText primary="Grant Submission Date" secondary="--/--/----"/>
+                        <ListItemText primary="Grant Award Date" secondary="--/--/----"/>
+                    </ListItem>
+                </List>
             </Grid>
         </Grid>
     )

@@ -33,7 +33,7 @@ let theme = createMuiTheme({
         h2: { fontFamily: 'EB Garamond', },
         h3: { fontFamily: 'EB Garamond', },
         h4: { fontFamily: 'EB Garamond', },
-        h5: { fontFamily: 'EB Garamond', },
+        h5: { fontFamily: 'Roboto', },
         headline: { fontFamily: 'EB Garamond', },
         body1: { fontFamily: 'Roboto', lineHeight: '1.75rem', },
         body2: { fontFamily: 'Roboto', lineHeight: '1.5rem', }, // paragraph gets this by default
