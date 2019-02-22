@@ -3,7 +3,6 @@ import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
-import Subheading from '../Typography/Subheading'
 import {
     AccountBox as PiIcon,
     CalendarToday as CalendarIcon,
@@ -12,7 +11,6 @@ import {
     Assignment as TicIcon,
     Alarm as ProposalStatusIcon,
     AttachMoney as BudgetIcon,
-    Timelapse as FundingDurationIcon,
 } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
