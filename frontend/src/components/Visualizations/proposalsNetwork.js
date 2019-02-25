@@ -21,6 +21,7 @@ export default function() {
 
       // Appearance
       radiusRange = [4, 32],
+      backgroundColor = "#e5e5e5",
 
       // Scales
       nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10),
@@ -559,10 +560,13 @@ export default function() {
     }
 
     if (proposals.length > 0) {
+      const nodeFaded = d3.color(backgroundColor).brighter(0.1);
+      const outlineFaded = d3.color(backgroundColor).darker(0.1);
+
       // Change link appearance
       svg.select(".network").selectAll(".link")
           .style("stroke", function(d) {
-            return linkConnected(d) ? "#666" : "#eee";
+            return linkConnected(d) ? "#666" : outlineFaded;
           })
           .filter(function(d) {
             return linkConnected(d);
@@ -571,10 +575,10 @@ export default function() {
       // Change node appearance
       svg.select(".network").selectAll(".node").select("circle")
           .style("fill", function(d) {
-            return nodeConnected(d) ? nodeFill(d) : "white";
+            return nodeConnected(d) ? nodeFill(d) : nodeFaded;
           })
           .style("stroke", function(d) {
-            return nodeConnected(d) ? "black" : "#eee";
+            return nodeConnected(d) ? "black" : outlineFaded;
           })
           .filter(function(d) {
             return nodeConnected(d);
