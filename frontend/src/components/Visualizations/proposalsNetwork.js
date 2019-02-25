@@ -423,11 +423,19 @@ export default function() {
           })
           .call(drag);
 
-      nodeEnter.append("circle");
-
-      // Node update
-      nodeEnter.merge(node).select("circle")
+      nodeEnter.append("circle")
+          .attr("class", "background")
           .attr("r", nodeRadius);
+
+      nodeEnter.append("circle")
+          .attr("class", "foreground")
+          .attr("r", nodeRadius)
+          .style("fill", nodeFill);
+
+      nodeEnter.append("circle")
+          .attr("class", "border")
+          .attr("r", nodeRadius)
+          .style("fill", "none");
 
       // Node exit
       node.exit().remove();
@@ -589,7 +597,6 @@ export default function() {
     }
 
     if (proposals.length > 0) {
-      const nodeFaded = d3.color(backgroundColor).brighter(0.1);
       const outlineFaded = d3.color(backgroundColor).darker(0.1);
 
       // Change link appearance
@@ -602,19 +609,33 @@ export default function() {
           }).raise();
 
       // Change node appearance
-      svg.select(".network").selectAll(".node").select("circle")
+      const node = svg.select(".network").selectAll(".node");
+
+      node.select(".background")
           .style("fill", function(d) {
-            return nodeConnected(d) ? nodeFill(d) : nodeFaded;
-          })
+            const scale = d3.scaleLinear()
+                .domain([0, 1])
+                .range([backgroundColor, nodeFill(d)]);
+
+            return active(d) ? scale(0.5) : scale(0.1);
+          });
+
+      node.select(".foreground")
+          .attr("r", function(d) {
+            return radiusScale(overlap(d));
+          });
+
+      node.select(".border")
           .style("stroke", function(d) {
-            return nodeConnected(d) ? "black" : outlineFaded;
+            return active(d) ? "black" : outlineFaded;
           })
           .style("stroke-width", function(d) {
             return isNodeSelected(d) ? 3 : 1;
-          })
-          .filter(function(d) {
-            return nodeConnected(d);
-          }).raise();
+          });
+
+      node.filter(function(d) {
+        return nodeConnected(d);
+      }).raise();
 
       // Change label appearance
       svg.select(".labels").selectAll(".foreground")
@@ -636,6 +657,13 @@ export default function() {
           .filter(function(d) {
             return nodeConnected(d);
           }).raise();
+
+      function overlap(d) {
+        return d.proposals.reduce(function(p, c) {
+          if (proposals.indexOf(c.id) !== -1) p++;
+          return p;
+        }, 0);
+      }
 
       function nodeConnected(d) {
         for (var i = 0; i < d.proposals.length; i++) {
