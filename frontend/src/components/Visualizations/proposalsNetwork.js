@@ -13,6 +13,7 @@ export default function() {
       data = [],
       network = {},
       selectedProposals = [],
+      selectedNodes = [],
 
       // Layout
       force = d3.forceSimulation()
@@ -91,6 +92,7 @@ export default function() {
       var svgEnter = svg.enter().append("svg")
           .attr("class", "proposalsNetwork")
           .on("click", function() {
+            selectedNodes = [];
             dispatcher.call("selectProposals", this, null);
           });
 
@@ -359,36 +361,49 @@ export default function() {
 
       var drag = d3.drag()
           .on("start", function(d) {
-            if (!d3.event.active) {
-              force.alphaTarget(0.3).restart();
-            }
+            //d.fx = d.x;
+            //d.fy = d.y;
 
-            d.fx = d.x;
-            d.fy = d.y;
-
-            dragNode = d;
-
-            tip.show(d, this);
+            //tip.show(d, this);
           })
           .on("drag", function(d) {
+            if (!dragNode) {
+              dragNode = d;
+
+              //if (!d3.event.active) {
+                force.alphaTarget(0.3).restart();
+              //}
+            }
+
             d.fx = d3.event.x;
             d.fy = d3.event.y;
 
             tip.show(d, this);
           })
           .on("end", function(d) {
-            if (!d3.event.active) {
-              force.alphaTarget(0).alpha(1).restart();
+            if (dragNode) {
+              //if (!d3.event.active) {
+                force.alphaTarget(0).alpha(1).restart();
+              //}
+
+              d.fx = null;
+              d.fy = null;
+
+              dragNode = null;
+
+              highlightProposals();
             }
+            else {
+              // Click
+              isNodeSelected(d) ? deselectNode(d) : selectNode(d);
 
-            d.fx = null;
-            d.fy = null;
+              var ids = d.proposals.map(function(d) { return d.id; });
 
-            dragNode = null;
+              dispatcher.call("selectProposals", this, ids);
 
-            highlightProposals();
-
-            tip.hide();
+              tip.hide();
+              tip.show(d, this);
+            }
           });
 
       // Bind nodes
@@ -403,8 +418,6 @@ export default function() {
           .on("mouseover", function(d) {
             if (dragNode) return;
 
-            if (!active(d)) return;
-
             tip.show(d, this);
 
             var ids = d.proposals.map(function(d) { return d.id; });
@@ -418,15 +431,6 @@ export default function() {
 
             dispatcher.call("highlightProposals", this, null);
           })
-          .on("click", function(d) {
-            d3.event.stopPropagation();
-
-            if (!active(d)) return;
-
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            dispatcher.call("selectProposals", this, ids);
-          })
           .call(drag);
 
       nodeEnter.append("circle");
@@ -439,6 +443,21 @@ export default function() {
       node.exit().remove();
 
       highlightProposals();
+    }
+
+    function selectNode(d) {
+      let i = selectedNodesIndexOf(d);
+
+      if (i === -1) selectedNodes.push({
+        type: d.type,
+        id: d.id
+      });
+    }
+
+    function deselectNode(d) {
+      let i = selectedNodesIndexOf(d);
+
+      if (i !== -1) selectedNodes.splice(i, 1);
     }
 
     function drawLinks() {
@@ -542,9 +561,27 @@ export default function() {
   }
 
   function active(d) {
-    return selectedProposals.length === 0 || d.proposals.reduce(function(p, c) {
-      return p || selectedProposals.indexOf(c.id) !== -1;
-    }, false);
+    return selectedProposals.length === 0 || selectionOverlap(d) > 0;
+  }
+
+  function selectedNodesIndexOf(d) {
+    for (let i = 0; i < selectedNodes.length; i++) {
+      let node = selectedNodes[i];
+      if (node.type === d.type && node.id === d.id) return i;
+    }
+
+    return -1;
+  }
+
+  function selectionOverlap(d) {
+    return d.proposals.reduce(function(p, c) {
+      if (selectedProposals.indexOf(c.id) !== -1) p++;
+      return p;
+    }, 0);
+  }
+
+  function isNodeSelected(d) {
+    return selectedNodesIndexOf(d) !== -1;
   }
 
   function highlightProposals(proposals) {
@@ -554,6 +591,8 @@ export default function() {
       proposals = selectedProposals.filter(function(proposal) {
         return proposals.indexOf(proposal) !== -1;
       });
+
+      if (proposals.length === 0) proposals = selectedProposals;
     }
     else {
       proposals = selectedProposals.concat(proposals);
@@ -579,6 +618,9 @@ export default function() {
           })
           .style("stroke", function(d) {
             return nodeConnected(d) ? "black" : outlineFaded;
+          })
+          .style("stroke-width", function(d) {
+            return isNodeSelected(d) ? 3 : 1;
           })
           .filter(function(d) {
             return nodeConnected(d);
@@ -624,7 +666,8 @@ export default function() {
 
       svg.select(".network").selectAll(".node").select("circle")
           .style("fill", nodeFill)
-          .style("stroke", "black");
+          .style("stroke", "black")
+          .style("stroke-width", 1);
 
       svg.select(".labels").selectAll(".foreground")
           .style("fill", "black");
