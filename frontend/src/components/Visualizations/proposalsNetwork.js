@@ -360,19 +360,11 @@ export default function() {
       var dragNode = null;
 
       var drag = d3.drag()
-          .on("start", function(d) {
-            //d.fx = d.x;
-            //d.fy = d.y;
-
-            //tip.show(d, this);
-          })
           .on("drag", function(d) {
             if (!dragNode) {
               dragNode = d;
 
-              //if (!d3.event.active) {
-                force.alphaTarget(0.3).restart();
-              //}
+              force.alphaTarget(0.3).restart();
             }
 
             d.fx = d3.event.x;
@@ -382,9 +374,7 @@ export default function() {
           })
           .on("end", function(d) {
             if (dragNode) {
-              //if (!d3.event.active) {
-                force.alphaTarget(0).alpha(1).restart();
-              //}
+              force.alphaTarget(0).alpha(1).restart();
 
               d.fx = null;
               d.fy = null;
