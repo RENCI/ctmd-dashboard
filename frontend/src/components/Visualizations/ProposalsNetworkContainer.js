@@ -44,7 +44,8 @@ function  ProposalsNetworkContainer(props) {
                     onChange={ handleControlChange } />
                 <Visualizations
                     proposals={ proposals }
-                    filteredProposals={ filteredProposals } />
+                    filteredProposals={ filteredProposals }
+                    onSelectProposals={ props.onSelectProposals } />
             </Fragment>
         : <CircularLoader />
     );

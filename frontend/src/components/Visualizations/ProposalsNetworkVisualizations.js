@@ -55,9 +55,16 @@ class ProposalsNetworkVisualizations extends Component {
     }
 
     selectProposals(proposals) {
+        const selected = !proposals ? [] : combine(this.state.selectedProposals, proposals);
+
         this.setState({
-          selectedProposals: !proposals ? [] : combine(this.state.selectedProposals, proposals)
+          selectedProposals: selected
         });
+
+        // Get the actual proposals instead of the ids
+        this.props.onSelectProposals(this.props.proposals.filter(proposal => {
+            return selected.indexOf(proposal.proposal_id) !== -1;
+        }));
     }
 
     componentDidMount() {
