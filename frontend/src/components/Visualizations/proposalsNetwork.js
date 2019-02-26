@@ -21,7 +21,7 @@ export default function() {
           .on("tick", updateForce),
 
       // Appearance
-      radiusRange = [4, 32],
+      radiusRange = [0, 32],
       backgroundColor = "#e5e5e5",
 
       // Scales
@@ -46,7 +46,9 @@ export default function() {
             switch (d.type) {
               case "pi":
                 return "PI: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               case "proposal":
                 return "Proposal: " + d.name + "<br><br>" +
@@ -56,15 +58,21 @@ export default function() {
 
               case "org":
                 return "Organization: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               case "tic":
                 return "TIC: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               case "area":
                 return "Therapeutic area: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               default:
                 console.log("Invalid type: " + d.type);
@@ -327,7 +335,7 @@ export default function() {
 
     radiusScale
         .domain([0, d3.max(network.nodes, function(d) {
-          return d.links.length;
+          return d.proposals.length;
         })])
         .range(radiusRange);
 
@@ -555,7 +563,7 @@ export default function() {
   }
 
   function nodeRadius(d) {
-    return d.type === "proposal" ? radiusScale(1) : radiusScale(d.links.length);
+    return radiusScale(d.proposals.length);
   }
 
   function active(d) {
@@ -609,7 +617,10 @@ export default function() {
           }).raise();
 
       // Change node appearance
-      const node = svg.select(".network").selectAll(".node");
+      const node = svg.select(".network").selectAll(".node")
+          .style("pointer-events", function(d) {
+            return active(d) ? null : "none";
+          });
 
       node.select(".background")
           .style("fill", function(d) {
@@ -617,7 +628,7 @@ export default function() {
                 .domain([0, 1])
                 .range([backgroundColor, nodeFill(d)]);
 
-            return active(d) ? scale(0.5) : scale(0.1);
+            return nodeConnected(d) ? scale(0.5) : scale(0.1);
           });
 
       node.select(".foreground")
@@ -627,7 +638,7 @@ export default function() {
 
       node.select(".border")
           .style("stroke", function(d) {
-            return active(d) ? "black" : outlineFaded;
+            return nodeConnected(d) ? "black" : outlineFaded;
           })
           .style("stroke-width", function(d) {
             return isNodeSelected(d) ? 3 : 1;
@@ -682,10 +693,14 @@ export default function() {
       svg.select(".network").selectAll(".link")
           .style("stroke", "#666");
 
-      svg.select(".network").selectAll(".node").select("circle")
-          .style("fill", nodeFill)
+      const node = svg.select(".network").selectAll(".node");
+
+      node.select(".foreground")
+          .attr("r", nodeRadius);
+
+      node.select(".border")
           .style("stroke", "black")
-          .style("stroke-width", 1);
+          .style("stroke-width", 1)
 
       svg.select(".labels").selectAll(".foreground")
           .style("fill", "black");
