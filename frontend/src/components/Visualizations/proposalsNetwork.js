@@ -608,13 +608,16 @@ export default function() {
       const outlineFaded = d3.color(backgroundColor).darker(0.1);
 
       // Change link appearance
-      svg.select(".network").selectAll(".link")
+      const link = svg.select(".network").selectAll(".link");
+
+      link.transition()
           .style("stroke", function(d) {
             return linkConnected(d) ? "#666" : outlineFaded;
           })
-          .filter(function(d) {
-            return linkConnected(d);
-          }).raise();
+
+      link.filter(function(d) {
+        return linkConnected(d);
+      }).raise();
 
       // Change node appearance
       const node = svg.select(".network").selectAll(".node")
@@ -622,7 +625,7 @@ export default function() {
             return active(d) ? null : "none";
           });
 
-      node.select(".background")
+      node.select(".background").transition()
           .style("fill", function(d) {
             const scale = d3.scaleLinear()
                 .domain([0, 1])
@@ -631,7 +634,7 @@ export default function() {
             return nodeConnected(d) ? scale(0.5) : scale(0.1);
           });
 
-      node.select(".foreground")
+      node.select(".foreground").transition()
           .attr("r", function(d) {
             return radiusScale(overlap(d));
           });
@@ -649,25 +652,10 @@ export default function() {
       }).raise();
 
       // Change label appearance
-      svg.select(".labels").selectAll(".foreground")
+      svg.select(".labels").selectAll(".foreground").transition()
           .style("fill", function(d) {
             return nodeConnected(d) ? "black" : "#ddd";
-          })
-          .filter(function(d) {
-            return nodeConnected(d);
-          }).raise();
-
-      // Sort links
-      svg.select(".network").selectAll(".link")
-          .filter(function(d) {
-            return linkConnected(d);
-          }).raise();
-
-      // Sort nodes
-      svg.select(".network").selectAll(".node")
-          .filter(function(d) {
-            return nodeConnected(d);
-          }).raise();
+          });
 
       function overlap(d) {
         return d.proposals.reduce(function(p, c) {
@@ -690,19 +678,19 @@ export default function() {
     }
     else {
       // Reset
-      svg.select(".network").selectAll(".link")
+      svg.select(".network").selectAll(".link").transition()
           .style("stroke", "#666");
 
       const node = svg.select(".network").selectAll(".node");
 
-      node.select(".foreground")
+      node.select(".foreground").transition()
           .attr("r", nodeRadius);
 
       node.select(".border")
           .style("stroke", "black")
           .style("stroke-width", 1)
 
-      svg.select(".labels").selectAll(".foreground")
+      svg.select(".labels").selectAll(".foreground").transition()
           .style("fill", "black");
 
       svg.select(".network").selectAll(".node").raise();
