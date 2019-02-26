@@ -123,7 +123,7 @@ const ProposalsByDate = (props) => {
 
     return (
         <div>
-            <Heading>Proposals by Date</Heading>
+            <Heading>Proposals by Submission Date</Heading>
             
             <Grid container spacing={ 16 }>
                 <Grid item xs={ 12 }>

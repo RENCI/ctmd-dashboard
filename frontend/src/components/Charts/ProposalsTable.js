@@ -45,23 +45,26 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const ProposalDetailPanel = props => {
-    const { proposal_id, short_name, pi_name, org_name, tic_name, submission_date, therapeutic_area, proposal_status, anticipated_budget, funding_duration, prop_submit } = props
+    const {
+        proposalID, shortTitle, piName, submitterInstitution, assignToInstitution, therapeuticArea, proposalStatus, totalBudget, fundingPeriod,
+        dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate
+    } = props
     const classes = useStyles()
     return (
         <Grid container className={ classes.panel }>
             <Grid item xs={ 12 } className={ classes.header }>
-                <Typography variant="h5" className={ classes.title }>{ short_name }</Typography>
-                <span className={ classes.proposalId }>#{ proposal_id }</span>
+                <Typography variant="h5" className={ classes.title }>{ shortTitle }</Typography>
+                <span className={ classes.proposalId }>#{ proposalID }</span>
             </Grid>
             <Grid item xs={ 4 } className={ classes.column1 }>
                 <List dense>
                     <ListItem>
                         <Tooltip title="PI" aria-label="PI"><ListItemIcon><PiIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ pi_name } />
+                        <ListItemText primary={ piName } />
                     </ListItem>
                     <ListItem>
                         <Tooltip title="Submitting Institution" aria-label="Submitting Institution"><ListItemIcon><InstitutionIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ org_name } />
+                        <ListItemText primary={ submitterInstitution } />
                     </ListItem>
                 </List>
             </Grid>
@@ -69,11 +72,11 @@ const ProposalDetailPanel = props => {
                 <List dense>
                     <ListItem>
                         <Tooltip title="Assigned TIC/RIC" aria-label="Assigned TIC/RIC"><ListItemIcon><TicIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ tic_name } />
+                        <ListItemText primary={ assignToInstitution } />
                     </ListItem>
                     <ListItem>
                         <Tooltip title="Therapeutic Area" aria-label="Therapeutic Area"><ListItemIcon><TherapeuticAreaIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ therapeutic_area } />
+                        <ListItemText primary={ therapeuticArea } />
                     </ListItem>
                 </List>
             </Grid>
@@ -81,12 +84,12 @@ const ProposalDetailPanel = props => {
                 <List dense>
                     <ListItem>
                         <Tooltip title="Proposal Status" aria-label="Proposal Status"><ListItemIcon><ProposalStatusIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ proposal_status } />
+                        <ListItemText primary={ proposalStatus } />
                     </ListItem>
                     <ListItem>
                         <Tooltip title="Budget" aria-label="Budget"><ListItemIcon><BudgetIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ anticipated_budget } />
-                        <ListItemText primary={ funding_duration } />
+                        <ListItemText primary={ totalBudget } />
+                        <ListItemText primary={ fundingPeriod } />
                     </ListItem>
                 </List>
             </Grid>
@@ -94,10 +97,10 @@ const ProposalDetailPanel = props => {
                 <List dense>
                     <ListItem>
                         <Tooltip title="Submission and Approval Dates" aria-label="Submission and Approval Dates"><ListItemIcon><CalendarIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary="Submission Date" secondary={ new Date(prop_submit).toDateString() }/>
-                        <ListItemText primary="Approval Date" secondary="--/--/----"/>
-                        <ListItemText primary="Grant Submission Date" secondary="--/--/----"/>
-                        <ListItemText primary="Grant Award Date" secondary="--/--/----"/>
+                        <ListItemText primary="Submission Date" secondary={ dateSubmitted }/>
+                        <ListItemText primary="Approval Date" secondary={ meetingDate }/>
+                        <ListItemText primary="Grant Submission Date" secondary={ fundingStart }/>
+                        <ListItemText primary="Grant Award Date" secondary={ plannedGrantSubmissionDate }/>
                     </ListItem>
                 </List>
             </Grid>
@@ -111,13 +114,12 @@ const ProposalsTable = (props) => {
         <MaterialTable
             components={{ }}
             columns={ [
-                { title: 'Proposal Name', field: 'short_name', },
-                { title: 'PI', field: 'pi_name', },
-                { title: 'Proposal Status', field: 'proposal_status', },
-                { title: 'Therapeutic Area', field: 'therapeutic_area', },
-                { title: 'TIC', field: 'tic_name', },
-                { title: 'Organization', field: 'org_name', },
-                { title: 'Submission Date', field: 'prop_submit', type: 'datetime', render: ({submission_date}) => <span>{ submission_date }</span>},
+                { title: 'Proposal Name', field: 'shortTitle', },
+                { title: 'PI', field: 'piName', },
+                { title: 'Status', field: 'proposalStatus', },
+                { title: 'Therapeutic Area', field: 'therapeuticArea', },
+                { title: 'Submitting Insitution', field: 'submitterInstitution', },
+                { title: 'Assigned TIC/RIC', field: 'assignToInstitution', },
             ] }
             data={ proposals }
             options={{

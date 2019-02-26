@@ -29,7 +29,7 @@ const tooltip = event => {
 
 const proposalsGroupedByTicThenStatus = props => {
     const { proposalsByTic, statuses } = props
-    const proposalGroups = proposalsByTic.map(tic => ({ name: tic.name, ...tic.proposals.countBy('proposal_status') }))
+    const proposalGroups = proposalsByTic.map(tic => ({ name: tic.name, ...tic.proposals.countBy('proposalStatus') }))
 
     return (
         <Card square={ false }>

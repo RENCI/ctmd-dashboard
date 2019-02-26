@@ -17,19 +17,19 @@ exports.getOne = (req, res) => {
         })
 }
 
-const query = `SELECT "Proposal"."ProposalID",                  
-            "Proposal"."ShortTitle",
-            "Proposal"."dateSubmitted",                                                                                                      
-            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
-            name.description AS proposalStatus,
-            name2.description AS assignToInstitution,
-            name3.description AS submitterInstitution,
-            name4.description AS therapeuticArea,
+const query = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
+            "Proposal"."ShortTitle" as "shortTitle",
+            CAST("Proposal"."dateSubmitted" AS VARCHAR),
+            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+            name.description AS "proposalStatus",
+            name2.description AS "assignToInstitution",
+            name3.description AS "submitterInstitution",
+            name4.description AS "therapeuticArea",
             "ProposalFunding"."totalBudget",
-            "ProposalFunding"."fundingPeriod",
-            "ProposalFunding"."fundingStart",
-            "PATMeeting"."meetingDate",
-            "ProtocolTimelines_estimated"."plannedGrantSubmissionDate"
+            CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
+            CAST("ProposalFunding"."fundingStart" AS VARCHAR),
+            CAST("PATMeeting"."meetingDate" AS VARCHAR),
+            CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR)
         FROM "Proposal"
         INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
         INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
@@ -41,17 +41,17 @@ const query = `SELECT "Proposal"."ProposalID",
         LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
         INNER JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
         INNER JOIN name name4 ON name4.index = "ProposalDetails"."therapeuticArea" AND name4."column" = 'therapeuticArea'
-        ORDER BY "ProposalID";`
+        ORDER BY "proposalID";`
 
-const query2 = `SELECT "Proposal"."ProposalID",                  
-                        "Proposal"."ShortTitle",
+const query2 = `SELECT "Proposal"."ProposalID" as "proposalID",                  
+                        "Proposal"."ShortTitle" as "shortTitle",
                         "Proposal"."dateSubmitted",                                                                                                      
-                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
-                        name.description AS proposalStatus,
-                        name2.description AS assignToInstitution,
-                        name3.description AS submitterInstitution,
-                        name4.description AS therapeuticArea,
-                        name5.description AS newServiceSelection,
+                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+                        name.description AS "proposalStatus",
+                        name2.description AS "assignToInstitution",
+                        name3.description AS "submitterInstitution",
+                        name4.description AS "therapeuticArea",
+                        name5.description AS "newServiceSelection",
                         "ProposalFunding"."totalBudget",
                         "ProposalFunding"."fundingPeriod",
                         "ProposalFunding"."fundingStart",
@@ -70,17 +70,17 @@ const query2 = `SELECT "Proposal"."ProposalID",
                     INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
                     INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
                     INNER JOIN name name5 ON name5.id="Proposal_NewServiceSelection"."serviceSelection" AND name5."column"='serviceSelection'
-                    ORDER BY "ProposalID";`
+                    ORDER BY "proposalID";`
 
-const query3 = `SELECT "Proposal"."ProposalID",                  
-                        "Proposal"."ShortTitle",
+const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",                  
+                        "Proposal"."ShortTitle" as "shortTitle",
                         "Proposal"."dateSubmitted",                                                                                                      
-                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
-                        name.description AS proposalStatus,
-                        name2.description AS assignToInstitution,
-                        name3.description AS submitterInstitution,
-                        name4.description AS therapeuticArea,
-                        name5.description AS servicesApproved,
+                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+                        name.description AS "proposalStatus",
+                        name2.description AS "assignToInstitution",
+                        name3.description AS "submitterInstitution",
+                        name4.description AS "therapeuticArea",
+                        name5.description AS "servicesApproved",
                         "ProposalFunding"."totalBudget",
                         "ProposalFunding"."fundingPeriod",
                         "ProposalFunding"."fundingStart",
@@ -99,15 +99,12 @@ const query3 = `SELECT "Proposal"."ProposalID",
                     INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
                     INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
                     INNER JOIN name name5 ON name5.id="Proposal_ServicesApproved"."servicesApproved" AND name5."column"='servicesApproved'
-                    ORDER BY "ProposalID";`
+                    ORDER BY "proposalID";`
 
 // /proposals
 exports.list = (req, res) => {
     db.any(query)
         .then(data => {
-            data.forEach(proposal => {
-                proposal.submission_date = proposal.dateSubmitted.toDateString()
-            })
             res.status(200).send(data)
         })
         .catch(error => {
@@ -118,16 +115,13 @@ exports.list = (req, res) => {
 
 // /proposals/by-status
 exports.byStatus = (req, res) => {
-    let statusQuery = `SELECT description AS name
-        FROM name
-        WHERE "column"='proposalStatus' ORDER BY index;`
+    let statusQuery = `SELECT description AS name FROM name WHERE "column"='proposalStatus' ORDER BY index;`
     db.any(statusQuery)
         .then(statuses => {
             statuses.forEach(status => { status.proposals = [] })
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
-                        proposal.submission_date = proposal.dateSubmitted ? proposal.dateSubmitted.toDateString() : null
                         const index = statuses.findIndex(status => status.name === proposal.proposalStatus)
                         if (index >= 0) statuses[index].proposals.push(proposal)
                     })
@@ -142,9 +136,7 @@ exports.byStatus = (req, res) => {
 
 // /proposals/by-submitted-service
 exports.bySubmittedService = (req, res) => {
-    let serviceQuery = `SELECT description AS name
-        FROM name
-        WHERE "column"='serviceSelection' ORDER BY index;`
+    let serviceQuery = `SELECT description AS name FROM name WHERE "column"='serviceSelection' ORDER BY index;`
     db.any(serviceQuery)
         .then(services => {
             services.forEach(service => { service.proposals = [] })
@@ -165,17 +157,14 @@ exports.bySubmittedService = (req, res) => {
 
 // /proposals/by-tic
 exports.byTic = (req, res) => {
-    let ticQuery = `SELECT index, description AS name FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
+    let ticQuery = `SELECT description AS name FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
     db.any(ticQuery)
         .then(tics => {
             tics.forEach(tic => { tic.proposals = [] })
             db.any(query)
                 .then(data => {
                     data.forEach(proposal => {
-                        // console.log(proposal)
-                        proposal.submission_date = proposal.dateSubmitted ? proposal.dateSubmitted.toDateString() : null
-                        const index = tics.findIndex(tic => tic.index === proposal.tic_ric_assign_v2)
-                        proposal.tic_ric_assign_v2 = parseInt(proposal.tic_ric_assign_v2)
+                        const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
                         if (index >= 0) tics[index].proposals.push(proposal)
                     })
                     res.status(200).send(tics)
@@ -196,8 +185,7 @@ exports.byOrganization = (req, res) => {
             db.any(query)
                 .then(proposals => {
                     proposals.forEach(proposal => {
-                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
-                        const index = organizations.findIndex(organization => organization.name === proposal.org_name)
+                        const index = organizations.findIndex(organization => organization.name === proposal.submitterInstitution)
                         if (index >= 0) organizations[index].proposals.push(proposal)
                     })
                     res.status(200).send(organizations)
@@ -219,7 +207,7 @@ exports.byTherapeuticArea = (req, res) => {
                 .then(proposals => {
                     proposals.forEach(proposal => {
                         proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
-                        const index = areas.findIndex(area => area.name === proposal.therapeutic_area)
+                        const index = areas.findIndex(area => area.name === proposal.therapeuticArea)
                         if (index >= 0) areas[index].proposals.push(proposal)
                     })
                     res.status(200).send(areas)
@@ -235,16 +223,13 @@ exports.byTherapeuticArea = (req, res) => {
 exports.byDate = (req, res) => {
     db.any(query)
         .then(data => {
-            data.forEach(proposal => {
-                // Convert day to YYYY-MM-DD format
-                proposal.day = proposal.prop_submit.substring(0, 10)
-                // Kill the long timestamp
-                delete proposal.prop_submit
-            })
-            dates = data.map(({ day }) => day)
+            data.map(proposal => {                            // streamline this
+                proposal.day = proposal.dateSubmitted         // streamline this
+            })                                                // streamline this
+            dates = data.map(({ day }) => day || '')                // streamline this
             proposalsByDate = []
             dates.forEach(date => {
-                const dateIndex = proposalsByDate.findIndex((prop) => prop.day === date)
+                const dateIndex = proposalsByDate.findIndex(proposal => proposal.day === date)
                 if (dateIndex >= 0) {
                     proposalsByDate[dateIndex].value += 1
                 } else {
@@ -362,8 +347,8 @@ exports.countSubmittedForServicesByInstitution = (req, res) => {
 exports.countSubmittedForServicesByTic = (req, res) => {
     const query = `SELECT name2.description AS tic_name, CAST(COUNT(*) AS INT)
         FROM proposal
-        INNER JOIN name AS name2 ON name2.index=cast(proposal.tic_ric_assign_v2 AS varchar)
-            AND name2."column"='tic_ric_assign_v2'
+        INNER JOIN name AS name2 ON name2.index=cast(proposal.assignToInstitution AS varchar)
+            AND name2."column"='assignToInstitution'
         WHERE proposal.redcap_repeat_instrument is null
             AND proposal.redcap_repeat_instance is null
             AND proposal.conso_or_services='2'
@@ -484,8 +469,8 @@ exports.countResubmissionsByInstitution = (req, res) => {
 exports.countResubmissionsByTic = (req, res) => {
     const query = `SELECT name2.description as tic_ric_assign, CAST(COUNT(*) AS INT)
         FROM proposal
-        INNER JOIN name AS name2 ON name2.index=cast(proposal.tic_ric_assign_v2 as varchar)
-            AND name2."column"='tic_ric_assign_v2'
+        INNER JOIN name AS name2 ON name2.index=cast(proposal.assignToInstitution as varchar)
+            AND name2."column"='assignToInstitution'
         WHERE proposal.redcap_repeat_instrument IS NULL
             AND proposal.redcap_repeat_instance IS NULL
             AND proposal.protocol_status='21'

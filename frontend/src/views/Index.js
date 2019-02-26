@@ -95,7 +95,7 @@ const HomePage = (props) => {
                 <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
                     {
                         (proposalsByStatus && tics)
-                            ? <ProposalsByStatusBarChart proposalsByStatus={ proposalsByStatus } tics={ tics.map(({ description }) => description) }/>
+                            ? <ProposalsByStatusBarChart proposalsByStatus={ proposalsByStatus } tics={ tics.map(({ name }) => name) }/>
                             : <CircularLoader />
                     }
                 </Grid>

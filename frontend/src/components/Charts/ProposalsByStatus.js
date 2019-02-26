@@ -29,7 +29,7 @@ const tooltip = (event) => {
 
 const proposalsGroupedByStatusThenTic = (props) => {
     const { proposalsByStatus, tics } = props
-    const proposalGroups = proposalsByStatus.map(status => ({ name: status.name, ...status.proposals.countBy('tic_name') }))
+    const proposalGroups = proposalsByStatus.map(status => ({ name: status.name, ...status.proposals.countBy('assignToInstitution') }))
     return (
         <Card>
             <CardHeader title="Grouped by Status" subheader="" />

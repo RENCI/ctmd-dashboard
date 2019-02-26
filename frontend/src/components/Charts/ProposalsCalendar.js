@@ -30,7 +30,8 @@ const ProposalsCalendar = props => {
     const handleClose = () => {
         setAnchorEl(null)
     }
-
+    
+    console.log(proposalsByDate)
     return (
         <Card>
             <CardHeader
@@ -50,7 +51,7 @@ const ProposalsCalendar = props => {
                     </Fragment>
                 }
                 title={ `Proposal Submissions in ${ year }` }
-                subheader={ `${ proposalsByDate.filter(({ day }) => day.includes(year)).reduce((sum, {value}) => sum + parseInt(value), 0) } Submissions` }
+                subheader={ `${ proposalsByDate.filter(({ day }) => day.includes(year)).reduce((sum, { value }) => sum + value, 0) } Submissions` }
             />
             <CardContent style={{ height: '250px' }}>
                 <ResponsiveCalendar

@@ -1,7 +1,7 @@
 const db = require('../config/database')
 
 exports.list = (req, res) => {
-    query = `SELECT CAST(index AS INT), description FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
+    query = `SELECT CAST(index AS INT), description AS name FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
     db.any(query)
         .then(tics => {
             res.status(200).send(tics)
