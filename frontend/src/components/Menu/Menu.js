@@ -5,32 +5,15 @@ import { MenuList, MenuItem, ListItemIcon, ListItemText } from '@material-ui/cor
 import {
     Dashboard as DashboardIcon,
     Description as ProposalsIcon,
-    // Assessment as ReportsIcon,
-    // Timeline as ForecastsIcon,
+    Assessment as ReportsIcon,
+    Timeline as ForecastsIcon,
     Star as MetricsIcon,
     LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
-    // Build as QueryBuilderIcon,
+    Build as QueryBuilderIcon,
 } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
-    menuItem: {
-        padding: `${ 1.5 * theme.spacing.unit }px ${ 4 * theme.spacing.unit }px`,
-        display: 'flex', alignItems: 'center',
-        margin: theme.spacing.unit,
-        borderRadius: theme.spacing.unit,
-        transition: 'background-color 250ms',
-        letterSpacing: '1px',
-        '&:hover': {
-            backgroundColor: theme.palette.grey[200],
-        },
-    },
-    icon: {
-        opacity: 0.8,
-        padding: 0,
-        paddingRight: 2 * theme.spacing.unit,
-        fontSize: '250%',
-    },
     active: {
         backgroundColor: theme.palette.grey[300],
         color: theme.palette.common.white,
@@ -47,25 +30,37 @@ const Menu = props => {
     const classes = useStyles()
     return (
         <MenuList>
-            <MenuItem component={ NavLink } exact to="/" className={ classes.menuItem } activeClassName={ classes.active }>
+            <MenuItem component={ NavLink } exact to="/" activeClassName={ classes.active }>
                 <ListItemIcon><DashboardIcon /></ListItemIcon>
                 <ListItemText primary="Dashboard"/>
             </MenuItem>
-            <MenuItem component={ NavLink } to="/proposals" className={ classes.menuItem } activeClassName={ classes.active }>
+            <MenuItem component={ NavLink } to="/proposals" activeClassName={ classes.active }>
                 <ListItemIcon><ProposalsIcon /></ListItemIcon>
                 <ListItemText primary="Proposals"/>
             </MenuItem>
-            <MenuItem component={ NavLink } to="/collaborations" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><CollaborationsIcon /></ListItemIcon>
-                <ListItemText primary="Collaborations"/>
+            <MenuItem component={ NavLink } to="/reports" activeClassName={ classes.active }>
+                <ListItemIcon><ReportsIcon /></ListItemIcon>
+                <ListItemText primary="Reports"/>
             </MenuItem>
-            <MenuItem component={ NavLink } to="/site-report" className={ classes.menuItem } activeClassName={ classes.active }>
+            <MenuItem component={ NavLink } to="/forecasts" activeClassName={ classes.active }>
+                <ListItemIcon><ForecastsIcon /></ListItemIcon>
+                <ListItemText primary="Forecasts"/>
+            </MenuItem>
+            <MenuItem component={ NavLink } to="/site-report" activeClassName={ classes.active }>
                 <ListItemIcon><SiteReportIcon /></ListItemIcon>
                 <ListItemText primary="Site Report"/>
             </MenuItem>
-            <MenuItem component={ NavLink } to="/study-metrics" className={ classes.menuItem } activeClassName={ classes.active }>
+            <MenuItem component={ NavLink } to="/study-metrics" activeClassName={ classes.active }>
                 <ListItemIcon><MetricsIcon /></ListItemIcon>
                 <ListItemText primary="Study Metrics"/>
+            </MenuItem>
+            <MenuItem component={ NavLink } to="/collaborations" activeClassName={ classes.active }>
+                <ListItemIcon><CollaborationsIcon /></ListItemIcon>
+                <ListItemText primary="Collaborations"/>
+            </MenuItem>
+            <MenuItem component={ NavLink } to="/query-builder" icon activeClassName={ classes.active }>
+                <ListItemIcon><QueryBuilderIcon /></ListItemIcon>
+                <ListItemText primary="Query Builder"/>
             </MenuItem>
         </MenuList>
     )

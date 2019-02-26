@@ -31,7 +31,6 @@ const ProposalsCalendar = props => {
         setAnchorEl(null)
     }
     
-    console.log(proposalsByDate)
     return (
         <Card>
             <CardHeader

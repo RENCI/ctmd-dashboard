@@ -4,16 +4,11 @@ import { makeStyles } from '@material-ui/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
     Menu as MenuIcon,
-    Build as QueryBuilderIcon,
-    Dashboard as DashboardIcon,
+    Build as BuildIcon,
     Settings as SettingsIcon,
-    Share as CollaborationsIcon,
-    Timeline as ForecastsIcon,
+    ExitToApp as ExitToAppIcon,
+    KeyboardArrowRight as KeyboardArrowRightIcon,
     ExitToApp as LogoutIcon,
-    Assessment as ProposalsIcon,
-    KeyboardArrowRight as SubItemIcon,
-    LocationOn as SiteReportIcon,
-    Star as MetricsIcon
 } from '@material-ui/icons'
 
 import ScrollToTop from './utils/ScrollToTop'
@@ -38,12 +33,8 @@ import CollaborationsPage from './views/Collaborations'
 const drawerWidth = 300
 
 const useStyles = makeStyles(theme => ({
-    layout: {
-        display: 'flex',
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
+    layout: { display: 'flex', },
+    drawerPaper: { width: drawerWidth, },
     drawer: {
         [theme.breakpoints.up('sm')]: {
             width: drawerWidth,
@@ -97,50 +88,14 @@ const Dashboard = props => {
     const classes = useStyles()
     const [mobileOpen, setMobileOpen] = useState()
 
-    // this object is passed to the SideMenu component to build the dashboard's side menu
-    const sideMenuItems = [
-        {
-            items: [
-                { text: 'Dashboard', icon: <DashboardIcon />, href: '/', },
-            ],
-        },
-        {
-            items: [
-                { text: 'Proposals', icon: <ProposalsIcon/>, href: '/proposals',
-                    submenu: [
-                        { text: 'All', path: '/proposals', icon: <SubItemIcon />, },
-                        { text: 'By Organization', path: '/proposals/organization', icon: <SubItemIcon/> },
-                        { text: 'By TIC/RIC', path: '/proposals/tic', icon: <SubItemIcon/> },
-                        { text: 'By Status', path: '/proposals/status', icon: <SubItemIcon/> },
-                        { text: 'By Domain', path: '/proposals/therapeutic-area', icon: <SubItemIcon/> },
-                        { text: 'By Date', path: '/proposals/date', icon: <SubItemIcon/> },
-                        { text: 'Submitted For Services', path: '/proposals/submitted-for-services', icon: <SubItemIcon/> },
-                        { text: 'Resubmissions', path: '/proposals/resubmissions', icon: <SubItemIcon/> },
-                    ]
-                },
-                { text: 'Forecasts', icon: <ForecastsIcon/>, href: '/forecasts', disabled: true, },
-                { text: 'Site Report', icon: <SiteReportIcon/>, href: '/site-report', },
-                { text: 'Study Metrics', icon: <MetricsIcon/>, href: '/study-metrics', },
-            ],
-        },
-        {
-            items: [
-                { text: 'Collaborations', icon: <CollaborationsIcon />, href: '/analytics/collaborations', },
-                { text: 'QueryBuilder', icon: <QueryBuilderIcon />, href: '/analytics/query-builder', disabled: true, },
-            ],
-        },
-    ]
-
-    const userMenuItems = [
-        { text: 'Settings', href: '/settings', icon: <SettingsIcon /> },
-        { text: 'Logout', href: '/', icon: <LogoutIcon />, },
+    
+    const userMenuItems = [{ text: 'Settings', href: '/settings', icon: <SettingsIcon /> },{ text: 'Logout', href: '/', icon: <LogoutIcon />, }
     ]
     
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
     }
 
-        
     const brand = (
         <div className={ classes.brand }>
             <div style={{ fontSize: '360%', lineHeight: '4rem', }}>Duke</div>
@@ -159,13 +114,13 @@ const Dashboard = props => {
                         ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
                     >
                         <a href="/">{ brand }</a>
-                        <SideMenu menuItems={ sideMenuItems }/>
+                        <SideMenu />
                     </Drawer>
                 </Hidden>
                 <Hidden xsDown implementation="css">
                     <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
                         <a href="/">{ brand }</a>
-                        <SideMenu menuItems={ sideMenuItems }/>
+                        <SideMenu />
                     </Drawer>
                 </Hidden>
             </nav>
@@ -178,9 +133,7 @@ const Dashboard = props => {
                             aria-label="Open drawer"
                             onClick={ handleDrawerToggle }
                             className={ classes.menuButton }
-                        >
-                            <MenuIcon />
-                        </IconButton>
+                        ><MenuIcon /></IconButton>
                         <div className={ classes.flexer }/>
                         <UserMenu menuItems={ userMenuItems }/>
                     </Toolbar>

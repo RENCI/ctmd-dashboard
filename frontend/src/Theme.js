@@ -83,17 +83,6 @@ theme = {
         MuiDrawer: {
             paper: {
                 backgroundColor: theme.palette.common.white,
-                // backgroundImage: `linear-gradient(
-                //     135deg,
-                //     ${theme.palette.secondary.light} 25%,
-                //     ${theme.palette.extended.shaleBlue} 25%,
-                //     ${theme.palette.extended.shaleBlue} 50%,
-                //     ${theme.palette.secondary.light} 50%,
-                //     ${theme.palette.secondary.light} 75%,
-                //     ${theme.palette.extended.shaleBlue} 75%,
-                //     ${theme.palette.extended.shaleBlue} 100%
-                // )`,
-                // backgroundSize: `5.66px 5.66px`,
             },
         },
     }
