@@ -17,14 +17,14 @@ exports.getOne = (req, res) => {
         })
 }
 
-const query = `SELECT "Proposal"."ProposalID",                  
-            "Proposal"."ShortTitle",
+const query = `SELECT "Proposal"."ProposalID" as "proposalID",                  
+            "Proposal"."ShortTitle" as "shortTitle",
             "Proposal"."dateSubmitted",                                                                                                      
-            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
-            name.description AS proposalStatus,
-            name2.description AS assignToInstitution,
-            name3.description AS submitterInstitution,
-            name4.description AS therapeuticArea,
+            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+            name.description AS "proposalStatus",
+            name2.description AS "assignToInstitution",
+            name3.description AS "submitterInstitution",
+            name4.description AS "therapeuticArea",
             "ProposalFunding"."totalBudget",
             "ProposalFunding"."fundingPeriod",
             "ProposalFunding"."fundingStart",
@@ -41,17 +41,17 @@ const query = `SELECT "Proposal"."ProposalID",
         LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
         INNER JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
         INNER JOIN name name4 ON name4.index = "ProposalDetails"."therapeuticArea" AND name4."column" = 'therapeuticArea'
-        ORDER BY "ProposalID";`
+        ORDER BY "proposalID";`
 
-const query2 = `SELECT "Proposal"."ProposalID",                  
-                        "Proposal"."ShortTitle",
+const query2 = `SELECT "Proposal"."ProposalID" as "proposalID",                  
+            "Proposal"."ShortTitle" as "shortTitle",
                         "Proposal"."dateSubmitted",                                                                                                      
-                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
-                        name.description AS proposalStatus,
-                        name2.description AS assignToInstitution,
-                        name3.description AS submitterInstitution,
-                        name4.description AS therapeuticArea,
-                        name5.description AS newServiceSelection,
+            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+            name.description AS "proposalStatus",
+            name2.description AS "assignToInstitution",
+            name3.description AS "submitterInstitution",
+            name4.description AS "therapeuticArea",
+                        name5.description AS "newServiceSelection",
                         "ProposalFunding"."totalBudget",
                         "ProposalFunding"."fundingPeriod",
                         "ProposalFunding"."fundingStart",
@@ -70,17 +70,17 @@ const query2 = `SELECT "Proposal"."ProposalID",
                     INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
                     INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
                     INNER JOIN name name5 ON name5.id="Proposal_NewServiceSelection"."serviceSelection" AND name5."column"='serviceSelection'
-                    ORDER BY "ProposalID";`
+                    ORDER BY "proposalID";`
 
-const query3 = `SELECT "Proposal"."ProposalID",                  
-                        "Proposal"."ShortTitle",
+const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",                  
+                        "Proposal"."ShortTitle" as "shortTitle",
                         "Proposal"."dateSubmitted",                                                                                                      
-                        TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS pi_name,
-                        name.description AS proposalStatus,
-                        name2.description AS assignToInstitution,
-                        name3.description AS submitterInstitution,
-                        name4.description AS therapeuticArea,
-                        name5.description AS servicesApproved,
+            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+            name.description AS "proposalStatus",
+            name2.description AS "assignToInstitution",
+            name3.description AS "submitterInstitution",
+            name4.description AS "therapeuticArea",
+                        name5.description AS "servicesApproved",
                         "ProposalFunding"."totalBudget",
                         "ProposalFunding"."fundingPeriod",
                         "ProposalFunding"."fundingStart",
@@ -99,7 +99,7 @@ const query3 = `SELECT "Proposal"."ProposalID",
                     INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
                     INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
                     INNER JOIN name name5 ON name5.id="Proposal_ServicesApproved"."servicesApproved" AND name5."column"='servicesApproved'
-                    ORDER BY "ProposalID";`
+                    ORDER BY "proposalID";`
 
 // /proposals
 exports.list = (req, res) => {
