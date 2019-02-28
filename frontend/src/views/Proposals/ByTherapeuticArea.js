@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import Heading from '../../components/Typography/Heading'
+import BrowseMenu from '../../components/Menus/BrowseMenu'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
@@ -16,6 +17,7 @@ const ProposalsByTherapeuticArea = props => {
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
     const api = useContext(ApiContext)
+    const tableRef = useRef(null)
     
     useEffect(() => {
         axios.get(api.proposalsByTherapeuticArea)
@@ -27,14 +29,22 @@ const ProposalsByTherapeuticArea = props => {
     const selectProposals = ({ id }) => {
         const index = proposalsByTherapeuticArea.findIndex(status => status.name === id)
         setProposals(proposalsByTherapeuticArea[index].proposals)
+        scrollToTable()
     }
     
     const handleSelectGraphType = (event, type) => setChartType(type)
     const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
 
+    const scrollToTable = () => {
+        setTimeout(() => tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 500)
+    }
+    
     return (
         <div>
-            <Heading>Proposals by Therapeutic Area</Heading>
+            <Heading>
+                Proposals by Therapeutic Area
+                <BrowseMenu />
+            </Heading>
 
             <Grid container>
 
@@ -61,6 +71,7 @@ const ProposalsByTherapeuticArea = props => {
                 </Grid>
 
                 <Grid item xs={ 12 }>
+                    <div ref={ tableRef }></div>
                     <ProposalsTable proposals={ proposals } paging={ false } />
                 </Grid>
 

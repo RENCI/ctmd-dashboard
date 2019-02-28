@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
-import { ApiContext } from '../../contexts/ApiContext'
-import Heading from '../../components/Typography/Heading'
-import ProposalsTable from '../../components/Charts/ProposalsTable'
-import { CircularLoader } from '../../components/Progress/Progress'
+import { ApiContext } from '../contexts/ApiContext'
+import Heading from '../components/Typography/Heading'
+import ProposalsTable from '../components/Charts/ProposalsTable'
+import { CircularLoader } from '../components/Progress/Progress'
+import BrowseMenu from '../components/Menus/BrowseMenu'
 
 const proposalsTable = (props) => {
     const [proposals, setProposals] = useState([])
@@ -17,7 +18,11 @@ const proposalsTable = (props) => {
 
     return (
         <div>
-            <Heading>Proposals</Heading>
+            <Heading>
+                Proposals <BrowseMenu />
+            </Heading>
+            
+
             {
                 (proposals.length > 0)
                 ? <ProposalsTable

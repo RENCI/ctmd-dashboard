@@ -4,6 +4,7 @@ import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
+import BrowseMenu from '../../components/Menus/BrowseMenu'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 
 const useStyles = makeStyles(theme => ({
@@ -123,7 +124,10 @@ const ProposalsByDate = (props) => {
 
     return (
         <div>
-            <Heading>Proposals by Submission Date</Heading>
+            <Heading>
+                Proposals by Submission Date
+                <BrowseMenu />
+            </Heading>
             
             <Grid container spacing={ 16 }>
                 <Grid item xs={ 12 }>

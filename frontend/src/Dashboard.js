@@ -4,10 +4,7 @@ import { makeStyles } from '@material-ui/styles'
 import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
 import {
     Menu as MenuIcon,
-    Build as BuildIcon,
     Settings as SettingsIcon,
-    ExitToApp as ExitToAppIcon,
-    KeyboardArrowRight as KeyboardArrowRightIcon,
     ExitToApp as LogoutIcon,
 } from '@material-ui/icons'
 
@@ -18,7 +15,7 @@ import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
-import ProposalsAll from './views/Proposals/All'
+import ProposalsPage from './views/Proposals'
 import ProposalsByOrganization from './views/Proposals/ByOrganization'
 import ProposalsByTic from './views/Proposals/ByTic'
 import ProposalsByStatus from './views/Proposals/ByStatus'
@@ -139,7 +136,7 @@ const Dashboard = props => {
                     </Toolbar>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
-                        <Route exact path="/proposals" component={ ProposalsAll }/>
+                        <Route exact path="/proposals" component={ ProposalsPage }/>
                         <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
                         <Route path="/proposals/tic" component={ ProposalsByTic }/>
                         <Route path="/proposals/status" component={ ProposalsByStatus }/>
@@ -147,9 +144,9 @@ const Dashboard = props => {
                         <Route path="/proposals/date" component={ ProposalsByDate }/>
                         <Route path="/proposals/submitted-for-services" component={ ProposalsSubmittedForServices }/>
                         <Route path="/proposals/resubmissions" component={ ProposalsResubmitted }/>
+                        <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route path="/site-report" component={ SiteReportPage }/>
                         <Route path="/study-metrics" component={ StudyMetricsPage }/>
-                        <Route path="/analytics/collaborations" component={ CollaborationsPage }/>
                         <Route path="/" component={ HomePage }/>
                     </Switch>
                 </ScrollToTop>
