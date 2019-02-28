@@ -21,7 +21,7 @@ export default function() {
           .on("tick", updateForce),
 
       // Appearance
-      radiusRange = [4, 32],
+      radiusRange = [0, 32],
       backgroundColor = "#e5e5e5",
 
       // Scales
@@ -46,7 +46,9 @@ export default function() {
             switch (d.type) {
               case "pi":
                 return "PI: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               case "proposal":
                 return "Proposal: " + d.name + "<br><br>" +
@@ -56,15 +58,21 @@ export default function() {
 
               case "org":
                 return "Organization: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               case "tic":
                 return "TIC: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               case "area":
                 return "Therapeutic area: " + d.name + "<br><br>" +
-                       "Proposals: " + d.proposals.length;
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
 
               default:
                 console.log("Invalid type: " + d.type);
@@ -327,7 +335,7 @@ export default function() {
 
     radiusScale
         .domain([0, d3.max(network.nodes, function(d) {
-          return d.links.length;
+          return d.proposals.length;
         })])
         .range(radiusRange);
 
@@ -423,11 +431,19 @@ export default function() {
           })
           .call(drag);
 
-      nodeEnter.append("circle");
-
-      // Node update
-      nodeEnter.merge(node).select("circle")
+      nodeEnter.append("circle")
+          .attr("class", "background")
           .attr("r", nodeRadius);
+
+      nodeEnter.append("circle")
+          .attr("class", "foreground")
+          .attr("r", nodeRadius)
+          .style("fill", nodeFill);
+
+      nodeEnter.append("circle")
+          .attr("class", "border")
+          .attr("r", nodeRadius)
+          .style("fill", "none");
 
       // Node exit
       node.exit().remove();
@@ -547,7 +563,7 @@ export default function() {
   }
 
   function nodeRadius(d) {
-    return d.type === "proposal" ? radiusScale(1) : radiusScale(d.links.length);
+    return radiusScale(d.proposals.length);
   }
 
   function active(d) {
@@ -589,53 +605,64 @@ export default function() {
     }
 
     if (proposals.length > 0) {
-      const nodeFaded = d3.color(backgroundColor).brighter(0.1);
       const outlineFaded = d3.color(backgroundColor).darker(0.1);
 
       // Change link appearance
-      svg.select(".network").selectAll(".link")
+      const link = svg.select(".network").selectAll(".link");
+
+      link.transition()
           .style("stroke", function(d) {
             return linkConnected(d) ? "#666" : outlineFaded;
           })
-          .filter(function(d) {
-            return linkConnected(d);
-          }).raise();
+
+      link.filter(function(d) {
+        return linkConnected(d);
+      }).raise();
 
       // Change node appearance
-      svg.select(".network").selectAll(".node").select("circle")
+      const node = svg.select(".network").selectAll(".node")
+          .style("pointer-events", function(d) {
+            return active(d) ? null : "none";
+          });
+
+      node.select(".background").transition()
           .style("fill", function(d) {
-            return nodeConnected(d) ? nodeFill(d) : nodeFaded;
-          })
+            const scale = d3.scaleLinear()
+                .domain([0, 1])
+                .range([backgroundColor, nodeFill(d)]);
+
+            return nodeConnected(d) ? scale(0.5) : scale(0.1);
+          });
+
+      node.select(".foreground").transition()
+          .attr("r", function(d) {
+            return radiusScale(overlap(d));
+          });
+
+      node.select(".border")
           .style("stroke", function(d) {
             return nodeConnected(d) ? "black" : outlineFaded;
           })
           .style("stroke-width", function(d) {
             return isNodeSelected(d) ? 3 : 1;
-          })
-          .filter(function(d) {
-            return nodeConnected(d);
-          }).raise();
+          });
+
+      node.filter(function(d) {
+        return nodeConnected(d);
+      }).raise();
 
       // Change label appearance
-      svg.select(".labels").selectAll(".foreground")
+      svg.select(".labels").selectAll(".foreground").transition()
           .style("fill", function(d) {
             return nodeConnected(d) ? "black" : "#ddd";
-          })
-          .filter(function(d) {
-            return nodeConnected(d);
-          }).raise();
+          });
 
-      // Sort links
-      svg.select(".network").selectAll(".link")
-          .filter(function(d) {
-            return linkConnected(d);
-          }).raise();
-
-      // Sort nodes
-      svg.select(".network").selectAll(".node")
-          .filter(function(d) {
-            return nodeConnected(d);
-          }).raise();
+      function overlap(d) {
+        return d.proposals.reduce(function(p, c) {
+          if (proposals.indexOf(c.id) !== -1) p++;
+          return p;
+        }, 0);
+      }
 
       function nodeConnected(d) {
         for (var i = 0; i < d.proposals.length; i++) {
@@ -651,15 +678,19 @@ export default function() {
     }
     else {
       // Reset
-      svg.select(".network").selectAll(".link")
+      svg.select(".network").selectAll(".link").transition()
           .style("stroke", "#666");
 
-      svg.select(".network").selectAll(".node").select("circle")
-          .style("fill", nodeFill)
-          .style("stroke", "black")
-          .style("stroke-width", 1);
+      const node = svg.select(".network").selectAll(".node");
 
-      svg.select(".labels").selectAll(".foreground")
+      node.select(".foreground").transition()
+          .attr("r", nodeRadius);
+
+      node.select(".border")
+          .style("stroke", "black")
+          .style("stroke-width", 1)
+
+      svg.select(".labels").selectAll(".foreground").transition()
           .style("fill", "black");
 
       svg.select(".network").selectAll(".node").raise();

@@ -1,21 +1,6 @@
 version: '3'
 
 services:
-  db:
-    container_name: postgres
-    restart: always
-    build:
-      context: ./db/
-      dockerfile: Dockerfile
-    volumes:
-      - ./db/pgdata/:/var/lib/postgresql/data/
-      - ./db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
-      - ./db/duketic.sql:/data/duketic.sql
-    env_file:
-     - ./.env
-    expose:
-      - ${POSTGRES_PORT}
-
   api:
     container_name: node
     build:
@@ -32,11 +17,10 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
     env_file:
      - ./.env
-    depends_on:
-      - db
-
+    network_mode: host
   frontend:
     container_name: react
     build:
