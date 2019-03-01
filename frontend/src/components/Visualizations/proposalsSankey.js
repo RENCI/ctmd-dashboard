@@ -134,7 +134,7 @@ export default function() {
   function processData() {
     // Filter any proposals without a TIC
     data = data.filter(function(d) {
-      return d.tic_name;
+      return d.assignToInstitution;
     });
 
     // Filter identified test proposals
@@ -144,13 +144,13 @@ export default function() {
     ];
 
     data = data.filter(function(d) {
-      return testProposals.indexOf(+d.proposal_id) === -1;
+      return testProposals.indexOf(+d.proposalID) === -1;
     });
 
     // Flatten data
     // XXX: Do this in the query instead?
     data = data.reduce(function(p, c) {
-      var id = c.proposal_id;
+      var id = c.proposalID;
       var d = p[id];
 
       if (d) {
@@ -180,24 +180,24 @@ export default function() {
         statuses = d3.map();
 
     data.forEach(function(d) {
-      addNode(d, pis, d.pi_name, "pi");
-      addNode(d, proposals, d.proposal_id, "proposal");
-      addNode(d, orgs, d.org_name, "org");
-      addNode(d, tics, d.tic_name, "tic");
-      addNode(d, areas, d.therapeutic_area, "area");
-      addNode(d, statuses, d.proposal_status, "status");
+      addNode(d, pis, d.piName, "pi");
+      addNode(d, proposals, d.proposalID, "proposal");
+      addNode(d, orgs, d.submitterInstitution, "org");
+      addNode(d, tics, d.assignToInstitution, "tic");
+      addNode(d, areas, d.therapeuticArea, "area");
+      addNode(d, statuses, d.proposalStatus, "status");
     });
 
     // Now link
     var links = [];
 
     data.forEach(function(d) {
-      var pi = pis.get(d.pi_name),
-          proposal = proposals.get(d.proposal_id),
-          org = orgs.get(d.org_name),
-          tic = tics.get(d.tic_name),
-          area = areas.get(d.therapeutic_area),
-          status = statuses.get(d.proposal_status);
+      var pi = pis.get(d.piName),
+          proposal = proposals.get(d.proposalID),
+          org = orgs.get(d.submitterInstitution),
+          tic = tics.get(d.assignToInstitution),
+          area = areas.get(d.therapeuticArea),
+          status = statuses.get(d.proposalStatus);
 
       var order = [
         tic, area, org, status, pi, proposal
@@ -252,10 +252,10 @@ export default function() {
 
           case "proposal":
             // XXX: Name placeholder
-            node.name = d.short_name;
-            node.budget = d.anticipated_budget ? d.anticipated_budget : "NA";
-            node.duration = d.funding_duration ? d.funding_duration : "NA";
-            node.status = d.proposal_status ? d.proposal_status : "NA";
+            node.name = d.ShortTitle;
+            node.budget = d.totalBudget ? d.totalBudget : "NA";
+            node.duration = d.fundingPeriod ? d.fundingPeriod : "NA";
+            node.status = d.proposalStatus ? d.proposalStatus : "NA";
             node.protocolStatus = d.protocol_status ? +d.protocol_status : "NA";
             break;
 

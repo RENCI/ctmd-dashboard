@@ -20,7 +20,7 @@ const defaultStatus = "All";
 
 function getStatusItems(proposals) {
     const statuses = proposals.reduce((p, c) => {
-        let status = c.proposal_status;
+        let status = c.proposalStatus;
         if (p.indexOf(status) === -1) p.push(status);
         return p;
     }, []);
