@@ -245,9 +245,11 @@ Alternatively, you could circumvent this by logging into the running `react` con
 
 #### Production
 
+The production environment looks for a database on the host machine, so ensure that is configured and running first. Then supply the necessary credentials to the environment variables file, `.env.`.
+
 ##### Prerequisites
 
-The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. You can copy the sampel password file `frontend/.htpasswd.sample` to that location. Its contains usernames and hashed passwords, as the sample file illustrates. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils`. To use `htpasswd`, navigate into `frontend/` and execute `htpasswd -c ./.htpasswd [username]`. Then you'll be prompted to enter a password twice.
+The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. You can copy the sampel password file `frontend/.htpasswd.sample` to that location. Its contains usernames and hashed passwords, as the sample file illustrates. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils` or `httpd-tools`. To use `htpasswd`, navigate into `frontend/` and execute `htpasswd -c ./.htpasswd [username]`. Then you'll be prompted to enter a password twice.
 
 The entire interaction shows output like the following.
 
