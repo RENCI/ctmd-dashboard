@@ -59,14 +59,6 @@ const Menu = props => {
                 <ListItemIcon><CollaborationsIcon /></ListItemIcon>
                 <ListItemText primary="Collaborations"/>
             </MenuItem>
-            <MenuItem component={ NavLink } to="/site-report" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><SiteReportIcon /></ListItemIcon>
-                <ListItemText primary="Site Report"/>
-            </MenuItem>
-            <MenuItem component={ NavLink } to="/study-metrics" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><MetricsIcon /></ListItemIcon>
-                <ListItemText primary="Study Metrics"/>
-            </MenuItem>
         </MenuList>
     )
 }
