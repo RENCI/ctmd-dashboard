@@ -63,7 +63,7 @@ class ProposalsNetworkVisualizations extends Component {
 
         // Get the actual proposals instead of the ids
         this.props.onSelectProposals(this.props.proposals.filter(proposal => {
-            return selected.indexOf(proposal.proposal_id) !== -1;
+            return selected.indexOf(proposal.proposalID) !== -1;
         }));
     }
 

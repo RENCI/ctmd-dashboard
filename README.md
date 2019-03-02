@@ -142,6 +142,8 @@ Make an environment variables file named `.env`. There's a sample one in the rep
 $ cp .env.sample .env
 ```
 
+This file contains database credentials and a couple variables to inform the frontend how to connect to the api. The production Docker Compose file, `docker-compose.prod.yml`, will override the `NODE_ENV` environment variable, allowing the use of the API path set in `ApiContext.js`.
+
 ### Copy the existing database
 
 On the PMD VM, dump a snapshot of the database.

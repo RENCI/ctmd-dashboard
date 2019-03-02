@@ -28,8 +28,8 @@ function  ProposalsNetworkContainer(props) {
                 let status = event.target.value;
 
                 setFilteredProposals(proposals.filter(proposal =>
-                    proposal.proposal_status === status
-                ).map(proposal => proposal.proposal_id));
+                    proposal.proposalStatus === status
+                ).map(proposal => proposal.proposalID));
 
                 break;
             default:
