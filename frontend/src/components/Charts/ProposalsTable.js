@@ -118,7 +118,11 @@ const ProposalsTable = (props) => {
                 { title: 'Status', field: 'proposalStatus', },
                 { title: 'Therapeutic Area', field: 'therapeuticArea', },
                 { title: 'Submitting Insitution', field: 'submitterInstitution', },
-                { title: 'Assigned TIC/RIC', field: 'assignToInstitution', },
+                { title: 'Assigned TIC/RIC', field: 'assignToInstitution' },
+                { title: 'Submission Date', field: 'dateSubmitted', hidden: false },
+                { title: 'Approval Date', field: 'meetingDate', hidden: true },
+                { title: 'Grant Submission Date', field: 'plannedGrantSubmissionDate', hidden: true },
+                { title: 'Grant Approval Date', field: 'FundingStart', hidden: true },
             ] }
             data={ proposals }
             options={{
