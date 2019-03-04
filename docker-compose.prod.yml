@@ -53,7 +53,6 @@ services:
       - ./frontend/.htpasswd:/etc/nginx/.htpasswd
     environment:
       NODE_ENV: production
-      API_ROOT: $API_ROOT
     ports:
       - 80:80
     depends_on:
