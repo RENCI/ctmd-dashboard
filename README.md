@@ -262,7 +262,7 @@ Re-type new password:
 Adding password for user myusername
 ```
 
-Do all that before spinning up the containers.
+Do all that before spinning up the containers. If you don't do this, things will seem to work normally until you go to access the site, at which point Nginx will throw a `500 Internal Server Error` at your browser.
 
 \* Note: this is only required for production.
 
