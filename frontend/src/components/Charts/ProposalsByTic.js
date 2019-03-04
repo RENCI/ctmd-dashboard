@@ -32,7 +32,7 @@ const proposalsGroupedByTicThenStatus = props => {
     const proposalGroups = proposalsByTic.map(tic => ({ name: tic.name, ...tic.proposals.countBy('proposalStatus') }))
 
     return (
-        <Card square={ false }>
+        <Card>
             <CardHeader title="Grouped by TIC/RIC" subheader="" />
             <CardContent style={{ height: '450px' }}>
                 <ResponsiveBar

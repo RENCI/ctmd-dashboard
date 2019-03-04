@@ -52,14 +52,14 @@ const ProposalsCalendar = props => {
                 title={ `Proposal Submissions in ${ year }` }
                 subheader={ `${ proposalsByDate.filter(({ day }) => day.includes(year)).reduce((sum, { value }) => sum + value, 0) } Submissions` }
             />
-            <CardContent style={{ height: '250px' }}>
+            <CardContent style={{ height: '200px' }}>
                 <ResponsiveCalendar
                     data={ proposalsByDate }
                     from={ `${ year }-01-01T12:00:00.000Z` }
                     to={ `${ year }-12-31T12:00:00.000Z` }
                     direction="horizontal"
                     emptyColor="#eee"
-                    margin={{ top: 16, right: 16, bottom: 0, left: 32, }}
+                    margin={{ top: 0, right: 16, bottom: 0, left: 32, }}
                     yearSpacing={ 40 }
                     monthBorderColor="#fff"
                     monthLegendOffset={ 10 }
