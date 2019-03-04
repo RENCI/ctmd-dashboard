@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
@@ -11,6 +11,7 @@ import {
     Alarm as ProposalStatusIcon,
     AttachMoney as BudgetIcon,
 } from '@material-ui/icons'
+import { SettingsContext } from '../../contexts/SettingsContext'
 
 const useStyles = makeStyles(theme => ({
     panel: {
@@ -108,21 +109,22 @@ const ProposalDetailPanel = props => {
 }
 
 const ProposalsTable = (props) => {
+    const [settings] = useContext(SettingsContext)
     const { proposals } = props
     return (
         <MaterialTable
             components={{ }}
             columns={ [
-                { title: 'Proposal Name', field: 'shortTitle', },
-                { title: 'PI', field: 'piName', },
-                { title: 'Status', field: 'proposalStatus', },
-                { title: 'Therapeutic Area', field: 'therapeuticArea', },
-                { title: 'Submitting Insitution', field: 'submitterInstitution', },
-                { title: 'Assigned TIC/RIC', field: 'assignToInstitution' },
-                { title: 'Submission Date', field: 'dateSubmitted', hidden: false },
-                { title: 'Approval Date', field: 'meetingDate', hidden: true },
-                { title: 'Grant Submission Date', field: 'plannedGrantSubmissionDate', hidden: true },
-                { title: 'Grant Approval Date', field: 'FundingStart', hidden: true },
+                { title: 'Proposal Name', field: 'shortTitle', hidden: !settings.visibleColumns.shortTitle },
+                { title: 'PI', field: 'piName', hidden: !settings.visibleColumns.piName },
+                { title: 'Status', field: 'proposalStatus', hidden: !settings.visibleColumns.proposalStatus },
+                { title: 'Therapeutic Area', field: 'therapeuticArea', hidden: !settings.visibleColumns.therapeuticArea },
+                { title: 'Submitting Insitution', field: 'submitterInstitution', hidden: !settings.visibleColumns.submitterInstitution },
+                { title: 'Assigned TIC/RIC', field: 'assignToInstitution', hidden: !settings.visibleColumns.assignToInstitution  },
+                { title: 'Submission Date', field: 'dateSubmitted', hidden: !settings.visibleColumns.dateSubmitted  },
+                { title: 'Approval Date', field: 'meetingDate', hidden: !settings.visibleColumns.meetingDate  },
+                { title: 'Grant Submission Date', field: 'plannedGrantSubmissionDate', hidden: !settings.visibleColumns.plannedGrantSubmissionDate  },
+                { title: 'Grant Approval Date', field: 'fundingStart', hidden: !settings.visibleColumns.fundingStart  },
             ] }
             data={ proposals }
             options={{

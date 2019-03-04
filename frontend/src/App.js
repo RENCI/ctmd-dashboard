@@ -4,13 +4,16 @@ import Theme from './Theme'
 import Dashboard from './Dashboard'
 import { ThemeProvider } from '@material-ui/styles'
 import { ApiContext, endpoints } from './contexts/ApiContext'
+import { SettingsProvider } from './contexts/SettingsContext'
 
 const App = props => {
     return (
         <Router>
             <ApiContext.Provider value={ endpoints }>
                 <ThemeProvider theme={ Theme }>
-                    <Dashboard />
+                    <SettingsProvider>
+                        <Dashboard />
+                    </SettingsProvider>
                 </ThemeProvider>
             </ApiContext.Provider>
         </Router>
