@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { Fragment, useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
@@ -41,6 +41,7 @@ const useStyles = makeStyles(theme => ({
     column3: {},
     timelineRow: {
         borderTop: `1px solid ${ theme.palette.grey[300] }`,
+        alignItems: 'flex-start',
     },
 }))
 
@@ -50,6 +51,9 @@ const ProposalDetailPanel = props => {
         dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate
     } = props
     const classes = useStyles()
+    
+    const timeSpan = (startDate, endDate) => Math.round(new Date(endDate) - new Date(startDate))/(1000 * 60 * 60 * 24)
+
     return (
         <Grid container className={ classes.panel }>
             <Grid item xs={ 12 } className={ classes.header }>
@@ -93,14 +97,34 @@ const ProposalDetailPanel = props => {
                     </ListItem>
                 </List>
             </Grid>
-            <Grid item xs={ 12 } className={ classes.timelineRow }>
+            <Grid item xs={ 12 }>
                 <List dense>
-                    <ListItem>
+                    <ListItem className={ classes.timelineRow }>
                         <Tooltip title="Submission and Approval Dates" aria-label="Submission and Approval Dates"><ListItemIcon><CalendarIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary="Submission Date" secondary={ dateSubmitted }/>
-                        <ListItemText primary="Approval Date" secondary={ meetingDate }/>
-                        <ListItemText primary="Grant Submission Date" secondary={ fundingStart }/>
-                        <ListItemText primary="Grant Award Date" secondary={ plannedGrantSubmissionDate }/>
+                        <ListItemText disableTypography primary="Submission Date" secondary={
+                            <Fragment>
+                                <div>{ dateSubmitted || '- - -' }</div>
+                                <div>Day 0</div>
+                            </Fragment>
+                        }/>
+                        <ListItemText disableTypography primary="Approval Date" secondary={
+                            <Fragment>
+                                <div>{ meetingDate || '- - -' }</div>
+                                <div>{ meetingDate && <span>Day { timeSpan(dateSubmitted, meetingDate) }</span> }</div>
+                            </Fragment>
+                        }/>
+                        <ListItemText disableTypography primary="Grant Submission Date" secondary={
+                            <Fragment>
+                                <div>{ plannedGrantSubmissionDate || '- - -' }</div>
+                                <div>{ plannedGrantSubmissionDate && <span>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span> }</div>
+                            </Fragment>
+                        }/>
+                        <ListItemText disableTypography primary="Grant Award Date" secondary={
+                            <Fragment>
+                                <div>{ fundingStart || '- - -' }</div>
+                                <div>{ fundingStart && <span>Day { timeSpan(dateSubmitted, fundingStart) }</span> }</div>
+                            </Fragment>
+                        }/>
                     </ListItem>
                 </List>
             </Grid>
