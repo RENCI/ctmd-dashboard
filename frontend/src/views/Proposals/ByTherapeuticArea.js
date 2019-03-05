@@ -14,6 +14,7 @@ import ChartOptions from '../../components/Menus/ChartOptions'
 const ProposalsByTherapeuticArea = props => {
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState()
     const [proposals, setProposals] = useState()
+    const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
     const api = useContext(ApiContext)
@@ -28,6 +29,7 @@ const ProposalsByTherapeuticArea = props => {
 
     const selectProposals = ({ id }) => {
         const index = proposalsByTherapeuticArea.findIndex(status => status.name === id)
+        setTableTitle('Therapeutic Area: ' + id)
         setProposals(proposalsByTherapeuticArea[index].proposals)
         scrollToTable()
     }
@@ -72,7 +74,7 @@ const ProposalsByTherapeuticArea = props => {
 
                 <Grid item xs={ 12 }>
                     <div ref={ tableRef }></div>
-                    <ProposalsTable proposals={ proposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ proposals } paging={ false } />
                 </Grid>
 
             </Grid>

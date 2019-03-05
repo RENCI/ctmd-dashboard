@@ -110,9 +110,10 @@ const ProposalDetailPanel = props => {
 
 const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
-    const { proposals } = props
+    const { title, proposals } = props
     return (
         <MaterialTable
+            title={ title }
             components={{ }}
             columns={ [
                 { title: 'Proposal Name', field: 'shortTitle', hidden: !settings.visibleColumns.shortTitle },
@@ -136,7 +137,6 @@ const ProposalsTable = (props) => {
                 pageSize: 15,
                 pageSizeOptions: [15, 25, 50],
             }}
-            title=""
             detailPanel={rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}
         />

@@ -13,6 +13,7 @@ import ChartOptions from '../../components/Menus/ChartOptions'
 const ProposalsByStatus = props => {
     const [proposalsByStatus, setProposalsByStatus] = useState()
     const [proposals, setProposals] = useState()
+    const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
     const api = useContext(ApiContext)
@@ -26,6 +27,7 @@ const ProposalsByStatus = props => {
 
     const selectProposals = ({ id }) => {
         const index = proposalsByStatus.findIndex(status => status.name === id)
+        setTableTitle('Status: ' + id)
         setProposals(proposalsByStatus[index].proposals)
         scrollToTable()
     }
@@ -70,7 +72,7 @@ const ProposalsByStatus = props => {
                 
                 <Grid item xs={ 12 }>
                     <div ref={ tableRef }></div>
-                    <ProposalsTable proposals={ proposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ proposals } paging={ false } />
                 </Grid>
 
             </Grid>

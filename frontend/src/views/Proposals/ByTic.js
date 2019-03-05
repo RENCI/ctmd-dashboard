@@ -14,6 +14,7 @@ import ChartOptions from '../../components/Menus/ChartOptions'
 const ProposalsByTic = props => {
     const [proposalsByTic, setProposalsByTic] = useState()
     const [proposals, setProposals] = useState()
+    const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
     const api = useContext(ApiContext)
@@ -27,6 +28,7 @@ const ProposalsByTic = props => {
 
     const selectProposals = ({ id }) => {
         const index = proposalsByTic.findIndex(status => status.name === id)
+        setTableTitle('Assigned TIC/TIC: ' + id)
         setProposals(proposalsByTic[index].proposals)
         scrollToTable()
     }
@@ -71,7 +73,7 @@ const ProposalsByTic = props => {
 
                 <Grid item xs={ 12 }>
                     <div ref={ tableRef }></div>
-                    <ProposalsTable proposals={ proposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ proposals } paging={ false } />
                 </Grid>
 
             </Grid>
