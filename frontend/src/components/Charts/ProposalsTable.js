@@ -136,6 +136,7 @@ const ProposalsTable = (props) => {
                 grouping: true,
                 pageSize: 15,
                 pageSizeOptions: [15, 25, 50],
+                exportFileName: title,
             }}
             detailPanel={rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}
