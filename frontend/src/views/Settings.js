@@ -10,9 +10,6 @@ const SettingsPage = props => {
 
     const handleChangeVisibleColumns = event => {
         const visibleColumns = { ...settings.visibleColumns, [event.target.value]: event.target.checked}
-        console.log(visibleColumns)
-        console.log(event.target.value)
-        console.log(event.target.checked)
         setSettings({ visibleColumns })
     }
 

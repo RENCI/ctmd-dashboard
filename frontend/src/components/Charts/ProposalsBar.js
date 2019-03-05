@@ -25,8 +25,8 @@ const ProposalsBarChart = props => {
                 enableGridX={ false }
                 enableGridY={ false }
                 colors="nivo"
-                colorBy="id"
-                margin={{ top: 0, right: 32, bottom: 0, left: longestLabelLength * 8 }}
+                colorBy="value"
+                margin={{ top: 0, right: 32, bottom: 0, left: longestLabelLength * 6 }}
                 borderWidth={ 1 }
                 borderColor="inherit:darker(0.75)"
                 animate={ true }
