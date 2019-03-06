@@ -83,6 +83,7 @@ const ProposalsByDate = (props) => {
         start: '2016-01-01',
         end: '2019-12-31',
     })
+    const [tableTitle, setTableTitle] = useState(`From ${ dates.start } to ${ dates.end }`)
     const api = useContext(ApiContext)
 
     useEffect(() => {
@@ -96,9 +97,10 @@ const ProposalsByDate = (props) => {
     
     const selectProposals = () => {
         const filteredProposals = proposals.filter(proposal => {
-            const proposalDate = new Date(proposal.prop_submit)
+            const proposalDate = new Date(proposal.dateSubmitted)
             return (new Date(dates.start) <= proposalDate && proposalDate <= new Date(dates.end))
         })
+        setTableTitle(`From ${ dates.start } to ${ dates.end }`)
         setDisplayedProposals(filteredProposals)
     }
 
@@ -170,7 +172,7 @@ const ProposalsByDate = (props) => {
                     </Card>
                 </Grid>
                 <Grid item xs={ 12 }>
-                    <ProposalsTable proposals={ displayedProposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ displayedProposals } paging={ false } />
                 </Grid>
             </Grid>
 
