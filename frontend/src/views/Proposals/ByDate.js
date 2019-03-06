@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
-import { ApiContext } from '../../contexts/ApiContext'
+import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import BrowseMenu from '../../components/Menus/BrowseMenu'
@@ -77,26 +77,20 @@ const PresetSelector = (props) => {
 
 const ProposalsByDate = (props) => {
     const classes = useStyles()
-    const [proposals, setProposals] = useState([])
+    const [store, setStore] = useContext(StoreContext)
     const [displayedProposals, setDisplayedProposals] = useState([])
     const [dates, setDates] = useState({
         start: '2016-01-01',
-        end: '2019-12-31',
+        end: `${ (new Date).getFullYear() }-12-31`,
     })
-    const api = useContext(ApiContext)
 
     useEffect(() => {
-        axios.get(api.proposals)
-            .then((response) => {
-                setProposals(response.data)
-                setDisplayedProposals(response.data)
-            })
-            .catch(error => console.log('Error', error))
-    }, [])
+        setDisplayedProposals(store.proposals)
+    }, [store.proposals])
     
     const selectProposals = () => {
-        const filteredProposals = proposals.filter(proposal => {
-            const proposalDate = new Date(proposal.prop_submit)
+        const filteredProposals = store.proposals.filter(proposal => {
+            const proposalDate = new Date(proposal.dateSubmitted)
             return (new Date(dates.start) <= proposalDate && proposalDate <= new Date(dates.end))
         })
         setDisplayedProposals(filteredProposals)

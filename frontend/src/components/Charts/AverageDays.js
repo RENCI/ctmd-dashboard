@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ApiContext } from '../../contexts/ApiContext'
-import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { ResponsiveBar } from '@nivo/bar'
+import { Card, CardHeader, CardContent } from '@material-ui/core'
+import { StoreContext } from '../../contexts/StoreContext'
+import { CircularLoader } from '../Progress/Progress'
 
 const AverageDays = props => {
-    const { proposals } = props
+    const [store, setStore] = useContext(StoreContext)
     const [averageDays, setAverageDays] = useState({
         submsisionToPatApproval: 0,
         submsisionToServicesOngoing: 0,
@@ -15,7 +16,7 @@ const AverageDays = props => {
 
     const findAverageDaysBetween = (field1, field2) => {
         let proposalsCount = 0
-        const total = proposals.reduce((totalDays, proposal) => {
+        const total = store.proposals.reduce((totalDays, proposal) => {
             if (proposal[field1] && proposal[field2]) {
                 proposalsCount += 1
                 return totalDays + Math.round(Math.abs(new Date(proposal[field2]) - new Date(proposal[field1])))/(1000 * 60 * 60 * 24)
@@ -26,19 +27,21 @@ const AverageDays = props => {
     }
     
     useEffect(() => {
-        const submsisionToPatApproval = findAverageDaysBetween('dateSubmitted', 'meetingDate')
-        const submsisionToServicesOngoing = 0
-        const approvalToGrantSubmission = findAverageDaysBetween('meetingDate', 'plannedGrantSubmissionDate')
-        const tinSubmissionToGrantSubmission = 0
-        const grantSubmissionToGrantAward = findAverageDaysBetween('plannedGrantSubmissionDate', 'fundingStart')
-        setAverageDays({
-            submsisionToPatApproval,
-            submsisionToServicesOngoing,
-            approvalToGrantSubmission,
-            tinSubmissionToGrantSubmission,
-            grantSubmissionToGrantAward,
-        }) 
-    }, [])
+        if (store.proposals) {
+            const submsisionToPatApproval = findAverageDaysBetween('dateSubmitted', 'meetingDate')
+            const submsisionToServicesOngoing = 0
+            const approvalToGrantSubmission = findAverageDaysBetween('meetingDate', 'plannedGrantSubmissionDate')
+            const tinSubmissionToGrantSubmission = 0
+            const grantSubmissionToGrantAward = findAverageDaysBetween('plannedGrantSubmissionDate', 'fundingStart')
+            setAverageDays({
+                submsisionToPatApproval,
+                submsisionToServicesOngoing,
+                approvalToGrantSubmission,
+                tinSubmissionToGrantSubmission,
+                grantSubmissionToGrantAward,
+            }) 
+        }
+    }, [store])
 
     return (
         <Card>
@@ -69,7 +72,7 @@ const AverageDays = props => {
                         tickPadding: 16,
                         tickRotation: 0,
                         legend: '',
-                        legendPosition: 'top',
+                        legendPosition: 'middle',
                         legendOffset: 0
                     }}
                     labelSkipWidth={ 0 }

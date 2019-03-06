@@ -9,8 +9,6 @@ import ProposalsByStatusBarChart from '../components/Charts/ProposalsByStatus'
 import ProposalsCalendar from '../components/Charts/ProposalsCalendar'
 import AverageDays from '../components/Charts/AverageDays'
 
-import { ApiContext } from '../contexts/ApiContext'
-
 const useStyles = makeStyles(theme => ({
     page: { },
     card: {
@@ -49,36 +47,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const HomePage = (props) => {
-    const [proposals, setProposals] = useState()
-    const [proposalsByTic, setProposalsByTic] = useState()
-    const [proposalsByDate, setProposalsByDate] = useState()
-    const [proposalsByStatus, setProposalsByStatus] = useState()
-    const [statuses, setStatuses] = useState()
-    const [tics, setTics] = useState()
-    const api = useContext(ApiContext)
     const theme = useTheme()
     const classes = useStyles()
-
-    useEffect(() => {
-        const promises = [
-            axios.get(api.proposals),
-            axios.get(api.proposalsByTic),
-            axios.get(api.proposalsByDate),
-            axios.get(api.proposalsByStatus),
-            axios.get(api.statuses),
-            axios.get(api.tics),
-        ]
-        Promise.all(promises)
-            .then((response) => {
-                setProposals(response[0].data)
-                setProposalsByTic(response[1].data)
-                setProposalsByDate(response[2].data)
-                setProposalsByStatus(response[3].data)
-                setStatuses(response[4].data)
-                setTics(response[5].data)
-            })
-            .catch(error => console.log('Error', error))
-    }, [])
 
     return (
         <div className={ classes.page }>
@@ -89,38 +59,18 @@ const HomePage = (props) => {
 
             <Grid container spacing={ 2 * theme.spacing.unit }>
                 <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
-                    {
-                        (proposalsByTic && statuses)
-                            ? <ProposalsByTicBarChart proposalsByTic={ proposalsByTic } statuses={ statuses.map(({ description }) => description) }/>
-                            : <CircularLoader />
-                    }
+                    <ProposalsByTicBarChart />
                 </Grid>
-
                 <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
-                    {
-                        (proposalsByStatus && tics)
-                            ? <ProposalsByStatusBarChart proposalsByStatus={ proposalsByStatus } tics={ tics.map(({ name }) => name) }/>
-                            : <CircularLoader />
-                    }
+                    <ProposalsByStatusBarChart />
                 </Grid>
-
                 <Grid item xs={ 12 } sm={ 11 } lg={ 7 }>
-                    {
-                        (proposalsByDate)
-                            ? <ProposalsCalendar proposalsByDate={ proposalsByDate }/>
-                            : <CircularLoader />
-                    }
+                    <ProposalsCalendar />
                 </Grid>
-
                 <Grid item xs={ 12 } sm={ 11 } lg={ 5 }>
-                    {
-                        (proposalsByDate)
-                            ? <AverageDays proposals={ proposals }/>
-                            : <CircularLoader />
-                    }
+                    <AverageDays />
                 </Grid>
             </Grid>
-
         </div>
     )
 }

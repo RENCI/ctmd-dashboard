@@ -1,7 +1,9 @@
-import React, { Fragment, useState } from 'react'
-import { ResponsiveCalendar } from '@nivo/calendar'
+import React, { Fragment, useContext, useState, useEffect } from 'react'
 import { Card, CardHeader, CardContent, Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
+import { ResponsiveCalendar } from '@nivo/calendar'
+import { StoreContext } from '../../contexts/StoreContext'
+import { CircularLoader } from '../Progress/Progress'
 
 const tooltip = (event) => {
     const { day, value } = event
@@ -14,9 +16,11 @@ const tooltip = (event) => {
 }
 
 const ProposalsCalendar = props => {
-    const { proposalsByDate } = props
+    const [store, setStore] = useContext(StoreContext)
+    const [calendarData, setCalendarData] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null)
     const [year, setYear] = useState((new Date()).getFullYear())
+    const [count, setCount] = useState(0)
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget)
@@ -30,6 +34,28 @@ const ProposalsCalendar = props => {
     const handleClose = () => {
         setAnchorEl(null)
     }
+
+    useEffect(() => {
+        if (store.proposals) {
+            let data = [] // [ { day: 'YYYY-MM-DD', value: N }, ...]
+            store.proposals.forEach(proposal => {
+                const dateIndex = data.findIndex(({ day }) => day === proposal.dateSubmitted)
+                if (dateIndex >= 0) {
+                    data[dateIndex].value += 1
+                } else {
+                    data.push({ day: proposal.dateSubmitted || '', value: 1 })
+                }
+            })
+            setCalendarData(data)
+            setCount(data.filter(({ day }) => day && day.includes(year) || 0).reduce((sum, { value }) => sum + value, 0))
+        }
+    }, [store])
+
+    useEffect(() => {
+        if (calendarData) {
+            setCount(calendarData.filter(({ day }) => day && day.includes(year) || 0).reduce((sum, { value }) => sum + value, 0))
+        }
+    }, [year])
     
     return (
         <Card>
@@ -50,23 +76,27 @@ const ProposalsCalendar = props => {
                     </Fragment>
                 }
                 title={ `Proposal Submissions in ${ year }` }
-                subheader={ `${ proposalsByDate.filter(({ day }) => day.includes(year)).reduce((sum, { value }) => sum + value, 0) } Submissions` }
+                subheader={ `${ count } Submissions` }
             />
             <CardContent style={{ height: '200px' }}>
-                <ResponsiveCalendar
-                    data={ proposalsByDate }
-                    from={ `${ year }-01-01T12:00:00.000Z` }
-                    to={ `${ year }-12-31T12:00:00.000Z` }
-                    direction="horizontal"
-                    emptyColor="#eee"
-                    margin={{ top: 0, right: 16, bottom: 0, left: 32, }}
-                    yearSpacing={ 40 }
-                    monthBorderColor="#fff"
-                    monthLegendOffset={ 10 }
-                    dayBorderWidth={ 1 }
-                    dayBorderColor="#fff"
-                    tooltip={ tooltip }
-                />
+                {
+                    calendarData ? (
+                        <ResponsiveCalendar
+                            data={ calendarData }
+                            from={ `${ year }-01-01T12:00:00.000Z` }
+                            to={ `${ year }-12-31T12:00:00.000Z` }
+                            direction="horizontal"
+                            emptyColor="#eee"
+                            margin={{ top: 0, right: 16, bottom: 0, left: 32, }}
+                            yearSpacing={ 40 }
+                            monthBorderColor="#fff"
+                            monthLegendOffset={ 10 }
+                            dayBorderWidth={ 1 }
+                            dayBorderColor="#fff"
+                            tooltip={ tooltip }
+                        />
+                    ) : <CircularLoader />
+                }
             </CardContent>
         </Card>
     )

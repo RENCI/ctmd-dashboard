@@ -23,6 +23,8 @@ export const endpoints = {
     resubmissionsCountByTherapeuticArea: apiRoot + 'proposals/resubmissions/count/by-therapeutic-area',
     network: apiRoot + 'proposals/network',
     statuses: apiRoot + 'statuses',
+    organizations: apiRoot + 'organizations',
     tics: apiRoot + 'tics',
+    therapeuticAreas: apiRoot + 'therapeutic-areas',
 }
 
