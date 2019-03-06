@@ -4,6 +4,7 @@ const servicesController = require('../controllers/services')
 
 // Routes beginning with "HOSTNAME/services/..."
 
+router.route('/').get(servicesController.list)
 router.route('/approval').get(servicesController.approvalServices)
 router.route('/submission').get(servicesController.submissionServices)
 

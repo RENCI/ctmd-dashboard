@@ -17,7 +17,7 @@ exports.getOne = (req, res) => {
         })
 }
 
-const query = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
+const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
             "Proposal"."ShortTitle" as "shortTitle",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
@@ -101,12 +101,48 @@ const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",
                     INNER JOIN name name5 ON name5.id="Proposal_ServicesApproved"."servicesApproved" AND name5."column"='servicesApproved'
                     ORDER BY "proposalID";`
 
+const approvedServicesQuery =
+    `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
+        FROM "Proposal"
+        INNER JOIN "Proposal_ServicesApproved" ON "Proposal"."ProposalID" = "Proposal_ServicesApproved"."ProposalID"
+        INNER JOIN name ON name.id="Proposal_ServicesApproved"."servicesApproved" AND name."column"='servicesApproved'
+        ORDER BY name.description;`
+
+const requestedServicesQuery =
+    `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
+        FROM "Proposal"
+        INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID"
+        INNER JOIN name ON name.id="Proposal_NewServiceSelection"."serviceSelection" AND name."column"='serviceSelection'
+        ORDER BY name.description;`
+
 // /proposals
 exports.list = (req, res) => {
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
+    db.task(t => {
+        return t.any(proposalsQuery)
+            .then(data => {
+                const proposals = data.map(prop => ({
+                    ...prop,
+                    requestedServices: [],
+                    approvedServices: [],
+                }))
+                return t.any(requestedServicesQuery)
+                    .then(data => {
+                        data.forEach(prop_serv => {
+                            const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+                            if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
+                        })
+                        return t.any(approvedServicesQuery)
+                            .then(data => {
+                                data.forEach(prop_serv => {
+                                    const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+                                    if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
+                                })
+                                return proposals
+                            })
+                    })
+            })
+    })
+        .then(proposals => res.status(200).send(proposals))
         .catch(error => {
             console.log('ERROR:', error)
             res.status(500).send('There was an error fetching data.')
@@ -119,7 +155,7 @@ exports.byStatus = (req, res) => {
     db.any(statusQuery)
         .then(statuses => {
             statuses.forEach(status => { status.proposals = [] })
-            db.any(query)
+            db.any(proposalsQuery)
                 .then(data => {
                     data.forEach(proposal => {
                         const index = statuses.findIndex(status => status.name === proposal.proposalStatus)
@@ -161,7 +197,7 @@ exports.byTic = (req, res) => {
     db.any(ticQuery)
         .then(tics => {
             tics.forEach(tic => { tic.proposals = [] })
-            db.any(query)
+            db.any(proposalsQuery)
                 .then(data => {
                     data.forEach(proposal => {
                         const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
@@ -182,7 +218,7 @@ exports.byOrganization = (req, res) => {
     db.any(organizationQuery)
         .then(organizations => {
             organizations.forEach(organization => { organization.proposals = [] })
-            db.any(query)
+            db.any(proposalsQuery)
                 .then(proposals => {
                     proposals.forEach(proposal => {
                         const index = organizations.findIndex(organization => organization.name === proposal.submitterInstitution)
@@ -203,7 +239,7 @@ exports.byTherapeuticArea = (req, res) => {
     db.any(areasQuery)
         .then(areas => {
             areas.forEach(area => { area.proposals = [] })
-            db.any(query)
+            db.any(proposalsQuery)
                 .then(proposals => {
                     proposals.forEach(proposal => {
                         proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
@@ -221,7 +257,7 @@ exports.byTherapeuticArea = (req, res) => {
 
 // /proposals/by-date
 exports.byDate = (req, res) => {
-    db.any(query)
+    db.any(proposalsQuery)
         .then(data => {
             data.map(proposal => {                            // streamline this
                 proposal.day = proposal.dateSubmitted         // streamline this
@@ -299,7 +335,7 @@ exports.submittedServices = (req, res) => {
 
 // /proposals/network
 exports.proposalsNetwork = (req, res) => {
-    db.any(query)
+    db.any(proposalsQuery)
         .then(data => {
             res.status(200).send(data)
         })
@@ -314,11 +350,32 @@ exports.proposalsNetwork = (req, res) => {
 
 // /proposals/count/submitted-for-services/
 exports.countSubmittedForServices = (req, res) => {
-    const query = `SELECT CAST(COUNT(*) AS INT)
-        FROM proposal
-        WHERE conso_or_services='2';`
-    db.any(query)
-        .then(data => res.status(200).send(data[0]))
+    db.task(t => {
+        return t.any(proposalsQuery)
+            .then(data => {
+                const proposals = data.map(prop => ({
+                    ...prop,
+                    requestedServices: [],
+                    approvedServices: [],
+                }))
+                return t.any(requestedServicesQuery)
+                    .then(data => {
+                        data.forEach(prop_serv => {
+                            const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+                            if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
+                        })
+                        return t.any(approvedServicesQuery)
+                            .then(data => {
+                                data.forEach(prop_serv => {
+                                    const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+                                    if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
+                                })
+                                return proposals
+                            })
+                    })
+            })
+    })
+        .then(proposals => res.status(200).send(proposals))
         .catch(error => {
             console.log('ERROR:', error)
             res.status(500).send('There was an error fetching data.')
@@ -420,7 +477,7 @@ exports.countSubmittedForServicesByMonth = (req, res) => {
 // /proposals/resubmissions
 exports.resubmissions = (req, res) => {
     // filter by status 21
-    db.any(query)
+    db.any(proposalsQuery)
         .then(data => {
             res.status(200).send(data)
         })
