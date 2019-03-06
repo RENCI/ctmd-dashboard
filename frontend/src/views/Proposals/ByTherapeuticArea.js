@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
-import axios from 'axios'
-import { ApiContext } from '../../contexts/ApiContext'
+import { StoreContext } from '../../contexts/StoreContext'
 import Heading from '../../components/Typography/Heading'
 import BrowseMenu from '../../components/Menus/BrowseMenu'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
@@ -10,27 +9,30 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
 
-
 const ProposalsByTherapeuticArea = props => {
+    const [store, setStore] = useContext(StoreContext)
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState()
-    const [proposals, setProposals] = useState()
+    const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
-    const api = useContext(ApiContext)
     const tableRef = useRef(null)
     
     useEffect(() => {
-        axios.get(api.proposalsByTherapeuticArea)
-            // .then(response => setProposalsByTherapeuticArea(response.data)) // all
-            .then(response => setProposalsByTherapeuticArea(response.data.filter(area => area.proposals.length > 0))) // non-empty areas
-            .catch(error => console.log('Error', error))
-    }, [])
+        if (store.proposals && store.therapeuticAreas) {
+            const areas = store.therapeuticAreas.map(({ description }) => ({ name: description, proposals: [] }))
+            store.proposals.forEach(proposal => {
+                const index = areas.findIndex(({ name }) => name === proposal.therapeuticArea)
+                if (index >= 0) areas[index].proposals.push(proposal)
+            })
+            setProposalsByTherapeuticArea(areas)
+        }
+    }, [store])
 
     const selectProposals = ({ id }) => {
-        const index = proposalsByTherapeuticArea.findIndex(status => status.name === id)
+        const index = proposalsByTherapeuticArea.findIndex(area => area.name === id)
         setTableTitle('Therapeutic Area: ' + id)
-        setProposals(proposalsByTherapeuticArea[index].proposals)
+        setDisplayedProposals(proposalsByTherapeuticArea[index].proposals)
         scrollToTable()
     }
     
@@ -74,7 +76,7 @@ const ProposalsByTherapeuticArea = props => {
 
                 <Grid item xs={ 12 }>
                     <div ref={ tableRef }></div>
-                    <ProposalsTable title={ tableTitle } proposals={ proposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ displayedProposals } paging={ false } />
                 </Grid>
 
             </Grid>

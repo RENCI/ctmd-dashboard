@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
-import axios from 'axios'
-import { ApiContext } from '../../contexts/ApiContext'
+import { StoreContext } from '../../contexts/StoreContext'
 import Heading from '../../components/Typography/Heading'
 import BrowseMenu from '../../components/Menus/BrowseMenu'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
@@ -12,24 +11,29 @@ import ChartOptions from '../../components/Menus/ChartOptions'
 
 
 const ProposalsByTic = props => {
+    const [store, setStore] = useContext(StoreContext)
     const [proposalsByTic, setProposalsByTic] = useState()
-    const [proposals, setProposals] = useState()
+    const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
-    const api = useContext(ApiContext)
     const tableRef = useRef(null)
     
     useEffect(() => {
-        axios.get(api.proposalsByTic)
-            .then(response => setProposalsByTic(response.data))
-            .catch(error => console.log('Error', error))
-    }, [])
+        if (store.proposals && store.tics) {
+            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] }))
+            store.proposals.forEach(proposal => {
+                const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
+                if (index >= 0) tics[index].proposals.push(proposal)
+            })
+            setProposalsByTic(tics)
+        }
+    }, [store])
 
     const selectProposals = ({ id }) => {
-        const index = proposalsByTic.findIndex(status => status.name === id)
+        const index = proposalsByTic.findIndex(tic => tic.name === id)
         setTableTitle('Assigned TIC/TIC: ' + id)
-        setProposals(proposalsByTic[index].proposals)
+        setDisplayedProposals(proposalsByTic[index].proposals)
         scrollToTable()
     }
     
@@ -73,7 +77,7 @@ const ProposalsByTic = props => {
 
                 <Grid item xs={ 12 }>
                     <div ref={ tableRef }></div>
-                    <ProposalsTable title={ tableTitle } proposals={ proposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ displayedProposals } paging={ false } />
                 </Grid>
 
             </Grid>

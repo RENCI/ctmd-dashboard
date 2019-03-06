@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
-import axios from 'axios'
-import { ApiContext } from '../../contexts/ApiContext'
+import { StoreContext } from '../../contexts/StoreContext'
 import Heading from '../../components/Typography/Heading'
 import BrowseMenu from '../../components/Menus/BrowseMenu'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
@@ -11,24 +10,29 @@ import ProposalsTable from '../../components/Charts/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
 
 const ProposalsByStatus = props => {
+    const [store, setStore] = useContext(StoreContext)
     const [proposalsByStatus, setProposalsByStatus] = useState()
-    const [proposals, setProposals] = useState()
+    const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
-    const api = useContext(ApiContext)
     const tableRef = useRef(null)
     
     useEffect(() => {
-        axios.get(api.proposalsByStatus)
-            .then(response => setProposalsByStatus(response.data))
-            .catch(error => console.log('Error', error))
-    }, [])
+        if (store.proposals && store.statuses) {
+            const statuses = store.statuses.map(({ description }) => ({ name: description, proposals: [] }))
+            store.proposals.forEach(proposal => {
+                const index = statuses.findIndex(({ name }) => name === proposal.proposalStatus)
+                if (index >= 0) statuses[index].proposals.push(proposal)
+            })
+            setProposalsByStatus(statuses)
+        }
+    }, [store])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByStatus.findIndex(status => status.name === id)
         setTableTitle('Status: ' + id)
-        setProposals(proposalsByStatus[index].proposals)
+        setDisplayedProposals(proposalsByStatus[index].proposals)
         scrollToTable()
     }
     
@@ -72,7 +76,7 @@ const ProposalsByStatus = props => {
                 
                 <Grid item xs={ 12 }>
                     <div ref={ tableRef }></div>
-                    <ProposalsTable title={ tableTitle } proposals={ proposals } paging={ false } />
+                    <ProposalsTable title={ tableTitle } proposals={ displayedProposals } paging={ false } />
                 </Grid>
 
             </Grid>
