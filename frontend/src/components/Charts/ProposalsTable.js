@@ -10,6 +10,7 @@ import {
     Assignment as TicIcon,
     Alarm as ProposalStatusIcon,
     AttachMoney as BudgetIcon,
+    LocalLaundryService as ServicesIcon,
 } from '@material-ui/icons'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
@@ -39,19 +40,35 @@ const useStyles = makeStyles(theme => ({
         borderRight: `1px solid ${ theme.palette.grey[300] }`,
     },
     column3: {},
+    servicesRow: {
+        alignItems: 'flex-start'
+    },
+    service: {
+        display: 'block',
+    },
     timelineRow: {
-        borderTop: `1px solid ${ theme.palette.grey[300] }`,
         alignItems: 'flex-start',
+        borderTop: `1px solid ${ theme.palette.grey[300] }`,
+    },
+    date: {
+        display: 'block',
+    },
+    dayCount: {
+        display: 'block',
     },
 }))
 
 const ProposalDetailPanel = props => {
     const {
-        proposalID, shortTitle, piName, submitterInstitution, assignToInstitution, therapeuticArea, proposalStatus, totalBudget, fundingPeriod,
-        dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate
+        proposalID, shortTitle, piName, submitterInstitution, assignToInstitution,
+        therapeuticArea, proposalStatus, totalBudget, fundingPeriod,
+        dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate,
+        requestedServices, approvedServices,
     } = props
     const classes = useStyles()
     
+    const todaysDate = (new Date).toISOString().slice(0,10)
+
     const timeSpan = (startDate, endDate) => Math.round(new Date(endDate) - new Date(startDate))/(1000 * 60 * 60 * 24)
 
     return (
@@ -60,7 +77,7 @@ const ProposalDetailPanel = props => {
                 <Typography variant="h5" className={ classes.title }>{ shortTitle }</Typography>
                 <span className={ classes.proposalId }>#{ proposalID }</span>
             </Grid>
-            <Grid item xs={ 4 } className={ classes.column1 }>
+            <Grid item xs={ 3 } className={ classes.column1 }>
                 <List dense>
                     <ListItem>
                         <Tooltip title="PI" aria-label="PI"><ListItemIcon><PiIcon /></ListItemIcon></Tooltip>
@@ -70,22 +87,18 @@ const ProposalDetailPanel = props => {
                         <Tooltip title="Submitting Institution" aria-label="Submitting Institution"><ListItemIcon><InstitutionIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ submitterInstitution } />
                     </ListItem>
-                </List>
-            </Grid>
-            <Grid item xs={ 4 } className={ classes.column2 }>
-                <List dense>
                     <ListItem>
                         <Tooltip title="Assigned TIC/RIC" aria-label="Assigned TIC/RIC"><ListItemIcon><TicIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ assignToInstitution } />
                     </ListItem>
+                </List>
+            </Grid>
+            <Grid item xs={ 3 } className={ classes.column2 }>
+                <List dense>
                     <ListItem>
                         <Tooltip title="Therapeutic Area" aria-label="Therapeutic Area"><ListItemIcon><TherapeuticAreaIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ therapeuticArea } />
                     </ListItem>
-                </List>
-            </Grid>
-            <Grid item xs={ 4 } className={ classes.column3 }>
-                <List dense>
                     <ListItem>
                         <Tooltip title="Proposal Status" aria-label="Proposal Status"><ListItemIcon><ProposalStatusIcon /></ListItemIcon></Tooltip>
                         <ListItemText primary={ proposalStatus } />
@@ -97,33 +110,70 @@ const ProposalDetailPanel = props => {
                     </ListItem>
                 </List>
             </Grid>
+            <Grid item xs={ 6 }>
+                <List dense>
+                    <ListItem className={ classes.servicesRow }>
+                        <Tooltip title="Services" aria-label="Requested and Approved Services"><ListItemIcon><ServicesIcon /></ListItemIcon></Tooltip>
+                        <ListItemText primary="Requested Services" secondary={
+                            <Fragment>
+                                {
+                                    requestedServices.length > 0 ? requestedServices.map(
+                                        service => <span className={ classes.service } key={ service }>{ service }</span>
+                                    ) : 'N/A'
+                                }
+                            </Fragment>
+                        }/>
+                        <ListItemText primary="Approved Services" secondary={
+                            <Fragment>
+                                {
+                                    approvedServices.length > 0 ? approvedServices.map(
+                                        service => <span className={ classes.service } key={ service }>{ service }</span>
+                                    ) : 'N/A'
+                                }
+                            </Fragment>
+                        }/>
+                    </ListItem>
+                </List>
+            </Grid>
             <Grid item xs={ 12 }>
                 <List dense>
                     <ListItem className={ classes.timelineRow }>
                         <Tooltip title="Submission and Approval Dates" aria-label="Submission and Approval Dates"><ListItemIcon><CalendarIcon /></ListItemIcon></Tooltip>
-                        <ListItemText disableTypography primary="Submission Date" secondary={
-                            <Fragment>
-                                <div>{ dateSubmitted || '- - -' }</div>
-                                <div>Day 0</div>
-                            </Fragment>
+                        <ListItemText primary="Submission Date" secondary={
+                            dateSubmitted ? (
+                                <Fragment>
+                                    <span className={ classes.date }>{ dateSubmitted }</span>
+                                    <span className={ classes.dayCount }>Day 0</span>
+                                    <span className={ classes.daysAgo }>{ timeSpan(dateSubmitted, todaysDate) } days ago</span>
+                                </Fragment>
+                            ) : <span className={ classes.date }>- - -</span>
                         }/>
-                        <ListItemText disableTypography primary="Approval Date" secondary={
-                            <Fragment>
-                                <div>{ meetingDate || '- - -' }</div>
-                                <div>{ meetingDate && <span>Day { timeSpan(dateSubmitted, meetingDate) }</span> }</div>
-                            </Fragment>
+                        <ListItemText primary="Approval Date" secondary={
+                            meetingDate ? (
+                                <Fragment>
+                                    <span className={ classes.date }>{ meetingDate }</span>
+                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, meetingDate) }</span>
+                                    <span className={ classes.daysAgo }>{ timeSpan(meetingDate, todaysDate) } days ago</span>
+                                </Fragment>
+                            ) : <span className={ classes.date }>- - -</span>
                         }/>
-                        <ListItemText disableTypography primary="Grant Submission Date" secondary={
-                            <Fragment>
-                                <div>{ plannedGrantSubmissionDate || '- - -' }</div>
-                                <div>{ plannedGrantSubmissionDate && <span>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span> }</div>
-                            </Fragment>
+                        <ListItemText primary="Grant Submission Date" secondary={
+                            plannedGrantSubmissionDate ? (
+                                <Fragment>
+                                    <span className={ classes.date }>{ plannedGrantSubmissionDate }</span>
+                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span>
+                                    <span className={ classes.daysAgo }>{ timeSpan(plannedGrantSubmissionDate, todaysDate) } days ago</span>
+                                </Fragment>
+                            ) : <span className={ classes.date }>- - -</span>
                         }/>
-                        <ListItemText disableTypography primary="Grant Award Date" secondary={
-                            <Fragment>
-                                <div>{ fundingStart || '- - -' }</div>
-                                <div>{ fundingStart && <span>Day { timeSpan(dateSubmitted, fundingStart) }</span> }</div>
-                            </Fragment>
+                        <ListItemText primary="Grant Award Date" secondary={
+                            fundingStart ? (
+                                <Fragment>
+                                    <span className={ classes.date }>{ fundingStart }</span>
+                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, fundingStart) }</span>
+                                    <span className={ classes.daysAgo }>{ timeSpan(fundingStart, todaysDate) } days ago</span>
+                                </Fragment>
+                            ) : <span className={ classes.date }>- - -</span>
                         }/>
                     </ListItem>
                 </List>
