@@ -187,7 +187,7 @@ const ProposalsTable = (props) => {
     const { title, proposals } = props
     return (
         <MaterialTable
-            title={ title }
+            title={ title || '' }
             components={{ }}
             columns={ [
                 { title: 'Proposal Name', field: 'shortTitle', hidden: !settings.visibleColumns.shortTitle },
