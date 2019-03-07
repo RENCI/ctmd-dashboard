@@ -3,6 +3,7 @@ import { ResponsiveBar } from '@nivo/bar'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
+import ChartTooltip from '../Tooltip/ChartTooltip'
 
 const AverageDays = props => {
     const [store, setStore] = useContext(StoreContext)
@@ -82,23 +83,15 @@ const AverageDays = props => {
                     motionStiffness={ 90 }
                     motionDamping={ 15 }
                     legends={ [] }
-                    tooltip={ ({ id, value, color, indexValue }) => Tooltip({ id: indexValue, value, color }) } 
+                    tooltip={ ({ id, value, color, indexValue }) => (
+                        <ChartTooltip color={ color }>
+                            <div><strong>{ indexValue }</strong></div>
+                            <div>~ { value } Day{ value !==  1 ? 's' : null }</div>
+                        </ChartTooltip>
+                    )} 
                 />
             </CardContent>
         </Card>
-    )
-}
-
-const Tooltip = ({ color, id, value }) => {
-    return (
-        <div style ={{ display: 'flex', }}>
-            <div style={{ display: 'inline', backgroundColor: color, width: '2.4rem', height: '2.4rem', marginRight: '0.5rem', }}>&nbsp;</div>
-            <div style={{ flex: 1, lineHeight: '1.2rem', }}>
-                <div><strong>Average Number of Days</strong></div>
-                <div>{ id }</div>
-                <div>{ value } Day{ value !==  1 ? 's' : null }</div>
-            </div>
-        </div>
     )
 }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import ChartTooltip from './ChartTooltip'
+import ChartTooltip from '../Tooltip/ChartTooltip'
 import { ResponsivePie } from '@nivo/pie'
 
 const ProposalsPieChart = props => {
@@ -13,7 +13,12 @@ const ProposalsPieChart = props => {
             <ResponsivePie
                 height={ height - 32}
                 data={ proposalGroups }
-                tooltip={ ChartTooltip }
+                tooltip={ ({ id, value, color, indexValue }) => (
+                        <ChartTooltip color={ color }>
+                            <div><strong>{ id }</strong></div>
+                            <div>{ value } Proposal{ value !==  1 ? 's' : null }</div>
+                        </ChartTooltip>
+                    )}
                 onClick={ clickHandler }
                 colors="nivo"
                 colorBy="id"

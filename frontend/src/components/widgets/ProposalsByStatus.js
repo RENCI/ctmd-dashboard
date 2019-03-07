@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
+import ChartTooltip from '../Tooltip/ChartTooltip'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
@@ -11,20 +12,6 @@ Array.prototype.countBy = function(prop) {
         groups[val] += 1
         return groups
     }, {})
-}
-
-const tooltip = (event) => {
-    const { id, value, indexValue, color } = event
-    return (
-        <div style={{ display: 'flex', }}>
-            <div style={{ display: 'inline', backgroundColor: color, width: '3.6rem', height: '3.6rem', marginRight: '0.5rem', }}>&nbsp;</div>
-            <div style={{ flex: 1, lineHeight: '1.2rem', }}>
-                <div><strong>{ indexValue }</strong></div>
-                <div>{ id }</div>
-                <div>{ value } Proposal{ value > 1 ? 's' : null }</div>
-            </div>
-        </div>
-    )
 }
 
 const proposalsGroupedByStatusThenTic = props => {
@@ -96,7 +83,13 @@ const proposalsGroupedByStatusThenTic = props => {
                                     }]
                                 }]
                             }
-                            tooltip={ tooltip }
+                            tooltip={ ({ id, value, color, indexValue}) => (
+                                <ChartTooltip color={ color }>
+                                    <div><strong>{ indexValue }</strong></div>
+                                    <div>{ id }</div>
+                                    <div>{ value } Proposal{ value > 1 ? 's' : null }</div>
+                                </ChartTooltip>
+                            )}
                         />
                     ) : <CircularLoader />
                 }

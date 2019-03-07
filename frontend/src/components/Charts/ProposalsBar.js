@@ -1,6 +1,6 @@
 import React from 'react'
-import ChartTooltip from './ChartTooltip'
 import { ResponsiveBar } from '@nivo/bar'
+import ChartTooltip from '../Tooltip/ChartTooltip'
 
 const ProposalsBarChart = props => {
     const {
@@ -18,10 +18,12 @@ const ProposalsBarChart = props => {
                 data={ proposalGroups }
                 // onClick={ clickHandler } // temp patch for issue #23
                 layout="horizontal"
-                // For some reason, nivo pie chart works fine and shows the `id` property fine,
-                // but the bar chart has id: "value" for every group.
-                // This is a fix for that: reassign id to be the value of `indexValue`.
-                tooltip={ ({ id, value, color, indexValue }) => ChartTooltip({ id: indexValue, value, color }) } 
+                tooltip={ ({ id, value, color, indexValue }) => (
+                        <ChartTooltip color={ color }>
+                            <div><strong>{ indexValue }</strong></div>
+                            <div>{ value } Proposal{ value !==  1 ? 's' : null }</div>
+                        </ChartTooltip>
+                    )}
                 enableGridX={ false }
                 enableGridY={ false }
                 colors="nivo"
