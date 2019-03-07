@@ -4,10 +4,10 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
 import Heading from '../components/Typography/Heading'
 import { CircularLoader } from '../components/Progress/Progress'
-import ProposalsByTicBarChart from '../components/Charts/ProposalsByTic'
-import ProposalsByStatusBarChart from '../components/Charts/ProposalsByStatus'
-import ProposalsCalendar from '../components/Charts/ProposalsCalendar'
-import AverageDays from '../components/Charts/AverageDays'
+import ProposalsByTicBarChart from '../components/widgets/ProposalsByTic'
+import ProposalsByStatusBarChart from '../components/widgets/ProposalsByStatus'
+import ProposalsCalendar from '../components/widgets/ProposalsCalendar'
+import AverageDays from '../components/widgets/AverageDays'
 
 const useStyles = makeStyles(theme => ({
     page: { },
