@@ -16,18 +16,20 @@ const ProposalsByOrganization = props => {
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
+    const [hideEmptyGroups, setHideEmptyGroups] = useState(false)
     const tableRef = useRef(null)
     
     useEffect(() => {
         if (store.proposals && store.organizations) {
-            const orgs = store.organizations.map(({ description }) => ({ name: description, proposals: [] }))
+            let orgs = store.organizations.map(({ description }) => ({ name: description, proposals: [] }))
             store.proposals.forEach(proposal => {
                 const index = orgs.findIndex(({ name }) => name === proposal.submitterInstitution)
                 if (index >= 0) orgs[index].proposals.push(proposal)
             })
+            if (hideEmptyGroups) orgs = orgs.filter(org => org.proposals.length > 0)
             setProposalsByOrganization(orgs)
         }
-    }, [store])
+    }, [store, hideEmptyGroups])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByOrganization.findIndex(org => org.name === id)
@@ -38,6 +40,7 @@ const ProposalsByOrganization = props => {
     
     const handleSelectGraphType = (event, type) => setChartType(type)
     const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
+    const handleToggleHideEmptyGroups = event => setHideEmptyGroups(event.target.checked)
 
     const scrollToTable = () => {
         setTimeout(() => tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 500)
@@ -58,6 +61,7 @@ const ProposalsByOrganization = props => {
                             <ChartOptions
                                 sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
                                 typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
+                                toggleHideEmptyGroupsHandler={ handleToggleHideEmptyGroups }
                             />
                         } />
                         <CardContent>

@@ -16,18 +16,20 @@ const ProposalsByTherapeuticArea = props => {
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
+    const [hideEmptyGroups, setHideEmptyGroups] = useState(false)
     const tableRef = useRef(null)
     
     useEffect(() => {
         if (store.proposals && store.therapeuticAreas) {
-            const areas = store.therapeuticAreas.map(({ description }) => ({ name: description, proposals: [] }))
+            let areas = store.therapeuticAreas.map(({ description }) => ({ name: description, proposals: [] }))
             store.proposals.forEach(proposal => {
                 const index = areas.findIndex(({ name }) => name === proposal.therapeuticArea)
                 if (index >= 0) areas[index].proposals.push(proposal)
             })
+            if (hideEmptyGroups) areas = areas.filter(area => area.proposals.length > 0)
             setProposalsByTherapeuticArea(areas)
         }
-    }, [store])
+    }, [store, hideEmptyGroups])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByTherapeuticArea.findIndex(area => area.name === id)
@@ -38,11 +40,12 @@ const ProposalsByTherapeuticArea = props => {
     
     const handleSelectGraphType = (event, type) => setChartType(type)
     const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
+    const handleToggleHideEmptyGroups = event => setHideEmptyGroups(event.target.checked)
 
     const scrollToTable = () => {
         setTimeout(() => tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 500)
     }
-    
+
     return (
         <div>
             <Heading>
@@ -58,6 +61,7 @@ const ProposalsByTherapeuticArea = props => {
                             <ChartOptions
                                 sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
                                 typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
+                                toggleHideEmptyGroupsHandler={ handleToggleHideEmptyGroups }
                             />
                         } />
                         <CardContent>

@@ -6,16 +6,16 @@ const ProposalsBarChart = props => {
     const {
         proposals, height, sorting, // clickHandler
     } = props
-    const proposalGroups = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
-    proposalGroups.sort((a, b) => a.id > b.id ? -1 : 1)
-    if (sorting === 'value') proposalGroups.sort((a, b) => a.value < b.value ? -1 : 1)
+    const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
+    proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
+    if (sorting === 'value') proposalCounts.sort((a, b) => a.value < b.value ? -1 : 1)
 
-    const longestLabelLength = Math.max(...proposalGroups.map(group => group.id.length))
+    const longestLabelLength = Math.max(...proposalCounts.map(group => group.id.length))
     return (
         <div style={{ height: height }}>
             <ResponsiveBar
                 height={ height - 32 }
-                data={ proposalGroups }
+                data={ proposalCounts }
                 // onClick={ clickHandler } // temp patch for issue #23
                 layout="horizontal"
                 tooltip={ ({ id, value, color, indexValue }) => (

@@ -4,15 +4,15 @@ import { ResponsivePie } from '@nivo/pie'
 
 const ProposalsPieChart = props => {
     const { proposals, clickHandler, height, sorting } = props
-    const proposalGroups = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
-    if (sorting === 'alpha') proposalGroups.sort((a, b) => a.id > b.id ? -1 : 1)
-    if (sorting === 'value') proposalGroups.sort((a, b) => a.value < b.value ? -1 : 1)
+    const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
+    if (sorting === 'alpha') proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
+    if (sorting === 'value') proposalCounts.sort((a, b) => a.value < b.value ? -1 : 1)
 
     return (
         <div style={{ height: height }}>
             <ResponsivePie
                 height={ height - 32}
-                data={ proposalGroups }
+                data={ proposalCounts }
                 tooltip={ ({ id, value, color, indexValue }) => (
                         <ChartTooltip color={ color }>
                             <div><strong>{ id }</strong></div>

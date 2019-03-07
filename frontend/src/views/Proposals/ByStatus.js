@@ -16,18 +16,20 @@ const ProposalsByStatus = props => {
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
+    const [hideEmptyGroups, setHideEmptyGroups] = useState(false)
     const tableRef = useRef(null)
     
     useEffect(() => {
         if (store.proposals && store.statuses) {
-            const statuses = store.statuses.map(({ description }) => ({ name: description, proposals: [] }))
+            let statuses = store.statuses.map(({ description }) => ({ name: description, proposals: [] }))
             store.proposals.forEach(proposal => {
                 const index = statuses.findIndex(({ name }) => name === proposal.proposalStatus)
                 if (index >= 0) statuses[index].proposals.push(proposal)
             })
+            if (hideEmptyGroups) statuses = statuses.filter(status => status.proposals.length > 0)
             setProposalsByStatus(statuses)
         }
-    }, [store])
+    }, [store, hideEmptyGroups])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByStatus.findIndex(status => status.name === id)
@@ -38,6 +40,7 @@ const ProposalsByStatus = props => {
     
     const handleSelectGraphType = (event, type) => setChartType(type)
     const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
+    const handleToggleHideEmptyGroups = event => setHideEmptyGroups(event.target.checked)
 
     const scrollToTable = () => {
         setTimeout(() => tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 500)
@@ -58,6 +61,7 @@ const ProposalsByStatus = props => {
                             <ChartOptions
                                 sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
                                 typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
+                                toggleHideEmptyGroupsHandler={ handleToggleHideEmptyGroups }
                             />
                         } />
                         <CardContent>
