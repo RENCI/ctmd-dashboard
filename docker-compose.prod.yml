@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    container_name: postgres
+    container_name: pmd-db
     restart: always
     build:
       context: ./db/
@@ -20,7 +20,7 @@ services:
       - $POSTGRES_PORT
 
   api:
-    container_name: node
+    container_name: pmd-api
     build:
       context: ./api/
       dockerfile: Dockerfile
@@ -40,19 +40,18 @@ services:
       - db
 
   frontend:
-    container_name: react
+    container_name: pmd-frontend
     build:
-      context: ./frontend/
-      dockerfile: Dockerfile-prod
       args:
         NODE_ENV: production
+        REACT_APP_API_ROOT: $REACT_APP_API_ROOT
+      context: ./frontend/
+      dockerfile: Dockerfile-prod
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./frontend/.htpasswd:/etc/nginx/.htpasswd
-    environment:
-      NODE_ENV: production
     ports:
       - 80:80
     depends_on:

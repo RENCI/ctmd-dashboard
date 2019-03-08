@@ -2,7 +2,8 @@ import React from 'react'
 
 export const ApiContext = React.createContext({})
 
-const apiRoot = (process.env.NODE_ENV === 'production') ? 'http://localhost/api/' : 'http://localhost:3030/'
+const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
+
 export const endpoints = {
     proposals: apiRoot + 'proposals',
     proposalsByTic: apiRoot + 'proposals/by-tic',

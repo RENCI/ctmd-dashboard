@@ -136,13 +136,9 @@ $ git clone https://github.com/renci/dashboard.git
 
 ### Set up environment variables file
 
-Make an environment variables file named `.env`. There's a sample one in the repo that will work for development out of the box, so just copy that.
+There are two places we specify environemt-specific variables `./.env` and `./frontend/.env`. The former will contain database credentials necessary for building the Docker images. The latter indicates the URL at which the frontend can access the API. It is necessary that the names of variables used in the React frontend begin with `REACT_APP_`. The variable is referenced in the `ApiContext`, which resides at `'./frontend/src/contexts/ApiContext.js`, providing access to the API's endpoints across the frontend application.
 
-```bash
-$ cp .env.sample .env
-```
-
-This file contains database credentials and a couple variables to inform the frontend how to connect to the api. The production Docker Compose file, `docker-compose.prod.yml`, will override the `NODE_ENV` environment variable, allowing the use of the API path set in `ApiContext.js`.
+There is a `.env.sample` file in each location that can be copied to get things working out of the box. Changes must be made to the `REACT_APP_API_ROOT` variable for various environments throughout the development workflow, so be sure make changes to that file accordingly--`http://localhost/api/` will work for testing development locally.
 
 ### Copy the existing database
 
@@ -214,26 +210,26 @@ react       |
 
 ##### Possibly Useful Notes
 
-It's nice to leave your session attached to keep an eye on errors, but of course you want to rebuild and/or detach at times:
+It's nice to leave your session attached to keep an eye on errors throughout development, but of course you want to rebuild and/or detach at times:
 
 ```bash
 $ docker-compose up --build -d
 ```
 
-Or only start a couple services, specify them explicitly:
+Or only start a couple services, you may specify them explicitly:
 
 ```bash
 $ docker-compose up api
 ```
 
-The above command starts the `api` and its dependency, the `db`. You can also just build specific images.
+The above command starts the `api` and its dependency, the `db` service. Similarly, one can also just build specific images.
 
 ```bash
 $ docker-compose up --build api db
 ```
 
-Point your browser to `http://localhost:3000` to see the dashboard.
-To mess with the API directly (in the browser or Postman, say), that is served to `http://localhost:3030`.
+Point your browser to `http://localhost:3000` to access the dashboard.
+To mess with the API directly (in the browser or in Postman, say), that is served to `http://localhost:3030`.
 
 ##### Hot Reloading
 
