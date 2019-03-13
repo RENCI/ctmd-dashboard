@@ -149,6 +149,7 @@ const Dashboard = props => {
                         <Route path="/proposals/requested-services" component={ ProposalsByRequestedServices }/>
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/proposals/resubmissions" component={ ProposalsResubmitted }/>
+                        <Route path="/services" component={ ServicesPage }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route path="/site-report" component={ SiteReportPage }/>
                         <Route path="/study-metrics" component={ StudyMetricsPage }/>
