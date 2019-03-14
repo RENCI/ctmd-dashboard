@@ -40,9 +40,6 @@ services:
   frontend:
     container_name: pmd-frontend
     build:
-      args:
-        NODE_ENV: development
-        API_ROOT: $API_ROOT_DEV
       context: ./frontend/
       dockerfile: Dockerfile
     volumes:
