@@ -7,7 +7,6 @@ import {
     Description as ProposalsIcon,
     // Assessment as ReportsIcon,
     // Timeline as ForecastsIcon,
-    LocalLaundryService as ServicesIcon,
     Star as MetricsIcon,
     LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
@@ -55,10 +54,6 @@ const Menu = props => {
             <MenuItem component={ NavLink } to="/proposals" className={ classes.menuItem } activeClassName={ classes.active }>
                 <ListItemIcon><ProposalsIcon /></ListItemIcon>
                 <ListItemText primary="Proposals"/>
-            </MenuItem>
-            <MenuItem component={ NavLink } to="/services" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><ServicesIcon /></ListItemIcon>
-                <ListItemText primary="Services"/>
             </MenuItem>
             <MenuItem component={ NavLink } to="/collaborations" className={ classes.menuItem } activeClassName={ classes.active }>
                 <ListItemIcon><CollaborationsIcon /></ListItemIcon>
