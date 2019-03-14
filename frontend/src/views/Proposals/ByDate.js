@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
-import axios from 'axios'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
@@ -81,7 +80,7 @@ const ProposalsByDate = (props) => {
     const [displayedProposals, setDisplayedProposals] = useState([])
     const [dates, setDates] = useState({
         start: '2016-01-01',
-        end: `${ (new Date).getFullYear() }-12-31`,
+        end: `${ (new Date()).getFullYear() }-12-31`,
     })
     const [tableTitle, setTableTitle] = useState(`From ${ dates.start } to ${ dates.end }`)
 
