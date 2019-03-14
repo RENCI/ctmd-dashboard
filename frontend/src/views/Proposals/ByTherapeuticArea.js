@@ -31,9 +31,10 @@ const ProposalsByTherapeuticArea = props => {
         }
     }, [store, hideEmptyGroups])
 
-    const selectProposals = ({ id }) => {
-        const index = proposalsByTherapeuticArea.findIndex(area => area.name === id)
-        setTableTitle('Therapeutic Area: ' + id)
+    const selectProposals = (props) => {
+        if (props.data) props = props.data  // Patch for issue #23
+        const index = proposalsByTherapeuticArea.findIndex(area => area.name === props.id)
+        setTableTitle('Therapeutic Area: ' + props.id)
         setDisplayedProposals(proposalsByTherapeuticArea[index].proposals)
         scrollToTable()
     }

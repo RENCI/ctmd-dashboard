@@ -30,9 +30,10 @@ const ProposalsByTic = props => {
         }
     }, [store])
 
-    const selectProposals = ({ id }) => {
-        const index = proposalsByTic.findIndex(tic => tic.name === id)
-        setTableTitle('Assigned TIC/TIC: ' + id)
+    const selectProposals = (props) => {
+        if (props.data) props = props.data  // Patch for issue #23
+        const index = proposalsByTic.findIndex(tic => tic.name === props.id)
+        setTableTitle('Assigned TIC/TIC: ' + props.id)
         setDisplayedProposals(proposalsByTic[index].proposals)
         scrollToTable()
     }

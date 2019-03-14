@@ -31,9 +31,10 @@ const ProposalsByOrganization = props => {
         }
     }, [store, hideEmptyGroups])
 
-    const selectProposals = ({ id }) => {
-        const index = proposalsByOrganization.findIndex(org => org.name === id)
-        setTableTitle('Submitting Institution: ' + id)
+    const selectProposals = (props) => {
+        if (props.data) props = props.data  // Patch for issue #23
+        const index = proposalsByOrganization.findIndex(org => org.name === props.id)
+        setTableTitle('Submitting Institution: ' + props.id)
         setDisplayedProposals(proposalsByOrganization[index].proposals)
         scrollToTable()
     }

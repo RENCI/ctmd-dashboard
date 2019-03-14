@@ -3,9 +3,7 @@ import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 
 const ProposalsBarChart = props => {
-    const {
-        proposals, height, sorting, // clickHandler
-    } = props
+    const { proposals, height, sorting, clickHandler } = props
     const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
     proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
     if (sorting === 'value') proposalCounts.sort((a, b) => a.value < b.value ? -1 : 1)
@@ -16,7 +14,7 @@ const ProposalsBarChart = props => {
             <ResponsiveBar
                 height={ height - 32 }
                 data={ proposalCounts }
-                // onClick={ clickHandler } // temp patch for issue #23
+                onClick={ clickHandler }
                 layout="horizontal"
                 tooltip={ ({ id, value, color, indexValue }) => (
                         <ChartTooltip color={ color }>

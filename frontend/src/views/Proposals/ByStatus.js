@@ -31,9 +31,10 @@ const ProposalsByStatus = props => {
         }
     }, [store, hideEmptyGroups])
 
-    const selectProposals = ({ id }) => {
-        const index = proposalsByStatus.findIndex(status => status.name === id)
-        setTableTitle('Status: ' + id)
+    const selectProposals = (props) => {
+        if (props.data) props = props.data  // Patch for issue #23
+        const index = proposalsByStatus.findIndex(status => status.name === props.id)
+        setTableTitle('Status: ' + props.id)
         setDisplayedProposals(proposalsByStatus[index].proposals)
         scrollToTable()
     }
