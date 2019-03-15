@@ -9,17 +9,17 @@ import { StoreProvider } from './contexts/StoreContext'
 
 const App = props => {
     return (
-        <Router>
-            <ApiContext.Provider value={ endpoints }>
-                <ThemeProvider theme={ Theme }>
-                    <StoreProvider>
-                        <SettingsProvider>
+        <ApiContext.Provider value={ endpoints }>
+            <ThemeProvider theme={ Theme }>
+                <StoreProvider>
+                    <SettingsProvider>
+                        <Router>
                             <Dashboard />
-                        </SettingsProvider>
-                    </StoreProvider>
-                </ThemeProvider>
-            </ApiContext.Provider>
-        </Router>
+                        </Router>
+                    </SettingsProvider>
+                </StoreProvider>
+            </ThemeProvider>
+        </ApiContext.Provider>
     )
 }
 
