@@ -11,11 +11,21 @@ import {
     LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
     // Build as QueryBuilderIcon,
+    Settings as SettingsIcon,
+    ExitToApp as LogoutIcon,
 } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
+    menuList: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    flexer: {
+        flex: 1,
+    },
     menuItem: {
-        padding: `${ 1.5 * theme.spacing.unit }px ${ 4 * theme.spacing.unit }px`,
+        padding: `${ 1.5 * theme.spacing.unit }px ${ 1.5 * theme.spacing.unit }px`,
         display: 'flex', alignItems: 'center',
         margin: theme.spacing.unit,
         borderRadius: theme.spacing.unit,
@@ -25,11 +35,12 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.grey[200],
         },
     },
+    listItemText: {
+        padding: 0,
+    },
     icon: {
         opacity: 0.8,
-        padding: 0,
-        paddingRight: 2 * theme.spacing.unit,
-        fontSize: '250%',
+        fontSize: '200%',
     },
     active: {
         backgroundColor: theme.palette.grey[300],
@@ -46,18 +57,25 @@ const useStyles = makeStyles(theme => ({
 const Menu = props => {
     const classes = useStyles()
     return (
-        <MenuList>
+        <MenuList className={ classes.menuList }>
             <MenuItem component={ NavLink } exact to="/" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><DashboardIcon /></ListItemIcon>
-                <ListItemText primary="Dashboard"/>
+                <ListItemIcon className={ classes.icon }><DashboardIcon /></ListItemIcon>
+                <ListItemText primary="Home" classes={{ root: classes.listItemText }}/>
             </MenuItem>
             <MenuItem component={ NavLink } to="/proposals" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><ProposalsIcon /></ListItemIcon>
-                <ListItemText primary="Proposals"/>
+                <ListItemIcon className={ classes.icon }><ProposalsIcon /></ListItemIcon>
+                <ListItemText primary="Proposals" classes={{ root: classes.listItemText }}/>
             </MenuItem>
             <MenuItem component={ NavLink } to="/collaborations" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon><CollaborationsIcon /></ListItemIcon>
-                <ListItemText primary="Collaborations"/>
+                <ListItemIcon className={ classes.icon }><CollaborationsIcon /></ListItemIcon>
+                <ListItemText primary="Collaborations" classes={{ root: classes.listItemText }}/>
+            </MenuItem>
+
+            <div className={ classes.flexer }/>
+
+            <MenuItem button component={ NavLink } to={ '/settings' } className={ classes.menuItem } activeClassName={ classes.active }>
+                <ListItemIcon>{ <SettingsIcon /> }</ListItemIcon>
+                <ListItemText primary="Settings"  classes={{ primary: classes.listItemText }}/>
             </MenuItem>
         </MenuList>
     )

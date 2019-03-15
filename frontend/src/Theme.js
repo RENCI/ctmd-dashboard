@@ -28,7 +28,7 @@ let theme = createMuiTheme({
     },
     typography: {
         useNextVariants: true,
-        htmlFontSize: 18,
+        htmlFontSize: 20,
         h1: { fontFamily: 'EB Garamond', },
         h2: { fontFamily: 'EB Garamond', },
         h3: { fontFamily: 'EB Garamond', },

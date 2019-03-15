@@ -29,18 +29,21 @@ import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
 import CollaborationsPage from './views/Collaborations'
 
-const drawerWidth = 300
+const drawerWidth = 240
 
 const useStyles = makeStyles(theme => ({
     layout: { display: 'flex', },
     drawerPaper: { width: drawerWidth, },
-    drawer: {
+    nav: {
+        minWidth: 0,
+        transition: 'min-width 250ms',
         [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
+            minWidth: drawerWidth,
             flexShrink: 0,
         },
     },
     brand: {
+        backgroundColor: 'transparent',
         border: `1px solid ${ theme.palette.extended.shaleBlue }`,
         color: theme.palette.extended.shaleBlue,
         fontFamily: 'EB Garamond',
@@ -54,31 +57,30 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
         }
     },
-    toolbar: {
-        display: 'flex',
-        flexDirection: 'row',
-        padding: 0,
-        margin: 0,
-        transition: 'margin-bottom 250ms',
-        marginBottom: 4 * theme.spacing.unit,
-    },
-    flexer: { flex: 1, },
     menuButton: {
-        marginRight: 20,
+        transform: 'translateX(0)',
+        transition: 'transform 250ms, opacity 500ms',
+        transitionDelay: '500ms',
+        opacity: 0.75,
+        position: 'absolute',
+        left: '0.5rem',
+        top: '0.5rem',
         [theme.breakpoints.up('sm')]: {
-            display: 'none',
+            transform: 'translateX(-150%)',
+            opacity: 0,
         },
     },
     main: {
+        // ...theme.mixins.debug,
         minHeight: '100vh',
         backgroundColor: theme.palette.extended.limestone,
         flexGrow: 1,
-        padding: 2 * theme.spacing.unit,
-        paddingTop: 0,
-        transition: 'padding 250ms',
+        padding: `${ 4 * theme.spacing.unit }px`,
+        paddingTop: `${ 8 * theme.spacing.unit }px`,
+        transition: 'padding-top 250ms',
         [theme.breakpoints.up('sm')]: {
-            padding: 4 * theme.spacing.unit,
-            paddingTop: 0,
+            padding: `${ 4 * theme.spacing.unit }px`,
+            paddingTop: `${ 5 * theme.spacing.unit }px`,
         },
     },
 }))
@@ -105,7 +107,7 @@ const Dashboard = props => {
 
     return (
         <div className={ classes.layout }>
-            <nav className={ classes.drawer }>
+            <nav className={ classes.nav }>
                 <Hidden smUp implementation="css">
                     <Drawer anchor={ 'left' } variant="temporary"
                         open={ mobileOpen } onClose={ handleDrawerToggle }
@@ -126,16 +128,12 @@ const Dashboard = props => {
             <main className={ classes.main }>
                 <CssBaseline />
                 <ScrollToTop>
-                    <Toolbar className={ classes.toolbar }>
-                        <IconButton
-                            color="inherit"
-                            aria-label="Open drawer"
-                            onClick={ handleDrawerToggle }
-                            className={ classes.menuButton }
-                        ><MenuIcon /></IconButton>
-                        <div className={ classes.flexer }/>
-                        <UserMenu menuItems={ userMenuItems }/>
-                    </Toolbar>
+                    <IconButton
+                        color="default"
+                        aria-label="Open drawer"
+                        onClick={ handleDrawerToggle }
+                        className={ classes.menuButton }
+                    ><MenuIcon fontSize="large" /></IconButton>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
                         <Route exact path="/proposals" component={ ProposalsPage }/>
