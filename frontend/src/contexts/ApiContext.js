@@ -28,5 +28,6 @@ export const endpoints = {
     tics: apiRoot + 'tics',
     therapeuticAreas: apiRoot + 'therapeutic-areas',
     services: apiRoot + 'services',
+    studyMetrics: apiRoot + 'study-metrics',
 }
 

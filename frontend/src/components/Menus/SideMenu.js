@@ -7,7 +7,7 @@ import {
     Description as ProposalsIcon,
     // Assessment as ReportsIcon,
     // Timeline as ForecastsIcon,
-    // Star as MetricsIcon,
+    Star as MetricsIcon,
     // LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
     // Build as QueryBuilderIcon,
@@ -70,8 +70,12 @@ const Menu = props => {
                 <ListItemIcon className={ classes.icon }><CollaborationsIcon /></ListItemIcon>
                 <ListItemText primary="Collaborations" classes={{ root: classes.listItemText }}/>
             </MenuItem>
+            <MenuItem component={ NavLink } to="/study-metrics" className={ classes.menuItem } activeClassName={ classes.active }>
+                <ListItemIcon className={ classes.icon }><MetricsIcon /></ListItemIcon>
+                <ListItemText primary="Study Metrics" classes={{ root: classes.listItemText }}/>
+            </MenuItem>
 
-            <div className={ classes.flexer }/>
+            <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
 
             <MenuItem button component={ NavLink } to={ '/settings' } className={ classes.menuItem } activeClassName={ classes.active }>
                 <ListItemIcon>{ <SettingsIcon /> }</ListItemIcon>
