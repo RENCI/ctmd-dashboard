@@ -16,12 +16,15 @@ app.listen(PORT, () => {
 })
 
 // Custom Middleware - Route-Logging
-
 const routeLogger = (req, res, next) => {
     console.log(`HIT: ${ req.path }`)
     next()
 }
 app.use(routeLogger)
+
+// Middleware Parse request body
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 // // // Routes // // //
 
@@ -39,6 +42,8 @@ app.use('/tics', require('./routes/tics'))
 app.use('/organizations', require('./routes/organizations'))
 // Therapeutic Area
 app.use('/therapeutic-areas', require('./routes/therapeutic-areas'))
+// Study Metrics
+app.use('/study-metrics', require('./routes/study-metrics'))
 
 // Endpoint List/Documentation
 app.use('/list', require('./routes/documentation'))
