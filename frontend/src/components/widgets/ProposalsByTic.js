@@ -1,9 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
+import useWindowWidth from '../../hooks/useWindowWidth'
 
 Array.prototype.countBy = function(prop) {
     return this.reduce(function(groups, item) {
@@ -17,6 +18,8 @@ Array.prototype.countBy = function(prop) {
 const proposalsGroupedByTicThenStatus = props => {
     const [store, setStore] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
+    const windowWidth = useWindowWidth()
+    const container = useRef(null)
 
     useEffect(() => {
         if (store.proposals && store.tics) {
@@ -28,9 +31,29 @@ const proposalsGroupedByTicThenStatus = props => {
             setProposalGroups(tics.map(tic => ({ name: tic.name, ...tic.proposals.countBy('proposalStatus') })))
         }
     }, [store])
+    
+    const chartLegends = [{
+        enableLabel: false,
+        dataFrom: 'keys',
+        anchor: 'top-right',
+        direction: 'column',
+        justify: false,
+        translateX: windowWidth < 1000 ? 0 : 156,
+        translateY: -32,
+        itemsSpacing: 1,
+        itemWidth: 20,
+        itemHeight: 20,
+        itemDirection: 'right-to-left',
+        itemOpacity: 0.75,
+        symbolSize: 20,
+        effects: [{
+            on: 'hover',
+            style: { itemOpacity: 1.0 }
+        }]
+    }]
 
     return (
-        <Card>
+        <Card ref={ container }>
             <CardHeader title="Grouped by TIC/RIC" subheader="" />
             <CardContent style={{ height: '450px' }}>
                 {
@@ -39,7 +62,7 @@ const proposalsGroupedByTicThenStatus = props => {
                             data={ proposalGroups }
                             keys={ store.statuses.map(({ description }) => description) }
                             indexBy="name"
-                            margin={{ top: 0, right: 64, bottom: 50, left: 0 }}
+                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 156, bottom: 50, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"
@@ -64,25 +87,7 @@ const proposalsGroupedByTicThenStatus = props => {
                             animate={ true }
                             motionStiffness={ 90 }
                             motionDamping={ 15 }
-                            legends={ [{
-                                enableLabel: false,
-                                dataFrom: 'keys',
-                                anchor: 'top-right',
-                                direction: 'column',
-                                justify: false,
-                                translateX: 64,
-                                translateY: 0,
-                                itemsSpacing: 1,
-                                itemWidth: 20,
-                                itemHeight: 20,
-                                itemDirection: 'right-to-left',
-                                itemOpacity: 0.75,
-                                symbolSize: 20,
-                                effects: [{
-                                    on: 'hover',
-                                    style: { itemOpacity: 1.0 }
-                                }]
-                            }] }
+                            legends={ windowWidth < 1000 ? [] : chartLegends }
                             tooltip={ ({ id, value, color, indexValue }) => (
                                 <ChartTooltip color={ color }>
                                     <div><strong>{ indexValue }</strong></div>

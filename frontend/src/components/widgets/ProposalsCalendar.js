@@ -78,7 +78,7 @@ const ProposalsCalendar = props => {
                 title={ `Proposal Submissions in ${ year }` }
                 subheader={ `${ count } Submissions` }
             />
-            <CardContent style={{ height: '200px' }}>
+            <CardContent style={{ height: '172px' }}>
                 {
                     calendarData ? (
                         <ResponsiveCalendar
@@ -87,13 +87,14 @@ const ProposalsCalendar = props => {
                             to={ `${ year }-12-31T12:00:00.000Z` }
                             direction="horizontal"
                             emptyColor="#eee"
-                            margin={{ top: 0, right: 16, bottom: 0, left: 32, }}
+                            margin={{ top: 20, right: 16, bottom: 0, left: 32, }}
                             yearSpacing={ 40 }
                             monthBorderColor="#fff"
                             monthLegendOffset={ 10 }
                             dayBorderWidth={ 1 }
                             dayBorderColor="#fff"
                             tooltip={ tooltip }
+                            domain={ [0, 4] }
                         />
                     ) : <CircularLoader />
                 }

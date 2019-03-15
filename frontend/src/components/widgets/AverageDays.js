@@ -55,12 +55,12 @@ const AverageDays = props => {
                     keys={ ['days'] }
                     indexBy="timespan"
                     margin={{ top: 0, right: 32, bottom: 32, left: 220 }}
-                    layout='horizontal'
+                    layout="horizontal"
                     enableGridY={ false }
-                    padding={ 0 }
-                    colors='nivo'
-                    colorBy='timespan'
-                    borderColor='inherit:darker(1.6)'
+                    padding={ 0.2 }
+                    colors="nivo"
+                    colorBy="index"
+                    borderColor="inherit:darker(1.6)"
                     axisTop={ null }
                     axisRight={ null }
                     axisBottom={ null }
@@ -74,7 +74,7 @@ const AverageDays = props => {
                     }}
                     labelSkipWidth={ 0 }
                     labelSkipHeight={ 12 }
-                    labelTextColor='inherit:darker(1.6)'
+                    labelTextColor="inherit:darker(1.6)"
                     animate={ true }
                     motionStiffness={ 90 }
                     motionDamping={ 15 }
