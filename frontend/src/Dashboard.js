@@ -23,8 +23,6 @@ import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
 import ProposalsByDate from './views/Proposals/ByDate'
 import ProposalsByApprovedServices from './views/Proposals/ByApprovedServices'
 import ProposalsByRequestedServices from './views/Proposals/ByRequestedServices'
-import ProposalsResubmitted from './views/Proposals/Resubmitted'
-import ProposalsSubmittedForServices from './views/Proposals/SubmittedForServices'
 import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
 import CollaborationsPage from './views/Collaborations'
@@ -144,7 +142,6 @@ const Dashboard = props => {
                         <Route path="/proposals/date" component={ ProposalsByDate }/>
                         <Route path="/proposals/requested-services" component={ ProposalsByRequestedServices }/>
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
-                        <Route path="/proposals/resubmissions" component={ ProposalsResubmitted }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route path="/site-report" component={ SiteReportPage }/>
                         <Route path="/study-metrics" component={ StudyMetricsPage }/>
