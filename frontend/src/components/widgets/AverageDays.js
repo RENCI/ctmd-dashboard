@@ -9,7 +9,6 @@ const AverageDays = props => {
     const [store, setStore] = useContext(StoreContext)
     const [averageDays, setAverageDays] = useState({
         submsisionToPatApproval: 0,
-        submsisionToServicesOngoing: 0,
         approvalToGrantSubmission: 0,
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
@@ -30,13 +29,11 @@ const AverageDays = props => {
     useEffect(() => {
         if (store.proposals) {
             const submsisionToPatApproval = findAverageDaysBetween('dateSubmitted', 'meetingDate')
-            const submsisionToServicesOngoing = 0
             const approvalToGrantSubmission = findAverageDaysBetween('meetingDate', 'plannedGrantSubmissionDate')
             const submissionToGrantSubmission = findAverageDaysBetween('dateSubmitted', 'plannedGrantSubmissionDate')
             const grantSubmissionToGrantAward = findAverageDaysBetween('plannedGrantSubmissionDate', 'fundingStart')
             setAverageDays({
                 submsisionToPatApproval,
-                submsisionToServicesOngoing,
                 approvalToGrantSubmission,
                 submissionToGrantSubmission,
                 grantSubmissionToGrantAward,
@@ -51,7 +48,6 @@ const AverageDays = props => {
                 <ResponsiveBar
                     data={[
                         { timespan: 'Submission to PAT Approval',         days: averageDays.submsisionToPatApproval, },
-                        { timespan: 'Submission to Services Ongoing',     days: 0, },
                         { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission, },
                         { timespan: 'Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission, },
                         { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward, },
