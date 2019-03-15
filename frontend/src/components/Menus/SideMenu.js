@@ -7,12 +7,12 @@ import {
     Description as ProposalsIcon,
     // Assessment as ReportsIcon,
     // Timeline as ForecastsIcon,
-    Star as MetricsIcon,
-    LocationOn as SiteReportIcon,
+    // Star as MetricsIcon,
+    // LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
     // Build as QueryBuilderIcon,
     Settings as SettingsIcon,
-    ExitToApp as LogoutIcon,
+    // ExitToApp as LogoutIcon,
 } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
