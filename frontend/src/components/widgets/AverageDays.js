@@ -54,7 +54,7 @@ const AverageDays = props => {
                     ]}
                     keys={ ['days'] }
                     indexBy="timespan"
-                    margin={{ top: 0, right: 32, bottom: 32, left: 220 }}
+                    margin={{ top: 0, right: 32, bottom: 32, left: 186 }}
                     layout="horizontal"
                     enableGridY={ false }
                     padding={ 0.2 }
