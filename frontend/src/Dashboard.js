@@ -88,9 +88,6 @@ const Dashboard = props => {
     const [mobileOpen, setMobileOpen] = useState()
 
     
-    const userMenuItems = [{ text: 'Settings', href: '/settings', icon: <SettingsIcon /> },{ text: 'Logout', href: '/', icon: <LogoutIcon />, }
-    ]
-    
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
     }
