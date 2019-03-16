@@ -8,6 +8,7 @@ import ProposalsByTicBarChart from '../components/widgets/ProposalsByTic'
 import ProposalsByStatusBarChart from '../components/widgets/ProposalsByStatus'
 import ProposalsCalendar from '../components/widgets/ProposalsCalendar'
 import AverageDays from '../components/widgets/AverageDays'
+import Counts from '../components/widgets/Counts'
 
 const useStyles = makeStyles(theme => ({
     page: { },
@@ -58,6 +59,9 @@ const HomePage = (props) => {
             </div>
 
             <Grid container spacing={ 2 * theme.spacing.unit }>
+                <Grid item xs={ 12 } xs={ 11 }>
+                    <Counts/>
+                </Grid>
                 <Grid item xs={ 12 } sm={ 11 }>
                     <ProposalsByTicBarChart />
                 </Grid>
