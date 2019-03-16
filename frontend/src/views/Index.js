@@ -61,11 +61,11 @@ const HomePage = (props) => {
                 <Grid item xs={ 12 } sm={ 11 }>
                     <ProposalsByTicBarChart />
                 </Grid>
-                <Grid item xs={ 12 } sm={ 11 } lg={ 6 }>
-                    <ProposalsCalendar />
-                </Grid>
-                <Grid item xs={ 12 } sm={ 11 } lg={ 5 }>
+                <Grid item xs={ 12 } sm={ 11 }>
                     <AverageDays />
+                </Grid>
+                <Grid item xs={ 12 } sm={ 11 }>
+                    <ProposalsCalendar />
                 </Grid>
             </Grid>
         </div>
