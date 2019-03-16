@@ -54,7 +54,7 @@ const proposalsGroupedByTicThenStatus = props => {
 
     return (
         <Card ref={ container }>
-            <CardHeader title="Grouped by TIC/RIC" subheader="" />
+            <CardHeader title="" subheader="" />
             <CardContent style={{ height: '450px' }}>
                 {
                     (proposalGroups && store.statuses) ? (
