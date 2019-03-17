@@ -43,14 +43,14 @@ const AverageDays = props => {
 
     return (
         <Card>
-            <CardHeader title="Average Days" subheader="" />
-            <CardContent style={{ height: '200px' }}>
+            <CardHeader title="Averages" subheader="Average number of days between notable times over the proposal lifespan" />
+            <CardContent style={{ height: '180px' }}>
                 <ResponsiveBar
                     data={[
-                        { timespan: 'Submission to PAT Approval',         days: averageDays.submsisionToPatApproval, },
-                        { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission, },
-                        { timespan: 'Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission, },
                         { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward, },
+                        { timespan: 'Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission, },
+                        { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission, },
+                        { timespan: 'Submission to PAT Approval',         days: averageDays.submsisionToPatApproval, },
                     ]}
                     keys={ ['days'] }
                     indexBy="timespan"

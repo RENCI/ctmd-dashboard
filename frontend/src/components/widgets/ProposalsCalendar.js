@@ -75,10 +75,10 @@ const ProposalsCalendar = props => {
                         </Menu>
                     </Fragment>
                 }
-                title={ `Proposal Submissions in ${ year }` }
+                title={ `Submissions in ${ year }` }
                 subheader={ `${ count } Submissions` }
             />
-            <CardContent style={{ height: '172px' }}>
+            <CardContent style={{ height: '180px' }}>
                 {
                     calendarData ? (
                         <ResponsiveCalendar
