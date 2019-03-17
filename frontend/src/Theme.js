@@ -80,6 +80,20 @@ theme = {
                 borderRadius: theme.shape.borderRadius,
             }
         },
+        MuiCardHeader: {
+            title: {
+                color: theme.palette.secondary.main,
+                fontSize: '150%',
+                fontWeight: 'bold',
+                opacity: '0.5',
+            },
+            subheader: {
+                color: theme.palette.secondary.main,
+                fontSize: '110%',
+                fontWeight: 'bold',
+                opacity: '0.4',
+            },
+        },
         MuiDrawer: {
             paper: {
                 backgroundColor: theme.palette.common.white,
