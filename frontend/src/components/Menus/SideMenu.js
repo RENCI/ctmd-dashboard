@@ -25,9 +25,9 @@ const useStyles = makeStyles(theme => ({
         flex: 1,
     },
     menuItem: {
-        padding: `${ 1.5 * theme.spacing.unit }px ${ 1.5 * theme.spacing.unit }px`,
+        padding: `${ 1 * theme.spacing.unit }px ${ 1 * theme.spacing.unit }px`,
         display: 'flex', alignItems: 'center',
-        margin: theme.spacing.unit,
+        margin: `${theme.spacing.unit / 4}px ${ theme.spacing.unit }px`,
         borderRadius: theme.spacing.unit,
         transition: 'background-color 250ms',
         letterSpacing: '1px',
