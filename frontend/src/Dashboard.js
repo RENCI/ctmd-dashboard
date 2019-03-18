@@ -42,8 +42,8 @@ const useStyles = makeStyles(theme => ({
     },
     brand: {
         backgroundColor: 'transparent',
-        border: `1px solid ${ theme.palette.extended.shaleBlue }`,
-        color: theme.palette.extended.shaleBlue,
+        border: `1px solid ${ theme.palette.primary.light }`,
+        color: theme.palette.primary.light,
         fontFamily: 'EB Garamond',
         textAlign: 'center',
         padding: `${2 * theme.spacing.unit }px 0`,
@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
         }
     },
-    menuButton: {
+    menuToggleButton: {
         transform: 'translateX(0)',
         transition: 'transform 250ms, opacity 500ms',
         transitionDelay: '500ms',
@@ -69,7 +69,6 @@ const useStyles = makeStyles(theme => ({
         },
     },
     main: {
-        // ...theme.mixins.debug,
         minHeight: '100vh',
         backgroundColor: theme.palette.extended.limestone,
         flexGrow: 1,
@@ -127,7 +126,7 @@ const Dashboard = props => {
                         color="default"
                         aria-label="Open drawer"
                         onClick={ handleDrawerToggle }
-                        className={ classes.menuButton }
+                        className={ classes.menuToggleButton }
                     ><MenuIcon fontSize="large" /></IconButton>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
