@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
 import { ApiContext } from '../contexts/ApiContext'
 import { Card, CardHeader, CardActions, CardContent, Button } from '@material-ui/core'
+import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import StudyMetricsForm from '../components/Forms/Metrics'
 import Heading from '../components/Typography/Heading'
 
@@ -59,12 +60,12 @@ const StudyMetricsPage = props => {
                             }
                         />
                         <div className={ classes.navigation }>
-                            <Button variant="outlined" color="secondary" onClick={ handleNavigate(-1) }>
-                                &lt; PREV
+                            <Button color="secondary" onClick={ handleNavigate(-1) }>
+                                <LeftIcon /> PREV
                             </Button>
                             <div className={ classes.flexer } />
-                            <Button variant="outlined" color="secondary" onClick={ handleNavigate(1) }>
-                                NEXT &gt;
+                            <Button color="secondary" onClick={ handleNavigate(1) }>
+                                NEXT <RightIcon />
                             </Button>
                         </div>
                         <CardContent>
