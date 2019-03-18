@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
+import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
@@ -20,6 +21,7 @@ const proposalsGroupedByTicThenStatus = props => {
     const [proposalGroups, setProposalGroups] = useState()
     const windowWidth = useWindowWidth()
     const container = useRef(null)
+    const theme = useTheme()
 
     useEffect(() => {
         if (store.proposals && store.tics) {
@@ -67,7 +69,7 @@ const proposalsGroupedByTicThenStatus = props => {
                             groupMode="stacked"
                             layout="vertical"
                             height={ 400 }
-                            colors="nivo"
+                            colors={ theme.palette.chartColors }
                             colorBy="id"
                             borderColor="inherit:darker(1.6)"
                             axisLeft={ null }

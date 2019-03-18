@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'center',
     },
     description: {
-        color: theme.palette.secondary.light,
+        color: theme.palette.primary.light,
         opacity: '0.75',
         fontSize: '125%',
         textAlign: 'center',

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
@@ -13,6 +14,7 @@ const AverageDays = props => {
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
     })
+    const theme = useTheme()
 
     const findAverageDaysBetween = (field1, field2) => {
         let proposalsCount = 0
@@ -58,7 +60,7 @@ const AverageDays = props => {
                     layout="horizontal"
                     enableGridY={ false }
                     padding={ 0.2 }
-                    colors="nivo"
+                    colors={ theme.palette.chartColors }
                     colorBy="index"
                     borderColor="inherit:darker(1.6)"
                     axisTop={ null }

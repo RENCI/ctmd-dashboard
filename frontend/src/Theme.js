@@ -2,8 +2,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 
 let theme = createMuiTheme({
     palette: {
-        primary: { main: '#1c253b' },
-        secondary: { main: '#324f69' },
+        primary: { main: '#324f69' },
+        secondary: { main: '#339898' },
         error: { main: '#cc3300' },
         extended: {
             copper: '#C84E00',
@@ -25,6 +25,14 @@ let theme = createMuiTheme({
             granite: '#B5B5B5',
             limestone: '#E5E5E5',
         },
+        chartColors: [
+            '#93E2D4',
+            '#5DCBBA',
+            '#EBA446',
+            '#7193f5',
+            '#F4DD67',
+            '#F77362',
+        ],
     },
     typography: {
         useNextVariants: true,
@@ -58,16 +66,6 @@ let theme = createMuiTheme({
 theme = {
     ...theme,
     overrides: {
-        MuiToolbar: {
-            // root: {
-            //     backgroundColor: theme.palette.common.white,
-            //     borderBottomLeftRadius: theme.shape.borderRadius,
-            //     borderBottomRightRadius: theme.shape.borderRadius,
-            //     boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12)',
-            // }
-        },
-        MuiPaper: {
-        },
         MuiGrid: {
             item: {
                 marginBottom: 2 * theme.spacing.unit,
@@ -82,16 +80,14 @@ theme = {
         },
         MuiCardHeader: {
             title: {
-                color: theme.palette.secondary.main,
+                color: theme.palette.primary.light,
                 fontSize: '150%',
                 fontWeight: 'bold',
-                opacity: '0.5',
             },
             subheader: {
-                color: theme.palette.secondary.main,
+                color: theme.palette.secondary.light,
                 fontSize: '110%',
                 fontWeight: 'bold',
-                opacity: '0.4',
             },
         },
         MuiDrawer: {

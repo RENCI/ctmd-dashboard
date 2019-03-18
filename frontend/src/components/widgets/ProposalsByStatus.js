@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
+import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
@@ -17,6 +18,7 @@ Array.prototype.countBy = function(prop) {
 const proposalsGroupedByStatusThenTic = props => {
     const [store, setStore] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
+    const theme = useTheme()
 
     useEffect(() => {
         if (store.proposals && store.statuses) {
@@ -44,7 +46,7 @@ const proposalsGroupedByStatusThenTic = props => {
                             groupMode='stacked'
                             layout='horizontal'
                             height={ 430 }
-                            colors='nivo'
+                            colors={ theme.palette.chartColors }
                             colorBy='id'
                             borderColor='inherit:darker(1.6)'
                             axisBottom={ null }

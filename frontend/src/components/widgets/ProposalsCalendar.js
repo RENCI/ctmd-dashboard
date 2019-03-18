@@ -1,4 +1,5 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react'
+import { useTheme } from '@material-ui/styles'
 import { Card, CardHeader, CardContent, Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { ResponsiveCalendar } from '@nivo/calendar'
@@ -21,6 +22,7 @@ const ProposalsCalendar = props => {
     const [anchorEl, setAnchorEl] = React.useState(null)
     const [year, setYear] = useState((new Date()).getFullYear())
     const [count, setCount] = useState(0)
+    const theme = useTheme()
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget)
@@ -86,6 +88,7 @@ const ProposalsCalendar = props => {
                             from={ `${ year }-01-01T12:00:00.000Z` }
                             to={ `${ year }-12-31T12:00:00.000Z` }
                             direction="horizontal"
+                            colors={ theme.palette.chartColors }
                             emptyColor="#eee"
                             margin={{ top: 20, right: 16, bottom: 0, left: 32, }}
                             yearSpacing={ 40 }
@@ -94,7 +97,7 @@ const ProposalsCalendar = props => {
                             dayBorderWidth={ 1 }
                             dayBorderColor="#fff"
                             tooltip={ tooltip }
-                            domain={ [0, 4] }
+                            domain={ [0, 5] }
                         />
                     ) : <CircularLoader />
                 }

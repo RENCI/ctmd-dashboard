@@ -1,10 +1,12 @@
 import React from 'react'
+import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 
 const ProposalsBarChart = props => {
     const { proposals, height, sorting, clickHandler } = props
     const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
+    const theme = useTheme()
     proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
     if (sorting === 'value') proposalCounts.sort((a, b) => a.value < b.value ? -1 : 1)
 
@@ -24,7 +26,7 @@ const ProposalsBarChart = props => {
                     )}
                 enableGridX={ false }
                 enableGridY={ false }
-                colors="nivo"
+                colors={ theme.palette.chartColors }
                 colorBy="value"
                 margin={{ top: 0, right: 32, bottom: 0, left: longestLabelLength * 6 }}
                 borderWidth={ 1 }
