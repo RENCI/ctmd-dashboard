@@ -9,7 +9,7 @@ import BrowseMenu from '../components/Menus/BrowseMenu'
 
 const proposalsTable = (props) => {
     const [store, setStore] = useContext(StoreContext)
-    const api = useContext(ApiContext)
+    // const api = useContext(ApiContext)
 
     return (
         <div>

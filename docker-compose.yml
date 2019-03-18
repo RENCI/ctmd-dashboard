@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    container_name: pmd-db
+    container_name: pmd-db-dev
     restart: always
     build:
       context: ./db/
@@ -20,7 +20,7 @@ services:
       - ${POSTGRES_PORT}
 
   api:
-    container_name: pmd-api
+    container_name: pmd-api-dev
     build:
       context: ./api/
       dockerfile: Dockerfile
@@ -38,7 +38,7 @@ services:
       - db
 
   frontend:
-    container_name: pmd-frontend
+    container_name: pmd-frontend-dev
     build:
       context: ./frontend/
       dockerfile: Dockerfile
