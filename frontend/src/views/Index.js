@@ -59,7 +59,7 @@ const HomePage = (props) => {
             </div>
 
             <Grid container spacing={ 2 * theme.spacing.unit }>
-                <Grid item xs={ 12 } xs={ 11 }>
+                <Grid item xs={ 12 } sm={ 11 }>
                     <Counts/>
                 </Grid>
                 <Grid item xs={ 12 } sm={ 11 }>

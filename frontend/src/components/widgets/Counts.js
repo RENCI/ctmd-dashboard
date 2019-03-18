@@ -1,6 +1,8 @@
 import React, { useContext } from 'react'
+import { NavLink }from 'react-router-dom'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { Grid, Card, CardContent, CardHeader } from '@material-ui/core'
+import { Grid, Card, CardContent, CardHeader, CardActions, Button } from '@material-ui/core'
+import { KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../../components/Progress/Progress'
 
@@ -15,23 +17,29 @@ const useStyles = makeStyles(theme => ({
         },
     },
     detail: {
-        color: theme.palette.secondary.light,
-        textAlign: 'left',
+        display: 'inline-block',
+        textAlign: 'center',
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
+            alignItems: 'center',
         }
     },
     value: {
-        color: theme.palette.secondary.main,
-        fontSize: '250%',
+        color: theme.palette.secondary.light,
+        fontSize: '350%',
         textAlign: 'center',
     },
     description: {
         color: theme.palette.secondary.light,
+        opacity: '0.75',
         fontSize: '125%',
         textAlign: 'center',
+    },
+    actions: {
+        display: 'flex',
+        justifyContent: 'flex-end'
     },
 }))
 
@@ -76,6 +84,9 @@ const Count = props => {
                     </Grid>
                 </Grid>
             </CardContent>
+            <CardActions className={ classes.actions }>
+                <Button component={ NavLink } to="/proposals">Browse Proposals<RightIcon /></Button>
+            </CardActions>
         </Card>
     )
 }
