@@ -7,6 +7,7 @@ const ProposalsBarChart = props => {
     const { proposals, height, sorting, clickHandler } = props
     const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
     const theme = useTheme()
+    
     proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
     if (sorting === 'value') proposalCounts.sort((a, b) => a.value < b.value ? -1 : 1)
 

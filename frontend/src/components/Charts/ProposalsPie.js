@@ -1,12 +1,13 @@
 import React from 'react'
-import { useTheme } from '@material-ui/styles'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 import { ResponsivePie } from '@nivo/pie'
+import { useTheme } from '@material-ui/styles'
 
 const ProposalsPieChart = props => {
     const { proposals, clickHandler, height, sorting } = props
     const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
     const theme = useTheme()
+    
     if (sorting === 'alpha') proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
     if (sorting === 'value') proposalCounts.sort((a, b) => a.value < b.value ? -1 : 1)
 

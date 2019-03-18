@@ -1,4 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles';
+import * as d3 from 'd3-scale-chromatic'
+
+d3.interpolateBrBG(0.5)
 
 let theme = createMuiTheme({
     palette: {
@@ -25,14 +28,7 @@ let theme = createMuiTheme({
             granite: '#B5B5B5',
             limestone: '#E5E5E5',
         },
-        chartColors: [
-            '#93E2D4',
-            '#5DCBBA',
-            '#EBA446',
-            '#7193f5',
-            '#F4DD67',
-            '#F77362',
-        ],
+        chartColors: d3.schemeSet2,
     },
     typography: {
         useNextVariants: true,
