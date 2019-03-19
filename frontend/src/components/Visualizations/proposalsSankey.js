@@ -53,6 +53,8 @@ export default function() {
                 case "proposal":
                   return "Proposal: " + d.name + "<br><br>" +
                          "Budget: " + d.budget + "<br>" +
+                         "Date submitted: " + d.dateSubmitted + "<br>" +
+                         "Meeting date: " + d.meetingDate + "<br>" +
                          "Duration: " + d.duration + "<br>" +
                          "Status: " + d.status;
 
@@ -132,6 +134,8 @@ export default function() {
   }
 
   function processData() {
+    console.log(data);
+
     // Filter any proposals without a TIC
     data = data.filter(function(d) {
       return d.assignToInstitution;
@@ -252,8 +256,10 @@ export default function() {
 
           case "proposal":
             // XXX: Name placeholder
-            node.name = d.ShortTitle;
+            node.name = d.shortTitle;
             node.budget = d.totalBudget ? d.totalBudget : "NA";
+            node.dateSubmitted = d.dateSubmitted ? d.dateSubmitted : "NA";
+            node.meetingDate = d.meetingDate ? d.meetingDate : "NA";
             node.duration = d.fundingPeriod ? d.fundingPeriod : "NA";
             node.status = d.proposalStatus ? d.proposalStatus : "NA";
             node.protocolStatus = d.protocol_status ? +d.protocol_status : "NA";
@@ -532,6 +538,8 @@ export default function() {
     }
 
     function drawLabels() {
+      const dy = ".35em";
+
       // Bind nodes
       var label = svg.select(".labels").selectAll(".nodeLabel")
           .data(nodes, function(d) {
@@ -544,7 +552,6 @@ export default function() {
           .style("font-size", "small")
           .style("font-weight", "bold")
           .style("pointer-events", "none")
-          .style("dominant-baseline", "middle")
           .style("opacity", labelOpacity)
           .attr("transform", function(d) {
             return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
@@ -552,6 +559,7 @@ export default function() {
 
       labelEnter.append("text")
           .attr("class", "background")
+          .attr("dy", dy)
           .text(function(d) {
             return d.name;
           })
@@ -561,6 +569,7 @@ export default function() {
 
       labelEnter.append("text")
           .attr("class", "foreground")
+          .attr("dy", dy)
           .text(function(d) {
             return d.name;
           })

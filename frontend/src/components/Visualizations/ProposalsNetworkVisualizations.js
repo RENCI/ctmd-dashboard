@@ -86,11 +86,11 @@ class ProposalsNetworkVisualizations extends Component {
     }
 
     drawVisualization(newProps, oldProps, state) {
-        const minSankeyHeight = 1000;
+        const minSankeyNodeHeight = 10;
+        const sankeyHeight = newProps.proposals.length * minSankeyNodeHeight;
         const networkWidth = this.networkDiv.clientWidth;
         const networkHeight = networkWidth;
         const sankeyWidth = this.sankeyDiv.clientWidth;
-        const sankeyHeight = Math.max(minSankeyHeight, sankeyWidth);
 
         this.network
             .width(networkWidth)

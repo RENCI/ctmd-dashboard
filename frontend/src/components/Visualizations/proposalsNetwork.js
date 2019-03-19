@@ -50,11 +50,13 @@ export default function() {
                        (selectedNodes.length > 0 ?
                        "<br>Selected proposals: " + selectionOverlap(d) : "");
 
-              case "proposal":
-                return "Proposal: " + d.name + "<br><br>" +
-                       "Budget: " + d.budget + "<br>" +
-                       "Duration: " + d.duration + "<br>" +
-                       "Status: " + d.status;
+             case "proposal":
+               return "Proposal: " + d.name + "<br><br>" +
+                      "Budget: " + d.budget + "<br>" +
+                      "Date submitted: " + d.dateSubmitted + "<br>" +
+                      "Meeting date: " + d.meetingDate + "<br>" +
+                      "Duration: " + d.duration + "<br>" +
+                      "Status: " + d.status;
 
               case "org":
                 return "Organization: " + d.name + "<br><br>" +
@@ -228,8 +230,10 @@ export default function() {
 
           case "proposal":
             // XXX: Name placeholder
-            node.name = d.ShortTitle;
+            node.name = d.shortTitle;
             node.budget = d.totalBudget ? d.totalBudget : "NA";
+            node.dateSubmitted = d.dateSubmitted ? d.dateSubmitted : "NA";
+            node.meetingDate = d.meetingDate ? d.meetingDate : "NA";
             node.duration = d.fundingPeriod ? d.fundingPeriod : "NA";
             node.status = d.proposalStatus ? d.proposalStatus : "NA";
             node.protocolStatus = d.protocol_status ? +d.protocol_status : "NA";
