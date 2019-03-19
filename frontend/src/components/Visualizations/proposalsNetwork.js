@@ -614,7 +614,7 @@ export default function() {
       // Change link appearance
       const link = svg.select(".network").selectAll(".link");
 
-      link.transition()
+      link//.transition()
           .style("stroke", function(d) {
             return linkConnected(d) ? "#666" : outlineFaded;
           })
@@ -629,7 +629,7 @@ export default function() {
             return active(d) ? null : "none";
           });
 
-      node.select(".background").transition()
+      node.select(".background")//.transition()
           .style("fill", function(d) {
             const scale = d3.scaleLinear()
                 .domain([0, 1])
@@ -638,7 +638,7 @@ export default function() {
             return nodeConnected(d) ? scale(0.5) : scale(0.1);
           });
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("r", function(d) {
             return radiusScale(overlap(d));
           });
@@ -656,7 +656,7 @@ export default function() {
       }).raise();
 
       // Change label appearance
-      svg.select(".labels").selectAll(".foreground").transition()
+      svg.select(".labels").selectAll(".foreground")//.transition()
           .style("fill", function(d) {
             return nodeConnected(d) ? "black" : "#ddd";
           });
@@ -682,19 +682,19 @@ export default function() {
     }
     else {
       // Reset
-      svg.select(".network").selectAll(".link").transition()
+      svg.select(".network").selectAll(".link")//.transition()
           .style("stroke", "#666");
 
       const node = svg.select(".network").selectAll(".node");
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("r", nodeRadius);
 
       node.select(".border")
           .style("stroke", "black")
           .style("stroke-width", 1)
 
-      svg.select(".labels").selectAll(".foreground").transition()
+      svg.select(".labels").selectAll(".foreground")//.transition()
           .style("fill", "black");
 
       svg.select(".network").selectAll(".node").raise();

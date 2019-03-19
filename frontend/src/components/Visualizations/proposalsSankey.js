@@ -412,13 +412,13 @@ export default function() {
           .style("stroke-width", 2);
 
       // Node update
-      node.select(".background,.border").transition()
+      node.select(".background,.border")//.transition()
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
           .attr("height", height);
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("x", x)
           .attr("width", width);
 
@@ -522,11 +522,11 @@ export default function() {
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link update
-      link.select(".background").transition()
+      link.select(".background")//.transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal())
           .style("stroke-width", strokeWidth);
 
-      link.select(".foreground").transition()
+      link.select(".foreground")//.transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link exit
@@ -576,7 +576,7 @@ export default function() {
           .style("fill", "black");
 
       // Label update
-      label.transition()
+      label//.transition()
           .attr("transform", function(d) {
             return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
           });
@@ -639,12 +639,12 @@ export default function() {
             return active(d) ? null : "none";
           });
 
-      link.select(".background").transition()
+      link.select(".background")//.transition()
           .style("stroke-opacity", function(d) {
             return linkConnected(d) ? 0.5 : 0.1;
           });
 
-      link.select(".foreground").transition()
+      link.select(".foreground")//.transition()
           .style("stroke-width", function(d) {
             let o = overlap(d) / d.proposals.length;
             return d.width / 2 * o;
@@ -660,12 +660,12 @@ export default function() {
             return active(d) ? null : "none";
           });
 
-      node.select(".background").transition()
+      node.select(".background")//.transition()
           .style("fill-opacity", function(d) {
             return nodeConnected(d) ? 0.5 : 0.1;
           });
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("y", function(d) {
             let o = 1 - overlap(d) / d.proposals.length;
             return d.y0 + (d.y1 - d.y0) * o / 2;
@@ -681,7 +681,7 @@ export default function() {
           });
 
       // Change label appearance
-      svg.select(".labels").selectAll(".nodeLabel").transition()
+      svg.select(".labels").selectAll(".nodeLabel")//.transition()
           .style("opacity", function(d) {
             return nodeConnected(d) ? 1.0 : 0.0;
           });
@@ -709,15 +709,15 @@ export default function() {
       // Reset
       let link = svg.select(".links").selectAll(".link");
 
-      link.select(".background").transition()
+      link.select(".background")//.transition()
           .style("stroke-opacity", linkOpacity);
 
-      link.select(".foreground").transition()
+      link.select(".foreground")//.transition()
           .style("stroke-width", 0);
 
       let node = svg.select(".nodes").selectAll(".node");
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("y", function(d) {
             return d.y0;
           })
@@ -728,7 +728,7 @@ export default function() {
       node.select(".border")
           .style("stroke", "none");
 
-      svg.select(".labels").selectAll(".nodeLabel").transition()
+      svg.select(".labels").selectAll(".nodeLabel")//.transition()
           .style("opacity", labelOpacity);
     }
   }
