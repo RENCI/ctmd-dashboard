@@ -13,8 +13,8 @@ import { MetricsFormContext } from './Metrics'
 
 const useStyles = makeStyles(theme => ({
     formControl: {
-        display: 'block',
-        margin: `${ 2 * theme.spacing.unit }px 0`,
+        width: '100%',
+        marginBottom: `${ 4 * theme.spacing.unit }px`,
     },
 }))
 
@@ -28,14 +28,17 @@ const StudyCharacteristicsForms = props => {
 
     return (
         <div>
-            <FormControl variant="outlined" className={ classes.formControl }>
-                <InputLabel htmlFor="network">
-                    Network
-                </InputLabel>
+            <FormControl className={ classes.formControl }>
+                <FormLabel>Network</FormLabel>
+                <FormHelperText>
+                    Select study network(s).
+                    If no network exists, select ‘Non-network Trial’.
+                    If a project overlaps two networks, select multiple.
+                </FormHelperText>
                 <Select
                     value={ values.network }
                     onChange={ handleChange('network') }
-                    input={ <OutlinedInput fullWidth labelWidth={ 48 } name="network" id="network" /> }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="network" id="network" style={{ marginTop: '16px' }}/> }
                 >
                     <MenuItem value=""></MenuItem>
                     <MenuItem value="ahcrn">AHCRN</MenuItem>
@@ -51,19 +54,14 @@ const StudyCharacteristicsForms = props => {
                     <MenuItem value="tin">TIN</MenuItem>
                     <MenuItem value="non-network">Non-network Trial</MenuItem>
                 </Select>
-                <FormHelperText>
-                    Specify study network(s). If no network exists, select ‘Non-network Trial’. If a project overlaps two networks, select multiple.
-                </FormHelperText>
             </FormControl>
-
-            <FormControl variant="outlined" fullWidth>
-                <InputLabel htmlFor="primary-study-type">
-                    Primary Study Type
-                </InputLabel>
+            
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">Primary Study Type</FormLabel>
                 <Select
                     value={ values.primaryStudyType }
                     onChange={ handleChange('primaryStudyType') }
-                    input={ <OutlinedInput labelWidth={ 110 } name="primary-study-type" id="primary-study-type" /> }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="primary-study-type" id="primary-study-type" style={{ marginTop: '16px' }} /> }
                 >
                     <MenuItem value=""></MenuItem>
                     <MenuItem value="registry">Registry</MenuItem>
@@ -72,8 +70,13 @@ const StudyCharacteristicsForms = props => {
                 </Select>
             </FormControl>
 
-            <FormControl component="fieldset">
-                <FormLabel component="legend">Linked Data</FormLabel>
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">Linked Data</FormLabel>
+                <FormHelperText>
+                    Does this study require data from another study?
+                    May be referred to as a "Linked", "Piggybacked", "Ancillary", or "Sub" study.
+                    This should be answered as "No" for a Registry.
+                </FormHelperText>
                 <RadioGroup
                     aria-label="linked-data"
                     name="linked-data"
@@ -83,15 +86,16 @@ const StudyCharacteristicsForms = props => {
                     <FormControlLabel value="1" control={<Radio />} label="Yes" />
                     <FormControlLabel value="0" control={<Radio />} label="No" />
                 </RadioGroup>
-                <FormHelperText>
-                    Does this study require data from a different study? May be referred to as a 'Linked', 'Piggybacked', 'Ancillary', or 'Sub' study. This should be answered as "No" for a Registry.
-                </FormHelperText>
             </FormControl>
 
-            <FormControl variant="outlined" fullWidth>
-                <TextField
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">Linked Data</FormLabel>
+                <FormHelperText>
+                    Specify study.
+                    If the study requires data from a different study, specify the name of the "linked study" using the Study Acronym.
+                </FormHelperText>
+                <TextField fullWidth
                     id="linked-study"
-                    label="Linked Data (Specify Study)"
                     value={ values.linkedStudy }
                     onChange={ handleChange('linkedStudy') }
                     margin="normal"
@@ -99,9 +103,6 @@ const StudyCharacteristicsForms = props => {
                     disabled={ values.linkedData !== '1' }
                     error={ values.linkedData === '1' && values.linkedStudy === '' }
                 />
-                <FormHelperText>
-                    If the study requires data from a different study, specify the name of the 'linked study' using the Study Acronym.
-                </FormHelperText>
             </FormControl>
         </div>
     )
