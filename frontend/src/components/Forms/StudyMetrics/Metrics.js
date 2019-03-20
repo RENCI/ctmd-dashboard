@@ -32,6 +32,7 @@ const emptyFormValues = ({
     primaryStudyType: '',
     linkedData: '',
     linkedStudy: '',
+    studyDesign: '',
     isRandomized: '',
     randomizationUnit: '',
     randomizationFeatures: [],
@@ -53,7 +54,7 @@ const emptyFormValues = ({
     primaryFundingType: '',
     primarilyFundedByInfrastructure: '',
     fundingSource: '',
-    fundingAwarded: '',
+    fundingAwardDate: '',
     previousFunding: '',
 })
 
