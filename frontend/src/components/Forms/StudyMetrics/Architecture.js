@@ -50,8 +50,8 @@ const StudyArchitectureForms = props => {
                     value={ values.studyDesign }
                     onChange={ handleChange('studyDesign') }
                 >
-                    <FormControlLabel value="interventional" control={<Radio />} label="Interventional" />
-                    <FormControlLabel value="observational" control={<Radio />} label="Observational" />
+                    <FormControlLabel value="interventional" control={ <Radio /> } label="Interventional" />
+                    <FormControlLabel value="observational" control={ <Radio /> } label="Observational" />
                 </RadioGroup>
             </FormControl>
 
@@ -63,8 +63,8 @@ const StudyArchitectureForms = props => {
                     value={ values.isRandomized }
                     onChange={ handleChange('isRandomized') }
                 >
-                    <FormControlLabel value="1" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="0" control={<Radio />} label="No" />
+                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
+                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
                 </RadioGroup>
             </FormControl>
 
@@ -76,8 +76,8 @@ const StudyArchitectureForms = props => {
                     value={ values.randomizationUnit }
                     onChange={ handleChange('randomizationUnit') }
                 >
-                    <FormControlLabel value="cluster" control={<Radio />} label="Cluster" />
-                    <FormControlLabel value="individual" control={<Radio />} label="Individual" />
+                    <FormControlLabel value="cluster" control={ <Radio /> } label="Cluster" />
+                    <FormControlLabel value="individual" control={ <Radio /> } label="Individual" />
                 </RadioGroup>
             </FormControl>
 
@@ -87,56 +87,23 @@ const StudyArchitectureForms = props => {
                     Select all that apply.
                 </FormHelperText>
                 <FormGroup>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={ values.randomizationFeatures.includes('simple-randomization') }
-                                onChange={ handleChange('randomizationFeatures') }
-                                value="simple-randomization"
-                            />
-                        }
-                        label="Simple Randomization"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={ values.randomizationFeatures.includes('block-randomization') }
-                                onChange={ handleChange('randomizationFeatures') }
-                                value="block-randomization"
-                            />
-                        }
-                        label="Block Randomization"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={ values.randomizationFeatures.includes('response-adaptive-randomization') }
-                                onChange={ handleChange('randomizationFeatures') }
-                                value="response-adaptive-randomization"
-                            />
-                        }
-                        label="Response Adaptive Randomization"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={ values.randomizationFeatures.includes('stratified-randomization') }
-                                onChange={ handleChange('randomizationFeatures') }
-                                value="stratified-randomization"
-                            />
-                        }
-                        label="Stratified Randomization"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={ values.randomizationFeatures.includes('covariate-adaptive-randomization') }
-                                onChange={ handleChange('randomizationFeatures') }
-                                value="covariate-adaptive-randomization"
-                            />
-                        }
-                        label="Covariate-Adaptive Randomization"
-                    />
+                    {
+                        ['simple-randomization', 'block-randomization', 'response-adaptive-randomization', 'stratified-randomization', 'covariate-adaptive-randomization'].map(featureName => {
+                            return (
+                                <FormControlLabel
+                                    key={ featureName }
+                                    control={
+                                        <Checkbox
+                                            checked={ values.randomizationFeatures.includes(featureName) }
+                                            onChange={ handleChange('randomizationFeatures') }
+                                            value={ featureName }
+                                        />
+                                    }
+                                    label={ featureName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') }
+                                />
+                            )
+                        })
+                    }
                 </FormGroup>
             </FormControl>
         </div>
