@@ -63,7 +63,7 @@ const MetricsForm = props => {
     const classes = useStyles()
     
     useEffect(() => {
-        setValues({ proposalID: proposalID })
+        setValues({ ...values, proposalID: proposalID })
     }, [props.proposalID])
 
     const handleNavigate = value => event => {
