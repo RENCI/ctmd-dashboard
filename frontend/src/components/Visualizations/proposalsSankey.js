@@ -4,14 +4,16 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  var margin = { top: 5, left: 10, bottom: 5, right: 150 },
+  var margin = { top: 90, left: 10, bottom: 5, right: 150 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
-      data = [],
+      allNodes = [],
+      nodeTypes = [],
+      typeOrder = ["tic", "area", "org", "status", "pi", "proposal"],
       network = {},
       selectedProposals = [],
       selectedNodes = [],
@@ -53,6 +55,8 @@ export default function() {
                 case "proposal":
                   return "Proposal: " + d.name + "<br><br>" +
                          "Budget: " + d.budget + "<br>" +
+                         "Date submitted: " + d.dateSubmitted + "<br>" +
+                         "Meeting date: " + d.meetingDate + "<br>" +
                          "Duration: " + d.duration + "<br>" +
                          "Status: " + d.status;
 
@@ -88,28 +92,30 @@ export default function() {
           }),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("highlightProposals", "selectProposals");
+      dispatcher = d3.dispatch("highlightNodes", "selectNodes", "deselectNodes");
 
   // Create a closure containing the above variables
   function proposalsSankey(selection) {
     selection.each(function(d) {
       // Save data
-      data = d;
+      allNodes = d.nodes;
+      nodeTypes = d.nodeTypes;
 
-      // Process data
-      processData();
+      // Link nodes
+      linkNodes();
 
       // Select the svg element, if it exists
       svg = d3.select(this).selectAll("svg")
-          .data([data]);
+          .data([allNodes]);
 
       // Otherwise create the skeletal chart
       var svgEnter = svg.enter().append("svg")
           .attr("class", "proposalsSankey")
           .on("click", function() {
-            selectedNodes = [];
-            dispatcher.call("selectProposals", this, null);
+            dispatcher.call("selectNodes", this, null);
           });
+
+      svgEnter.append("g").attr("class", "legend");
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -131,100 +137,25 @@ export default function() {
     });
   }
 
-  function processData() {
-    // Filter any proposals without a TIC
-    data = data.filter(function(d) {
-      return d.assignToInstitution;
+  function linkNodes() {
+    // Get active nodes
+    const activeTypes = nodeTypes.filter(d => d.show).map(d => d.type).sort((a, b) => {
+      return d3.ascending(typeOrder.indexOf(a), typeOrder.indexOf(b));
     });
-
-    // Filter identified test proposals
-    var testProposals = [
-      168, 200, 220, 189, 355, 390, 272, 338, 308, 309, 394, 286, 306, 401,
-      390, 272, 306, 338, 200, 286, 220, 168, 401
-    ];
-
-    data = data.filter(function(d) {
-      return testProposals.indexOf(+d.proposalID) === -1;
-    });
-
-    // Flatten data
-    // XXX: Do this in the query instead?
-    data = data.reduce(function(p, c) {
-      var id = c.proposalID;
-      var d = p[id];
-
-      if (d) {
-        // Update with any non-blank values
-        d3.keys(c).forEach(function(key) {
-          if (c[key]) {
-            d[key] = c[key];
-          }
-        });
-      }
-      else {
-        // Start with this version
-        p[id] = c;
-      }
-
-      return p;
-    }, {});
-
-    data = d3.values(data);
-
-    // First get all unique PIs, proposals, and orgs
-    var pis = d3.map(),
-        proposals = d3.map(),
-        orgs = d3.map(),
-        tics = d3.map(),
-        areas = d3.map(),
-        statuses = d3.map();
-
-    data.forEach(function(d) {
-      addNode(d, pis, d.piName, "pi");
-      addNode(d, proposals, d.proposalID, "proposal");
-      addNode(d, orgs, d.submitterInstitution, "org");
-      addNode(d, tics, d.assignToInstitution, "tic");
-      addNode(d, areas, d.therapeuticArea, "area");
-      addNode(d, statuses, d.proposalStatus, "status");
-    });
+    const nodes = allNodes.filter(d => activeTypes.indexOf(d.type) !== -1);
 
     // Now link
-    var links = [];
+    const proposals = allNodes.filter(d => d.type === "proposal");
+    let links = [];
 
-    data.forEach(function(d) {
-      var pi = pis.get(d.piName),
-          proposal = proposals.get(d.proposalID),
-          org = orgs.get(d.submitterInstitution),
-          tic = tics.get(d.assignToInstitution),
-          area = areas.get(d.therapeuticArea),
-          status = statuses.get(d.proposalStatus);
-
-      var order = [
-        tic, area, org, status, pi, proposal
-      ];
-
-      d3.pairs(order).forEach(function(d) {
-        addLink(d[0], d[1], proposal);
+    proposals.forEach(proposal => {
+      const nodes = activeTypes.map(type => {
+        return type === "proposal" ? proposal : proposal.nodes.filter(d => d.type === type)[0];
       });
 
-      // Add proposal to final node
-      order[order.length - 1].proposals.push(proposal);
-    });
-
-    var nodes = pis.values()
-        .concat(proposals.values())
-        .concat(orgs.values())
-        .concat(tics.values())
-        .concat(areas.values())
-        .concat(statuses.values());
-
-    var nodeTypes = nodes.reduce(function(p, c) {
-      if (p.indexOf(c.type) === -1) p.push(c.type);
-      return p;
-    }, []);
-
-    nodes = nodes.sort(function(a, b) {
-      return d3.descending(a.proposals.length, b.proposals.length);
+      d3.pairs(nodes).forEach(d => {
+        addLink(d[0], d[1], proposal);
+      });
     });
 
     links = links.sort(function(a, b) {
@@ -233,60 +164,12 @@ export default function() {
 
     network = {
       nodes: nodes,
-      nodeTypes: nodeTypes,
       links: links
     };
 
-    function addNode(d, map, id, type) {
-      if (!map.has(id)) {
-        var node = {
-          type: type,
-          id: id,
-          proposals: [],
-        };
-
-        switch (type) {
-          case "pi":
-            node.name = id;
-            break;
-
-          case "proposal":
-            // XXX: Name placeholder
-            node.name = d.ShortTitle;
-            node.budget = d.totalBudget ? d.totalBudget : "NA";
-            node.duration = d.fundingPeriod ? d.fundingPeriod : "NA";
-            node.status = d.proposalStatus ? d.proposalStatus : "NA";
-            node.protocolStatus = d.protocol_status ? +d.protocol_status : "NA";
-            break;
-
-          case "org":
-            node.name = id;
-            break;
-
-          case "tic":
-            node.name = id;
-            break;
-
-          case "area":
-            node.name = id;
-            break;
-
-          case "status":
-            node.name = id;
-            break;
-
-          default:
-            console.log("Invalid type: " + type);
-            return;
-        };
-
-        map.set(id, node);
-      }
-    }
-
     function addLink(node1, node2, proposal) {
       // Get link if already created
-      var link = links.filter(function(d) {
+      let link = links.filter(function(d) {
         return d.source === node1 && d.target === node2;
       });
 
@@ -306,8 +189,6 @@ export default function() {
 
         links.push(link);
       }
-
-      node1.proposals.push(proposal);
     }
   }
 
@@ -326,7 +207,7 @@ export default function() {
 
     // Color scale
     var nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10)
-        .domain(network.nodeTypes);
+        .domain(nodeTypes.map(d => d.type));
 
     linkOpacityScale
           .domain([1, d3.max(links, function(d) { return d.value; })])
@@ -336,6 +217,9 @@ export default function() {
     drawLinks();
     drawNodes();
     drawLabels();
+    drawLegend();
+
+    highlightNodes();
 
     function drawNodes() {
       let r = 2;
@@ -348,34 +232,41 @@ export default function() {
 
       // Node enter
       let nodeEnter = node.enter().append("g")
-          .attr("class", "node")
+          .attr("class", "node");
+
+      nodeEnter.append("rect")
+          .attr("class", "background");
+
+      nodeEnter.append("rect")
+          .attr("class", "foreground");
+
+      nodeEnter.append("rect")
+          .attr("class", "border")
+          .style("fill", "none")
+          .style("stroke-width", 2);
+
+      // Node update + enter
+      let nodeUpdate = nodeEnter.merge(node)
           .on("mouseover", function(d) {
             tip.show(d, this);
-
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            dispatcher.call("highlightProposals", this, ids);
+            dispatcher.call("highlightNodes", this, [d]);
           })
           .on("mouseout", function() {
             tip.hide();
-
-            dispatcher.call("highlightProposals", this, null);
+            dispatcher.call("highlightNodes", this, null);
           })
           .on("click", function(d) {
             d3.event.stopPropagation();
 
-            isNodeSelected(d) ? deselectNode(d) : selectNode(d);
-
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            dispatcher.call("selectProposals", this, ids);
+            isNodeSelected(d) ?
+                dispatcher.call("deselectNodes", this, [d]) :
+                dispatcher.call("selectNodes", this, [d]);
 
             tip.hide();
             tip.show(d, this);
           });
 
-      nodeEnter.append("rect")
-          .attr("class", "background")
+      nodeUpdate.select(".background")
           .attr("rx", r)
           .attr("ry", r)
           .attr("x", x)
@@ -384,8 +275,7 @@ export default function() {
           .attr("height", height)
           .style("fill", fill);
 
-      nodeEnter.append("rect")
-          .attr("class", "foreground")
+      nodeUpdate.select(".foreground")
           .attr("rx", r)
           .attr("ry", r)
           .attr("x", x)
@@ -394,32 +284,16 @@ export default function() {
           .attr("height", height)
           .style("fill", fill);
 
-      nodeEnter.append("rect")
-          .attr("class", "border")
+      nodeUpdate.select(".border")
           .attr("rx", r)
           .attr("ry", r)
-          .attr("x", x)
-          .attr("y", y)
-          .attr("width", width)
-          .attr("height", height)
-          .style("fill", "none")
-          .style("stroke-width", 2);
-
-      // Node update
-      node.select(".background,.border").transition()
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
           .attr("height", height);
 
-      node.select(".foreground").transition()
-          .attr("x", x)
-          .attr("width", width);
-
       // Node exit
       node.exit().remove();
-
-      highlightProposals();
 
       function x(d) {
         return d.x0;
@@ -442,21 +316,6 @@ export default function() {
       }
     }
 
-    function selectNode(d) {
-      let i = selectedNodesIndexOf(d);
-
-      if (i === -1) selectedNodes.push({
-        type: d.type,
-        id: d.id
-      });
-    }
-
-    function deselectNode(d) {
-      let i = selectedNodesIndexOf(d);
-
-      if (i !== -1) selectedNodes.splice(i, 1);
-    }
-
     function drawLinks() {
       // Bind data for links
       let link = svg.select(".links").selectAll(".link")
@@ -469,31 +328,21 @@ export default function() {
           .attr("class", "link")
           .on("mouseover", function(d) {
             tip.show(d, this);
-
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            dispatcher.call("highlightProposals", this, ids);
+            dispatcher.call("highlightNodes", this, [d.source, d.target]);
           })
           .on("mouseout", function(d) {
             tip.hide();
-
-            dispatcher.call("highlightProposals", this, null);
+            dispatcher.call("highlightNodes", this, null);
           })
           .on("click", function(d) {
             d3.event.stopPropagation();
 
             if (isNodeSelected(d.source) && isNodeSelected(d.target)) {
-              deselectNode(d.source);
-              deselectNode(d.target);
+              dispatcher.call("deselectNodes", this, [d.source, d.target]);
             }
             else {
-              selectNode(d.source);
-              selectNode(d.target);
+              dispatcher.call("selectNodes", this, [d.source, d.target]);
             }
-
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            dispatcher.call("selectProposals", this, ids);
 
             tip.hide();
             tip.show(d, this);
@@ -516,11 +365,11 @@ export default function() {
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link update
-      link.select(".background").transition()
+      link.select(".background")//.transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal())
           .style("stroke-width", strokeWidth);
 
-      link.select(".foreground").transition()
+      link.select(".foreground")//.transition()
           .attr("d", d3Sankey.sankeyLinkHorizontal());
 
       // Link exit
@@ -532,6 +381,8 @@ export default function() {
     }
 
     function drawLabels() {
+      const dy = ".35em";
+
       // Bind nodes
       var label = svg.select(".labels").selectAll(".nodeLabel")
           .data(nodes, function(d) {
@@ -544,7 +395,6 @@ export default function() {
           .style("font-size", "small")
           .style("font-weight", "bold")
           .style("pointer-events", "none")
-          .style("dominant-baseline", "middle")
           .style("opacity", labelOpacity)
           .attr("transform", function(d) {
             return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
@@ -552,6 +402,7 @@ export default function() {
 
       labelEnter.append("text")
           .attr("class", "background")
+          .attr("dy", dy)
           .text(function(d) {
             return d.name;
           })
@@ -561,19 +412,86 @@ export default function() {
 
       labelEnter.append("text")
           .attr("class", "foreground")
+          .attr("dy", dy)
           .text(function(d) {
             return d.name;
           })
           .style("fill", "black");
 
       // Label update
-      label.transition()
+      label//.transition()
           .attr("transform", function(d) {
             return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
           });
 
       // Label exit
       label.exit().remove();
+    }
+
+    function drawLegend() {
+      var r = 5;
+
+      var yScale = d3.scaleBand()
+          .domain(nodeTypes.map(d => d.type))
+          .range([r + 1, (r * 2.5) * (nodeTypes.length + 1)]);
+
+      // Bind node type data
+      var node = svg.select(".legend")
+          .attr("transform", "translate(" + (r + 1) + ",0)")
+      .selectAll(".legendNode")
+          .data(nodeTypes);
+
+      // Enter
+      var nodeEnter = node.enter().append("g")
+          .attr("class", "legendNode")
+          .attr("transform", d => "translate(0," + yScale(d.type) + ")")
+          .style("pointer-events", "all")
+          .on("mouseover", function(d) {
+            const node = d3.select(this);
+
+            node.select("circle")
+                .style("fill", d.show ? "none" : nodeColorScale(d.type));
+
+            node.select("text")
+                .style("fill", "black");
+          })
+          .on("mouseout", function(d) {
+            const node = d3.select(this);
+
+            node.select("circle")
+                .style("fill", d.show ? nodeColorScale(d.type) : "none");
+
+            node.select("text")
+                .style("fill", d.show ? "#666" : "#ccc");
+          })
+          .on("click", function(d) {
+            // Keep at least 2 active
+            if (d.show && nodeTypes.filter(d => d.show).length <= 2) return;
+
+            d.show = !d.show;
+
+            d3.select(this).select("circle")
+                .style("fill", d.show ? "none" : nodeColorScale(d.type));
+
+            linkNodes();
+            draw();
+          });
+
+      nodeEnter.append("circle")
+          .attr("r", r)
+          .style("fill", d => nodeColorScale(d.type))
+          .style("stroke", d => nodeColorScale(d.type))
+          .style("stroke-width", 2);
+
+      nodeEnter.append("text")
+          .text(d => d.type)
+          .attr("x", r * 1.5)
+          .attr("dy", ".35em")
+          .style("fill", "#666")
+          .style("font-size", "small");
+
+      // Node exit
+      node.exit().remove();
     }
   }
 
@@ -589,28 +507,31 @@ export default function() {
     return selectedProposals.length === 0 || selectionOverlap(d) > 0;
   }
 
-  function selectedNodesIndexOf(d) {
-    for (let i = 0; i < selectedNodes.length; i++) {
-      let node = selectedNodes[i];
-      if (node.type === d.type && node.id === d.id) return i;
-    }
-
-    return -1;
-  }
-
   function selectionOverlap(d) {
     return d.proposals.reduce(function(p, c) {
-      if (selectedProposals.indexOf(c.id) !== -1) p++;
+      if (selectedProposals.indexOf(c) !== -1) p++;
       return p;
     }, 0);
   }
 
   function isNodeSelected(d) {
-    return selectedNodesIndexOf(d) !== -1;
+    return selectedNodes.indexOf(d) !== -1;
   }
 
-  function highlightProposals(proposals) {
-    if (!proposals) proposals = [];
+  function highlightNodes(nodes) {
+    function nodeProposals(d) {
+      if (d.length === 0) return [];
+
+      return d[0].proposals.filter(proposal => {
+        for (let i = 1; i < d.length; i++) {
+          if (d[i].proposals.indexOf(proposal) === -1) return false;
+        }
+        return true;
+      });
+    }
+
+    selectedProposals = nodeProposals(selectedNodes);
+    let proposals = !nodes ? [] : nodeProposals(nodes);
 
     if (selectedProposals.length > 0 && proposals.length > 0) {
       proposals = selectedProposals.filter(function(proposal) {
@@ -630,12 +551,12 @@ export default function() {
             return active(d) ? null : "none";
           });
 
-      link.select(".background").transition()
+      link.select(".background")//.transition()
           .style("stroke-opacity", function(d) {
             return linkConnected(d) ? 0.5 : 0.1;
           });
 
-      link.select(".foreground").transition()
+      link.select(".foreground")//.transition()
           .style("stroke-width", function(d) {
             let o = overlap(d) / d.proposals.length;
             return d.width / 2 * o;
@@ -651,12 +572,12 @@ export default function() {
             return active(d) ? null : "none";
           });
 
-      node.select(".background").transition()
+      node.select(".background")//.transition()
           .style("fill-opacity", function(d) {
             return nodeConnected(d) ? 0.5 : 0.1;
           });
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("y", function(d) {
             let o = 1 - overlap(d) / d.proposals.length;
             return d.y0 + (d.y1 - d.y0) * o / 2;
@@ -672,21 +593,21 @@ export default function() {
           });
 
       // Change label appearance
-      svg.select(".labels").selectAll(".nodeLabel").transition()
+      svg.select(".labels").selectAll(".nodeLabel")//.transition()
           .style("opacity", function(d) {
             return nodeConnected(d) ? 1.0 : 0.0;
           });
 
       function overlap(d) {
         return d.proposals.reduce(function(p, c) {
-          if (proposals.indexOf(c.id) !== -1) p++;
+          if (proposals.indexOf(c) !== -1) p++;
           return p;
         }, 0);
       }
 
       function nodeConnected(d) {
         for (let i = 0; i < d.proposals.length; i++) {
-          if (proposals.indexOf(d.proposals[i].id) !== -1) return true;
+          if (proposals.indexOf(d.proposals[i]) !== -1) return true;
         }
 
         return false;
@@ -700,15 +621,15 @@ export default function() {
       // Reset
       let link = svg.select(".links").selectAll(".link");
 
-      link.select(".background").transition()
+      link.select(".background")//.transition()
           .style("stroke-opacity", linkOpacity);
 
-      link.select(".foreground").transition()
+      link.select(".foreground")//.transition()
           .style("stroke-width", 0);
 
       let node = svg.select(".nodes").selectAll(".node");
 
-      node.select(".foreground").transition()
+      node.select(".foreground")//.transition()
           .attr("y", function(d) {
             return d.y0;
           })
@@ -719,7 +640,7 @@ export default function() {
       node.select(".border")
           .style("stroke", "none");
 
-      svg.select(".labels").selectAll(".nodeLabel").transition()
+      svg.select(".labels").selectAll(".nodeLabel")//.transition()
           .style("opacity", labelOpacity);
     }
   }
@@ -738,14 +659,14 @@ export default function() {
     return proposalsSankey;
   };
 
-  proposalsSankey.highlightProposals = function(_) {
-    highlightProposals(_);
+  proposalsSankey.highlightNodes = function(_) {
+    highlightNodes(_);
     return proposalsSankey;
   };
 
-  proposalsSankey.selectProposals = function(_) {
-    selectedProposals = _.length ? _ : [];
-    highlightProposals();
+  proposalsSankey.selectNodes = function(_) {
+    selectedNodes = _.length ? _ : [];
+    highlightNodes();
     return proposalsSankey;
   };
 
