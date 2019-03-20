@@ -15,6 +15,9 @@ export const defaultSettings = {
         plannedGrantSubmissionDate: false,
         fundingStart: false,
     },
+    charts: {
+        hideEmptyGroups: true,
+    }
 }
 
 export const SettingsProvider = ({ children }) => {
