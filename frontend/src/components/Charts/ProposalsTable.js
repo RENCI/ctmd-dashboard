@@ -184,7 +184,8 @@ const ProposalDetailPanel = props => {
 
 const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
-    const { title, proposals } = props
+    let { title, proposals } = props
+    if (title) title += ` (${ proposals.length } Proposals)`
     return (
         <MaterialTable
             title={ title || '' }
@@ -209,7 +210,7 @@ const ProposalsTable = (props) => {
                 filtering: true,
                 grouping: true,
                 pageSize: 15,
-                pageSizeOptions: [15, 25, 50],
+                pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
             }}
             detailPanel={rowData => <ProposalDetailPanel { ...rowData } />}
