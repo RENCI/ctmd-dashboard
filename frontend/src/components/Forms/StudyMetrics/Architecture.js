@@ -32,6 +32,9 @@ const StudyArchitectureForms = props => {
         <div>
             <FormControl component="fieldset" fullWidth>
                 <FormLabel component="legend">Study Design</FormLabel>
+                <FormHelperText>
+                    Enter study design attributes.
+                </FormHelperText>
                 <RadioGroup
                     aria-label="study-design"
                     name="study-design"
@@ -41,9 +44,6 @@ const StudyArchitectureForms = props => {
                     <FormControlLabel value="interventional" control={<Radio />} label="Interventional" />
                     <FormControlLabel value="observational" control={<Radio />} label="Observational" />
                 </RadioGroup>
-                <FormHelperText>
-                    Enter study design attributes.
-                </FormHelperText>
             </FormControl>
 
             <FormControl component="fieldset" fullWidth>
