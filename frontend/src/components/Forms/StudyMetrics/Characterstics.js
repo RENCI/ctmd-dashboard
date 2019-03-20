@@ -38,7 +38,7 @@ const StudyCharacteristicsForms = props => {
                 <Select
                     value={ values.network }
                     onChange={ handleChange('network') }
-                    input={ <OutlinedInput fullWidth name="network" id="network" style={{ marginTop: '16px' }}/> }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="network" id="network" style={{ marginTop: '16px' }}/> }
                 >
                     <MenuItem value=""></MenuItem>
                     <MenuItem value="ahcrn">AHCRN</MenuItem>
@@ -61,7 +61,7 @@ const StudyCharacteristicsForms = props => {
                 <Select
                     value={ values.primaryStudyType }
                     onChange={ handleChange('primaryStudyType') }
-                    input={ <OutlinedInput fullWidth labelWidth={ 110 } name="primary-study-type" id="primary-study-type" style={{ marginTop: '16px' }} /> }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="primary-study-type" id="primary-study-type" style={{ marginTop: '16px' }} /> }
                 >
                     <MenuItem value=""></MenuItem>
                     <MenuItem value="registry">Registry</MenuItem>
