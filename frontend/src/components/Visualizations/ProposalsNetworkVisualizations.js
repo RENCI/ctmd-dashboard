@@ -24,21 +24,21 @@ class ProposalsNetworkVisualizations extends Component {
 
         this.state = {
             windowWidth: 0,
-            windowHeight: 0,
-            selectedProposals: []
+            windowHeight: 0
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-        this.highlightProposals = this.highlightProposals.bind(this);
-        this.selectProposals = this.selectProposals.bind(this);
+        this.highlightNodes = this.highlightNodes.bind(this);
 
         this.network = proposalsNetwork()
-            .on("highlightProposals", this.highlightProposals)
-            .on("selectProposals", this.selectProposals);
+            //.on("highlightNodes", this.highlightNodes)
+            //.on("selectNodes", this.props.onSelectNodes)
+            //.on("deselectNodes", this.props.onDeselectNodes);
 
         this.sankey = proposalsSankey()
-            .on("highlightProposals", this.highlightProposals)
-            .on("selectProposals", this.selectProposals);
+            .on("highlightNodes", this.highlightNodes)
+            .on("selectNodes", this.props.onSelectNodes)
+            .on("deselectNodes", this.props.onDeselectNodes);
     }
 
     updateWindowDimensions() {
@@ -49,22 +49,9 @@ class ProposalsNetworkVisualizations extends Component {
         });
     }
 
-    highlightProposals(proposals) {
-        this.network.highlightProposals(proposals);
-        this.sankey.highlightProposals(proposals);
-    }
-
-    selectProposals(proposals) {
-        const selected = !proposals ? [] : combine(this.state.selectedProposals, proposals);
-
-        this.setState({
-          selectedProposals: selected
-        });
-
-        // Get the actual proposals instead of the ids
-        this.props.onSelectProposals(this.props.proposals.filter(proposal => {
-            return selected.indexOf(proposal.proposalID) !== -1;
-        }));
+    highlightNodes(nodes) {
+        //this.network.highlightNodes(nodes);
+        this.sankey.highlightNodes(nodes);
     }
 
     componentDidMount() {
@@ -86,8 +73,10 @@ class ProposalsNetworkVisualizations extends Component {
     }
 
     drawVisualization(newProps, oldProps, state) {
+        const n = newProps.nodeData.nodes.filter(d => d.type === 'proposal').length;
+
         const minSankeyNodeHeight = 10;
-        const sankeyHeight = newProps.proposals.length * minSankeyNodeHeight;
+        const sankeyHeight = n * minSankeyNodeHeight;
         const networkWidth = this.networkDiv.clientWidth;
         const networkHeight = networkWidth;
         const sankeyWidth = this.sankeyDiv.clientWidth;
@@ -100,21 +89,19 @@ class ProposalsNetworkVisualizations extends Component {
             .width(sankeyWidth)
             .height(sankeyHeight);
 
-        if (!oldProps || newProps.proposals !== oldProps.proposals) {
+        if (!oldProps || newProps.nodeData !== oldProps.nodeData) {
             // Bind new data
-            d3.select(this.networkDiv)
-                .datum(newProps.proposals)
-                .call(this.network);
+            //d3.select(this.networkDiv)
+              //  .datum(newProps.nodes)
+                //.call(this.network);
 
             d3.select(this.sankeyDiv)
-                .datum(newProps.proposals)
+                .datum(newProps.nodeData)
                 .call(this.sankey);
         }
 
-        const combined = combine(newProps.filteredProposals, state.selectedProposals);
-
-        this.network.selectProposals(combined);
-        this.sankey.selectProposals(combined);
+        //this.network.selectNodes(newProps.selectedNodes);
+        this.sankey.selectNodes(newProps.selectedNodes);
     }
 
     render() {
@@ -131,8 +118,10 @@ class ProposalsNetworkVisualizations extends Component {
 }
 
 ProposalsNetworkVisualizations.propTypes = {
-    proposals: PropTypes.arrayOf(PropTypes.object).isRequired,
-    filteredProposals: PropTypes.arrayOf(PropTypes.number).isRequired
+    nodeData: PropTypes.object.isRequired,
+    selectedNodes: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onSelectNodes: PropTypes.func,
+    onDeselectNodes: PropTypes.func
 };
 
 export default ProposalsNetworkVisualizations
