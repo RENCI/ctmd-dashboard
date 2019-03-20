@@ -31,9 +31,9 @@ class ProposalsNetworkVisualizations extends Component {
         this.highlightNodes = this.highlightNodes.bind(this);
 
         this.network = proposalsNetwork()
-            //.on("highlightNodes", this.highlightNodes)
-            //.on("selectNodes", this.props.onSelectNodes)
-            //.on("deselectNodes", this.props.onDeselectNodes);
+            .on("highlightNodes", this.highlightNodes)
+            .on("selectNodes", this.props.onSelectNodes)
+            .on("deselectNodes", this.props.onDeselectNodes);
 
         this.sankey = proposalsSankey()
             .on("highlightNodes", this.highlightNodes)
@@ -50,7 +50,7 @@ class ProposalsNetworkVisualizations extends Component {
     }
 
     highlightNodes(nodes) {
-        //this.network.highlightNodes(nodes);
+        this.network.highlightNodes(nodes);
         this.sankey.highlightNodes(nodes);
     }
 
@@ -91,16 +91,16 @@ class ProposalsNetworkVisualizations extends Component {
 
         if (!oldProps || newProps.nodeData !== oldProps.nodeData) {
             // Bind new data
-            //d3.select(this.networkDiv)
-              //  .datum(newProps.nodes)
-                //.call(this.network);
+            d3.select(this.networkDiv)
+                .datum(newProps.nodeData)
+                .call(this.network);
 
             d3.select(this.sankeyDiv)
                 .datum(newProps.nodeData)
                 .call(this.sankey);
         }
 
-        //this.network.selectNodes(newProps.selectedNodes);
+        this.network.selectNodes(newProps.selectedNodes);
         this.sankey.selectNodes(newProps.selectedNodes);
     }
 

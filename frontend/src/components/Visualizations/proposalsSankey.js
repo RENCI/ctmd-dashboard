@@ -219,6 +219,8 @@ export default function() {
     drawLabels();
     drawLegend();
 
+    highlightNodes();
+
     function drawNodes() {
       let r = 2;
 
@@ -292,8 +294,6 @@ export default function() {
 
       // Node exit
       node.exit().remove();
-
-      highlightNodes();
 
       function x(d) {
         return d.x0;
@@ -530,7 +530,7 @@ export default function() {
       });
     }
 
-    const selectedProposals = nodeProposals(selectedNodes);
+    selectedProposals = nodeProposals(selectedNodes);
     let proposals = !nodes ? [] : nodeProposals(nodes);
 
     if (selectedProposals.length > 0 && proposals.length > 0) {

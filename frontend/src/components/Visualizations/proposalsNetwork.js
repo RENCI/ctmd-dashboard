@@ -10,7 +10,6 @@ export default function() {
       //innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
-      data = [],
       allNodes = [],
       nodeTypes = [],
       network = {},
@@ -91,27 +90,28 @@ export default function() {
           }),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("highlightProposals", "selectProposals");
+      dispatcher = d3.dispatch("highlightNodes", "selectNodes", "deselectNodes");
 
   // Create a closure containing the above variables
   function proposalsNetwork(selection) {
     selection.each(function(d) {
       // Save data
-      data = d;
+      allNodes = d.nodes;
+      nodeTypes = d.nodeTypes;
 
-      // Process data
-      processData();
+      // Link nodes
+      linkNodes();
 
       // Select the svg element, if it exists
       svg = d3.select(this).selectAll("svg")
-          .data([data]);
+          .data([allNodes]);
 
       // Otherwise create the skeletal chart
       var svgEnter = svg.enter().append("svg")
           .attr("class", "proposalsNetwork")
           .on("click", function() {
             selectedNodes = [];
-            dispatcher.call("selectProposals", this, null);
+            dispatcher.call("selectNodes", this, null);
           });
 
       svgEnter.append("g").attr("class", "legend");
@@ -134,137 +134,6 @@ export default function() {
 
       draw();
     });
-  }
-
-  function processData() {
-    // Filter any proposals without a TIC
-    data = data.filter(function(d) {
-      return d.assignToInstitution;
-    });
-
-    // Filter identified test proposals
-    var testProposals = [
-      168, 200, 220, 189, 355, 390, 272, 338, 308, 309, 394, 286, 306, 401,
-      390, 272, 306, 338, 200, 286, 220, 168, 401
-    ];
-
-    data = data.filter(function(d) {
-      return testProposals.indexOf(+d.proposalID) === -1;
-    });
-
-    // Flatten data
-    // XXX: Do this in the query instead?
-    data = data.reduce(function(p, c) {
-      var id = c.proposalID;
-      var d = p[id];
-
-      if (d) {
-        // Update with any non-blank values
-        d3.keys(c).forEach(function(key) {
-          if (c[key]) {
-            d[key] = c[key];
-          }
-        });
-      }
-      else {
-        // Start with this version
-        p[id] = c;
-      }
-
-      return p;
-    }, {});
-
-    data = d3.values(data);
-
-    // First get all unique PIs, proposals, and orgs
-    var pis = d3.map(),
-        proposals = d3.map(),
-        orgs = d3.map(),
-        tics = d3.map(),
-        areas = d3.map(),
-        statuses = d3.map();
-
-    data.forEach(function(d) {
-      const proposal = addNode(d, proposals, d.proposalID, "proposal");
-
-      addNode(d, pis, d.piName, "pi", proposal);
-      addNode(d, orgs, d.submitterInstitution, "org", proposal);
-      addNode(d, tics, d.assignToInstitution, "tic", proposal);
-      addNode(d, areas, d.therapeuticArea, "area", proposal);
-      addNode(d, statuses, d.proposalStatus, "status", proposal);
-    });
-
-    allNodes = pis.values()
-        .concat(proposals.values())
-        .concat(orgs.values())
-        .concat(tics.values())
-        .concat(areas.values())
-        .concat(statuses.values());
-
-    nodeTypes = allNodes.reduce((p, c) => {
-      if (p.indexOf(c.type) === -1) p.push(c.type);
-      return p;
-    }, []).map(d => {
-      return { type: d, show: true }
-    });
-
-    allNodes = allNodes.sort(function(a, b) {
-      return d3.descending(a.proposals.length, b.proposals.length);
-    });
-
-    linkNodes();
-
-    function addNode(d, map, id, type, proposal) {
-      if (!map.has(id)) {
-        // Create node
-        const node = {
-          type: type,
-          id: id
-        };
-
-        switch (type) {
-          case "proposal":
-            node.name = d.shortTitle;
-            node.budget = d.totalBudget ? d.totalBudget : "NA";
-            node.dateSubmitted = d.dateSubmitted ? d.dateSubmitted : "NA";
-            node.meetingDate = d.meetingDate ? d.meetingDate : "NA";
-            node.duration = d.fundingPeriod ? d.fundingPeriod : "NA";
-            node.status = d.proposalStatus ? d.proposalStatus : "NA";
-            node.protocolStatus = d.protocol_status ? +d.protocol_status : "NA";
-            node.proposals = [node];
-            node.nodes = [];
-            break;
-
-          case "pi":
-          case "org":
-          case "tic":
-          case "area":
-          case "status":
-            node.name = id;
-            node.proposals = [proposal];
-            proposal.nodes.push(node);
-            break;
-
-          default:
-            console.log("Invalid type: " + type);
-            return null;
-        };
-
-        map.set(id, node);
-
-        return node;
-      }
-      else {
-        if (type === "proposal") return null;
-
-        // Link nodes to proposals
-        const node = map.get(id);
-        node.proposals.push(proposal);
-        proposal.nodes.push(node);
-
-        return node;
-      }
-    }
   }
 
   function linkNodes() {
@@ -331,30 +200,37 @@ export default function() {
 
   function updateForce() {
     if (!network.nodes) return;
-/*
-    // Arrange proposals around tics
-    var r = 5;
 
-    network.nodes.filter(function(d) {
-      return d.type === "proposal";
-    }).forEach(function(d) {
-      var tic = d.links.filter(function(d) {
-        return d.type === "proposal_tic";
-      })[0].target;
+    const ticType = nodeTypes.reduce((p, c) => {
+      return c.type === "tic" ? c : p;
+    }, null);
 
-      var vx = d.x - tic.x,
-          vy = d.y - tic.y,
-          dist = Math.sqrt(vx * vx + vy * vy);
+    if (ticType.show) {
+      // Arrange proposals around tics
+      const r = 5;
 
-      vx /= dist;
-      vy /= dist;
+      network.nodes.filter(function(d) {
+        return d.type === "proposal";
+      }).forEach(d => {
+        const tic = d.nodes.reduce((p, c) => {
+          return c.type === "tic" ? c : p;
+        }, null);
 
-      var nr = tic.links.length * r / Math.PI;
+        let vx = d.x - tic.x,
+            vy = d.y - tic.y;
 
-      d.x = tic.x + vx * nr;
-      d.y = tic.y + vy * nr;
-    });
-*/
+        const dist = Math.sqrt(vx * vx + vy * vy);
+
+        vx /= dist;
+        vy /= dist;
+
+        const nr = tic.proposals.length * r / Math.PI;
+
+        d.x = tic.x + vx * nr;
+        d.y = tic.y + vy * nr;
+      });
+    }
+
     svg.select(".network").selectAll(".node")
         .attr("transform", function(d) {
           return "translate(" + d.x + "," + d.y + ")";
@@ -408,6 +284,8 @@ export default function() {
     drawLabels();
     drawLegend();
 
+    highlightNodes();
+
     function drawNodes() {
       // Drag behavior, based on:
       // http://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7
@@ -435,15 +313,13 @@ export default function() {
 
               dragNode = null;
 
-              highlightProposals();
+              highlightNodes();
             }
             else {
               // Click
-              isNodeSelected(d) ? deselectNode(d) : selectNode(d);
-
-              var ids = d.proposals.map(function(d) { return d.id; });
-
-              dispatcher.call("selectProposals", this, ids);
+              isNodeSelected(d) ?
+                  dispatcher.call("deselectNodes", this, [d]) :
+                  dispatcher.call("selectNodes", this, [d]);
 
               tip.hide();
               tip.show(d, this);
@@ -463,17 +339,13 @@ export default function() {
             if (dragNode) return;
 
             tip.show(d, this);
-
-            var ids = d.proposals.map(function(d) { return d.id; });
-
-            dispatcher.call("highlightProposals", this, ids);
+            dispatcher.call("highlightNodes", this, [d]);
           })
           .on("mouseout", function() {
             if (dragNode) return;
 
             tip.hide();
-
-            dispatcher.call("highlightProposals", this, null);
+            dispatcher.call("highlightNodes", this, null);
           })
           .call(drag);
 
@@ -493,23 +365,6 @@ export default function() {
 
       // Node exit
       node.exit().remove();
-
-      highlightProposals();
-    }
-
-    function selectNode(d) {
-      let i = selectedNodesIndexOf(d);
-
-      if (i === -1) selectedNodes.push({
-        type: d.type,
-        id: d.id
-      });
-    }
-
-    function deselectNode(d) {
-      let i = selectedNodesIndexOf(d);
-
-      if (i !== -1) selectedNodes.splice(i, 1);
     }
 
     function drawLinks() {
@@ -652,28 +507,31 @@ export default function() {
     return selectedProposals.length === 0 || selectionOverlap(d) > 0;
   }
 
-  function selectedNodesIndexOf(d) {
-    for (let i = 0; i < selectedNodes.length; i++) {
-      let node = selectedNodes[i];
-      if (node.type === d.type && node.id === d.id) return i;
-    }
-
-    return -1;
-  }
-
   function selectionOverlap(d) {
     return d.proposals.reduce(function(p, c) {
-      if (selectedProposals.indexOf(c.id) !== -1) p++;
+      if (selectedProposals.indexOf(c) !== -1) p++;
       return p;
     }, 0);
   }
 
   function isNodeSelected(d) {
-    return selectedNodesIndexOf(d) !== -1;
+    return selectedNodes.indexOf(d) !== -1;
   }
 
-  function highlightProposals(proposals) {
-    if (!proposals) proposals = [];
+  function highlightNodes(nodes) {
+    function nodeProposals(d) {
+      if (d.length === 0) return [];
+
+      return d[0].proposals.filter(proposal => {
+        for (let i = 1; i < d.length; i++) {
+          if (d[i].proposals.indexOf(proposal) === -1) return false;
+        }
+        return true;
+      });
+    }
+
+    selectedProposals = nodeProposals(selectedNodes);
+    let proposals = !nodes ? [] : nodeProposals(nodes);
 
     if (selectedProposals.length > 0 && proposals.length > 0) {
       proposals = selectedProposals.filter(function(proposal) {
@@ -741,14 +599,14 @@ export default function() {
 
       function overlap(d) {
         return d.proposals.reduce(function(p, c) {
-          if (proposals.indexOf(c.id) !== -1) p++;
+          if (proposals.indexOf(c) !== -1) p++;
           return p;
         }, 0);
       }
 
       function nodeConnected(d) {
         for (var i = 0; i < d.proposals.length; i++) {
-          if (proposals.indexOf(d.proposals[i].id) !== -1) return true;
+          if (proposals.indexOf(d.proposals[i]) !== -1) return true;
         }
 
         return false;
@@ -793,14 +651,14 @@ export default function() {
     return proposalsNetwork;
   };
 
-  proposalsNetwork.highlightProposals = function(_) {
-    highlightProposals(_);
+  proposalsNetwork.highlightNodes = function(_) {
+    highlightNodes(_);
     return proposalsNetwork;
   };
 
-  proposalsNetwork.selectProposals = function(_) {
-    selectedProposals = _.length ? _ : [];
-    highlightProposals();
+  proposalsNetwork.selectNodes = function(_) {
+    selectedNodes = _.length ? _ : [];
+    highlightNodes();
     return proposalsNetwork;
   };
 

@@ -164,42 +164,32 @@ function  ProposalsNetworkContainer(props) {
         );
     }
 
-    function handleControlChange(name, event) {
-        switch (name) {
-            case 'status':
-                const nonStatusNodes = selectedNodes.filter(d => d.type !== 'status');
-
-                const status = event.target.value;
-                const node = nodeData.nodes.reduce((p, c) => {
-                  return c.type === 'status' && c.name === status ? c : p;
-                }, null);
-
-                const newNodes = node ? nonStatusNodes.concat(node) : nonStatusNodes;
-
-                updateSelectedNodes(newNodes);
-
-                break;
-
-            default:
-        }
-    }
-
     function updateSelectedNodes(selectedNodes, action) {
         let newNodes = [];
 
         switch (action.type) {
-          case "select":
-            newNodes = !action.nodes ? [] :
-                action.nodes.reduce((p, c) => {
-                    return p.indexOf(c) === -1 ? p.concat(c) : p;
-                }, selectedNodes);
-            break;
+            case 'select':
+                newNodes = !action.nodes ? [] :
+                    action.nodes.reduce((p, c) => {
+                        return p.indexOf(c) === -1 ? p.concat(c) : p;
+                    }, selectedNodes);
+                break;
 
-          case "deselect":
-            newNodes = selectedNodes.filter(d => action.nodes.indexOf(d) === -1);
-            break;
+            case 'deselect':
+                newNodes = selectedNodes.filter(d => action.nodes.indexOf(d) === -1);
+                break;
 
-          default:
+            case 'control':
+                const nonTypeNodes = selectedNodes.filter(d => d.type !== action.name);
+                const node = nodeData.nodes.reduce((p, c) => {
+                  return c.type === action.name && c.name === action.value ? c : p;
+                }, null);
+
+                newNodes = node ? nonTypeNodes.concat(node) : nonTypeNodes;
+
+                break;
+
+            default:
         }
 
         props.onSelectProposals(getProposals(newNodes));
@@ -207,12 +197,16 @@ function  ProposalsNetworkContainer(props) {
         return newNodes;
     }
 
+    function handleControlChange(name, event) {
+        selectedNodesDispatcher({ type: 'control', name: name, value: event.target.value });
+    }
+
     function handleSelectNodes(nodes) {
-      selectedNodesDispatcher({ nodes: nodes, type: "select" });
+      selectedNodesDispatcher({ type: 'select', nodes: nodes });
     }
 
     function handleDeselectNodes(nodes) {
-      selectedNodesDispatcher({ nodes: nodes, type: "deselect" });
+      selectedNodesDispatcher({ type: 'deselect', nodes: nodes });
     }
 
     return (
