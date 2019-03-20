@@ -26,44 +26,47 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const emptyFormValues = ({
+    proposalID: null,
+    network: '',
+    primaryStudyType: '',
+    linkedData: '',
+    linkedStudy: '',
+    isRandomized: '',
+    randomizationUnit: '',
+    randomizationFeatures: [],
+    phase: '',
+    pilotOrDemo: '',
+    isRegistry: '',
+    isEhrDataTransfer: '',
+    isConsentRequired: '',
+    efic: '',
+    irbTypes: [],
+    regulatoryClassifications: [],
+    clinicalTrialsGovId: '',
+    dsmbDmcRequired: '',
+    initialParticipatingSiteNumber: '',
+    enrollmentGoal: '',
+    initialProjectedEnrollmentDuration: '',
+    leadPiNames: '',
+    awardeeSiteAcronym: '',
+    primaryFundingType: '',
+    primarilyFundedByInfrastructure: '',
+    fundingSource: '',
+    fundingAwarded: '',
+    previousFunding: '',
+})
+
 const MetricsForm = props => {
     const { proposalID } = props
-    const [values, setValues] = useState({
-        proposalID: null,
-        network: '',
-        primaryStudyType: '',
-        linkedData: '',
-        linkedStudy: '',
-        isRandomized: '',
-        randomizationUnit: '',
-        randomizationFeatures: [],
-        phase: '',
-        pilotOrDemo: '',
-        isRegistry: '',
-        isEhrDataTransfer: '',
-        isConsentRequired: '',
-        efic: '',
-        irbTypes: [],
-        regulatoryClassifications: [],
-        clinicalTrialsGovId: '',
-        dsmbDmcRequired: '',
-        initialParticipatingSiteNumber: '',
-        enrollmentGoal: '',
-        initialProjectedEnrollmentDuration: '',
-        leadPiNames: '',
-        awardeeSiteAcronym: '',
-        primaryFundingType: '',
-        primarilyFundedByInfrastructure: '',
-        fundingSource: '',
-        fundingAwarded: '',
-        previousFunding: '',
-    })
+    const [values, setValues] = useState(emptyFormValues)
     const [currentSubformNumber, setCurrentSubformNumer] = useState(0)
     const api = useContext(ApiContext)
     const classes = useStyles()
     
     useEffect(() => {
-        setValues({ ...values, proposalID: proposalID })
+        setCurrentSubformNumer(0)
+        setValues({ ...emptyFormValues, proposalID: proposalID })
     }, [props.proposalID])
 
     const handleNavigate = value => event => {
