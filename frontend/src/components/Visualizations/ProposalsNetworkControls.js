@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
+    Grid,
     FormControl, FormHelperText,
     InputLabel, OutlinedInput,
     Select, MenuItem
@@ -16,65 +17,112 @@ const styles = (theme) => ({
     select: {}
 });
 
-const defaultStatus = "All";
+const defaultValue = "All";
 
-function getStatusItems(proposals) {
-    const statuses = proposals.reduce((p, c) => {
-        let status = c.proposalStatus;
-        if (p.indexOf(status) === -1) p.push(status);
+function getItems(proposals, key) {
+    const values = proposals.reduce((p, c) => {
+        let value = c[key];
+        if (value && p.indexOf(value) === -1) p.push(value);
         return p;
-    }, []);
+    }, []).sort();
 
-    return [defaultStatus].concat(statuses).map((status, i) =>
-        <MenuItem key={i} value={status}>{status}</MenuItem>
+    return [defaultValue].concat(values).map((value, i) =>
+        <MenuItem key={ i } value={ value }>{ value }</MenuItem>
     );
 }
 
 function ProposalsNetworkControls(props) {
-    const [status, setStatus] = useState(defaultStatus);
-    const [labelWidth, setLabelWidth] = useState(0);
+    const [pi, setPI] = useState(defaultValue);
+    const [proposal, setProposal] = useState(defaultValue);
+    const [org, setOrg] = useState(defaultValue);
+    const [tic, setTic] = useState(defaultValue);
+    const [status, setStatus] = useState(defaultValue);
+    const [area, setArea] = useState(defaultValue);
 
-    const inputLabelRef = useRef(null);
+    // There must be a better way than setting these all separately
+    const [piLabelWidth, setPILabelWidth] = useState(0);
+    const [proposalLabelWidth, setProposalLabelWidth] = useState(0);
+    const [orgLabelWidth, setOrgLabelWidth] = useState(0);
+    const [ticLabelWidth, setTicLabelWidth] = useState(0);
+    const [statusLabelWidth, setStatusLabelWidth] = useState(0);
+    const [areaLabelWidth, setAreaLabelWidth] = useState(0);
+
+    const piLabelRef = useRef(null);
+    const proposalLabelRef = useRef(null);
+    const orgLabelRef = useRef(null);
+    const ticLabelRef = useRef(null);
+    const statusLabelRef = useRef(null);
+    const areaLabelRef = useRef(null);
 
     const { classes, proposals, onChange } = props;
 
     useEffect(() => {
-        setLabelWidth(ReactDOM.findDOMNode(inputLabelRef.current).offsetWidth);
-    }, [inputLabelRef]);
+        setPILabelWidth(ReactDOM.findDOMNode(piLabelRef.current).offsetWidth);
+        setProposalLabelWidth(ReactDOM.findDOMNode(proposalLabelRef.current).offsetWidth);
+        setOrgLabelWidth(ReactDOM.findDOMNode(orgLabelRef.current).offsetWidth);
+        setTicLabelWidth(ReactDOM.findDOMNode(ticLabelRef.current).offsetWidth);
+        setStatusLabelWidth(ReactDOM.findDOMNode(statusLabelRef.current).offsetWidth);
+        setAreaLabelWidth(ReactDOM.findDOMNode(areaLabelRef.current).offsetWidth);
+    }, [piLabelRef]);
 
-    function handleStatusSelect(event) {
-        let status = event.target.value;
+    function handleSelect(type, event) {
+        const value = event.target.value;
 
-        setStatus(status);
+        switch (type) {
+           case "pi": setPI(value); break;
+           case "proposal": setProposal(value); break;
+           case "org": setOrg(value); break;
+           case "tic": setTic(value); break;
+           case "status": setStatus(value); break;
+           case "area": setArea(value); break;
+        }
 
-        onChange("status", event);
+        onChange(type, event);
     };
 
-    const statusItems = useMemo(() => getStatusItems(proposals), [proposals]);
+    const piItems = useMemo(() => getItems(proposals, 'piName'), [proposals]);
+    const proposalItems = useMemo(() => getItems(proposals, 'shortTitle'), [proposals]);
+    const orgItems = useMemo(() => getItems(proposals, 'submitterInstitution'), [proposals]);
+    const ticItems = useMemo(() => getItems(proposals, 'assignToInstitution'), [proposals]);
+    const areaItems = useMemo(() => getItems(proposals, 'therapeuticArea'), [proposals]);
+    const statusItems = useMemo(() => getItems(proposals, 'proposalStatus'), [proposals]);
+
+    function dropDown(type, value, label, helperText, items, ref, labelWidth) {
+        return (
+            <FormControl variant="outlined" fullWidth className={ classes.formControl }>
+                <InputLabel htmlFor="type" ref={ ref }>
+                    { label }
+                </InputLabel>
+                <Select
+                    className={ classes.select }
+                    value={ value }
+                    onChange={ e => handleSelect(type, e) }
+                    input={
+                        <OutlinedInput
+                            labelWidth={ labelWidth }
+                            name={ type }
+                            id={ type }
+                        />
+                    }
+                >
+                    { items }
+                </Select>
+                <FormHelperText>
+                    { "Specify " + helperText + " to highlight." }
+                </FormHelperText>
+            </FormControl>
+        );
+    }
 
     return (
-        <FormControl variant="outlined" fullWidth className={ classes.formControl }>
-            <InputLabel htmlFor="status" ref={ inputLabelRef }>
-                Status
-            </InputLabel>
-            <Select
-                className={ classes.select }
-                value={ status }
-                onChange={ handleStatusSelect }
-                input={
-                    <OutlinedInput
-                        labelWidth={ labelWidth }
-                        name="status"
-                        id="status"
-                    />
-                }
-            >
-                {statusItems}
-            </Select>
-            <FormHelperText>
-                Specify proposal status to highlight.
-            </FormHelperText>
-        </FormControl>
+        <Grid container wrap={'nowrap'}>
+            { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
+            { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
+            { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
+            { dropDown("tic", tic, "TIC", "TIC", ticItems, ticLabelRef, ticLabelWidth) }
+            { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
+            { dropDown("area", area, "Therapeutic Area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
+        </Grid>
     );
 }
 
