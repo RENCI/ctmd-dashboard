@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
+import { useTheme } from '@material-ui/styles'
 import axios from 'axios'
 import { StoreContext } from '../contexts/StoreContext'
 import { ApiContext } from '../contexts/ApiContext'
@@ -13,34 +13,10 @@ import { CircularLoader } from '../components/Progress/Progress'
 import ProposalDetailsForm from '../components/Forms/ProposalDetails'
 import StudyMetricsForm from '../components/Forms/StudyMetrics/Metrics'
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        // ...theme.mixins.debug,
-    },
-    navigation: {
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-    flexer: {
-        flex: 1,
-    },
-    actions: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-    },
-    previousNextName: {
-        display: 'none',
-        [theme.breakpoints.up('md')]: {
-            display: 'inline-block',
-        }
-    },
-}))
-
 const StudyMetricsPage = props => {
     const [store, setStore] = useContext(StoreContext)
     const [current, setCurrent] = useState(0)
     const api = useContext(ApiContext)
-    const classes = useStyles()
     const theme = useTheme()
 
     const handleNavigate = value => event => {
@@ -52,7 +28,7 @@ const StudyMetricsPage = props => {
     }
 
     return (
-        <div className={ classes.root }>
+        <div>
 
             <Heading>Study Metrics</Heading>
             
@@ -64,7 +40,7 @@ const StudyMetricsPage = props => {
                             <Card>
                                 <CardHeader subheader="Proposal Details"/>
                                 <CardContent>
-                                    <FormControl fullWidth variant="outlined" className={ classes.formControl }>
+                                    <FormControl fullWidth variant="outlined">
                                         <InputLabel htmlFor="proposal-short-title">Proposal Short Title
                                         </InputLabel>
                                         <Select value={ current } onChange={ handleChangeCurrent }
