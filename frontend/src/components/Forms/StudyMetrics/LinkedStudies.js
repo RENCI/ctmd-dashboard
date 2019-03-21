@@ -83,7 +83,7 @@ const StudyCharacteristicsForms = props => {
                         margin="normal"
                         variant="outlined"
                         disabled={ values.hasSubStudy !== '1' }
-                        error={ values.hasSubStudy === '1' || values.subStudy.trim() === '' }
+                        error={ values.hasSubStudy === '1' && values.subStudy.trim() === '' }
                     />
                 </FormControl>
             }
