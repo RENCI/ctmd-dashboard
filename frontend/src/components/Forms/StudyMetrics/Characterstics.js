@@ -1,13 +1,11 @@
 import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import {
-    FormControl, FormGroup, FormHelperText, FormControlLabel, FormLabel,
-    InputLabel, OutlinedInput,
+    FormControl, FormHelperText, FormControlLabel, FormLabel,
+    OutlinedInput,
     Select, MenuItem,
     RadioGroup, Radio,
     TextField,
-    Checkbox,
-    Button,
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
@@ -71,39 +69,95 @@ const StudyCharacteristicsForms = props => {
             </FormControl>
 
             <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Linked Data</FormLabel>
+                <FormLabel component="label">TIC</FormLabel>
                 <FormHelperText>
-                    Does this study require data from another study?
-                    May be referred to as a "Linked", "Piggybacked", "Ancillary", or "Sub" study.
-                    This should be answered as "No" for a Registry.
+                    Primary TIC on the study
                 </FormHelperText>
-                <RadioGroup
-                    aria-label="linked-data"
-                    name="linked-data"
-                    value={ values.linkedData }
-                    onChange={ handleChange('linkedData') }
+                <Select
+                    value={ values.tic }
+                    onChange={ handleChange('tic') }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="tic" id="tic" style={{ marginTop: '16px' }} /> }
                 >
-                    <FormControlLabel value="1" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="0" control={<Radio />} label="No" />
-                </RadioGroup>
+                    <MenuItem value=""></MenuItem>
+                    <MenuItem value="utah">Duke</MenuItem>
+                    <MenuItem value="duke-vanderbilt">Duke/Vanderbilt</MenuItem>
+                    <MenuItem value="jhu-tufts">JHU/Tufts</MenuItem>
+                    <MenuItem value="n/a">N/A</MenuItem>
+                </Select>
             </FormControl>
 
             <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Linked Data</FormLabel>
+                <FormLabel component="label">RIC</FormLabel>
+                <Select
+                    value={ values.ric }
+                    onChange={ handleChange('ric') }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="ric" id="ric" style={{ marginTop: '16px' }} /> }
+                >
+                    <MenuItem value=""></MenuItem>
+                    <MenuItem value="vanderbilt">Vanderbilt</MenuItem>
+                    <MenuItem value="n/a">N/A</MenuItem>
+                </Select>
+            </FormControl>
+
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">Collaborative TIC</FormLabel>
+                <Select
+                    value={ values.collaborativeTic }
+                    onChange={ handleChange('collaborativeTic') }
+                    input={ <OutlinedInput fullWidth labelWidth={ 0 } name="collaborative-tic" id="collaborative-tic" style={{ marginTop: '16px' }} /> }
+                >
+                    <MenuItem value=""></MenuItem>
+                    <MenuItem value="utah">Duke</MenuItem>
+                    <MenuItem value="duke-vanderbilt">Duke/Vanderbilt</MenuItem>
+                    <MenuItem value="jhu-tufts">JHU/Tufts</MenuItem>
+                    <MenuItem value="n/a">N/A</MenuItem>
+                </Select>
+            </FormControl>
+
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">Collaborative TIC Role Explain</FormLabel>
                 <FormHelperText>
-                    Specify study.
-                    If the study requires data from a different study, specify the name of the "linked study" using the Study Acronym.
+                    Type a description about the role of the collaborative TIC.
                 </FormHelperText>
                 <TextField fullWidth
-                    id="linked-study"
-                    value={ values.linkedStudy }
-                    onChange={ handleChange('linkedStudy') }
+                    id="collaborative-tic-details"
+                    value={ values.collaborativeTicDetails }
+                    onChange={ handleChange('collaborativeTicDetails') }
                     margin="normal"
                     variant="outlined"
-                    disabled={ values.linkedData !== '1' }
-                    error={ values.linkedData === '1' && values.linkedStudy === '' }
+                    disabled={ values.collaborativeTic === 'n/a' || values.collaborativeTic === '' }
+                    error={ values.collaborativeTic !== 'n/a' && values.collaborativeTicDetails.trim() === '' }
                 />
             </FormControl>
+
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">DCC Institution</FormLabel>
+                <FormHelperText>
+                    Enter the Data Coordinating Center for the study
+                </FormHelperText>
+                <TextField fullWidth
+                    id="dcc"
+                    value={ values.dcc }
+                    onChange={ handleChange('dcc') }
+                    margin="normal"
+                    variant="outlined"
+                />
+            </FormControl>
+
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">CCC Institution</FormLabel>
+                <FormHelperText>
+                    Enter the Clinical Coordinating Center for the study.
+                </FormHelperText>
+                <TextField fullWidth
+                    id="ccc"
+                    value={ values.ccc }
+                    onChange={ handleChange('ccc') }
+                    margin="normal"
+                    variant="outlined"
+                />
+            </FormControl>
+
         </div>
     )
 }
