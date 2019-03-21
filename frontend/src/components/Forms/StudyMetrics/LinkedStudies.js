@@ -19,7 +19,7 @@ const StudyCharacteristicsForms = props => {
     return (
         <div>
             <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Linked Data</FormLabel>
+                <FormLabel component="label">Is this a substudy?</FormLabel>
                 <FormHelperText>
                     Does this study require data from another study?
                     May be referred to as a "Linked", "Piggybacked", "Ancillary", or "Sub" study.
