@@ -91,6 +91,12 @@ theme = {
                 backgroundColor: theme.palette.common.white,
             },
         },
+        MuiFormLabel: {
+            root: {
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+            }
+        },
         MuiFormHelperText: {
             root: {
                 marginLeft: 0,
