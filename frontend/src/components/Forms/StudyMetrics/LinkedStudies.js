@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { makeStyles } from '@material-ui/styles'
 import {
     FormControl, FormHelperText, FormControlLabel, FormLabel,
     OutlinedInput,
@@ -9,16 +8,9 @@ import {
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
-const useStyles = makeStyles(theme => ({
-    formControl: {
-        width: '100%',
-        marginBottom: `${ 4 * theme.spacing.unit }px`,
-    },
-}))
-
 const StudyCharacteristicsForms = props => {
     const [values, setValues] = useContext(MetricsFormContext)
-    const classes = useStyles()
+    const { classes } = props
 
     const handleChange = name => event => {
         setValues({ ...values, [name]: event.target.value })
@@ -44,22 +36,25 @@ const StudyCharacteristicsForms = props => {
                 </RadioGroup>
             </FormControl>
 
-            <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Linked Study</FormLabel>
-                <FormHelperText>
-                    Specify main study.
-                    If the study requires data from a different study, specify the name of the "linked study" using the Study Acronym.
-                </FormHelperText>
-                <TextField fullWidth
-                    id="super-study"
-                    value={ values.superStudy }
-                    onChange={ handleChange('superStudy') }
-                    margin="normal"
-                    variant="outlined"
-                    disabled={ values.hasSuperStudy !== '1' }
-                    error={ values.hasSuperStudy === '1' || values.hasSuperStudy === '' }
-                />
-            </FormControl>
+            {
+                values.hasSuperStudy === '1' && 
+                <FormControl className={ classes.formControl }>
+                    <FormLabel component="label">Linked Study</FormLabel>
+                    <FormHelperText>
+                        Specify main study.
+                        If the study requires data from a different study, specify the name of the "linked study" using the Study Acronym.
+                    </FormHelperText>
+                    <TextField fullWidth
+                        id="super-study"
+                        value={ values.superStudy }
+                        onChange={ handleChange('superStudy') }
+                        margin="normal"
+                        variant="outlined"
+                        disabled={ values.hasSuperStudy !== '1' }
+                        error={ values.hasSuperStudy === '1' && values.superStudy.trim() === '' }
+                    />
+                </FormControl>
+            }
 
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">Does this study have substudies?</FormLabel>
@@ -76,19 +71,22 @@ const StudyCharacteristicsForms = props => {
                     <FormControlLabel value="0" control={ <Radio /> } label="No" />
                 </RadioGroup>
             </FormControl>
-
-            <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Linked Substudy</FormLabel>
-                <TextField fullWidth
-                    id="subStudy"
-                    value={ values.subStudy }
-                    onChange={ handleChange('subStudy') }
-                    margin="normal"
-                    variant="outlined"
-                    disabled={ values.hasSubStudy !== '1' }
-                    error={ values.hasSubStudy === '1' || values.hasSubStudy === '' }
-                />
-            </FormControl>
+            
+            {
+                values.hasSubStudy === '1' &&
+                <FormControl className={ classes.formControl }>
+                    <FormLabel component="label">Linked Substudy</FormLabel>
+                    <TextField fullWidth
+                        id="subStudy"
+                        value={ values.subStudy }
+                        onChange={ handleChange('subStudy') }
+                        margin="normal"
+                        variant="outlined"
+                        disabled={ values.hasSubStudy !== '1' }
+                        error={ values.hasSubStudy === '1' || values.subStudy.trim() === '' }
+                    />
+                </FormControl>
+            }
         </div>
     )
 }

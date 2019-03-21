@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { makeStyles } from '@material-ui/styles'
 import {
     FormControl, FormGroup, FormHelperText, FormControlLabel, FormLabel,
     InputLabel, OutlinedInput,
@@ -11,16 +10,9 @@ import {
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
-const useStyles = makeStyles(theme => ({
-    formControl: {
-        width: '100%',
-        marginBottom: `${ 4 * theme.spacing.unit }px`,
-    },
-}))
-
 const StudyFundingForm = props => {
     const [values, setValues] = useContext(MetricsFormContext)
-    const classes = useStyles()
+    const { classes } = props
 
     const handleChange = name => event => {
         setValues({ ...values, [name]: event.target.value })

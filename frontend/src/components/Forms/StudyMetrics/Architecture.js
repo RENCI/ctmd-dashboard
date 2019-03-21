@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { makeStyles } from '@material-ui/styles'
 import {
     FormControl, FormGroup, FormHelperText, FormControlLabel, FormLabel,
     InputLabel, OutlinedInput,
@@ -11,16 +10,9 @@ import {
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
-const useStyles = makeStyles(theme => ({
-    formControl: {
-        width: '100%',
-        marginBottom: `${ 4 * theme.spacing.unit }px`,
-    },
-}))
-
 const StudyArchitectureForms = props => {
     const [values, setValues] = useContext(MetricsFormContext)
-    const classes = useStyles()
+    const { classes } = props
 
     const handleChange = name => event => {
         switch (name) {
@@ -152,7 +144,6 @@ const StudyArchitectureForms = props => {
                             />
                         )
                     }
-                    <FormControlLabel value="longitudinal" control={ <Radio /> } label="Longitudinal" />
                 </RadioGroup>
             </FormControl>
 
@@ -169,33 +160,36 @@ const StudyArchitectureForms = props => {
                 </RadioGroup>
             </FormControl>
 
-            <FormControl className={ classes.formControl }>
-                <FormLabel>EHR Data Transfer</FormLabel>
-                <FormHelperText>
-                    Will this study use EHR Data Transfer?
-                </FormHelperText>
-                <RadioGroup aria-label="usesEhrDataTransfer" name="usesEhrDataTransfer"
-                    value={ values.usesEhrDataTransfer } onChange={ handleChange('usesEhrDataTransfer') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
-            </FormControl>
-    
-            {
-                values.usesEhrDataTransfer === '1' &&
+            <FormGroup row>
                 <FormControl className={ classes.formControl }>
+                    <FormLabel>EHR Data Transfer</FormLabel>
                     <FormHelperText>
-                        Will this study use full or partial EHR Data Transfer?
+                        Will this study use EHR Data Transfer?
                     </FormHelperText>
-                    <RadioGroup aria-label="ehr-data-transfer-type" name="ehr-data-transfer-type"
-                        value={ values.ehrDataTransferType } onChange={ handleChange('ehrDataTransferType') }
+                    <RadioGroup aria-label="usesEhrDataTransfer" name="usesEhrDataTransfer"
+                        value={ values.usesEhrDataTransfer } onChange={ handleChange('usesEhrDataTransfer') }
                     >
-                        <FormControlLabel value="full" control={ <Radio /> } label="Full" />
-                        <FormControlLabel value="partial" control={ <Radio /> } label="Partial" />
+                        <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
+                        <FormControlLabel value="0" control={ <Radio /> } label="No" />
                     </RadioGroup>
                 </FormControl>
-            }
+        
+                {
+                    values.usesEhrDataTransfer === '1' &&
+                    <FormControl className={ classes.formControl }>
+                        <FormLabel>EHR Data Transfer</FormLabel>
+                        <FormHelperText>
+                            Will this study use full or partial EHR Data Transfer?
+                        </FormHelperText>
+                        <RadioGroup aria-label="ehr-data-transfer-type" name="ehr-data-transfer-type"
+                            value={ values.ehrDataTransferType } onChange={ handleChange('ehrDataTransferType') }
+                        >
+                            <FormControlLabel value="full" control={ <Radio /> } label="Full" />
+                            <FormControlLabel value="partial" control={ <Radio /> } label="Partial" />
+                        </RadioGroup>
+                    </FormControl>
+                }
+            </FormGroup>
 
             <FormControl className={ classes.formControl }>
                 <FormLabel>Consent</FormLabel>
@@ -275,8 +269,7 @@ const StudyArchitectureForms = props => {
                 <FormHelperText>
                     If applicable, enter the ClinicalTrials.gov identifier.
                 </FormHelperText>
-                <TextField margin="normal" variant="outlined"
-                    id="clinical-trials-gov-id" label="ClinicalTrials.gov Identifier"
+                <TextField margin="normal" variant="outlined" id="clinical-trials-gov-id"
                     value={ values.clinicalTrialsGovId } onChange={ handleChange('clinicalTrialsGovId') }
                 />
             </FormControl>
@@ -294,36 +287,6 @@ const StudyArchitectureForms = props => {
                 </RadioGroup>
             </FormControl>
 
-            <FormControl className={ classes.formControl }>
-                <FormLabel>Participating Sites</FormLabel>
-                <FormHelperText>
-                    Number of planned sites to be activated at study onset.
-                </FormHelperText>
-                <TextField margin="normal" variant="outlined"
-                    id="initial-participating-site-number" label="Initial Participating Site Number"
-                    value={ values.initialParticipatingSiteNumber } onChange={ handleChange('initialParticipatingSiteNumber') }
-                />
-            </FormControl>
-
-            <FormControl className={ classes.formControl }>
-                <FormHelperText>
-                    Total projected sample size at study onset. This # should NOT reflect subsequent sample size changes related to protocol amendments. Leave this field blank for Registry studies.
-                </FormHelperText>
-                <TextField margin="normal" variant="outlined"
-                    id="enrollment-goal" label="Enrollment Goal"
-                    value={ values.enrollmentGoal } onChange={ handleChange('enrollmentGoal') }
-                />
-            </FormControl>
-
-            <FormControl className={ classes.formControl }>
-                <FormHelperText>
-                    Enter time-period in months. Leave this field blank for Registry studies.
-                </FormHelperText>
-                <TextField margin="normal" variant="outlined"
-                    id="initial-projected-enrollment-duration" label="Initial Projected Enrollment Duration"
-                    value={ values.initialProjectedEnrollmentDuration } onChange={ handleChange('initialProjectedEnrollmentDuration') }
-                />
-            </FormControl>
         </div>
     )
 }

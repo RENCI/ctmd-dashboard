@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { makeStyles } from '@material-ui/styles'
 import {
     FormControl, FormHelperText, FormControlLabel, FormLabel,
     OutlinedInput,
@@ -9,16 +8,9 @@ import {
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
-const useStyles = makeStyles(theme => ({
-    formControl: {
-        width: '100%',
-        marginBottom: `${ 4 * theme.spacing.unit }px`,
-    },
-}))
-
 const StudyCharacteristicsForms = props => {
     const [values, setValues] = useContext(MetricsFormContext)
-    const classes = useStyles()
+    const { classes } = props
 
     const handleChange = name => event => {
         setValues({ ...values, [name]: event.target.value })
@@ -71,7 +63,7 @@ const StudyCharacteristicsForms = props => {
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">TIC</FormLabel>
                 <FormHelperText>
-                    Primary TIC on the study
+                    Select the primary TIC on the study
                 </FormHelperText>
                 <Select
                     value={ values.tic }
@@ -88,6 +80,9 @@ const StudyCharacteristicsForms = props => {
 
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">RIC</FormLabel>
+                <FormHelperText>
+                    Select the RIC on the study
+                </FormHelperText>
                 <Select
                     value={ values.ric }
                     onChange={ handleChange('ric') }
@@ -113,22 +108,25 @@ const StudyCharacteristicsForms = props => {
                     <MenuItem value="n/a">N/A</MenuItem>
                 </Select>
             </FormControl>
-
-            <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Collaborative TIC Role Explain</FormLabel>
-                <FormHelperText>
-                    Type a description about the role of the collaborative TIC.
-                </FormHelperText>
-                <TextField fullWidth
-                    id="collaborative-tic-details"
-                    value={ values.collaborativeTicDetails }
-                    onChange={ handleChange('collaborativeTicDetails') }
-                    margin="normal"
-                    variant="outlined"
-                    disabled={ values.collaborativeTic === 'n/a' || values.collaborativeTic === '' }
-                    error={ values.collaborativeTic !== 'n/a' && values.collaborativeTicDetails.trim() === '' }
-                />
-            </FormControl>
+            
+            {
+                values.collaborativeTic && values.collaborativeTic !== 'n/a' &&
+                <FormControl className={ classes.formControl }>
+                    <FormLabel component="label">Collaborative TIC Role</FormLabel>
+                    <FormHelperText>
+                        Provide a description about the role of the collaborative TIC indicated above.
+                    </FormHelperText>
+                    <TextField fullWidth
+                        id="collaborative-tic-details"
+                        value={ values.collaborativeTicDetails }
+                        onChange={ handleChange('collaborativeTicDetails') }
+                        margin="normal"
+                        variant="outlined"
+                        disabled={ values.collaborativeTic === 'n/a' || values.collaborativeTic === '' }
+                        error={ values.collaborativeTic !== 'n/a' && values.collaborativeTicDetails.trim() === '' }
+                    />
+                </FormControl>
+            }
 
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">DCC Institution</FormLabel>

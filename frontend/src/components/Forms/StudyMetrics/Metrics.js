@@ -7,10 +7,11 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons'
 import { Grid, Card, CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
 import { ApiContext } from '../../../contexts/ApiContext'
 import Subheading from '../../Typography/Subheading'
-import StudyCharacteristicsForm from './Characterstics'
+import CharacteristicsForm from './Characterstics'
 import LinkedStudiesForm from './LinkedStudies'
-import StudyArchitectureForm from './Architecture'
-import StudyFundingForm from './Funding'
+import ArchitectureForm from './Architecture'
+import ParticipationForm from './Participation'
+import FundingForm from './Funding'
 
 export const MetricsFormContext = React.createContext({})
 
@@ -20,6 +21,10 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'space-between',
     },
     formContainer: {
+    },
+    formControl: {
+        width: '100%',
+        marginBottom: `${ 4 * theme.spacing.unit }px`,
     },
     actions: {
         display: 'flex',
@@ -50,6 +55,7 @@ const emptyFormValues = ({
     randomizationFeatures: [],
     ascertainment: '',
     phase: '',
+    pilotOrDemo: '', //
     usesRegistryData: '',
     usesEhrDataTransfer: '',
     ehrDataTransferType: '',
@@ -60,7 +66,6 @@ const emptyFormValues = ({
     clinicalTrialsGovId: '',
     isDsmbDmcRequired: '',
     // Funding
-    pilotOrDemo: '',
     initialParticipatingSiteNumber: '',
     enrollmentGoal: '',
     initialProjectedEnrollmentDuration: '',
@@ -86,7 +91,7 @@ const MetricsForm = props => {
     }, [props.proposalID])
 
     const handleNavigate = value => event => {
-        setCurrentSubformNumer((currentSubformNumber + value + subformHeaders.length) % subformHeaders.length)
+        setCurrentSubformNumer((currentSubformNumber + value + subforms.length) % subforms.length)
     }
 
     const handleSave = () => {
@@ -96,17 +101,23 @@ const MetricsForm = props => {
             .catch(error => console.log('Error', error))
     }
 
-    const subformHeaders = ['Study Characteristics', 'Linked Studies', 'Study Architecture', 'Study Funding']
+    const subforms = [
+        { title: 'Study Characteristics', form: <CharacteristicsForm classes={ classes } /> },
+        { title: 'Linked Studies', form: <LinkedStudiesForm classes={ classes } /> },
+        { title: 'Study Architecture', form: <ArchitectureForm classes={ classes } /> },
+        { title: 'Participation', form: <ParticipationForm classes={ classes } /> },
+        { title: 'Study Funding', form: <FundingForm classes={ classes } /> },
+    ]
     
     const formNavigation = (
         <Fragment>
             <Button disabled={ currentSubformNumber === 0 } color="secondary" onClick={ handleNavigate(-1) }>
                 <LeftIcon />
-                { currentSubformNumber > 0 ? subformHeaders[currentSubformNumber - 1] : null }
+                { currentSubformNumber > 0 ? subforms[currentSubformNumber - 1].title : null }
             </Button>
             <div className="flexer"/>
-            <Button disabled={ currentSubformNumber === subformHeaders.length - 1 } color="secondary" onClick={ handleNavigate(1) }>
-                { currentSubformNumber < subformHeaders.length ? subformHeaders[currentSubformNumber + 1] : null }
+            <Button disabled={ currentSubformNumber === subforms.length - 1 } color="secondary" onClick={ handleNavigate(1) }>
+                { currentSubformNumber + 1 < subforms.length ? subforms[currentSubformNumber + 1].title : null }
                 <RightIcon />
             </Button>
         </Fragment>
@@ -118,12 +129,9 @@ const MetricsForm = props => {
                 <CardActions className={ classes.navigation }>
                     { formNavigation }
                 </CardActions>
-                <CardHeader style={{textAlign: 'center' }} title={ subformHeaders[currentSubformNumber] } />
+                <CardHeader style={{textAlign: 'center' }} title={ subforms[currentSubformNumber].title } />
                 <CardContent className={ classes.formContainer }>
-                    { currentSubformNumber === 0 && <StudyCharacteristicsForm /> }
-                    { currentSubformNumber === 1 && <LinkedStudiesForm /> }
-                    { currentSubformNumber === 2 && <StudyArchitectureForm /> }
-                    { currentSubformNumber === 3 && <StudyFundingForm /> }
+                    { subforms[currentSubformNumber].form }
                 </CardContent>
                 <CardActions className={ classes.navigation }>
                     { formNavigation }
