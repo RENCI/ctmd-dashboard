@@ -247,7 +247,7 @@ const StudyArchitectureForms = props => {
                 <FormGroup>
                     {
                         ['Requires IND', 'Requires IDE', 'Requires NSR', 'Post-marketing Study', 'Not Subject to FDA Regulation'].map(classification => {
-                            const classificationKebabCase = classification.toLowerCase().replace(' ', '-')
+                            const classificationKebabCase = classification.toLowerCase().split(' ').join('-')
                             return (
                                 <FormControlLabel key={ classificationKebabCase }
                                     control={
