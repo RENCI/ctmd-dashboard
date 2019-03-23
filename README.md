@@ -1,5 +1,4 @@
-# New Document# Trial Innovation Center Dashboard
-
+# Trial Innovation Center Dashboard
 - [Server Setup](#server-setup)
   + [Install Docker](#install-docker)
   + [Docker Post-Installation Steps](#docker-post-installation-steps)
@@ -258,9 +257,15 @@ Adding password for user myusername
 If this is not done, Nginx will throw a `500 Internal Server Error` at your browser whne you try to access the site.
 
 ###### API URL
+<<<<<<< HEAD
 
 The second thing that you'll need to specify is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
 
+=======
+
+The second thing that you'll need to specify is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
+
+>>>>>>> bfe2b406085456736278f72b7e0bf3de413e4274
 If this is not done, you will see progress/loading spinners in the browser. This is because the frontend will be reaching out for data from the wrong location and never receive it.
 
 ##### OK, Let's Go
@@ -272,6 +277,7 @@ $ docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
 This serves the frontend to port `80` on the host, and is thus reachable simply at `http://localhost` (or your domain name). The API is publicly accessible via `http://localhost/api`.
+<<<<<<< HEAD
 
 ### Notes About Docker
 
@@ -303,6 +309,39 @@ To tinker and test various things, one often needs to log into an individual con
 docker exec -it pmd-db bash
 ```
 
+=======
+
+### Notes About Docker
+
+#### Detaching
+
+It's nice to leave your session attached to keep an eye on errors throughout the development process, but of course you want to rebuild and/or detach in some cases:
+
+```bash
+$ docker-compose up --build -d
+```
+
+Only start a couple services, you may specify them explicitly:
+
+```bash
+$ docker-compose up api
+```
+
+The above command starts the development `api` and its dependency, the `db` service (indicated with the `depends_on` tag in the `docker-compose.yml` file. Similarly, one can also just build specific images and start containers based on them. The following command behaves just like the previous one, except that it rebuilds the images first.
+
+```bash
+$ docker-compose up --build api
+```
+
+#### Tinkering in a Running Container
+
+To tinker and test various things, one often needs to log into an individual container with `docker exec`. (This was mentioned earlier when describing the installation of new npm modules.) To, say, run some database queries inside the database container, we can attach to it with the following command.
+
+```bash
+docker exec -it pmd-db bash
+```
+
+>>>>>>> bfe2b406085456736278f72b7e0bf3de413e4274
 Now you're inside the container and can proceed normally -- switch to the `postgres` user with something like `sudo -u postgres -i`, access the database `psql duketic`, and execute queries to your heart's content, `select * from proposal where false;` is a fun one.
 
 ## Tear it Down
