@@ -119,3 +119,18 @@ exports.post = (req, res) => {
             console.log('Error', error)
         })
 }
+
+exports.get = (req, res) => {
+    const id = req.query.proposalID
+    query = 'SELECT * from "UtahRecommendation" where "ProposalID"=$1'
+    db.one(query, id)
+        .then(data => {
+            console.log(`Found study metrics for proposal ${ id }`)
+            console.log(data)
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('Error', error)
+            res.status(500).send('Error', error)
+        })
+}

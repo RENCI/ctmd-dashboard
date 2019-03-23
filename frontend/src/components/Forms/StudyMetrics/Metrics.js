@@ -93,6 +93,12 @@ const MetricsForm = props => {
     const handleNavigate = value => event => {
         setCurrentSubformNumer((currentSubformNumber + value + subforms.length) % subforms.length)
     }
+    
+    useEffect(() => {
+        axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
+            .then(response => console.log(response.data))
+            .catch(error => console.log('Error', error))
+    }, [props.proposalID])
 
     const handleSave = () => {
         console.log(values)
