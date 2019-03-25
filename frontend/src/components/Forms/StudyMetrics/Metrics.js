@@ -90,16 +90,64 @@ const MetricsForm = props => {
         setValues({ ...emptyFormValues, proposalID: proposalID })
     }, [props.proposalID])
 
+    useEffect(() => {
+        axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
+            .then(response => {
+                console.log(response.data)
+                const { data } = response
+                setValues({
+                    proposalID: data.ProposalID,
+                    // Characteristics
+                    network: data.network,
+                    primaryStudyType: data.primaryStudyType,
+                    tic: data.tic,
+                    ric: data.ric,
+                    collaborativeTic: data.collaborativeTIC,
+                    collaborativeTicDetails: data.collaborativeTIC_roleExplain,
+                    dcc: data.DCCinstitution,
+                    ccc: data.CCCinstitution,
+                    // Linked Data
+                    hasSuperStudy: null,
+                    superStudy: data.mainStudy,
+                    hasSubStudy: data.hasSubAncillaryStudy,
+                    subStudy: data.sub_ancillaryStudy,
+                    studyDesign: data.studyDesign,
+                    // Architecture
+                    isRandomized: data.randomized,
+                    randomizationUnit: data.randomizationUnit,
+                    randomizationFeatures: data.randomizationFeatures,
+                    ascertainment: data.ascertainment,
+                    phase: data.phase,
+                    pilotOrDemo: data.pilot_or_demo, //
+                    usesRegistryData: data.registry,
+                    usesEhrDataTransfer: data.EHRdataTransfer,
+                    ehrDataTransferType: data.EHRdataTransfer_option,
+                    isConsentRequired: data.consent,
+                    efic: data.EFIC,
+                    irbTypes: data.IRBtype,
+                    regulatoryClassifications: data.regulatoryClassification,
+                    clinicalTrialsGovId: data.clinicalTrialsIdentifier,
+                    isDsmbDmcRequired: data.dsmb_dmcUsed,
+                    // Funding
+                    initialParticipatingSiteNumber: data.initialPlannedNumberOfSites,
+                    enrollmentGoal: data.enrollmentGoal,
+                    initialProjectedEnrollmentDuration: data.initialProjectedEnrollmentDuration,
+                    leadPiNames: null,
+                    awardeeSiteAcronym: null,
+                    primaryFundingType: null,
+                    primarilyFundedByInfrastructure: null,
+                    fundingSource: null,
+                    fundingAwardDate: null,
+                    previousFunding: null,
+                })
+            })
+            .catch(error => console.log('Error', error))
+    }, [props.proposalID])
+
     const handleNavigate = value => event => {
         setCurrentSubformNumer((currentSubformNumber + value + subforms.length) % subforms.length)
     }
     
-    useEffect(() => {
-        axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
-            .then(response => console.log(response.data))
-            .catch(error => console.log('Error', error))
-    }, [props.proposalID])
-
     const handleSave = () => {
         console.log(values)
         axios.post(api.studyMetrics, values)
