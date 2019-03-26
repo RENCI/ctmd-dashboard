@@ -54,7 +54,7 @@ const StudyMetricsPage = props => {
                                         </Select>
                                     </FormControl>
                                     <FormControl variant="outlined" fullWidth>
-                                        <TextField disabled id="proposal-full-name" label="Full Name" margin="normal" variant="outlined" value="add this to proposals query" />
+                                        <TextField disabled id="proposal-full-name" label="Full Name" margin="normal" variant="outlined" value={ store.proposals[current].longTitle } />
                                     </FormControl>
                                     <FormControl variant="outlined" fullWidth>
                                         <TextField disabled id="tic" label="Assigned TIC/RIC" margin="normal" variant="outlined" value={ store.proposals[current].assignToInstitution || '' } />

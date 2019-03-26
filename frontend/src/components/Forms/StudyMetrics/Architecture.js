@@ -45,6 +45,10 @@ const StudyArchitectureForms = props => {
         }
     }
 
+    const handleToggle = name => event => {
+        setValues({ ...values, [name]: event.target.checked })
+    }
+
     return (
         <div>
             <FormControl className={ classes.formControl }>
@@ -61,17 +65,19 @@ const StudyArchitectureForms = props => {
             </FormControl>
 
             <FormControl className={ classes.formControl }>
-                <FormLabel>Randomized</FormLabel>
-                <RadioGroup aria-label="randomized" name="randomized"
-                    value={ values.isRandomized } onChange={ handleChange('isRandomized') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
+                <FormLabel component="label">Randomization</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.isRandomized === true } onChange={ handleToggle('isRandomized') } /> }
+                    label={
+                        <FormHelperText>
+                            Is this study randomized?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
             {
-                values.isRandomized == '1' && 
+                values.isRandomized === true && 
                 <FormControl className={ classes.formControl }>
                     <FormLabel>Randomization Unit</FormLabel>
                     <RadioGroup aria-label="randomization-unit" name="randomization-unit"
@@ -84,7 +90,7 @@ const StudyArchitectureForms = props => {
             }
 
             {
-                values.isRandomized == '1' &&
+                values.isRandomized == true &&
                 <FormControl className={ classes.formControl }>
                     <FormLabel>Randomization Features</FormLabel>
                     <FormHelperText>
@@ -133,88 +139,115 @@ const StudyArchitectureForms = props => {
             </FormControl>
 
             <FormControl className={ classes.formControl }>
-                <FormLabel>Phase</FormLabel>
-                <RadioGroup aria-label="phase" name="phase"
-                    value={ values.phase } onChange={ handleChange('phase') }
-                >
-                    {
-                        ['pilot', 'phase-1', 'phase-2', 'phase-3', 'phase-4', 'phase-5'].map(
-                            phaseName => <FormControlLabel control={ <Radio /> } value={ phaseName }
-                                label={ (phaseName.charAt(0).toUpperCase() + phaseName.slice(1)).replace('-', ' ') }
-                            />
-                        )
+                <FormLabel component="label">Pilot or Demo Study</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.isPilotOrDemo === true } onChange={ handleToggle('isPilotOrDemo') } /> }
+                    label={
+                        <FormHelperText>
+                            Is this either a pilot or demo study?
+                        </FormHelperText>
                     }
-                </RadioGroup>
+                />
+            </FormControl>
+
+            {
+                values.isPilotOrDemo === true &&
+                <FormControl className={ classes.formControl }>
+                    <FormLabel>Pilot or Demo</FormLabel>
+                    <RadioGroup aria-label="pilot-or-demo" name="pilot-or-demo"
+                        value={ values.pilotOrDemo } onChange={ handleChange('pilotOrDemo') }
+                    >
+                        {
+                            ['pilot', 'demo'].map(
+                                name => <FormControlLabel control={ <Radio /> } value={ name }
+                                    label={ name.charAt(0).toUpperCase() + name.slice(1) }
+                                />
+                            )
+                        }
+                    </RadioGroup>
+                </FormControl>
+            }
+            
+            {
+                values.isPilotOrDemo !== true &&
+                <FormControl className={ classes.formControl }>
+                    <FormLabel>Phase</FormLabel>
+                    <RadioGroup aria-label="phase" name="phase"
+                        value={ values.phase } onChange={ handleChange('phase') }
+                    >
+                        {
+                            ['phase-1', 'phase-2', 'phase-3', 'phase-4', 'phase-5'].map(
+                                phaseName => <FormControlLabel control={ <Radio /> } value={ phaseName }
+                                    label={ (phaseName.charAt(0).toUpperCase() + phaseName.slice(1)).replace('-', ' ') }
+                                />
+                            )
+                        }
+                    </RadioGroup>
+                </FormControl>
+            }
+            
+            <FormControl className={ classes.formControl }>
+                <FormLabel>Registry Data</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.usesRegistryData === true } onChange={ handleToggle('usesRegistryData') } /> }
+                    label={
+                        <FormHelperText>
+                            Does this study use registry data?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
             <FormControl className={ classes.formControl }>
-                <FormLabel>Registry Data</FormLabel>
-                <FormHelperText>
-                    Does this study use registry data?
-                </FormHelperText>
-                <RadioGroup aria-label="usesRegistryData" name="usesRegistryData"
-                    value={ values.usesRegistryData } onChange={ handleChange('usesRegistryData') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
+                <FormLabel component="label">EHR Data Transfer</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.usesEhrDataTransfer === true } onChange={ handleToggle('usesEhrDataTransfer') } /> }
+                    label={
+                        <FormHelperText>
+                            Will this study use EHR Data Transfer?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
-
-            <FormGroup row>
+        
+            {
+                values.usesEhrDataTransfer === true &&
                 <FormControl className={ classes.formControl }>
                     <FormLabel>EHR Data Transfer</FormLabel>
                     <FormHelperText>
-                        Will this study use EHR Data Transfer?
+                        Will this study use full or partial EHR Data Transfer?
                     </FormHelperText>
-                    <RadioGroup aria-label="usesEhrDataTransfer" name="usesEhrDataTransfer"
-                        value={ values.usesEhrDataTransfer } onChange={ handleChange('usesEhrDataTransfer') }
+                    <RadioGroup aria-label="ehr-data-transfer-type" name="ehr-data-transfer-type"
+                        value={ values.ehrDataTransferType } onChange={ handleChange('ehrDataTransferType') }
                     >
-                        <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                        <FormControlLabel value="0" control={ <Radio /> } label="No" />
+                        <FormControlLabel value="full" control={ <Radio /> } label="Full" />
+                        <FormControlLabel value="partial" control={ <Radio /> } label="Partial" />
                     </RadioGroup>
                 </FormControl>
-        
-                {
-                    values.usesEhrDataTransfer === '1' &&
-                    <FormControl className={ classes.formControl }>
-                        <FormLabel>EHR Data Transfer</FormLabel>
-                        <FormHelperText>
-                            Will this study use full or partial EHR Data Transfer?
-                        </FormHelperText>
-                        <RadioGroup aria-label="ehr-data-transfer-type" name="ehr-data-transfer-type"
-                            value={ values.ehrDataTransferType } onChange={ handleChange('ehrDataTransferType') }
-                        >
-                            <FormControlLabel value="full" control={ <Radio /> } label="Full" />
-                            <FormControlLabel value="partial" control={ <Radio /> } label="Partial" />
-                        </RadioGroup>
-                    </FormControl>
-                }
-            </FormGroup>
+            }
 
             <FormControl className={ classes.formControl }>
                 <FormLabel>Consent</FormLabel>
-                <FormHelperText>
-                    Does this study require informed consent for participants?
-                </FormHelperText>
-                <RadioGroup aria-label="consent-required" name="consent-required"
-                    value={ values.isConsentRequired } onChange={ handleChange('isConsentRequired') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.isConsentRequired === true } onChange={ handleToggle('isConsentRequired') } /> }
+                    label={
+                        <FormHelperText>
+                            Does this study require informed consent for participants?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
             <FormControl className={ classes.formControl }>
-                <FormLabel>EFIC</FormLabel>
-                <FormHelperText>
-                    Is EFIC (exception from informed consent) used?
-                </FormHelperText>
-                <RadioGroup aria-label="efic" name="efic"
-                    value={ values.efic } onChange={ handleChange('efic') }
-                >
-                    <FormControlLabel value="1" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="0" control={<Radio />} label="No" />
-                </RadioGroup>
+                <FormLabel component="label">EFIC</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.efic === true } onChange={ handleToggle('efic') } /> }
+                    label={
+                        <FormHelperText>
+                            Is EFIC (exception from informed consent) used?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
             <FormControl component="fieldset" fullWidth className={ classes.formControl }>
@@ -247,7 +280,7 @@ const StudyArchitectureForms = props => {
                 <FormGroup>
                     {
                         ['Requires IND', 'Requires IDE', 'Requires NSR', 'Post-marketing Study', 'Not Subject to FDA Regulation'].map(classification => {
-                            const classificationKebabCase = classification.toLowerCase().replace(' ', '-')
+                            const classificationKebabCase = classification.toLowerCase().split(' ').join('-')
                             return (
                                 <FormControlLabel key={ classificationKebabCase }
                                     control={
@@ -274,17 +307,16 @@ const StudyArchitectureForms = props => {
                 />
             </FormControl>
 
-            <FormControl component="fieldset" fullWidth className={ classes.formControl }>
-                <FormLabel component="legend">DSMB/DMC</FormLabel>
-                <FormHelperText>
-                    Is a DSMB/DMC required for this study?
-                </FormHelperText>
-                <RadioGroup aria-label="dsmb-dmc-required" name="dsmb-dmc-required"
-                    value={ values.isDsmbDmcRequired } onChange={ handleChange('isDsmbDmcRequired') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
+            <FormControl className={ classes.formControl }>
+                <FormLabel component="label">DSMB/DMC</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.isDsmbDmcRequired === true } onChange={ handleToggle('isDsmbDmcRequired') } /> }
+                    label={
+                        <FormHelperText>
+                            Is a DSMB/DMC required for this study?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
         </div>
