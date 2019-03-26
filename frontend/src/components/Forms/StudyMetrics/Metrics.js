@@ -6,13 +6,13 @@ import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons'
 import { Grid, Card, CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
 import { ApiContext } from '../../../contexts/ApiContext'
+import { FlashMessageContext } from '../../../contexts/FlashMessageContext'
 import Subheading from '../../Typography/Subheading'
 import CharacteristicsForm from './Characterstics'
 import LinkedStudiesForm from './LinkedStudies'
 import ArchitectureForm from './Architecture'
 import ParticipationForm from './Participation'
 import FundingForm from './Funding'
-
 export const MetricsFormContext = React.createContext({})
 
 const useStyles = makeStyles(theme => ({
@@ -82,7 +82,9 @@ const MetricsForm = props => {
     const { proposalID } = props
     const [values, setValues] = useState(emptyFormValues)
     const [currentSubformNumber, setCurrentSubformNumer] = useState(0)
+    const [submitAllowed, setSubmitAllowed] = useState(false)
     const api = useContext(ApiContext)
+    const addFlashMessage = useContext(FlashMessageContext)
     const classes = useStyles()
     
     useEffect(() => {
@@ -143,14 +145,20 @@ const MetricsForm = props => {
             .catch(error => console.log('Error', error))
     }, [props.proposalID])
 
+    useEffect(() => {
+        setSubmitAllowed(true)
+    }, [values])
+
     const handleNavigate = value => event => {
         setCurrentSubformNumer((currentSubformNumber + value + subforms.length) % subforms.length)
     }
     
     const handleSave = () => {
-        console.log(values)
         axios.post(api.studyMetrics, values)
-            .then(response => console.log(response))
+            .then(response => {
+                addFlashMessage('Form Submitted!')
+                setSubmitAllowed(false)
+            })
             .catch(error => console.log('Error', error))
     }
 
@@ -191,7 +199,9 @@ const MetricsForm = props => {
                 </CardActions>
                 <Divider />
                 <CardActions className={ classes.actions }>
-                    <Button color="primary" onClick={ handleSave }>Save</Button>
+                    <Button color="primary" disabled={ !submitAllowed } onClick={ handleSave }>
+                        { submitAllowed ? 'Save' : 'Saved!' }
+                    </Button>
                 </CardActions>
             </div>
         </MetricsFormContext.Provider>
