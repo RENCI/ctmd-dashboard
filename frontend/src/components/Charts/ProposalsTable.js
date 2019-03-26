@@ -191,6 +191,7 @@ const ProposalsTable = (props) => {
             title={ title || '' }
             components={{ }}
             columns={ [
+                { title: 'ID', field: 'proposalID', hidden: false },
                 { title: 'Proposal Name', field: 'shortTitle', hidden: !settings.visibleColumns.shortTitle },
                 { title: 'PI', field: 'piName', hidden: !settings.visibleColumns.piName },
                 { title: 'Status', field: 'proposalStatus', hidden: !settings.visibleColumns.proposalStatus },
