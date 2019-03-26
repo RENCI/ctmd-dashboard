@@ -23,8 +23,8 @@ import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
 import ProposalsByDate from './views/Proposals/ByDate'
 import ProposalsByApprovedServices from './views/Proposals/ByApprovedServices'
 import ProposalsByRequestedServices from './views/Proposals/ByRequestedServices'
-import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
+import SiteReportPage from './views/SiteReport'
 import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 240

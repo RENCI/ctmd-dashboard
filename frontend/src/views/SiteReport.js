@@ -1,23 +1,122 @@
-import React from 'react'
-import SiteReportForm from '../components/Forms/SiteReport'
+import React, { useState, useContext, useEffect } from 'react'
+import axios from 'axios'
+import { makeStyles, useTheme } from '@material-ui/styles'
+import { ApiContext } from '../contexts/ApiContext'
+import {
+    Grid, Card, CardHeader, CardContent, Button,
+    List, ListItem, ListItemText,
+    Dialog, DialogTitle, DialogContent, DialogActions,
+    Tabs,
+} from '@material-ui/core'
+import SiteReport from '../components/Forms/SiteReports/SiteReport'
 import Heading from '../components/Typography/Heading'
 
-const sample_sites = [
-    { id: 1, name: 'Out of Site', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur laboriosam deserunt, vitae consequatur delectus cumque nam debitis molestias repudiandae suscipit ullam, tempore, minima culpa ipsa quas. Cum et, corporis expedita.', },
-    { id: 2, name: 'Site for Sore Eyes', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur dolorum, doloremque totam saepe! Tempore error ipsam dolorum. Consequatur beatae, sunt eius nemo cum numquam molestias similique, dolores, impedit expedita iusto.', },
-    { id: 3, name: 'Out of Site, Out of Mind', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis, excepturi, ea! Voluptatum nihil quibusdam temporibus, doloribus tempora vero obcaecati fugit explicabo laboriosam autem est saepe eaque. Commodi neque provident, omnis.', },
-    { id: 4, name: 'Hidden in Plain Site', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum, explicabo. Nemo voluptatum aspernatur officia esse! Nam atque perferendis, commodi optio! Non, odit, deserunt. Quam tempora, laudantium quis voluptatibus neque deleniti?', },
-    { id: 5, name: 'HindSite', details: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda labore, accusantium, accusamus laborum ut vitae architecto ipsum officiis consectetur non quos esse maiores hic perferendis harum nam iusto distinctio provident.', },
-]
+const useStyles = makeStyles(theme => ({
+    card: {
+        // ...theme.mixins.debug,
+    },
+    cardHeader: {
+        flex: 1,
+        borderWidth: '0 0 1px 0',
+        border: `1px solid ${ theme.palette.grey[300] }`,
+    },
+    cardContent: {
+        flex: 8,
+        position: 'relative',
+    },
+    openReportButton: {
+        marginTop: 2 * theme.spacing.unit,
+        padding: theme.spacing.unit,
+        position: 'absolute',
+        right: 2 * theme.spacing.unit,
+        bottom: 2 * theme.spacing.unit,
+    },
+    dialog: {},
+    dialogTitle: {},
+    dialogContent: {
+        // paddingTop: 2 * theme.spacing.unit,
+    },
+    dialogActions: {
+        padding: 2 * theme.spacing.unit,
+    },
+}))
 
 const SiteReportPage = props => {
+    const [sites, setSites] = useState(null)
+    const [dialogOpen, setDialogOpen] = useState(false)
+    const [study, setStudy] = useState()
+    const api = useContext(ApiContext)
+    const classes = useStyles()
+    const theme = useTheme()
+
+    useEffect(() => {
+        axios.get(api.sites)
+            .then(response => {
+                setSites(response.data)
+            })
+            .catch(error => console.log('Error', error))
+    }, [])
+
+    const handleSetStudy = event => {
+        setStudy(event.currentTarget.value)
+        handleOpenDialog()
+    }
+
+    const handleOpenDialog = () => { setDialogOpen(true) }
+    const handleCloseDialog = () => { setDialogOpen(false) }
+
+    const studies = ['STRESS', 'SPIRRIT', 'COVET']
+
     return (
         <div>
-        
             <Heading>Site Report Card</Heading>
 
-            <SiteReportForm sites={ sample_sites }/>
-            
+            <Grid container spacing={ 2 * theme.spacing.unit }>
+                {
+                    studies.map((study, i) => {
+                        return (
+                            <Grid item xs={ 12 } md={ 6 } lg={ 4 } key={ study }>
+                                <Card className={ classes.card }>
+                                    <CardHeader title={ study } className={ classes.cardHeader} />
+                                    <CardContent className={ classes.cardContent }>
+                                        <List>
+                                            <ListItem>
+                                                <ListItemText primary="Study Name" secondary={ study }/>
+                                            </ListItem>
+                                            <ListItem>
+                                                <ListItemText primary="Prinipal Investigator" secondary="Jane Doe"/>
+                                            </ListItem>
+                                            <ListItem>
+                                                <ListItemText primary="Study Coordinator" secondary="John Doe"/>
+                                            </ListItem>
+                                        </List>
+                                        <Button key={ `${ study }-edit` } variant="contained" color="primary"
+                                            className={ classes.openReportButton } onClick={ handleSetStudy } value={ study }
+                                        >
+                                            View Report
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )
+                    })
+                }
+
+            </Grid>
+
+            <Dialog maxWidth="md" scroll="body" open={ dialogOpen } onClose={ handleCloseDialog } className={ classes.dialog }>
+                <DialogTitle disableTypography onClose={ handleCloseDialog } className={ classes.dialogTitle }>
+                    { study } Site Report
+                </DialogTitle>
+                <DialogContent className={ classes.dialogContent }>
+                    <SiteReport />
+                </DialogContent>
+                <DialogActions className={ classes.dialogActions }>
+                    <Button variant="outlined" color="secondary" onClick={ () => console.log('Saving...') }>Save</Button>
+                    <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
+                    <Button variant="contained" color="secondary" onClick={ handleCloseDialog }>Close</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     )
 }
