@@ -18,6 +18,10 @@ const StudyFundingForm = props => {
         setValues({ ...values, [name]: event.target.value })
     }
 
+    const handleToggle = name => event => {
+        setValues({ ...values, [name]: event.target.checked })
+    }
+
     return (
         <div>
             <FormControl className={ classes.formControl }>
@@ -54,18 +58,14 @@ const StudyFundingForm = props => {
 
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">Primarily Funded by Infrastructure</FormLabel>
-                <FormHelperText>
-                    Is primary funding source to support the study considered network infrastructure funding? For example, if there is no external grant funding (e.g. an R01), a study might be supported by infrastructure funds.
-                </FormHelperText>
-                <RadioGroup
-                    aria-label="primarily-funded-byinfrastructure"
-                    name="primarily-funded-byinfrastructure"
-                    value={ values.primarilyFundedByInfrastructure }
-                    onChange={ handleChange('primarilyFundedByInfrastructure') }
-                >
-                    <FormControlLabel value="1" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="0" control={<Radio />} label="No" />
-                </RadioGroup>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.primarilyFundedByInfrastructure === true } onChange={ handleToggle('primarilyFundedByInfrastructure') } /> }
+                    label={
+                        <FormHelperText>
+                            Is primary funding source to support the study considered network infrastructure funding? For example, if there is no external grant funding (e.g. an R01), a study might be supported by infrastructure funds.
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
             <FormControl className={ classes.formControl }>
@@ -100,19 +100,16 @@ const StudyFundingForm = props => {
 
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">Previous Funding</FormLabel>
-                <FormHelperText>
-                    Was this study preceded or supported by a previous planning grant (e.g. R34, K award, etc)?
-                </FormHelperText>
-                <RadioGroup
-                    aria-label="previous-funding"
-                    name="previous-funding"
-                    value={ values.previousFunding }
-                    onChange={ handleChange('previousFunding') }
-                >
-                    <FormControlLabel value="1" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="0" control={<Radio />} label="No" />
-                </RadioGroup>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.previousFunding === true } onChange={ handleToggle('previousFunding') } /> }
+                    label={
+                        <FormHelperText>
+                            Was this study preceded or supported by a previous planning grant (e.g. R34, K award, etc)?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
+
         </div>
     )
 }
