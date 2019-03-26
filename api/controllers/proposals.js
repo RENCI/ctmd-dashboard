@@ -19,6 +19,7 @@ exports.getOne = (req, res) => {
 
 const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
             "Proposal"."ShortTitle" as "shortTitle",
+            "Proposal"."FullTitle" as "longTitle",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
             name.description AS "proposalStatus",
