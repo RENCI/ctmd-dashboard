@@ -190,9 +190,8 @@ exports.post = (req, res) => {
 exports.get = (req, res) => {
     const id = req.query.proposalID
     query = 'SELECT * from "UtahRecommendation" where "ProposalID"=$1'
-    db.one(query, id)
+    db.oneOrNone(query, id)
         .then(data => {
-            console.log(`Found study metrics for proposal ${ id }`)
             res.status(200).send(data)
         })
         .catch(error => {
