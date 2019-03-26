@@ -93,6 +93,7 @@ const MetricsForm = props => {
     useEffect(() => {
         axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
             .then(response => {
+                const { data } = response
                 setValues({
                     proposalID: data.ProposalID,
                     // Characteristics
