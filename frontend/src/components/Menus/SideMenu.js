@@ -8,7 +8,7 @@ import {
     // Assessment as ReportsIcon,
     // Timeline as ForecastsIcon,
     Star as MetricsIcon,
-    // LocationOn as SiteReportIcon,
+    LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
     // Build as QueryBuilderIcon,
     Settings as SettingsIcon,
@@ -73,6 +73,10 @@ const Menu = props => {
             <MenuItem component={ NavLink } to="/study-metrics" className={ classes.menuItem } activeClassName={ classes.active }>
                 <ListItemIcon className={ classes.icon }><MetricsIcon /></ListItemIcon>
                 <ListItemText primary="Study Metrics" classes={{ root: classes.listItemText }}/>
+            </MenuItem>
+            <MenuItem component={ NavLink } to="/site-report" className={ classes.menuItem } activeClassName={ classes.active }>
+                <ListItemIcon className={ classes.icon }><SiteReportIcon /></ListItemIcon>
+                <ListItemText primary="Site Report" classes={{ root: classes.listItemText }}/>
             </MenuItem>
 
             <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
