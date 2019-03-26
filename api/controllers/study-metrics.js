@@ -15,7 +15,6 @@ exports.post = (req, res) => {
     db.any('SELECT * FROM "UtahRecommendation" WHERE "ProposalID" = $1', [newMetric.proposalID])
         .then(data => {
             if (data.length === 0) {
-                // Define INSERT query
                 const query = `INSERT INTO "UtahRecommendation"(
                     "ProposalID", 
                     "network",
@@ -53,7 +52,7 @@ exports.post = (req, res) => {
                     "initialProjectedEnrollmentDuration", 
                     "finalPlannedNumberOfSites", 
                     "actualEnrollment"
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36)`
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36) RETURNING "ProposalID"`
                 
                 const values = [
                     stringToInteger(newMetric.proposalID),
@@ -94,10 +93,10 @@ exports.post = (req, res) => {
                     0 // actualEnrollment
                 ]
                 
-                db.none(query, values)
+                db.one(query, values)
                     .then(data => {
-                        console.log(data)
-                        res.send('Metric data inserted successfully')
+                        console.log(`Metrics inserted for proposal ${ data.ProposalID }`)
+                        res.status(200).send()
                     })
                     .catch(error => {
                         res.status(500).send('There was an error inserting data')
@@ -176,7 +175,7 @@ exports.post = (req, res) => {
                 ]
                 
                 db.none(query, values)
-                    .then(() => console.log(`Study metrics update successful! [proposalID: ${ newMetric.proposalID }]`))
+                    .then(() => console.log(`Metrics update successful for proposal ${ newMetric.proposalID }`))
                     .catch(exn => console.log("Exception", exn))
                 res.send('Success!')
 
@@ -192,7 +191,13 @@ exports.get = (req, res) => {
     query = 'SELECT * from "UtahRecommendation" where "ProposalID"=$1'
     db.oneOrNone(query, id)
         .then(data => {
-            res.status(200).send(data)
+            if (data) {
+                console.log(`Metrics found for proposal ${ id }`)
+                res.status(200).send(data)
+            } else {
+                console.log(`No metrics found for proposal ${ id }`)
+                res.status(200).send()
+            }
         })
         .catch(error => {
             console.log('Error', error)
