@@ -29,5 +29,6 @@ export const endpoints = {
     therapeuticAreas: apiRoot + 'therapeutic-areas',
     services: apiRoot + 'services',
     studyMetrics: apiRoot + 'study-metrics',
+    sites: apiRoot + 'sites',
 }
 
