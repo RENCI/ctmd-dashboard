@@ -44,27 +44,27 @@ const emptyFormValues = ({
     dcc: '',
     ccc: '',
     // Linked Data
-    hasSuperStudy: '',
+    hasSuperStudy: false,
     superStudy: '',
-    hasSubStudy: '',
+    hasSubStudy: false,
     subStudy: '',
     studyDesign: '',
     // Architecture
-    isRandomized: '',
+    isRandomized: false,
     randomizationUnit: '',
     randomizationFeatures: [],
     ascertainment: '',
     phase: '',
-    pilotOrDemo: '', //
-    usesRegistryData: '',
-    usesEhrDataTransfer: '',
+    pilotOrDemo: false,
+    usesRegistryData: false,
+    usesEhrDataTransfer: false,
     ehrDataTransferType: '',
-    isConsentRequired: '',
-    efic: '',
+    isConsentRequired: false,
+    efic: false,
     irbTypes: [],
     regulatoryClassifications: [],
     clinicalTrialsGovId: '',
-    isDsmbDmcRequired: '',
+    isDsmbDmcRequired: false,
     // Funding
     initialParticipatingSiteNumber: '',
     enrollmentGoal: '',
@@ -90,10 +90,63 @@ const MetricsForm = props => {
         setValues({ ...emptyFormValues, proposalID: proposalID })
     }, [props.proposalID])
 
+    useEffect(() => {
+        axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
+            .then(response => {
+                const { data } = response
+                setValues({
+                    proposalID: data.ProposalID,
+                    // Characteristics
+                    network: data.network,
+                    primaryStudyType: data.primaryStudyType,
+                    tic: data.tic,
+                    ric: data.ric,
+                    collaborativeTic: data.collaborativeTIC,
+                    collaborativeTicDetails: data.collaborativeTIC_roleExplain,
+                    dcc: data.DCCinstitution,
+                    ccc: data.CCCinstitution,
+                    // Linked Data
+                    hasSuperStudy: data.sub_ancillaryStudy,
+                    superStudy: data.mainStudy,
+                    hasSubStudy: data.sub_ancillaryStudy,
+                    subStudy: data.sub_ancillaryStudyName,
+                    studyDesign: data.studyDesign,
+                    // Architecture
+                    isRandomized: data.randomized,
+                    randomizationUnit: data.randomizationUnit,
+                    randomizationFeatures: JSON.parse(data.randomizationFeature),
+                    ascertainment: data.ascertainment,
+                    isPilotOrDemo: data.pilot_demoStudy,
+                    phase: data.phase,
+                    usesRegistryData: data.registry,
+                    usesEhrDataTransfer: data.EHRdataTransfer,
+                    ehrDataTransferType: data.EHRdataTransfer_option,
+                    isConsentRequired: data.consent,
+                    efic: data.EFIC,
+                    irbTypes: JSON.parse(data.IRBtype),
+                    regulatoryClassifications: JSON.parse(data.regulatoryClassification),
+                    clinicalTrialsGovId: data.clinicalTrialsIdentifier,
+                    isDsmbDmcRequired: data.dsmb_dmcUsed,
+                    // Funding
+                    initialParticipatingSiteNumber: data.initialPlannedNumberOfSites,
+                    enrollmentGoal: data.enrollmentGoal,
+                    initialProjectedEnrollmentDuration: data.initialProjectedEnrollmentDuration,
+                    leadPiNames: null,
+                    awardeeSiteAcronym: null,
+                    primaryFundingType: null,
+                    primarilyFundedByInfrastructure: null,
+                    fundingSource: null,
+                    fundingAwardDate: null,
+                    previousFunding: null,
+                })
+            })
+            .catch(error => console.log('Error', error))
+    }, [props.proposalID])
+
     const handleNavigate = value => event => {
         setCurrentSubformNumer((currentSubformNumber + value + subforms.length) % subforms.length)
     }
-
+    
     const handleSave = () => {
         console.log(values)
         axios.post(api.studyMetrics, values)

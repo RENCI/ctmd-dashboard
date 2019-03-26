@@ -4,6 +4,7 @@ import {
     OutlinedInput,
     Select, MenuItem,
     RadioGroup, Radio,
+    Checkbox,
     TextField,
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
@@ -11,6 +12,13 @@ import { MetricsFormContext } from './Metrics'
 const StudyCharacteristicsForms = props => {
     const [values, setValues] = useContext(MetricsFormContext)
     const { classes } = props
+
+    console.log(values.subStudy)
+    console.log(typeof values.subStudy)
+
+    const handleToggle = name => event => {
+        setValues({ ...values, [name]: event.target.checked })
+    }
 
     const handleChange = name => event => {
         setValues({ ...values, [name]: event.target.value })
@@ -20,24 +28,20 @@ const StudyCharacteristicsForms = props => {
         <div>
             <FormControl className={ classes.formControl }>
                 <FormLabel component="label">Is this a substudy?</FormLabel>
-                <FormHelperText>
-                    Does this study require data from another study?
-                    May be referred to as a "Linked", "Piggybacked", "Ancillary", or "Sub" study.
-                    This should be answered as "No" for a Registry.
-                </FormHelperText>
-                <RadioGroup
-                    aria-label="has-super-study"
-                    name="has-super-study"
-                    value={ values.hasSuperStudy }
-                    onChange={ handleChange('hasSuperStudy') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.hasSuperStudy === true } onChange={ handleToggle('hasSuperStudy') } /> }
+                    label={
+                        <FormHelperText>
+                            Does this study require data from another study?
+                            May be referred to as a "Linked", "Piggybacked", "Ancillary", or "Sub" study.
+                            This should be answered as "No" for a Registry.
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
 
             {
-                values.hasSuperStudy === '1' && 
+                values.hasSuperStudy === true && 
                 <FormControl className={ classes.formControl }>
                     <FormLabel component="label">Linked Study</FormLabel>
                     <FormHelperText>
@@ -50,30 +54,26 @@ const StudyCharacteristicsForms = props => {
                         onChange={ handleChange('superStudy') }
                         margin="normal"
                         variant="outlined"
-                        disabled={ values.hasSuperStudy !== '1' }
-                        error={ values.hasSuperStudy === '1' && values.superStudy.trim() === '' }
+                        disabled={ values.hasSuperStudy !== true }
+                        error={ values.hasSuperStudy === true && values.superStudy.trim() === '' }
                     />
                 </FormControl>
             }
 
             <FormControl className={ classes.formControl }>
-                <FormLabel component="label">Does this study have substudies?</FormLabel>
-                <FormHelperText>
-                    Is data from this study required by another study?
-                </FormHelperText>
-                <RadioGroup
-                    aria-label="has-subStudy"
-                    name="has-subStudy"
-                    value={ values.hasSubStudy }
-                    onChange={ handleChange('hasSubStudy') }
-                >
-                    <FormControlLabel value="1" control={ <Radio /> } label="Yes" />
-                    <FormControlLabel value="0" control={ <Radio /> } label="No" />
-                </RadioGroup>
+                <FormLabel component="label">Does this study have any substudies?</FormLabel>
+                <FormControlLabel
+                    control={ <Checkbox checked={ values.hasSubStudy === true } onChange={ handleToggle('hasSubStudy') } /> }
+                    label={
+                        <FormHelperText>
+                            Is data from this study required by another study?
+                        </FormHelperText>
+                    }
+                />
             </FormControl>
             
             {
-                values.hasSubStudy === '1' &&
+                values.hasSubStudy === true &&
                 <FormControl className={ classes.formControl }>
                     <FormLabel component="label">Linked Substudy</FormLabel>
                     <TextField fullWidth
@@ -82,8 +82,8 @@ const StudyCharacteristicsForms = props => {
                         onChange={ handleChange('subStudy') }
                         margin="normal"
                         variant="outlined"
-                        disabled={ values.hasSubStudy !== '1' }
-                        error={ values.hasSubStudy === '1' && values.subStudy.trim() === '' }
+                        disabled={ values.hasSubStudy !== true }
+                        error={ values.hasSubStudy === true && values.subStudy.trim() === '' }
                     />
                 </FormControl>
             }
