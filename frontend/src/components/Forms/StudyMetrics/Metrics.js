@@ -148,7 +148,6 @@ const MetricsForm = props => {
     }
     
     const handleSave = () => {
-        console.log(values)
         axios.post(api.studyMetrics, values)
             .then(response => console.log(response))
             .catch(error => console.log('Error', error))

@@ -1,6 +1,8 @@
 import React, { Fragment, useState, useContext } from 'react'
+import axios from 'axios'
+import { ApiContext } from '../../contexts/ApiContext'
 import { makeStyles } from '@material-ui/styles'
-import { AppBar, Tabs, Tab, InputLabel, TextField } from '@material-ui/core'
+import { AppBar, Tabs, Tab, InputLabel, TextField, Button } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,12 +19,21 @@ const useStyles = makeStyles(theme => ({
 
 const SiteReportFormContext = React.createContext({})
 
-const SiteReport = props => {
+const SiteReportEditor = props => {
     const { study } = props
     const [values, setValues] = useState({})
     const [tabNumber, setTabNumber] = useState(0)
     const classes = useStyles()
 
+    const handleChange = (event, value) => { setTabNumber(value) }
+
+    const handleSave = () => {
+        console.log(values)
+        // axios.post(api.saveSiteReport, values)
+        //     .then(response => console.log(response))
+        //     .catch(error => console.log('Error', error))
+    }
+    
     const subforms = [
         {
             title: 'Site Information',
@@ -79,15 +90,30 @@ const SiteReport = props => {
         },
     ]
 
-    const handleChange = (event, value) => { setTabNumber(value) }
-
     return (
         <SiteReportFormContext.Provider value={ [values, setValues] }>
             <Tabs value={ tabNumber } indicatorColor="primary" textColor="primary" variant="scrollable" scrollButtons="on" onChange={ handleChange }>
                 { subforms.map(subform => <Tab key={ subform.title } disableRipple label={ subform.title } />) }
             </Tabs>
             <div className={ classes.fieldsContainer }>
-                <SiteForm fields={ subforms[tabNumber].fields } />
+                {
+                    subforms[tabNumber].fields.map(field => {
+                        return (
+                            <Fragment key={ field.id }>
+                                <InputLabel>{ field.label }</InputLabel>
+                                <TextField variant="outlined" fullWidth className={ classes.textField }
+                                    multiline={ field.multiline || false }
+                                    rows={ field.multiline ? 10 : null }
+                                    id={ field.id }
+                                    value={ values[field.id] }
+                                    onChange={ handleChange(field.id.split('-').map(text => text.charAt(0).toUpperCase() + text.slice(1)).join(' ')) }
+                                />
+                                <br/>
+                            </Fragment>
+                        )
+                    })
+                }
+                <Button variant="outlined" color="secondary" onClick={ handleSave }>Save</Button>
             </div>
         </SiteReportFormContext.Provider>
     )
@@ -97,38 +123,24 @@ const VIEW = 'VIEW'
 const EDIT = 'EDIT'
 const EMAIL = 'EMAIL'
 
-const SiteForm = props => {
+const SiteReport = props => {
     const [values, setValues] = useContext(SiteReportFormContext)
-    const [state, setState] = useState(EDIT)
+    const [state, setState] = useState(VIEW)
+    const api = useContext(ApiContext)
     const { fields } = props
     const classes = useStyles()
+
+
 
     const handleChange = name => event => setValues({ ...values, [name]: event.target.value })
     
     return (
         <div>
             {
-                state === VIEW && 'View Report'
+                state == VIEW && 'Viewing Report'
             }
             {
-                state === EDIT && fields.map(field => {
-                    return (
-                        <Fragment key={ field.id }>
-                            <InputLabel>{ field.label }</InputLabel>
-                            <TextField variant="outlined" fullWidth className={ classes.textField }
-                                multiline={ field.multiline || false }
-                                rows={ field.multiline ? 10 : null }
-                                id={ field.id }
-                                value={ values[field.id] }
-                                onChange={ handleChange(field.id.split('-').map(text => text.charAt(0).toUpperCase() + text.slice(1)).join(' ')) }
-                            />
-                            <br/>
-                        </Fragment>
-                    )
-                })
-            }
-            {
-                state === EMAIL && 'Email Report'
+                state === EDIT && 'Report Editor'
             }
         </div>
     )
