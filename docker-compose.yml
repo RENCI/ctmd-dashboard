@@ -47,7 +47,6 @@ services:
       - /usr/src/app/node_modules
     environment:
       NODE_ENV: development
-      API_ROOT: $API_ROOT_DEV
     ports:
       - 3000:3000
     depends_on:
