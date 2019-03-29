@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
-const StudyArchitectureForms = props => {
+const StudyArchitectureForm = props => {
     const [values, setValues] = useContext(MetricsFormContext)
     const { classes } = props
 
@@ -159,7 +159,7 @@ const StudyArchitectureForms = props => {
                     >
                         {
                             ['pilot', 'demo'].map(
-                                name => <FormControlLabel control={ <Radio /> } value={ name }
+                                name => <FormControlLabel key={ name } control={ <Radio /> } value={ name }
                                     label={ name.charAt(0).toUpperCase() + name.slice(1) }
                                 />
                             )
@@ -177,7 +177,7 @@ const StudyArchitectureForms = props => {
                     >
                         {
                             ['phase-1', 'phase-2', 'phase-3', 'phase-4', 'phase-5'].map(
-                                phaseName => <FormControlLabel control={ <Radio /> } value={ phaseName }
+                                phaseName => <FormControlLabel key={ phaseName } control={ <Radio /> } value={ phaseName }
                                     label={ (phaseName.charAt(0).toUpperCase() + phaseName.slice(1)).replace('-', ' ') }
                                 />
                             )
@@ -323,4 +323,4 @@ const StudyArchitectureForms = props => {
     )
 }
 
-export default StudyArchitectureForms
+export default StudyArchitectureForm
