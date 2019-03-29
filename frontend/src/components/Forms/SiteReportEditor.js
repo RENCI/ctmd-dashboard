@@ -119,31 +119,4 @@ const SiteReportEditor = props => {
     )
 }
 
-const VIEW = 'VIEW'
-const EDIT = 'EDIT'
-const EMAIL = 'EMAIL'
-
-const SiteReport = props => {
-    const [values, setValues] = useContext(SiteReportFormContext)
-    const [state, setState] = useState(VIEW)
-    const api = useContext(ApiContext)
-    const { fields } = props
-    const classes = useStyles()
-
-
-
-    const handleChange = name => event => setValues({ ...values, [name]: event.target.value })
-    
-    return (
-        <div>
-            {
-                state == VIEW && 'Viewing Report'
-            }
-            {
-                state === EDIT && 'Report Editor'
-            }
-        </div>
-    )
-}
-
-export default SiteReport
+export default SiteReportEditor

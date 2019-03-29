@@ -74,7 +74,7 @@ const Menu = props => {
                 <ListItemIcon className={ classes.icon }><MetricsIcon /></ListItemIcon>
                 <ListItemText primary="Study Metrics" classes={{ root: classes.listItemText }}/>
             </MenuItem>
-            <MenuItem component={ NavLink } to="/site-report" className={ classes.menuItem } activeClassName={ classes.active }>
+            <MenuItem component={ NavLink } to="/site-reports" className={ classes.menuItem } activeClassName={ classes.active }>
                 <ListItemIcon className={ classes.icon }><SiteReportIcon /></ListItemIcon>
                 <ListItemText primary="Site Report" classes={{ root: classes.listItemText }}/>
             </MenuItem>
