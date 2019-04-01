@@ -30,5 +30,6 @@ export const endpoints = {
     services: apiRoot + 'services',
     studyMetrics: apiRoot + 'study-metrics',
     sites: apiRoot + 'sites',
+    saveSiteReport: apiRoot + 'sites/reports',
 }
 

@@ -21,9 +21,10 @@ const SiteReportFormContext = React.createContext({})
 
 const SiteReportEditor = props => {
     const { study } = props
-    const [values, setValues] = useState({})
+    const [values, setValues] = useState({ })
     const [tabNumber, setTabNumber] = useState(0)
     const classes = useStyles()
+    const api = useContext(ApiContext)
 
     const handleChange = (event, value) => { setTabNumber(value) }
     const handleEditField = name => event => {
@@ -31,9 +32,19 @@ const SiteReportEditor = props => {
     };
     const handleSave = () => {
         console.log(values)
-        // axios.post(api.saveSiteReport, values)
-        //     .then(response => console.log(response))
-        //     .catch(error => console.log('Error', error))
+        axios.post(api.saveSiteReport, values)
+            .then(response => console.log(response))
+            .catch(error => console.log('Error', error))
+    }
+
+    const kebabToCamelCase = text => {
+        return (
+            text.split('-').map(
+                (word, i) => i > 0
+                ? word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)
+                : word
+            ).join('')
+        )
     }
     
     const subforms = [
@@ -106,8 +117,8 @@ const SiteReportEditor = props => {
                                 multiline={ field.multiline || false }
                                 rows={ field.multiline ? 10 : null }
                                 id={ field.id }
-                                value={ values[field.id] }
-                                onChange={ handleEditField(field.id) }
+                                value={ values[kebabToCamelCase(field.id)] }
+                                onChange={ handleEditField(kebabToCamelCase(field.id)) }
                             />
                             <br/>
                         </Fragment>

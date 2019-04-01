@@ -1,6 +1,7 @@
 const db = require('../config/database')
 
-exports.post = (req, res) => {
+exports.addReport = (req, res) => {
+    console.log(req.body)
     res.status(200).send('Post site report')
 }
 
