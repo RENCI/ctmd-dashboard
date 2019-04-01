@@ -1,13 +1,5 @@
 const db = require('../config/database')
-
-const stringToInteger = s => {
-    let i = parseInt(s)
-    if (isNaN(i)) {
-        return 0
-    } else {
-        return i
-    }
-}
+const stringToInteger = require('./utils').stringToInteger
 
 exports.post = (req, res) => {
     const newMetric = req.body
