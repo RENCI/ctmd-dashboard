@@ -5,6 +5,7 @@ import {
     List, ListItem, ListItemText,
     Menu, MenuItem,
 } from '@material-ui/core'
+import { ArrowDropDown as DropdownIcon, Add as AddIcon } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -18,13 +19,17 @@ const useStyles = makeStyles(theme => ({
     cardContent: {
         flex: 8,
     },
-    button: {
-        marginTop: 2 * theme.spacing.unit,
+    cardActions: {
         padding: theme.spacing.unit,
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+    button: {
+        padding: `${ theme.spacing.unit }px ${ 2 * theme.spacing.unit }`,
     },
 }))
 
-const SiteCard = props => {
+const StudyCard = props => {
     const { studyName, reportSelectionHandler } = props
     const [anchorEl, setAnchorEl] = useState(null)
     const [report, setReport] = useState(-1)
@@ -35,11 +40,12 @@ const SiteCard = props => {
         setReport(event.target.value)
     }
     
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget)
+    const handleOpenMenu = event => setAnchorEl(event.currentTarget)
+    const handleCloseMenu = () => setAnchorEl(null)
+    const handleSelect = (event) => {
         reportSelectionHandler(event)
+        handleCloseMenu()
     }
-    const handleClose = () => setAnchorEl(null)
 
     return (
         <Card className={ classes.card }>
@@ -57,26 +63,26 @@ const SiteCard = props => {
                     </ListItem>
                 </List>
             </CardContent>
-            <CardActions>
-                 <Button variant="contained" color="primary"  className={ classes.button }
+            <CardActions className={ classes.cardActions }>
+                 <Button variant="contained" className={ classes.button }
                     aria-owns={ anchorEl ? 'site-select-menu' : undefined }
                     aria-haspopup="true"
-                    onClick={ handleClick }
+                    onClick={ handleOpenMenu }
                 >
-                    View Site Report
+                    View Site Report <DropdownIcon />
                 </Button>
-                <Menu id="site-select-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
-                    <MenuItem value="" onClick={ handleClose }><em>None</em></MenuItem>
-                    { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ handleClose }>Site { i }</MenuItem>) }
+                <Menu id="site-select-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleCloseMenu }>
+                    <MenuItem value="" onClick={ handleCloseMenu }><em>None</em></MenuItem>
+                    { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ handleSelect }>Sample Site { i }</MenuItem>) }
                 </Menu>
-                <Button variant="contained" color="primary" className={ classes.button }
+                <Button variant="contained" color="secondary" className={ classes.button }
                     onClick={ () => console.log('Add new site report...') }
                 >
-                    Add Site Report
+                    <AddIcon /> Add Site Report
                 </Button>
             </CardActions>
         </Card>
     )
 }
 
-export default SiteCard
+export default StudyCard

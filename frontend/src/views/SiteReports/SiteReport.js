@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core'
 import SiteReportEditor from '../../components/Forms/SiteReportEditor'
@@ -14,8 +14,13 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const VIEW = 'VIEW'
+const EDIT = 'EDIT'
+const EXPORT = 'EXPORT'
+
 const SiteReport = props => {
     const { open, closeHandler, study } = props
+    const [state, setState] = useState()
     const classes = useStyles()
 
     return (

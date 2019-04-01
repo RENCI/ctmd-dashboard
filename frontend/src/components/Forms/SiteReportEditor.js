@@ -37,15 +37,15 @@ const SiteReportEditor = props => {
     const subforms = [
         {
             title: 'Site Information',
-            fields: [
-                { label: 'Study Name', id: 'study-name', },
-                { label: 'Site Number', id: 'site-number', },
-                { label: 'Site Name', id: 'site-name', },
-                { label: 'Principal Investigator', id: 'principal-investigator', },
-                { label: 'Study Coordinator', id: 'study-coordinator', },
-                { label: 'CTSA Name', id: 'ctsa-name', },
-                { label: 'CTSA Point of Contact', id: 'ctsa-poc', },
-            ],
+            fields: ([
+                            { label: 'Study Name', id: 'study-name', },
+                            { label: 'Site Number', id: 'site-number', },
+                            { label: 'Site Name', id: 'site-name', },
+                            { label: 'Principal Investigator', id: 'principal-investigator', },
+                            { label: 'Study Coordinator', id: 'study-coordinator', },
+                            { label: 'CTSA Name', id: 'ctsa-name', },
+                            { label: 'CTSA Point of Contact', id: 'ctsa-poc', },
+                        ]),
         }, {
             title: 'Protocol Information',
             fields: [
@@ -96,23 +96,7 @@ const SiteReportEditor = props => {
                 { subforms.map(subform => <Tab key={ subform.title } disableRipple label={ subform.title } />) }
             </Tabs>
             <div className={ classes.fieldsContainer }>
-                {
-                    subforms[tabNumber].fields.map(field => {
-                        return (
-                            <Fragment key={ field.id }>
-                                <InputLabel>{ field.label }</InputLabel>
-                                <TextField variant="outlined" fullWidth className={ classes.textField }
-                                    multiline={ field.multiline || false }
-                                    rows={ field.multiline ? 10 : null }
-                                    id={ field.id }
-                                    value={ values[field.id] }
-                                    onChange={ handleChange(field.id.split('-').map(text => text.charAt(0).toUpperCase() + text.slice(1)).join(' ')) }
-                                />
-                                <br/>
-                            </Fragment>
-                        )
-                    })
-                }
+                { JSON.stringify(subforms[tabNumber].fields, null, 2) }
                 <Button variant="outlined" color="secondary" onClick={ handleSave }>Save</Button>
             </div>
         </SiteReportFormContext.Provider>

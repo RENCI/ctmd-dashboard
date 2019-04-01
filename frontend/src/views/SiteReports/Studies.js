@@ -9,8 +9,12 @@ import {
     Tabs,
 } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
-import SiteCard from '../../components/SiteCard/SiteCard'
-import SiteReportDialog from './SiteReport'
+import StudyCard from './StudyCard'
+import SiteReportEditor from '../../components/Forms/SiteReportEditor'
+
+const VIEW = 'VIEW'
+const EDIT = 'EDIT'
+const EXPORT = 'EXPORT'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -42,6 +46,7 @@ const SiteReportPage = props => {
     const [sites, setSites] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(false)
     const [report, setReport] = useState()
+    const [reportMode, setReportMode] = useState(VIEW)
     const api = useContext(ApiContext)
     const classes = useStyles()
     const theme = useTheme()
@@ -60,18 +65,20 @@ const SiteReportPage = props => {
     const handleOpenDialog = () => { setDialogOpen(true) }
     const handleCloseDialog = () => { setDialogOpen(false) }
 
-    const studies = ['STRESS', 'SPIRRIT', 'COVET']
+    const changeReportMode = event => setReportMode(event.currentTarget.value)
 
+    const studies = ['STRESS', 'SPIRRIT', 'COVET']
+    
     return (
         <div>
-            <Heading>Site Report Card</Heading>
+            <Heading>Site Report Cards</Heading>
 
             <Grid container spacing={ 2 * theme.spacing.unit }>
                 {
                     studies.map((study, i) => {
                         return (
                             <Grid item xs={ 12 } md={ 6 } lg={ 4 } key={ study }>
-                                <SiteCard studyName={ study } reportSelectionHandler={ handleSetReport } />
+                                <StudyCard studyName={ study } reportSelectionHandler={ handleSetReport } />
                             </Grid>
                         )
                     })
@@ -79,7 +86,24 @@ const SiteReportPage = props => {
 
             </Grid>
 
-            <SiteReportDialog open={ dialogOpen }/>
+            <Dialog maxWidth="md" scroll="body" open={ dialogOpen } onClose={ handleCloseDialog } className={ classes.dialog }>
+                <DialogTitle disableTypography onClose={ handleCloseDialog } className={ classes.dialogTitle }>
+                    Site Report
+                </DialogTitle>
+                <DialogContent className={ classes.dialogContent }>
+                    { reportMode === VIEW && 'Viewer' }
+                    { reportMode === EDIT && <SiteReportEditor /> }
+                </DialogContent>
+                <DialogActions className={ classes.dialogActions }>
+                    <Button variant="outlined" color="secondary"
+                        value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }
+                    >
+                        { reportMode === VIEW ? 'Edit' : 'View' }
+                    </Button>
+                    <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
+                    <Button variant="contained" color="secondary" onClick={ handleCloseDialog }>Close</Button>
+                </DialogActions>
+            </Dialog>
             
         </div>
     )
