@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 const SiteReportFormContext = React.createContext({})
 
 const SiteReportEditor = props => {
-    const { study } = props
+    const { study, readOnly } = props
     const [values, setValues] = useState({ })
     const [tabNumber, setTabNumber] = useState(0)
     const classes = useStyles()
@@ -112,19 +112,21 @@ const SiteReportEditor = props => {
                 {
                     subforms[tabNumber].fields.map(field => (
                         <Fragment key={ field.id }>
-                            <InputLabel>{ field.label }</InputLabel>
-                            <TextField variant="outlined" fullWidth className={ classes.textField }
+                            <InputLabel disabled={ readOnly }>{ field.label }</InputLabel>
+                            <TextField variant={ "outlined" } fullWidth className={ classes.textField }
                                 multiline={ field.multiline || false }
                                 rows={ field.multiline ? 10 : null }
                                 id={ field.id }
                                 value={ values[kebabToCamelCase(field.id)] }
                                 onChange={ handleEditField(kebabToCamelCase(field.id)) }
+                                InputProps={{ readOnly: readOnly }}
+                                disabled={ readOnly }
                             />
                             <br/>
                         </Fragment>
                     ))
                 }
-                <Button variant="outlined" color="secondary" onClick={ handleSave }>Save</Button>
+                { readOnly === false ? <Button variant="contained" color="secondary" onClick={ handleSave }>Save</Button> : null }
             </div>
         </SiteReportFormContext.Provider>
     )

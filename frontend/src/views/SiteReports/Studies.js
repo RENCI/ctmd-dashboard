@@ -11,6 +11,7 @@ import {
 import Heading from '../../components/Typography/Heading'
 import StudyCard from './StudyCard'
 import SiteReportEditor from '../../components/Forms/SiteReportEditor'
+import SiteReportViewer from './SiteReportViewer'
 
 const VIEW = 'VIEW'
 const EDIT = 'EDIT'
@@ -91,8 +92,8 @@ const SiteReportPage = props => {
                     Site Report
                 </DialogTitle>
                 <DialogContent className={ classes.dialogContent }>
-                    { reportMode === VIEW && 'Viewer' }
-                    { reportMode === EDIT && <SiteReportEditor /> }
+                    { reportMode === VIEW && <SiteReportEditor readOnly={ true } /> }
+                    { reportMode === EDIT && <SiteReportEditor readOnly={ false } /> }
                 </DialogContent>
                 <DialogActions className={ classes.dialogActions }>
                     <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
