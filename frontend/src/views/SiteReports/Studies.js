@@ -95,9 +95,7 @@ const SiteReportPage = props => {
                     { reportMode === EDIT && <SiteReportEditor /> }
                 </DialogContent>
                 <DialogActions className={ classes.dialogActions }>
-                    <Button variant="outlined" color="secondary"
-                        value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }
-                    >
+                    <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
                         { reportMode === VIEW ? 'Edit' : 'View' }
                     </Button>
                     <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
