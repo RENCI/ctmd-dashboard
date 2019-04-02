@@ -17,15 +17,15 @@ const AverageDays = props => {
     const theme = useTheme()
 
     const findAverageDaysBetween = (field1, field2) => {
-        let proposalsCount = 0
+        let count = 0
         const total = store.proposals.reduce((totalDays, proposal) => {
             if (proposal[field1] && proposal[field2]) {
-                proposalsCount += 1
+                count += 1
                 return totalDays + Math.round(Math.abs(new Date(proposal[field2]) - new Date(proposal[field1])))/(1000 * 60 * 60 * 24)
             }
             return totalDays
         }, 0)
-        return Math.round(total / proposalsCount)
+        return [Math.round(total / count), count]
     }
     
     useEffect(() => {
@@ -43,16 +43,23 @@ const AverageDays = props => {
         }
     }, [store])
 
+    const averages = {
+        grantSubmissionToGrantAward: averageDays.grantSubmissionToGrantAward,
+        submissionToGrantSubmission: averageDays.submissionToGrantSubmission,
+        approvalToGrantSubmission: averageDays.approvalToGrantSubmission,
+        submsisionToPatApproval: averageDays.submsisionToPatApproval,
+    }
+
     return (
         <Card>
             <CardHeader title="Averages" subheader="Average number of days between notable times over the proposal lifespan" />
             <CardContent style={{ height: '180px' }}>
                 <ResponsiveBar
                     data={[
-                        { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward, },
-                        { timespan: 'Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission, },
-                        { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission, },
-                        { timespan: 'Submission to PAT Approval',         days: averageDays.submsisionToPatApproval, },
+                        { timespan: 'Grant Submission to Grant Award',    days: averages.grantSubmissionToGrantAward[0],    count: averages.grantSubmissionToGrantAward[1]},
+                        { timespan: 'Submission to Grant Submission',     days: averages.submissionToGrantSubmission[0],    count: averages.submissionToGrantSubmission[1]},
+                        { timespan: 'PAT Approval to Grant Submission',   days: averages.approvalToGrantSubmission[0],      count: averages.approvalToGrantSubmission[1]},
+                        { timespan: 'Submission to PAT Approval',         days: averages.submsisionToPatApproval[0],        count: averages.submsisionToPatApproval[1]},
                     ]}
                     keys={ ['days'] }
                     indexBy="timespan"
@@ -81,10 +88,11 @@ const AverageDays = props => {
                     motionStiffness={ 90 }
                     motionDamping={ 15 }
                     legends={ [] }
-                    tooltip={ ({ id, value, color, indexValue }) => (
+                    tooltip={ ({ id, value, color, indexValue, data }) => (
                         <ChartTooltip color={ color }>
                             <div><strong>{ indexValue }</strong></div>
                             <div>~ { value } Day{ value !==  1 ? 's' : null }</div>
+                            <div style={{ opacity: 0.5, fontSize: '90%' }}><small>Calculated from { data.count } Proposals</small></div>
                         </ChartTooltip>
                     )} 
                 />

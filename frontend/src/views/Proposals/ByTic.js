@@ -8,15 +8,17 @@ import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
-
+import { SettingsContext } from '../../contexts/SettingsContext'
 
 const ProposalsByTic = props => {
     const [store, setStore] = useContext(StoreContext)
+    const [settings] = useContext(SettingsContext)
     const [proposalsByTic, setProposalsByTic] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
+    const [hideEmptyGroups, setHideEmptyGroups] = useState(settings.charts.hideEmptyGroups)
     const tableRef = useRef(null)
     
     useEffect(() => {
@@ -40,6 +42,7 @@ const ProposalsByTic = props => {
     
     const handleSelectGraphType = (event, type) => setChartType(type)
     const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
+    const handleToggleHideEmptyGroups = event => setHideEmptyGroups(event.target.checked)
 
     const scrollToTable = () => {
         setTimeout(() => tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 500)
@@ -60,6 +63,7 @@ const ProposalsByTic = props => {
                             <ChartOptions
                                 sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
                                 typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
+                                toggleHideEmptyGroupsHandler={ handleToggleHideEmptyGroups } hideEmptyGroups={ hideEmptyGroups }
                             />
                         } />
                         <CardContent>

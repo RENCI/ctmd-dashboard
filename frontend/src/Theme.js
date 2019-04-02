@@ -91,6 +91,22 @@ theme = {
                 backgroundColor: theme.palette.common.white,
             },
         },
+        MuiFormLabel: {
+            root: {
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+            }
+        },
+        MuiFormHelperText: {
+            root: {
+                marginLeft: 0,
+            }
+        },
+        MuiOutlinedInput: {
+            root: {
+                // marginTop: `${ theme.spacing.unit }px`,
+            }
+        },
     }
 }
 

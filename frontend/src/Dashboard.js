@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
     },
     main: {
         minHeight: '100vh',
-        backgroundColor: theme.palette.extended.limestone,
+        backgroundColor: theme.palette.grey[100],
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
         paddingTop: `${ 8 * theme.spacing.unit }px`,

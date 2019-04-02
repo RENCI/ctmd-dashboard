@@ -8,15 +8,17 @@ import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import ChartOptions from '../../components/Menus/ChartOptions'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
+import { SettingsContext } from '../../contexts/SettingsContext'
 
 const ProposalsByStatus = props => {
     const [store, setStore] = useContext(StoreContext)
+    const [settings] = useContext(SettingsContext)
     const [proposalsByStatus, setProposalsByStatus] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
     const [chartSorting, setChartSorting] = useState('alpha')
-    const [hideEmptyGroups, setHideEmptyGroups] = useState(false)
+    const [hideEmptyGroups, setHideEmptyGroups] = useState(settings.charts.hideEmptyGroups)
     const tableRef = useRef(null)
     
     useEffect(() => {
@@ -62,7 +64,7 @@ const ProposalsByStatus = props => {
                             <ChartOptions
                                 sortingSelectionHandler={ handleSelectGraphSorting } currentSorting={ chartSorting }
                                 typeSelectionHandler={ handleSelectGraphType } currentType={ chartType }
-                                toggleHideEmptyGroupsHandler={ handleToggleHideEmptyGroups }
+                                toggleHideEmptyGroupsHandler={ handleToggleHideEmptyGroups } hideEmptyGroups={ hideEmptyGroups }
                             />
                         } />
                         <CardContent>
