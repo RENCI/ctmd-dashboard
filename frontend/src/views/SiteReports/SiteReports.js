@@ -9,7 +9,7 @@ import {
     FormControl, FormLabel, Select, OutlinedInput,
     List, ListItem, ListItemText,
     Menu, MenuItem,
-    Tabs, Fab,
+    Tabs, Fab, Tooltip
 } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import StudyCard from './StudyCard'
@@ -67,6 +67,8 @@ const SiteReportsPage = props => {
         setCurrentReport(event.target.value)
     }
 
+    const demoRandomReportCount = Math.floor(Math.random() * 9) + 1
+
     return (
         <div>
             <Heading>Site Reports</Heading>
@@ -75,11 +77,13 @@ const SiteReportsPage = props => {
                     <Card xs={ 12 }>
                     <CardHeader
                         title={ proposal ? proposal.shortTitle : 'Site Reports' }
-                        subheader="5 Site Reports"
+                        subheader={ `${ demoRandomReportCount } Site Reports` }
                         action={
-                            <Fab color="secondary" aria-label="Add" className={classes.fab} onClick={ () => console.log('Add new site report...') }>
-                                <AddIcon />
-                            </Fab>
+                            <Tooltip title="Add a Site Report" placement="left">
+                                <Fab color="secondary" aria-label="Add" className={classes.fab} onClick={ () => console.log('Add new site report...') }>
+                                    <AddIcon />
+                                </Fab>
+                            </Tooltip>
                         }
                     />
                         <Select
@@ -88,17 +92,14 @@ const SiteReportsPage = props => {
                             input={ <OutlinedInput fullWidth labelWidth={ 0 } name="site" id="site" style={{ marginTop: '16px' }}/> }
                         >
                             <MenuItem value="-1">-</MenuItem>
-                            { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ handleChangeReport }>Sample Site { i }</MenuItem>) }
+                            { [...Array(demoRandomReportCount).keys()].map(i => <MenuItem key={ i } value={ i } onClick={ handleChangeReport }>Sample Site { i }</MenuItem>) }
                         </Select>
                     </Card>
                 </Grid>
                 <Grid item xs={ 12 }>
                     {
                         currentReport >= 0
-                        ? <SiteReportViewer
-                            proposalID={ proposal.proposalID }
-                            siteID={ 101 }
-                        />
+                        ? <SiteReportViewer proposalID={ proposal.proposalID } siteID={ Math.floor(Math.random() * 100) + 10 } />
                         : null
                     }
                 </Grid>
