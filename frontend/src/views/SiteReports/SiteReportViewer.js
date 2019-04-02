@@ -19,7 +19,7 @@ const EDIT = 'EDIT'
 const EXPORT = 'EXPORT'
 
 const SiteReportCard = props => {
-    const { open, closeCardHandler, proposal, site } = props
+    const { open, proposalID, siteID } = props
     const [reportMode, setReportMode] = useState(VIEW)
     const classes = useStyles()
 
@@ -28,20 +28,28 @@ const SiteReportCard = props => {
     console.log(props)
 
     return (
-        <Card maxWidth="md" scroll="body" open={ open } onClose={ closeCardHandler } className={ classes.card }>
-            <CardHeader disableTypography onClose={ closeCardHandler } className={ classes.cardTitle }>
-                Site Report for { site }
-            </CardHeader>
+        <Card maxWidth="md" scroll="body" open={ open }  className={ classes.card }>
+            <CardHeader
+                title={ `Site Report Card for ${ siteID }` }
+                subheader={ 'Proposal ' + proposalID }
+                action={
+                    <div>
+                        <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
+                            { reportMode === VIEW ? 'Edit' : 'View' }
+                        </Button>
+                        <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
+                    </div>
+                }
+            />
             <CardContent className={ classes.cardContent }>
                 { reportMode === VIEW && <SiteReportEditor readOnly={ true } /> }
-                { reportMode === EDIT && <SiteReportEditor proposalID={ proposal.proposalID } readOnly={ false } /> }
+                { reportMode === EDIT && <SiteReportEditor proposalID={ proposalID } readOnly={ false } /> }
             </CardContent>
             <CardActions className={ classes.cardActions }>
                 <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
                     { reportMode === VIEW ? 'Edit' : 'View' }
                 </Button>
                 <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
-                <Button variant="contained" color="secondary" onClick={ closeCardHandler }>Close</Button>
             </CardActions>
         </Card>
     )

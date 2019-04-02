@@ -6,7 +6,7 @@ import { StoreContext } from '../../contexts/StoreContext'
 import {
     Grid, Card, CardHeader, CardContent, Button,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    FormControl, InputLabel, Select, OutlinedInput,
+    FormControl, FormLabel, Select, OutlinedInput,
     List, ListItem, ListItemText,
     Menu, MenuItem,
     Tabs,
@@ -62,6 +62,7 @@ const SiteReportsPage = props => {
     }, [props.match.params.id, store])
 
     const handleChangeReport = event => {
+        console.log(event.target.value)
         setCurrentReport(event.target.value)
     }
 
@@ -70,16 +71,27 @@ const SiteReportsPage = props => {
             <Heading>Site Reports: { proposal ? proposal.shortTitle : '...' }</Heading>
             <Grid container spacing={ 2 * theme.spacing.unit }>
                 <Grid item xs={ 12 }>
-                    <FormControl fullWidth variant="outlined">
-                        <InputLabel>Site Reports</InputLabel>
-                        <Select variant="outlined" value={ currentReport } onChange={ handleChangeReport }>
-                            <MenuItem value="-1" onClick={ null }>-</MenuItem>
-                            { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ null }>Sample Site { i }</MenuItem>) }
+                    <Card xs={ 12 }>
+                    <CardHeader title="Select Site"/>
+                        <Select
+                            value={ currentReport }
+                            onChange={ handleChangeReport }
+                            input={ <OutlinedInput fullWidth labelWidth={ 0 } name="site" id="site" style={{ marginTop: '16px' }}/> }
+                        >
+                            <MenuItem value="-1">-</MenuItem>
+                            { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ handleChangeReport }>Sample Site { i }</MenuItem>) }
                         </Select>
-                    </FormControl>
+                    </Card>
                 </Grid>
                 <Grid item xs={ 12 }>
-                    <SiteReportViewer />
+                    {
+                        currentReport >= 0
+                        ? <SiteReportViewer
+                            proposalID={ proposal.proposalID }
+                            siteID={ 101 }
+                        />
+                        : null
+                    }
                 </Grid>
             </Grid>
         </div>
