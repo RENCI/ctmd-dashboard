@@ -3,6 +3,7 @@ import { Route, Switch, NavLink } from 'react-router-dom'
 import axios from 'axios'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { ApiContext } from '../../contexts/ApiContext'
+import { StoreContext } from '../../contexts/StoreContext'
 import {
     Grid, Card, CardHeader, CardContent, Button,
     Dialog, DialogTitle, DialogContent, DialogActions,
@@ -10,8 +11,7 @@ import {
 } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import StudyCard from './StudyCard'
-import SiteReportEditor from '../../components/Forms/SiteReportEditor'
-import SiteReportViewer from './SiteReportViewer'
+import SiteReportDialog from './SiteReportDialog'
 
 const VIEW = 'VIEW'
 const EDIT = 'EDIT'
@@ -44,22 +44,28 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const SiteReportPage = props => {
-    const [sites, setSites] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [report, setReport] = useState()
+    const [site, setSite] = useState('some site')
+    const [store, setStore] = useContext(StoreContext)
     const [reportMode, setReportMode] = useState(VIEW)
+    const [studies, setStudies] = useState()
+    const [proposal, setProposal] = useState()
     const api = useContext(ApiContext)
     const classes = useStyles()
     const theme = useTheme()
-
+    
     useEffect(() => {
-        axios.get(api.sites)
-            .then(response => setSites(response.data))
-            .catch(error => console.log('Error', error))
-    }, [])
+        if (store.proposals) {
+            const ids = [186, 171, 196]
+            setStudies(store.proposals.filter(proposal => ids.includes(proposal.proposalID)))
+        }
+    }, [store.proposals])
 
-    const handleSetReport = event => {
-        setReport(event.currentTarget.value)
+    const handleSelectStudy = event => {
+        console.log(event.target.value)
+        setProposal(store.proposals.find(proposal => proposal.proposalID === event.currentTarget.value))
+    }
+    const handleSelectStudyAndSite = event => {
         handleOpenDialog()
     }
 
@@ -68,41 +74,25 @@ const SiteReportPage = props => {
 
     const changeReportMode = event => setReportMode(event.currentTarget.value)
 
-    const studies = ['STRESS', 'SPIRRIT', 'COVET']
-    
     return (
         <div>
             <Heading>Site Report Cards</Heading>
 
             <Grid container spacing={ 2 * theme.spacing.unit }>
                 {
-                    studies.map((study, i) => {
+                    studies ?
+                    studies.map(study => {
                         return (
-                            <Grid item xs={ 12 } md={ 6 } lg={ 4 } key={ study }>
-                                <StudyCard studyName={ study } reportSelectionHandler={ handleSetReport } />
+                            <Grid item xs={ 12 } md={ 6 } lg={ 4 } key={ study.proposalID }>
+                                <StudyCard proposal={ study } siteSelectHandler={ handleSelectStudy } />
                             </Grid>
                         )
                     })
+                    : null
                 }
-
             </Grid>
 
-            <Dialog maxWidth="md" scroll="body" open={ dialogOpen } onClose={ handleCloseDialog } className={ classes.dialog }>
-                <DialogTitle disableTypography onClose={ handleCloseDialog } className={ classes.dialogTitle }>
-                    Site Report
-                </DialogTitle>
-                <DialogContent className={ classes.dialogContent }>
-                    { reportMode === VIEW && <SiteReportEditor readOnly={ true } /> }
-                    { reportMode === EDIT && <SiteReportEditor readOnly={ false } /> }
-                </DialogContent>
-                <DialogActions className={ classes.dialogActions }>
-                    <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
-                        { reportMode === VIEW ? 'Edit' : 'View' }
-                    </Button>
-                    <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
-                    <Button variant="contained" color="secondary" onClick={ handleCloseDialog }>Close</Button>
-                </DialogActions>
-            </Dialog>
+            <SiteReportDialog open={ dialogOpen } closeDialogHandler={ handleCloseDialog } proposal={ proposal } site={ site }/>
             
         </div>
     )

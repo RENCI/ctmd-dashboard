@@ -30,10 +30,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const StudyCard = props => {
-    const { studyName, reportSelectionHandler } = props
+    const { proposal, siteSelectHandler } = props
     const [anchorEl, setAnchorEl] = useState(null)
     const [report, setReport] = useState(-1)
     const classes = useStyles()
+    
+    console.log(props.proposal)
 
     const handleSelectSiteReport = event => {
         console.log('Setting study and site report...')
@@ -43,25 +45,15 @@ const StudyCard = props => {
     const handleOpenMenu = event => setAnchorEl(event.currentTarget)
     const handleCloseMenu = () => setAnchorEl(null)
     const handleSelect = (event) => {
-        reportSelectionHandler(event)
+        siteSelectHandler(event)
         handleCloseMenu()
     }
 
     return (
         <Card className={ classes.card }>
-            <CardHeader title={ studyName } className={ classes.cardHeader } />
+            <CardHeader className={ classes.cardHeader } title={ proposal.shortTitle } subheader={ proposal.longTitle } />
             <CardContent className={ classes.cardContent }>
-                <List>
-                    <ListItem>
-                        <ListItemText primary="Study Name" secondary={ studyName }/>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Prinipal Investigator" secondary="Jane Doe"/>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Study Coordinator" secondary="John Doe"/>
-                    </ListItem>
-                </List>
+                <br/>
             </CardContent>
             <CardActions className={ classes.cardActions }>
                  <Button variant="contained" className={ classes.button }
@@ -75,9 +67,7 @@ const StudyCard = props => {
                     <MenuItem value="" onClick={ handleCloseMenu }><em>None</em></MenuItem>
                     { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ handleSelect }>Sample Site { i }</MenuItem>) }
                 </Menu>
-                <Button variant="contained" color="secondary" className={ classes.button }
-                    onClick={ () => console.log('Add new site report...') }
-                >
+                <Button variant="contained" color="secondary" className={ classes.button } onClick={ () => console.log('Add new site report...') }>
                     <AddIcon /> Add Site Report
                 </Button>
             </CardActions>

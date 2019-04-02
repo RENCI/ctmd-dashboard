@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext } from 'react'
+import React, { Fragment, useState, useContext, useEffect } from 'react'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import { makeStyles } from '@material-ui/styles'
@@ -20,11 +20,15 @@ const useStyles = makeStyles(theme => ({
 const SiteReportFormContext = React.createContext({})
 
 const SiteReportEditor = props => {
-    const { study, readOnly } = props
+    const { proposalID, readOnly } = props
     const [values, setValues] = useState({ })
     const [tabNumber, setTabNumber] = useState(0)
     const classes = useStyles()
     const api = useContext(ApiContext)
+
+    useEffect(() => {
+        setValues({ ...values, proposalID: props.proposalID });
+    }, [props.proposalID])
 
     const handleChange = (event, value) => { setTabNumber(value) }
     const handleEditField = name => event => {
