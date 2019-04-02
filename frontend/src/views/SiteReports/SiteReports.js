@@ -9,11 +9,12 @@ import {
     FormControl, FormLabel, Select, OutlinedInput,
     List, ListItem, ListItemText,
     Menu, MenuItem,
-    Tabs,
+    Tabs, Fab,
 } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import StudyCard from './StudyCard'
 import SiteReportViewer from './SiteReportViewer'
+import { Add as AddIcon } from '@material-ui/icons'
 
 const VIEW = 'VIEW'
 const EDIT = 'EDIT'
@@ -68,11 +69,19 @@ const SiteReportsPage = props => {
 
     return (
         <div>
-            <Heading>Site Reports: { proposal ? proposal.shortTitle : '...' }</Heading>
+            <Heading>Site Reports</Heading>
             <Grid container spacing={ 2 * theme.spacing.unit }>
                 <Grid item xs={ 12 }>
                     <Card xs={ 12 }>
-                    <CardHeader title="Select Site"/>
+                    <CardHeader
+                        title={ proposal ? proposal.shortTitle : 'Site Reports' }
+                        subheader="5 Site Reports"
+                        action={
+                            <Fab color="secondary" aria-label="Add" className={classes.fab} onClick={ () => console.log('Add new site report...') }>
+                                <AddIcon />
+                            </Fab>
+                        }
+                    />
                         <Select
                             value={ currentReport }
                             onChange={ handleChangeReport }

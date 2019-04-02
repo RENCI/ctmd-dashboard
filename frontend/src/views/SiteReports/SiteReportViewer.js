@@ -28,18 +28,10 @@ const SiteReportCard = props => {
     console.log(props)
 
     return (
-        <Card maxWidth="md" scroll="body" open={ open }  className={ classes.card }>
+        <Card maxwidth="md" scroll="body" open={ open }  className={ classes.card }>
             <CardHeader
-                title={ `Site Report Card for ${ siteID }` }
+                title={ `Site Report Card for Site ${ siteID }` }
                 subheader={ 'Proposal ' + proposalID }
-                action={
-                    <div>
-                        <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
-                            { reportMode === VIEW ? 'Edit' : 'View' }
-                        </Button>
-                        <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
-                    </div>
-                }
             />
             <CardContent className={ classes.cardContent }>
                 { reportMode === VIEW && <SiteReportEditor readOnly={ true } /> }

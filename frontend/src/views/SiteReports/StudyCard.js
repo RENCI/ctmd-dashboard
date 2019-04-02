@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/styles'
 import {
     Card, CardActionArea, CardHeader, CardContent, CardActions, Button,
 } from '@material-ui/core'
-import { ArrowDropDown as DropdownIcon, Add as AddIcon } from '@material-ui/icons'
+import { ArrowDropDown as DropdownIcon } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -20,8 +20,6 @@ const useStyles = makeStyles(theme => ({
     },
     cardActions: {
         padding: theme.spacing.unit,
-        display: 'flex',
-        justifyContent: 'space-between',
     },
     button: {
         padding: `${ theme.spacing.unit }px ${ 2 * theme.spacing.unit }`,
@@ -55,13 +53,10 @@ const StudyCard = props => {
                 <br/>
             </CardContent>
             <CardActions className={ classes.cardActions }>
-                 <Button variant="contained" className={ classes.button }
+                 <Button variant="contained" color="secondary" className={ classes.button } size="large"
                     component={ NavLink } to={ `/site-reports/${ proposal.proposalID }` }
                 >
                     View Site Reports
-                </Button>
-                <Button variant="contained" color="secondary" className={ classes.button } onClick={ () => console.log('Add new site report...') }>
-                    <AddIcon /> Add Site Report
                 </Button>
             </CardActions>
         </Card>
