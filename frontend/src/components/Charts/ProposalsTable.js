@@ -162,7 +162,7 @@ const ProposalDetailPanel = props => {
                                 </Fragment>
                             ) : <span className={ classes.date }>- - -</span>
                         }/>
-                        <ListItemText primary="Approval Date" secondary={
+                        <ListItemText primary="PAT Review Date" secondary={
                             meetingDate ? (
                                 <Fragment>
                                     <span className={ classes.date }>{ meetingDate }</span>
@@ -213,7 +213,7 @@ const ProposalsTable = (props) => {
                 { title: 'Submitting Insitution', field: 'submitterInstitution', hidden: !settings.visibleColumns.submitterInstitution },
                 { title: 'Assigned TIC/RIC', field: 'assignToInstitution', hidden: !settings.visibleColumns.assignToInstitution  },
                 { title: 'Submission Date', field: 'dateSubmitted', hidden: !settings.visibleColumns.dateSubmitted  },
-                { title: 'Approval Date', field: 'meetingDate', hidden: !settings.visibleColumns.meetingDate  },
+                { title: 'PAT Review Date', field: 'meetingDate', hidden: !settings.visibleColumns.meetingDate  },
                 { title: 'Grant Submission Date', field: 'plannedGrantSubmissionDate', hidden: !settings.visibleColumns.plannedGrantSubmissionDate  },
                 { title: 'Grant Approval Date', field: 'fundingStart', hidden: !settings.visibleColumns.fundingStart  },
             ] }
