@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
 import StudyCard from './StudyCard'
-import SiteReportDialog from './SiteReportDialog'
 
 const VIEW = 'VIEW'
 const EDIT = 'EDIT'
@@ -43,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const SiteReportPage = props => {
+const StudiesPage = props => {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [site, setSite] = useState('some site')
     const [store, setStore] = useContext(StoreContext)
@@ -92,10 +91,8 @@ const SiteReportPage = props => {
                 }
             </Grid>
 
-            <SiteReportDialog open={ dialogOpen } closeDialogHandler={ handleCloseDialog } proposal={ proposal } site={ site }/>
-            
         </div>
     )
 }
 
-export default SiteReportPage
+export default StudiesPage

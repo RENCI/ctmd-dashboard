@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core'
+import { Card, CardHeader, CardContent, CardActions, Button } from '@material-ui/core'
 import SiteReportEditor from '../../components/Forms/SiteReportEditor'
 
 const useStyles = makeStyles(theme => ({
-    dialog: {},
-    dialogTitle: {},
-    dialogContent: {
+    card: {},
+    cardTitle: {},
+    cardContent: {
         // paddingTop: 2 * theme.spacing.unit,
     },
-    dialogActions: {
+    cardActions: {
         padding: 2 * theme.spacing.unit,
     },
 }))
@@ -18,8 +18,8 @@ const VIEW = 'VIEW'
 const EDIT = 'EDIT'
 const EXPORT = 'EXPORT'
 
-const SiteReportDialog = props => {
-    const { open, closeDialogHandler, proposal, site } = props
+const SiteReportCard = props => {
+    const { open, closeCardHandler, proposal, site } = props
     const [reportMode, setReportMode] = useState(VIEW)
     const classes = useStyles()
 
@@ -28,23 +28,23 @@ const SiteReportDialog = props => {
     console.log(props)
 
     return (
-        <Dialog maxWidth="md" scroll="body" open={ open } onClose={ closeDialogHandler } className={ classes.dialog }>
-            <DialogTitle disableTypography onClose={ closeDialogHandler } className={ classes.dialogTitle }>
+        <Card maxWidth="md" scroll="body" open={ open } onClose={ closeCardHandler } className={ classes.card }>
+            <CardHeader disableTypography onClose={ closeCardHandler } className={ classes.cardTitle }>
                 Site Report for { site }
-            </DialogTitle>
-            <DialogContent className={ classes.dialogContent }>
+            </CardHeader>
+            <CardContent className={ classes.cardContent }>
                 { reportMode === VIEW && <SiteReportEditor readOnly={ true } /> }
                 { reportMode === EDIT && <SiteReportEditor proposalID={ proposal.proposalID } readOnly={ false } /> }
-            </DialogContent>
-            <DialogActions className={ classes.dialogActions }>
+            </CardContent>
+            <CardActions className={ classes.cardActions }>
                 <Button variant="outlined" color="secondary" value={ reportMode === VIEW ? EDIT : VIEW } onClick={ changeReportMode }>
                     { reportMode === VIEW ? 'Edit' : 'View' }
                 </Button>
                 <Button variant="outlined" color="secondary" onClick={ () => console.log('Exporting to PDF...') }>Export</Button>
-                <Button variant="contained" color="secondary" onClick={ closeDialogHandler }>Close</Button>
-            </DialogActions>
-        </Dialog>
+                <Button variant="contained" color="secondary" onClick={ closeCardHandler }>Close</Button>
+            </CardActions>
+        </Card>
     )
 }
 
-export default SiteReportDialog
+export default SiteReportCard

@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import {
-    Card, CardHeader, CardContent, CardActions, Button,
-    List, ListItem, ListItemText,
-    Menu, MenuItem,
+    Card, CardActionArea, CardHeader, CardContent, CardActions, Button,
 } from '@material-ui/core'
 import { ArrowDropDown as DropdownIcon, Add as AddIcon } from '@material-ui/icons'
 
@@ -57,16 +56,10 @@ const StudyCard = props => {
             </CardContent>
             <CardActions className={ classes.cardActions }>
                  <Button variant="contained" className={ classes.button }
-                    aria-owns={ anchorEl ? 'site-select-menu' : undefined }
-                    aria-haspopup="true"
-                    onClick={ handleOpenMenu }
+                    component={ NavLink } to={ `/site-reports/${ proposal.proposalID }` }
                 >
-                    View Site Report <DropdownIcon />
+                    View Site Reports
                 </Button>
-                <Menu id="site-select-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleCloseMenu }>
-                    <MenuItem value="" onClick={ handleCloseMenu }><em>None</em></MenuItem>
-                    { [0, 1, 2, 3, 4].map(i => <MenuItem key={ i } value={ i } onClick={ handleSelect }>Sample Site { i }</MenuItem>) }
-                </Menu>
                 <Button variant="contained" color="secondary" className={ classes.button } onClick={ () => console.log('Add new site report...') }>
                     <AddIcon /> Add Site Report
                 </Button>
