@@ -13,12 +13,13 @@ export default function() {
       // Data
       allNodes = [],
       nodeTypes = [],
-      typeOrder = ["tic", "area", "org", "status", "pi", "proposal"],
       network = {},
       selectedProposals = [],
       selectedNodes = [],
+      typeActive = {},
 
       // Scales
+      nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10),
       linkOpacityScale = d3.scaleLinear(),
 
       // Start with empty selections
@@ -138,10 +139,15 @@ export default function() {
   }
 
   function linkNodes() {
+    if (d3.values(typeActive).length !== nodeTypes.length){
+      typeActive = {};
+      nodeTypes.forEach(d => {
+        typeActive[d] = true;
+      });
+    }
+
     // Get active nodes
-    const activeTypes = nodeTypes.filter(d => d.show).map(d => d.type).sort((a, b) => {
-      return d3.ascending(typeOrder.indexOf(a), typeOrder.indexOf(b));
-    });
+    const activeTypes = nodeTypes.filter(d => typeActive[d]);
     const nodes = allNodes.filter(d => activeTypes.indexOf(d.type) !== -1);
 
     // Now link
@@ -206,8 +212,7 @@ export default function() {
     var {nodes, links} = sankey(network);
 
     // Color scale
-    var nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10)
-        .domain(nodeTypes.map(d => d.type));
+    nodeColorScale.domain(nodeTypes);
 
     linkOpacityScale
           .domain([1, d3.max(links, function(d) { return d.value; })])
@@ -432,7 +437,7 @@ export default function() {
       var r = 5;
 
       var yScale = d3.scaleBand()
-          .domain(nodeTypes.map(d => d.type))
+          .domain(nodeTypes)
           .range([r + 1, (r * 2.5) * (nodeTypes.length + 1)]);
 
       // Bind node type data
@@ -444,13 +449,13 @@ export default function() {
       // Enter
       var nodeEnter = node.enter().append("g")
           .attr("class", "legendNode")
-          .attr("transform", d => "translate(0," + yScale(d.type) + ")")
+          .attr("transform", d => "translate(0," + yScale(d) + ")")
           .style("pointer-events", "all")
           .on("mouseover", function(d) {
             const node = d3.select(this);
 
             node.select("circle")
-                .style("fill", d.show ? "none" : nodeColorScale(d.type));
+                .style("fill", typeActive[d] ? "none" : nodeColorScale(d));
 
             node.select("text")
                 .style("fill", "black");
@@ -459,19 +464,19 @@ export default function() {
             const node = d3.select(this);
 
             node.select("circle")
-                .style("fill", d.show ? nodeColorScale(d.type) : "none");
+                .style("fill", typeActive[d] ? nodeColorScale(d) : "none");
 
             node.select("text")
-                .style("fill", d.show ? "#666" : "#ccc");
+                .style("fill", typeActive[d] ? "#666" : "#ccc");
           })
           .on("click", function(d) {
             // Keep at least 2 active
-            if (d.show && nodeTypes.filter(d => d.show).length <= 2) return;
+            if (typeActive[d] && d3.values(typeActive).filter(d => d).length <= 2) return;
 
-            d.show = !d.show;
+            typeActive[d] = !typeActive[d];
 
             d3.select(this).select("circle")
-                .style("fill", d.show ? "none" : nodeColorScale(d.type));
+                .style("fill", typeActive[d] ? "none" : nodeColorScale(d));
 
             linkNodes();
             draw();
@@ -479,12 +484,12 @@ export default function() {
 
       nodeEnter.append("circle")
           .attr("r", r)
-          .style("fill", d => nodeColorScale(d.type))
-          .style("stroke", d => nodeColorScale(d.type))
+          .style("fill", d => nodeColorScale(d))
+          .style("stroke", d => nodeColorScale(d))
           .style("stroke-width", 2);
 
       nodeEnter.append("text")
-          .text(d => d.type)
+          .text(d => d)
           .attr("x", r * 1.5)
           .attr("dy", ".35em")
           .style("fill", "#666")
