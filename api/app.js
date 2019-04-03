@@ -44,6 +44,8 @@ app.use('/organizations', require('./routes/organizations'))
 app.use('/therapeutic-areas', require('./routes/therapeutic-areas'))
 // Study Metrics
 app.use('/study-metrics', require('./routes/study-metrics'))
+// Sites
+app.use('/sites', require('./routes/sites'))
 
 // Endpoint List/Documentation
 app.use('/list', require('./routes/documentation'))

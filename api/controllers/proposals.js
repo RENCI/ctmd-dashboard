@@ -6,7 +6,7 @@ const db = require('../config/database')
 
 // /proposals/:id(\\d+)
 exports.getOne = (req, res) => {
-    const query = `SELECT * FROM "Proposal" WHERE "ProposalId"=${ req.params.id };`
+    const query = `SELECT * FROM "Proposal" WHERE "Proposal"."ProposalID"=${ req.params.id };`
     db.any(query)
         .then(data => {
             res.status(200).send(data)

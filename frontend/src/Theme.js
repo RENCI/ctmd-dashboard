@@ -74,6 +74,13 @@ theme = {
                 borderRadius: theme.shape.borderRadius,
             }
         },
+        MuiDialogTitle: {
+            root: {
+                color: theme.palette.primary.light,
+                fontSize: '200%',
+                fontWeight: 'bold',
+            },
+        },
         MuiCardHeader: {
             title: {
                 color: theme.palette.primary.light,
