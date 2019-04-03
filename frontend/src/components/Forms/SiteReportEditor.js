@@ -3,6 +3,7 @@ import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import { makeStyles } from '@material-ui/styles'
 import { AppBar, Tabs, Tab, InputLabel, TextField, Button } from '@material-ui/core'
+import { FlashMessageContext } from '../../contexts/FlashMessageContext'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -25,6 +26,7 @@ const SiteReportEditor = props => {
     const [tabNumber, setTabNumber] = useState(0)
     const classes = useStyles()
     const api = useContext(ApiContext)
+    const addFlashMessage = useContext(FlashMessageContext)
 
     useEffect(() => {
         setValues({ ...values, proposalID: props.proposalID });
@@ -37,7 +39,10 @@ const SiteReportEditor = props => {
     const handleSave = () => {
         console.log(values)
         axios.post(api.saveSiteReport, values)
-            .then(response => console.log(response))
+            .then(response => {
+                console.log(response)
+                addFlashMessage('Site Report Saved!')
+            })
             .catch(error => console.log('Error', error))
     }
 

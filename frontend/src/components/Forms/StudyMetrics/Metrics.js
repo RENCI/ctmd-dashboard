@@ -156,7 +156,7 @@ const MetricsForm = props => {
     const handleSave = () => {
         axios.post(api.studyMetrics, values)
             .then(response => {
-                addFlashMessage('Form Submitted!')
+                addFlashMessage('Study Metrics Saved!')
                 setSubmitAllowed(false)
             })
             .catch(error => console.log('Error', error))
