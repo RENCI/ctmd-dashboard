@@ -16,7 +16,7 @@ export const FlashMessageProvider = ({ children }) => {
         <FlashMessageContext.Provider value={ addFlashMessage }>
             { children }
             <FlashMessageContainer>
-                { queue.map((message, i) => <FlashMessage key={ i } message={ message } />) }
+                { queue.map((message, i) => <FlashMessage key={ i } messageType={ message.type } messageText={ message.text } />) }
             </FlashMessageContainer>
         </FlashMessageContext.Provider>
     )

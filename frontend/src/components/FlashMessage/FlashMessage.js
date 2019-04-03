@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { Close as CloseIcon } from '@material-ui/icons'
-import { Snackbar, IconButton, Button } from '@material-ui/core'
+import { Snackbar, SnackbarContent, IconButton, Button } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
     flashMessageContainer: {
@@ -12,11 +13,22 @@ const useStyles = makeStyles(theme => ({
         transform: 'translateX(-50%)',
         display: 'flex',
         flexDirection: 'column-reverse',
+        width: '90%',
+        [theme.breakpoints.up('sm')]: {
+            width: '500px',
+        }
     },
-    flashMessage: {
+    snackbar: {
         position: 'relative',
         marginBottom: theme.spacing.unit,
     },
+    flashMessage: {
+        borderRadius: theme.spacing.unit,
+    },
+    success: { backgroundColor: theme.palette.flashMessage.success, },
+    info: { backgroundColor: theme.palette.flashMessage.info, },
+    warning: { backgroundColor: theme.palette.flashMessage.warning, },
+    error: { backgroundColor: theme.palette.flashMessage.error, },
 }))
 
 
@@ -33,7 +45,7 @@ export const FlashMessageContainer = props => {
 
 export const FlashMessage = props => {
     const [open, setOpen] = useState(true)
-    const { message } = props
+    const { messageType, messageText } = props
     const classes = useStyles()
     
     useEffect(() => {
@@ -56,13 +68,17 @@ export const FlashMessage = props => {
             open={ open }
             autoHideDuration={ 3000 }
             onClose={ handleClose }
-            ContentProps={{ 'aria-describedby': 'message-id' }}
-            message={ <span id="message-id">{ message }</span> }
-            action={[
-                <IconButton key="close" aria-label="Close" color="inherit" onClick={ handleClose }>
-                    <CloseIcon />
-                </IconButton>,
-            ]}
-        />
+        >
+            <SnackbarContent
+                className={ classnames(classes.flashMessage, classes[messageType]) }
+                ContentProps={{ 'aria-describedby': 'message-id' }}
+                message={ <span id="message-id">{ messageText }</span> }
+                action={[
+                    <IconButton key="close" aria-label="Close" color="inherit" onClick={ handleClose }>
+                        <CloseIcon />
+                    </IconButton>,
+                ]}
+            />
+        </Snackbar>
     )
 }
