@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import FlashMessage from '../components/FlashMessage/FlashMessage'
-import FlashMessageContainer from '../components/FlashMessage/FlashMessageContainer'
+import { FlashMessage, FlashMessageContainer } from '../components/FlashMessage/FlashMessage'
 
 export const FlashMessageContext = React.createContext({})
 
 export const FlashMessageProvider = ({ children }) => {
-    const [queue, setQueue] = useState([
-        { createdAt: Date.now(), text: 'Sample Message' },
-        { createdAt: Date.now(), text: 'Another Message' },
-    ])
+    const [queue, setQueue] = useState([])
 
     const addFlashMessage = newMessage => {
         let newQueue = queue
-            .concat({
-                createdAt: Date.now(),
-                text: newMessage,
-            })
+            .concat(newMessage)
         setQueue(newQueue)
     }
 
@@ -23,7 +16,7 @@ export const FlashMessageProvider = ({ children }) => {
         <FlashMessageContext.Provider value={ addFlashMessage }>
             { children }
             <FlashMessageContainer>
-                { queue.map((message, i) => <FlashMessage key={ i } message={ message.text } />) }
+                { queue.map((message, i) => <FlashMessage key={ i } messageType={ message.type } messageText={ message.text } />) }
             </FlashMessageContainer>
         </FlashMessageContext.Provider>
     )

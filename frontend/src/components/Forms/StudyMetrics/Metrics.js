@@ -156,10 +156,13 @@ const MetricsForm = props => {
     const handleSave = () => {
         axios.post(api.studyMetrics, values)
             .then(response => {
-                addFlashMessage('Form Submitted!')
+                addFlashMessage({ type: 'success', text: 'Study Metrics Saved!'})
                 setSubmitAllowed(false)
             })
-            .catch(error => console.log('Error', error))
+            .catch(error => {
+                addFlashMessage({ type: 'error', text: 'Failed to save Study Metrics!'})
+                console.log('Error', error)
+            })
     }
 
     const subforms = [

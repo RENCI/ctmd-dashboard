@@ -29,6 +29,12 @@ let theme = createMuiTheme({
             limestone: '#E5E5E5',
         },
         chartColors: d3.schemeSet2,
+        flashMessage: {
+            success: '#63c0a5',
+            info: '#999',
+            warning: '#ffd548',
+            error: '#ff8a66',
+        },
     },
     typography: {
         useNextVariants: true,
