@@ -3,6 +3,7 @@ import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { Close as CloseIcon } from '@material-ui/icons'
 import { Snackbar, SnackbarContent, IconButton, Button } from '@material-ui/core'
+import { CheckCircle as SuccessIcon, Error as ErrorIcon, Info as InfoIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
     flashMessageContainer: {
@@ -25,12 +26,25 @@ const useStyles = makeStyles(theme => ({
     flashMessage: {
         borderRadius: theme.spacing.unit,
     },
+    messageSpan: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    icon: {
+        marginRight: theme.spacing.unit,
+    },
     success: { backgroundColor: theme.palette.flashMessage.success, },
     info: { backgroundColor: theme.palette.flashMessage.info, },
     warning: { backgroundColor: theme.palette.flashMessage.warning, },
     error: { backgroundColor: theme.palette.flashMessage.error, },
 }))
 
+const icon = {
+    success: SuccessIcon,
+    info: InfoIcon,
+    warning: ErrorIcon,
+    error: ErrorIcon,
+}
 
 export const FlashMessageContainer = props => {
     const { children } = props
@@ -47,6 +61,7 @@ export const FlashMessage = props => {
     const [open, setOpen] = useState(true)
     const { messageType, messageText } = props
     const classes = useStyles()
+    const Icon = icon[messageType];
     
     useEffect(() => {
         setOpen(true)
@@ -63,7 +78,7 @@ export const FlashMessage = props => {
 
     return (
         <Snackbar
-            className={ classes.flashMessage }
+            className={ classes.snackbar }
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             open={ open }
             autoHideDuration={ 3000 }
@@ -72,7 +87,12 @@ export const FlashMessage = props => {
             <SnackbarContent
                 className={ classnames(classes.flashMessage, classes[messageType]) }
                 ContentProps={{ 'aria-describedby': 'message-id' }}
-                message={ <span id="message-id">{ messageText }</span> }
+                message={
+                    <span id="message" className={ classes.messageSpan }>
+                        <Icon className={ classes.icon } />
+                        { messageText }
+                    </span>
+                }
                 action={[
                     <IconButton key="close" aria-label="Close" color="inherit" onClick={ handleClose }>
                         <CloseIcon />
