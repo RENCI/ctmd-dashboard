@@ -5,7 +5,10 @@ import FlashMessageContainer from '../components/FlashMessage/FlashMessageContai
 export const FlashMessageContext = React.createContext({})
 
 export const FlashMessageProvider = ({ children }) => {
-    const [queue, setQueue] = useState([])
+    const [queue, setQueue] = useState([
+        { createdAt: Date.now(), text: 'Sample Message' },
+        { createdAt: Date.now(), text: 'Another Message' },
+    ])
 
     const addFlashMessage = newMessage => {
         let newQueue = queue

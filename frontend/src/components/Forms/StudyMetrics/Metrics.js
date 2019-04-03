@@ -110,7 +110,7 @@ const MetricsForm = props => {
                     // Linked Data
                     hasSuperStudy: data.sub_ancillaryStudy,
                     superStudy: data.mainStudy,
-                    hasSubStudy: data.sub_ancillaryStudy,
+                    hasSubStudy: data.hasSubAncillaryStudy,
                     subStudy: data.sub_ancillaryStudyName,
                     studyDesign: data.studyDesign,
                     // Architecture
@@ -199,9 +199,7 @@ const MetricsForm = props => {
                 </CardActions>
                 <Divider />
                 <CardActions className={ classes.actions }>
-                    <Button color="primary" disabled={ !submitAllowed } onClick={ handleSave }>
-                        { submitAllowed ? 'Save' : 'Saved!' }
-                    </Button>
+                    <Button variant="contained" color="secondary" onClick={ handleSave }>Save</Button>
                 </CardActions>
             </div>
         </MetricsFormContext.Provider>

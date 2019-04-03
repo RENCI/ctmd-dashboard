@@ -10,8 +10,7 @@ const useStyles = makeStyles(theme => ({
         transform: 'translateX(-50%)',
         width: '100%',
         display: 'flex',
-        flexDirection: 'column',
-        margin: 2 * theme.spacing.unit,
+        flexDirection: 'column-reverse',
     },
 }))
 

@@ -116,12 +116,12 @@ function ProposalsNetworkControls(props) {
 
     return (
         <Grid container wrap={'nowrap'}>
-            { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
-            { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
-            { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
             { dropDown("tic", tic, "TIC", "TIC", ticItems, ticLabelRef, ticLabelWidth) }
             { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
+            { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
             { dropDown("area", area, "Therapeutic Area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
+            { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
+            { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
         </Grid>
     );
 }

@@ -60,16 +60,20 @@ function createNodeData(data) {
       .concat(areas.values())
       .concat(statuses.values());
 
-  const nodeTypes = nodes.reduce((p, c) => {
-    if (p.indexOf(c.type) === -1) p.push(c.type);
-    return p;
-  }, []).map(d => {
-    return { type: d, show: true }
-  });
+  let nodeTypes = nodes.reduce((p, c) => {
+    const type = p[c.type];
 
-  nodes = nodes.sort(function(a, b) {
-    return d3.descending(a.proposals.length, b.proposals.length);
-  });
+    if (!type) p[c.type] = { type: c.type, count: 1 }
+    else type.count++;
+
+    return p;
+  }, {});
+
+  nodeTypes = d3.values(nodeTypes)
+      .sort((a, b) => d3.ascending(a.count, b.count))
+      .map(d => d.type);
+
+  nodes = nodes.sort((a, b) => d3.descending(a.proposals.length, b.proposals.length));
 
   return {
     nodes: nodes,
