@@ -17,11 +17,11 @@ const useStyles = makeStyles(theme => ({
 
 const VIEW = 'VIEW'
 const EDIT = 'EDIT'
-const EXPORT = 'EXPORT'
+// const EXPORT = 'EXPORT'
 
 const SiteReportCard = props => {
     const { open, proposalID, siteID } = props
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [proposal, setProposal] = useState()
     const [reportMode, setReportMode] = useState(VIEW)
     const classes = useStyles()

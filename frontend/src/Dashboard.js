@@ -1,17 +1,14 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
-import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
+import { Drawer, Hidden, CssBaseline, IconButton } from '@material-ui/core'
 import {
     Menu as MenuIcon,
-    Settings as SettingsIcon,
-    ExitToApp as LogoutIcon,
 } from '@material-ui/icons'
 
 import ScrollToTop from './utils/ScrollToTop'
 
 import SideMenu from './components/Menus/SideMenu'
-import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'

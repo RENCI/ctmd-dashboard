@@ -1,24 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react'
-import axios from 'axios'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { ApiContext } from '../../contexts/ApiContext'
 import { StoreContext } from '../../contexts/StoreContext'
 import {
-    Grid, Card, CardHeader, CardContent, Button,
-    Dialog, DialogTitle, DialogContent, DialogActions,
-    FormControl, FormLabel, Select, OutlinedInput,
-    List, ListItem, ListItemText,
-    Menu, MenuItem,
-    Tabs, Fab, Tooltip
+    Grid, Card, CardHeader,
+    Select, OutlinedInput,
+    MenuItem,
+    Fab, Tooltip
 } from '@material-ui/core'
 import Heading from '../../components/Typography/Heading'
-import StudyCard from './StudyCard'
 import SiteReportViewer from './SiteReportViewer'
 import { Add as AddIcon } from '@material-ui/icons'
-
-const VIEW = 'VIEW'
-const EDIT = 'EDIT'
-const EXPORT = 'EXPORT'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -47,16 +38,14 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const SiteReportsPage = props => {
-    const { match: { params }} = props
-    const [store, setStore] = useContext(StoreContext)
+    const { match: { params } } = props
+    const [store, ] = useContext(StoreContext)
     const [proposal, setProposal] = useState()
     const [currentReport, setCurrentReport] = useState(-1)
     const classes = useStyles()
     const theme = useTheme()
 
     useEffect(() => {
-        console.log(store)
-        console.log(props.match.params.id)
         if (store.proposals && props.match.params.id) {
             setProposal(store.proposals.find(proposal => proposal.proposalID === parseInt(params.id)))
         }

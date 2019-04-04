@@ -1,21 +1,13 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import axios from 'axios'
 import { StoreContext } from '../contexts/StoreContext'
-import { ApiContext } from '../contexts/ApiContext'
-import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardActions, CardContent, Button } from '@material-ui/core'
-import { FormControl, FormLabel, TextField, InputLabel, Select, MenuItem, OutlinedInput, FormHelperText } from '@material-ui/core'
-import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, ExpansionPanelActions, Divider } from '@material-ui/core'
+import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
+import { FormControl, FormLabel, Select, MenuItem, OutlinedInput } from '@material-ui/core'
 import {
-    KeyboardArrowLeft as LeftIcon,
-    KeyboardArrowRight as RightIcon,
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
 } from '@material-ui/icons'
 import Heading from '../components/Typography/Heading'
-import Subheading from '../components/Typography/Subheading'
-import { CircularLoader } from '../components/Progress/Progress'
-import ProposalDetailsForm from '../components/Forms/ProposalDetails'
 import StudyMetricsForm from '../components/Forms/StudyMetrics/Metrics'
 
 const useStyles = makeStyles(theme => ({
@@ -29,15 +21,10 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const StudyMetricsPage = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [current, setCurrent] = useState(-1)
-    const api = useContext(ApiContext)
     const classes = useStyles()
     const theme = useTheme()
-
-    const handleNavigate = value => event => {
-        setCurrent((current + value + store.proposals.length) % store.proposals.length)
-    }
 
     const handleChangeCurrent = event => {
         setCurrent(event.target.value)

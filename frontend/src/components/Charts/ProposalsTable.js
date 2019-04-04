@@ -73,7 +73,7 @@ const ProposalDetailPanel = props => {
 
     console.log(fundingStatusWhenApproved)
     
-    const todaysDate = (new Date).toISOString().slice(0,10)
+    const todaysDate = (new Date()).toISOString().slice(0,10)
 
     const timeSpan = (startDate, endDate) => Math.round(new Date(endDate) - new Date(startDate))/(1000 * 60 * 60 * 24)
 

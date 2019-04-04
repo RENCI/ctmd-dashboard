@@ -1,12 +1,7 @@
 import React, { useContext } from 'react'
 import {
-    FormControl, FormGroup, FormHelperText, FormControlLabel, FormLabel,
-    InputLabel, OutlinedInput,
-    Select, MenuItem,
-    RadioGroup, Radio,
-    TextField,
-    Checkbox,
-    Button,
+    FormControl, FormHelperText, FormControlLabel, FormLabel,
+    RadioGroup, Radio, TextField, Checkbox,
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 

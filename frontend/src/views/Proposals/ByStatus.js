@@ -11,7 +11,7 @@ import ProposalsTable from '../../components/Charts/ProposalsTable'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
 const ProposalsByStatus = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
     const [proposalsByStatus, setProposalsByStatus] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()

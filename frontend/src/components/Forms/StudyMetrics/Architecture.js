@@ -1,12 +1,9 @@
 import React, { useContext } from 'react'
 import {
     FormControl, FormGroup, FormHelperText, FormControlLabel, FormLabel,
-    InputLabel, OutlinedInput,
-    Select, MenuItem,
     RadioGroup, Radio,
     TextField,
     Checkbox,
-    Button,
 } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
@@ -90,7 +87,7 @@ const StudyArchitectureForm = props => {
             }
 
             {
-                values.isRandomized == true &&
+                values.isRandomized === true &&
                 <FormControl className={ classes.formControl }>
                     <FormLabel>Randomization Features</FormLabel>
                     <FormHelperText>

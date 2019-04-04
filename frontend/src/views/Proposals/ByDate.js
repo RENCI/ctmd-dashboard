@@ -76,7 +76,7 @@ const PresetSelector = (props) => {
 
 const ProposalsByDate = (props) => {
     const classes = useStyles()
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [displayedProposals, setDisplayedProposals] = useState([])
     const [dates, setDates] = useState({
         start: '2016-01-01',

@@ -3,11 +3,10 @@ import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
-import { CircularLoader } from '../Progress/Progress'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 
 const AverageDays = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [averageDays, setAverageDays] = useState({
         submsisionToPatApproval: 0,
         approvalToGrantSubmission: 0,

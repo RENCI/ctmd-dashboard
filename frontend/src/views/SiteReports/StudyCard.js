@@ -1,10 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
-import {
-    Card, CardActionArea, CardHeader, CardContent, CardActions, Button,
-} from '@material-ui/core'
-import { ArrowDropDown as DropdownIcon } from '@material-ui/icons'
+import { Card, CardHeader, CardContent, CardActions, Button } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -27,24 +24,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const StudyCard = props => {
-    const { proposal, siteSelectHandler } = props
-    const [anchorEl, setAnchorEl] = useState(null)
-    const [report, setReport] = useState(-1)
+    const { proposal } = props
     const classes = useStyles()
-    
-    console.log(props.proposal)
-
-    const handleSelectSiteReport = event => {
-        console.log('Setting study and site report...')
-        setReport(event.target.value)
-    }
-    
-    const handleOpenMenu = event => setAnchorEl(event.currentTarget)
-    const handleCloseMenu = () => setAnchorEl(null)
-    const handleSelect = (event) => {
-        siteSelectHandler(event)
-        handleCloseMenu()
-    }
 
     return (
         <Card className={ classes.card }>

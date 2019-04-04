@@ -11,7 +11,7 @@ import ChartOptions from '../../components/Menus/ChartOptions'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
 const ProposalsByTherapeuticArea = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()

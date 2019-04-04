@@ -17,7 +17,7 @@ const tooltip = (event) => {
 }
 
 const ProposalsCalendar = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [calendarData, setCalendarData] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null)
     const [year, setYear] = useState((new Date()).getFullYear())
@@ -49,13 +49,13 @@ const ProposalsCalendar = props => {
                 }
             })
             setCalendarData(data)
-            setCount(data.filter(({ day }) => day && day.includes(year) || 0).reduce((sum, { value }) => sum + value, 0))
+            setCount(data.filter(({ day }) => day && day.includes(year)).reduce((sum, { value }) => sum + value, 0))
         }
     }, [store])
 
     useEffect(() => {
         if (calendarData) {
-            setCount(calendarData.filter(({ day }) => day && day.includes(year) || 0).reduce((sum, { value }) => sum + value, 0))
+            setCount(calendarData.filter(({ day }) => day && day.includes(year)).reduce((sum, { value }) => sum + value, 0))
         }
     }, [year])
     

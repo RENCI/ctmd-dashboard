@@ -44,8 +44,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Count = props => {
-    const { value } = props
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const classes = useStyles()
     const theme = useTheme()
     const today = new Date()

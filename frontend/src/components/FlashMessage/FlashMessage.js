@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { Close as CloseIcon } from '@material-ui/icons'
-import { Snackbar, SnackbarContent, IconButton, Button } from '@material-ui/core'
+import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core'
 import { CheckCircle as SuccessIcon, Error as ErrorIcon, Info as InfoIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
@@ -66,8 +66,6 @@ export const FlashMessage = props => {
     useEffect(() => {
         setOpen(true)
     }, [props.message])
-
-    const handleClick = () => setOpen(true)
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {

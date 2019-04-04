@@ -1,13 +1,10 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
 import axios from 'axios'
-import ReactDOM from 'react-dom'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons'
-import { Grid, Card, CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
+import { CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
 import { ApiContext } from '../../../contexts/ApiContext'
 import { FlashMessageContext } from '../../../contexts/FlashMessageContext'
-import Subheading from '../../Typography/Subheading'
 import CharacteristicsForm from './Characterstics'
 import LinkedStudiesForm from './LinkedStudies'
 import ArchitectureForm from './Architecture'
@@ -133,13 +130,13 @@ const MetricsForm = props => {
                     initialParticipatingSiteNumber: data.initialPlannedNumberOfSites,
                     enrollmentGoal: data.enrollmentGoal,
                     initialProjectedEnrollmentDuration: data.initialProjectedEnrollmentDuration,
-                    leadPiNames: null,
-                    awardeeSiteAcronym: null,
-                    primaryFundingType: null,
-                    primarilyFundedByInfrastructure: null,
-                    fundingSource: null,
-                    fundingAwardDate: null,
-                    previousFunding: null,
+                    leadPiNames: '',
+                    awardeeSiteAcronym: '',
+                    primaryFundingType: '',
+                    primarilyFundedByInfrastructure: '',
+                    fundingSource: '',
+                    fundingAwardDate: '',
+                    previousFunding: '',
                 })
             })
             .catch(error => console.log('Error', error))
@@ -202,7 +199,12 @@ const MetricsForm = props => {
                 </CardActions>
                 <Divider />
                 <CardActions className={ classes.actions }>
-                    <Button variant="contained" color="secondary" onClick={ handleSave }>Save</Button>
+                    <Button variant="contained" color="secondary"
+                        disabled={ !submitAllowed }
+                        onClick={ handleSave }
+                    >
+                        { submitAllowed ? 'Save' : 'Saved!' }
+                    </Button>
                 </CardActions>
             </div>
         </MetricsFormContext.Provider>

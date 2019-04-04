@@ -17,7 +17,7 @@ Array.prototype.countBy = function(prop) {
 }
 
 const proposalsGroupedByTicThenStatus = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
     const windowWidth = useWindowWidth()
     const container = useRef(null)

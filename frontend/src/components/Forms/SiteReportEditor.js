@@ -2,7 +2,7 @@ import React, { Fragment, useState, useContext, useEffect } from 'react'
 import axios from 'axios'
 import { ApiContext } from '../../contexts/ApiContext'
 import { makeStyles } from '@material-ui/styles'
-import { AppBar, Tabs, Tab, InputLabel, TextField, Button } from '@material-ui/core'
+import { Tabs, Tab, InputLabel, TextField, Button } from '@material-ui/core'
 import { FlashMessageContext } from '../../contexts/FlashMessageContext'
 
 const useStyles = makeStyles(theme => ({
