@@ -5,8 +5,8 @@
   + [Install Docker Compose](#install-docker-compose)
 - [Application Setup](#application-setup)
   + [Clone](#clone)
-  + [Set up environment variables file](#set-up-environment-variables-file)
-  + [Copy the existing database](#copy-the-existing-database)
+  + [Set up Environment Variables](#set-up-environment-variables)
+  + [Take a Snapshot of the Existing Database](#take-a-snapshot-of-the-existing-database)
 - [Start](#start)
   + [Development](#development)
     * [Hot Reloading](#hot-reloading)
@@ -150,13 +150,19 @@ Fork or clone this repo.
 $ git clone https://github.com/renci/dashboard.git
 ```
 
-### Set up environment variables file
+### Set up Environment Variables
 
-There are two places we specify environemt-specific variables `./.env` and `./frontend/.env`. The former will contain database credentials necessary for building the Docker images. The latter indicates the URL at which the frontend can access the API. It is necessary that the names of variables used in the React frontend begin with `REACT_APP_`. The variable is referenced in the `ApiContext`, which resides at `'./frontend/src/contexts/ApiContext.js`, providing access to the API's endpoints across the frontend application.
+Environemt variables should like in the file called `./.env`. In this file, you will find key information to build the docker images correctly so that the containers can communicate. The set of variables consists of database credentials, the root path of the API, the port on which to serve the API, the token to access the RedCap database, and the location to store Postgres data dumps. A brief desription of each environment variable follows.
 
-There is a `.env.sample` file in each location that can be copied to get things working out of the box. Changes must be made to the `REACT_APP_API_ROOT` variable for various environments throughout the development workflow, so be sure make changes to that file accordingly--`http://localhost/api/` will work for testing development locally.
+- `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`: These are all credentials to connect to the database container.
+- `REACT_APP_API_ROOT`: Environment variables used in React begin with `REACT_APP_`. This variable is referenced in the `ApiContext`, which resides at `'./frontend/src/contexts/ApiContext.js`, providing access to the API's endpoints across the entire frontend of the application. This is only used in production.
+- `API_PORT`: This is the port the `pmd-api` container should serve the API.
+- `REDCAP_APPLICATION_TOKEN`: This token grants access to the RedCap database. \* This is only used in production.
+- `POSTGRES_DUMP_PATH`: This is the location on the host where Postgres backups (via `pg_dump`) will be stored. \* This is only used in production.
 
-### Copy the existing database
+There is a `.env.sample` file that can be used as a guide (and it can be copied to get things working out of the box for local development).
+
+### Take a Snapshot of the Existing Database
 
 On the PMD VM, dump a snapshot of the database. In the example here, we're `pg_dump`ing the database called `duketicheal`.
 
@@ -176,11 +182,11 @@ The `postgres` container looks for that file--`./db/duketic.sql`--to populate a 
 
 ### Start 
 
-There are three services that we need to run--they are named `frontend`, `api`, and `db`, and the assodicated containers are prepended with `pmd-`. the development containers are named similarly, but appended with `-dev`.
+There are three services that we need to run in development--they are named `frontend`, `api`, and `db`, and the associated containers are prepended with `pmd-`, and the development containers are appended with `-dev`. One additional container called `pipeline` runs in production.
 
 #### Development
 
-Start all three services:
+Start all three development services:
 
 ```bash
 $ docker-compose up
@@ -261,6 +267,14 @@ If this is not done, Nginx will throw a `500 Internal Server Error` at your brow
 The second thing that you'll need to specify is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
 
 If this is not done, you will see progress/loading spinners in the browser. This is because the frontend will be reaching out for data from the wrong location and never receive it.
+
+###### RedCap Token
+
+The `pipeline` container must communicate with the RedCap database, thus the `REDCAP_APPLICATION_TOKEN` token must be set to access its API.
+
+###### Postgres Dump Location
+
+The `pipeline` container takes care of taking snapshots of the data in the postgres database in the `pmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`.
 
 ##### OK, Let's Go
 
