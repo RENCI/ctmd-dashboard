@@ -54,30 +54,28 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const menuItems = [
+    { text: 'Home', path: '/', icon: DashboardIcon, },
+    { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
+    { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
+    { text: 'Study Metrics', path: '/study-metrics', icon: MetricsIcon, },
+    { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
+]
+
 const Menu = props => {
     const classes = useStyles()
     return (
         <MenuList className={ classes.menuList }>
-            <MenuItem component={ NavLink } exact to="/" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon className={ classes.icon }><DashboardIcon /></ListItemIcon>
-                <ListItemText primary="Home" classes={{ root: classes.listItemText }}/>
-            </MenuItem>
-            <MenuItem component={ NavLink } to="/proposals" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon className={ classes.icon }><ProposalsIcon /></ListItemIcon>
-                <ListItemText primary="Proposals" classes={{ root: classes.listItemText }}/>
-            </MenuItem>
-            <MenuItem component={ NavLink } to="/collaborations" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon className={ classes.icon }><CollaborationsIcon /></ListItemIcon>
-                <ListItemText primary="Collaborations" classes={{ root: classes.listItemText }}/>
-            </MenuItem>
-            <MenuItem component={ NavLink } to="/study-metrics" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon className={ classes.icon }><MetricsIcon /></ListItemIcon>
-                <ListItemText primary="Study Metrics" classes={{ root: classes.listItemText }}/>
-            </MenuItem>
-            <MenuItem component={ NavLink } to="/site-reports" className={ classes.menuItem } activeClassName={ classes.active }>
-                <ListItemIcon className={ classes.icon }><SiteReportIcon /></ListItemIcon>
-                <ListItemText primary="Site Report" classes={{ root: classes.listItemText }}/>
-            </MenuItem>
+            {
+                menuItems.map(item => {
+                    return (
+                        <MenuItem component={ NavLink } exact to={ item.path } className={ classes.menuItem } activeClassName={ classes.active }>
+                            <ListItemIcon className={ classes.icon }><item.icon /></ListItemIcon>
+                            <ListItemText primary={ item.text } classes={{ root: classes.listItemText }}/>
+                        </MenuItem>
+                    )
+                })
+            }
 
             <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
 
