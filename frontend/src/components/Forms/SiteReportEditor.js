@@ -37,11 +37,9 @@ const SiteReportEditor = props => {
         setValues({ ...values, [name]: event.target.value });
     };
     const handleSave = () => {
-        console.log(values)
         axios.post(api.saveSiteReport, values)
             .then(response => {
-                console.log(response)
-                addFlashMessage('Site Report Saved!')
+                addFlashMessage({ type: 'success', text: 'Site Report Saved!'})
             })
             .catch(error => console.log('Error', error))
     }

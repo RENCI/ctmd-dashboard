@@ -86,9 +86,8 @@ export const FlashMessage = props => {
         >
             <SnackbarContent
                 className={ classnames(classes.flashMessage, classes[messageType]) }
-                ContentProps={{ 'aria-describedby': 'message-id' }}
                 message={
-                    <span id="message" className={ classes.messageSpan }>
+                    <span className={ classes.messageSpan }>
                         <Icon className={ classes.icon } />
                         { messageText }
                     </span>
