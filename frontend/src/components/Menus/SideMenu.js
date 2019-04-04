@@ -59,7 +59,7 @@ const menuItems = [
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
     { text: 'Study Metrics', path: '/study-metrics', icon: MetricsIcon, },
-    { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
+    // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
 ]
 
 const Menu = props => {
@@ -69,7 +69,7 @@ const Menu = props => {
             {
                 menuItems.map(item => {
                     return (
-                        <MenuItem component={ NavLink } exact to={ item.path } className={ classes.menuItem } activeClassName={ classes.active }>
+                        <MenuItem key={ item.path } component={ NavLink } exact to={ item.path } className={ classes.menuItem } activeClassName={ classes.active }>
                             <ListItemIcon className={ classes.icon }><item.icon /></ListItemIcon>
                             <ListItemText primary={ item.text } classes={{ root: classes.listItemText }}/>
                         </MenuItem>
