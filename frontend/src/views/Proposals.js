@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { StoreContext } from '../contexts/StoreContext'
-import Heading from '../components/Typography/Heading'
+import { Heading } from '../components/Typography/Typography'
 import ProposalsTable from '../components/Charts/ProposalsTable'
 import BrowseMenu from '../components/Menus/BrowseMenu'
 

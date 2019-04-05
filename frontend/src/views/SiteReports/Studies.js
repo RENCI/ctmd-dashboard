@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid } from '@material-ui/core'
-import Heading from '../../components/Typography/Heading'
+import { Heading } from '../../components/Typography/Typography'
 import StudyCard from './StudyCard'
 
 const StudiesPage = props => {

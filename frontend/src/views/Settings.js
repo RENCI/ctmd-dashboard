@@ -1,5 +1,5 @@
 import React, { Fragment, useContext } from 'react'
-import Heading from '../components/Typography/Heading'
+import { Heading } from '../components/Typography/Typography'
 import {
     Grid, Card, CardHeader, CardContent,
     FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch

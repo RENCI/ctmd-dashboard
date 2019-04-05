@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
-import Heading from '../components/Typography/Heading'
+import { Heading } from '../components/Typography/Typography'
 import ProposalsByTicBarChart from '../components/widgets/ProposalsByTic'
 import ProposalsCalendar from '../components/widgets/ProposalsCalendar'
 import AverageDays from '../components/widgets/AverageDays'

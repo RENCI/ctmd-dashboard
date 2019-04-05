@@ -7,7 +7,7 @@ import {
     MenuItem,
     Fab, Tooltip
 } from '@material-ui/core'
-import Heading from '../../components/Typography/Heading'
+import { Heading } from '../../components/Typography/Typography'
 import SiteReportViewer from './SiteReportViewer'
 import { Add as AddIcon } from '@material-ui/icons'
 

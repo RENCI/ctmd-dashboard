@@ -7,7 +7,7 @@ import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
 } from '@material-ui/icons'
-import Heading from '../components/Typography/Heading'
+import { Heading } from '../components/Typography/Typography'
 import StudyMetricsForm from '../components/Forms/StudyMetrics/Metrics'
 
 const useStyles = makeStyles(theme => ({
