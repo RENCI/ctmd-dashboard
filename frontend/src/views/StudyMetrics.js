@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { StoreContext } from '../contexts/StoreContext'
 import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
@@ -22,12 +22,12 @@ const useStyles = makeStyles(theme => ({
 
 const StudyMetricsPage = props => {
     const [store, ] = useContext(StoreContext)
-    const [current, setCurrent] = useState(-1)
+    const [currentProposal, setCurrentProposal] = useState(null)
     const classes = useStyles()
     const theme = useTheme()
 
-    const handleChangeCurrent = event => {
-        setCurrent(event.target.value)
+    const handleChangeCurrentProposal = event => {
+        setCurrentProposal(store.proposals.find(proposal => proposal.proposalID === event.target.value))
     }
 
     return (
@@ -44,15 +44,15 @@ const StudyMetricsPage = props => {
                                 <FormControl fullWidth variant="outlined">
                                     <FormLabel>Select Proposal</FormLabel>
                                     <Select
-                                        value={ current }
-                                        onChange={ handleChangeCurrent }
+                                        value={ currentProposal ? currentProposal.proposalID : -1 }
+                                        onChange={ handleChangeCurrentProposal }
                                         input={ <OutlinedInput fullWidth labelWidth={ 0 } name="network" id="network" style={{ marginTop: '16px' }}/> }
                                     >
                                         <MenuItem value="-1">-</MenuItem>
                                         {
                                             store.proposals
                                                 .filter(proposal => proposal.proposalStatus === 'Ready for Implementation')
-                                                .map((proposal, i) => <MenuItem key={ proposal.proposalID } value={ i }>{ proposal.shortTitle } (id: { proposal.proposalID })</MenuItem>)
+                                                .map(proposal => <MenuItem key={ proposal.proposalID } value={ proposal.proposalID }>{ proposal.shortTitle } (id: { proposal.proposalID })</MenuItem>)
                                         }
                                     </Select>
                                 </FormControl>
@@ -60,25 +60,29 @@ const StudyMetricsPage = props => {
                         }/>
                         <CardContent>
                             <CardHeader
-                                subheader={ current >= 0 ? (
+                                subheader={ currentProposal ? (
                                     <div>
-                                        <div>{ current >= 0 ? store.proposals[current].longTitle : null } </div>
+                                        <div>{ currentProposal.longTitle } </div>
                                         <div style={{ opacity: 0.5 }}>
-                                            { `${ store.proposals[current].shortTitle } (id: ${ store.proposals[current].proposalID })` }
+                                            { `${ currentProposal.shortTitle } (id: ${ currentProposal.proposalID })` }
                                         </div>
                                     </div>
                                 ) : null }
                             />
-                            <List className={ classes.details } style={{ opacity: current >= 0 ? 1 : 0.25 }}>
+                            <List className={ classes.details } style={{ opacity: currentProposal ? 1 : 0.25 }}>
                                 <ListItem>
                                     <Avatar><InstitutionIcon /></Avatar>
-                                    <ListItemText primary="Submitting Institution" secondary={
-                                        current >= 0 ? store.proposals[current].submitterInstitution || '-' : '...'} />
+                                    <ListItemText
+                                        primary="Submitting Institution"
+                                        secondary={ currentProposal ? (currentProposal.submitterInstitution || '-') : '-' }
+                                    />
                                 </ListItem>
                                 <ListItem>
                                     <Avatar><TicIcon /></Avatar>
-                                    <ListItemText primary="Assigned TIC/RIC" secondary={
-                                        current >= 0 ? store.proposals[current].assignToInstitution || '-' : '...'} />
+                                    <ListItemText
+                                        primary="Assigned TIC/RIC"
+                                        secondary={ currentProposal ? (currentProposal.assignToInstitution || '-') : '-' }
+                                    />
                                 </ListItem>
                             </List>
                         </CardContent>
@@ -86,10 +90,10 @@ const StudyMetricsPage = props => {
                 </Grid>
                 <Grid item xs={ 12 }>
                     {
-                        store.proposals && current >= 0
+                        currentProposal
                         ? (
                             <Card>
-                                 <StudyMetricsForm proposalID={ store.proposals[current].proposalID } />
+                                 <StudyMetricsForm proposalID={ currentProposal.proposaID } />
                             </Card>
                         ) : null
                     }
