@@ -1,1 +1,1 @@
-FROM postgres:latest
+FROM postgres:11.2
