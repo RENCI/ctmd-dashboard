@@ -1,4 +1,4 @@
-# Duke/Vanderbilt Trial Innovation Center
+# Trial Innovation Center Dashboard
 ## API
 
 ### Disclaimer

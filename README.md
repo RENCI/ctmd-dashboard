@@ -1,4 +1,5 @@
 # Trial Innovation Center Dashboard
+
 - [Server Setup](#server-setup)
   + [Install Docker](#install-docker)
   + [Docker Post-Installation Steps](#docker-post-installation-steps)
