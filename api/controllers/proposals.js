@@ -32,7 +32,8 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
             CAST("ProposalFunding"."fundingStart" AS VARCHAR),
             CAST("PATMeeting"."meetingDate" AS VARCHAR),
-            CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR)
+            CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR),
+            CAST("ProtocolTimelines_estimated"."actualGrantSubmissionDate" AS VARCHAR)
         FROM "Proposal"
         INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
         INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
@@ -61,7 +62,8 @@ const query2 = `SELECT "Proposal"."ProposalID" as "proposalID",
                         "ProposalFunding"."fundingPeriod",
                         "ProposalFunding"."fundingStart",
                         "PATMeeting"."meetingDate",
-                        "ProtocolTimelines_estimated"."plannedGrantSubmissionDate"
+                        "ProtocolTimelines_estimated"."plannedGrantSubmissionDate",
+                        "ProtocolTimelines_estimated"."actualGrantSubmissionDate"
                     FROM "Proposal"
                     INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
                     INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
@@ -90,7 +92,8 @@ const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",
                         "ProposalFunding"."fundingPeriod",
                         "ProposalFunding"."fundingStart",
                         "PATMeeting"."meetingDate",
-                        "ProtocolTimelines_estimated"."plannedGrantSubmissionDate"
+                        "ProtocolTimelines_estimated"."plannedGrantSubmissionDate",
+                        "ProtocolTimelines_estimated"."actualGrantSubmissionDate"
                     FROM "Proposal"
                     INNER JOIN "Submitter" ON "Proposal"."ProposalID"="Submitter"."ProposalID"
                     INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID"="ProposalDetails"."ProposalID"

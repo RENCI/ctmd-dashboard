@@ -30,9 +30,9 @@ const AverageDays = props => {
     useEffect(() => {
         if (store.proposals) {
             const submsisionToPatApproval = findAverageDaysBetween('dateSubmitted', 'meetingDate')
-            const approvalToGrantSubmission = findAverageDaysBetween('meetingDate', 'plannedGrantSubmissionDate')
-            const submissionToGrantSubmission = findAverageDaysBetween('dateSubmitted', 'plannedGrantSubmissionDate')
-            const grantSubmissionToGrantAward = findAverageDaysBetween('plannedGrantSubmissionDate', 'fundingStart')
+            const approvalToGrantSubmission = findAverageDaysBetween('meetingDate', 'actualGrantSubmissionDate')
+            const submissionToGrantSubmission = findAverageDaysBetween('dateSubmitted', 'actualGrantSubmissionDate')
+            const grantSubmissionToGrantAward = findAverageDaysBetween('actualGrantSubmissionDate', 'fundingStart')
             setAverageDays({
                 submsisionToPatApproval,
                 approvalToGrantSubmission,

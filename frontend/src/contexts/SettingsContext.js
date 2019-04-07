@@ -13,6 +13,7 @@ export const defaultSettings = {
         dateSubmitted: true,
         meetingDate: false,
         plannedGrantSubmissionDate: false,
+        actualGrantSubmissionDate: false,
         fundingStart: false,
     },
     charts: {

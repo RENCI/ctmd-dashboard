@@ -66,7 +66,7 @@ const ProposalDetailPanel = props => {
     const {
         proposalID, shortTitle, piName, submitterInstitution, assignToInstitution,
         therapeuticArea, proposalStatus, totalBudget, fundingPeriod, fundingStatus, fundingStatusWhenApproved,
-        dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate,
+        dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate, actualGrantSubmissionDate,
         requestedServices, approvedServices,
     } = props
     const classes = useStyles()
@@ -171,12 +171,21 @@ const ProposalDetailPanel = props => {
                                 </Fragment>
                             ) : <span className={ classes.date }>- - -</span>
                         }/>
-                        <ListItemText primary="Grant Submission Date" secondary={
+                        <ListItemText primary="Planned Grant Submission Date" secondary={
                             plannedGrantSubmissionDate ? (
                                 <Fragment>
                                     <span className={ classes.date }>{ plannedGrantSubmissionDate }</span>
                                     <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span>
                                     <span className={ classes.daysAgo }>{ timeSpan(plannedGrantSubmissionDate, todaysDate) } days ago</span>
+                                </Fragment>
+                            ) : <span className={ classes.date }>- - -</span>
+                        }/>
+                        <ListItemText primary="Actual Grant Submission Date" secondary={
+                            plannedGrantSubmissionDate ? (
+                                <Fragment>
+                                    <span className={ classes.date }>{ actualGrantSubmissionDate }</span>
+                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, actualGrantSubmissionDate) }</span>
+                                    <span className={ classes.daysAgo }>{ timeSpan(actualGrantSubmissionDate, todaysDate) } days ago</span>
                                 </Fragment>
                             ) : <span className={ classes.date }>- - -</span>
                         }/>
@@ -215,6 +224,7 @@ const ProposalsTable = (props) => {
                 { title: 'Submission Date', field: 'dateSubmitted', hidden: !settings.visibleColumns.dateSubmitted  },
                 { title: 'PAT Review Date', field: 'meetingDate', hidden: !settings.visibleColumns.meetingDate  },
                 { title: 'Planned Grant Submission Date', field: 'plannedGrantSubmissionDate', hidden: !settings.visibleColumns.plannedGrantSubmissionDate  },
+                { title: 'Actual Grant Submission Date', field: 'actualGrantSubmissionDate', hidden: !settings.visibleColumns.actualGrantSubmissionDate  },
                 { title: 'Grant Approval Date', field: 'fundingStart', hidden: !settings.visibleColumns.fundingStart  },
             ] }
             data={ proposals }

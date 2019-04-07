@@ -69,6 +69,7 @@ const SettingsPage = props => {
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.dateSubmitted } onChange={ handleChangeVisibleColumns } value="dateSubmitted" /> } label="Submission Date" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.meetingDate } onChange={ handleChangeVisibleColumns } value="meetingDate" /> } label="PAT Review Date" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.plannedGrantSubmissionDate } onChange={ handleChangeVisibleColumns } value="plannedGrantSubmissionDate" /> } label="Planned Grant Submission Date" />
+                                <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.actualGrantSubmissionDate } onChange={ handleChangeVisibleColumns } value="actualGrantSubmissionDate" /> } label="Actual Grant Submission Date" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.fundingStart } onChange={ handleChangeVisibleColumns } value="fundingStart" /> } label="Grant Approval Date" />
                             </FormGroup>
                         </FormControl>
