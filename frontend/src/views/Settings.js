@@ -60,6 +60,7 @@ const SettingsPage = props => {
                                 The visible columns will still be able to be altered individually when viewing a table.
                             </FormHelperText>
                             <FormGroup>
+                                <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.proposalID } onChange={ handleChangeVisibleColumns } value="proposalID" />} label="Proposal ID" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.shortTitle } onChange={ handleChangeVisibleColumns } value="shortTitle" />} label="Proposal Name" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.piName } onChange={ handleChangeVisibleColumns } value="piName" /> } label="PI Name" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.visibleColumns.proposalStatus } onChange={ handleChangeVisibleColumns } value="proposalStatus" /> } label="Proposal Status" />

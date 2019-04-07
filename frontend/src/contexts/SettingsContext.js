@@ -4,6 +4,7 @@ export const SettingsContext = React.createContext({})
 
 export const defaultSettings = {
     visibleColumns: {
+        proposalID: true,
         shortTitle: true,
         piName: true,
         proposalStatus: true,

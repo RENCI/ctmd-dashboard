@@ -219,7 +219,7 @@ const ProposalsTable = (props) => {
             columns={ [
                 {
                     title: 'ID', field: 'proposalID',
-                    hidden: false,
+                    hidden: !settings.visibleColumns.proposalID,
                     customSort: (a, b) => sortNullFirst(a, b, 'proposalID')
                 },
                 {
