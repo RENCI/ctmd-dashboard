@@ -209,23 +209,74 @@ const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
     let { title, proposals } = props
     if (title) title += ` (${ proposals.length } Proposals)`
+
+    const sortNullFirst = (a, b, property) => a[property] < b[property] || a[property] === null ? -1 : 1
+    
     return (
         <MaterialTable
             title={ title || '-' }
             components={{ }}
             columns={ [
-                { title: 'ID', field: 'proposalID', hidden: false },
-                { title: 'Proposal Name', field: 'shortTitle', hidden: !settings.visibleColumns.shortTitle },
-                { title: 'PI', field: 'piName', hidden: !settings.visibleColumns.piName },
-                { title: 'Status', field: 'proposalStatus', hidden: !settings.visibleColumns.proposalStatus },
-                { title: 'Therapeutic Area', field: 'therapeuticArea', hidden: !settings.visibleColumns.therapeuticArea },
-                { title: 'Submitting Insitution', field: 'submitterInstitution', hidden: !settings.visibleColumns.submitterInstitution },
-                { title: 'Assigned TIC/RIC', field: 'assignToInstitution', hidden: !settings.visibleColumns.assignToInstitution  },
-                { title: 'Submission Date', field: 'dateSubmitted', hidden: !settings.visibleColumns.dateSubmitted  },
-                { title: 'PAT Review Date', field: 'meetingDate', hidden: !settings.visibleColumns.meetingDate  },
-                { title: 'Planned Grant Submission Date', field: 'plannedGrantSubmissionDate', hidden: !settings.visibleColumns.plannedGrantSubmissionDate  },
-                { title: 'Actual Grant Submission Date', field: 'actualGrantSubmissionDate', hidden: !settings.visibleColumns.actualGrantSubmissionDate  },
-                { title: 'Grant Approval Date', field: 'fundingStart', hidden: !settings.visibleColumns.fundingStart  },
+                {
+                    title: 'ID', field: 'proposalID',
+                    hidden: false,
+                    customSort: (a, b) => sortNullFirst(a, b, 'proposalID')
+                },
+                {
+                    title: 'Proposal Name', field: 'shortTitle',
+                    hidden: !settings.visibleColumns.shortTitle,
+                    customSort: (a, b) => sortNullFirst(a, b, 'shortTitle')
+                },
+                {
+                    title: 'PI', field: 'piName',
+                    hidden: !settings.visibleColumns.piName,
+                    customSort: (a, b) => sortNullFirst(a, b, 'piName')
+                },
+                {
+                    title: 'Status', field: 'proposalStatus',
+                    hidden: !settings.visibleColumns.proposalStatus,
+                    customSort: (a, b) => sortNullFirst(a, b, 'proposalStatus')
+                },
+                {
+                    title: 'Therapeutic Area', field: 'therapeuticArea',
+                    hidden: !settings.visibleColumns.therapeuticArea,
+                    customSort: (a, b) => sortNullFirst(a, b, 'therapeuticArea')
+                },
+                {
+                    title: 'Submitting Insitution', field: 'submitterInstitution',
+                    hidden: !settings.visibleColumns.submitterInstitution,
+                    customSort: (a, b) => sortNullFirst(a, b, 'submitterInstitution')
+                },
+                {
+                    title: 'Assigned TIC/RIC', field: 'assignToInstitution',
+                    hidden: !settings.visibleColumns.assignToInstitution,
+                    customSort: (a, b) => sortNullFirst(a, b, 'assignToInstitution')
+                },
+                {
+                    title: 'Submission Date', field: 'dateSubmitted',
+                    hidden: !settings.visibleColumns.dateSubmitted, 
+                    customSort: (a, b) => sortNullFirst(a, b, 'dateSubmitted')
+                },
+                {
+                    title: 'PAT Review Date', field: 'meetingDate',
+                    hidden: !settings.visibleColumns.meetingDate,
+                    customSort: (a, b) => sortNullFirst(a, b, 'meetingDate')
+                },
+                {
+                    title: 'Planned Grant Submission Date', field: 'plannedGrantSubmissionDate',
+                    hidden: !settings.visibleColumns.plannedGrantSubmissionDate,
+                    customSort: (a, b) => sortNullFirst(a, b, 'plannedGrantSubmissionDate')
+                },
+                {
+                    title: 'Actual Grant Submission Date', field: 'actualGrantSubmissionDate',
+                    hidden: !settings.visibleColumns.actualGrantSubmissionDate,
+                    customSort: (a, b) => sortNullFirst(a, b, 'actualGrantSubmissionDate')
+                },
+                {
+                    title: 'Grant Approval Date', field: 'fundingStart',
+                    hidden: !settings.visibleColumns.fundingStart,
+                    customSort: (a, b) => sortNullFirst(a, b, 'fundingStart')
+                },
             ] }
             data={ proposals }
             options={{
