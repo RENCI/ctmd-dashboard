@@ -10,6 +10,7 @@ import SideMenu from './components/Menus/SideMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
+import ProposalPage from './views/ProposalInspector'
 import ProposalsPage from './views/Proposals'
 import ProposalsByOrganization from './views/Proposals/ByOrganization'
 import ProposalsByTic from './views/Proposals/ByTic'
@@ -81,7 +82,6 @@ const useStyles = makeStyles(theme => ({
 const Dashboard = props => {
     const classes = useStyles()
     const [mobileOpen, setMobileOpen] = useState()
-
     
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
@@ -126,6 +126,7 @@ const Dashboard = props => {
                     ><MenuIcon fontSize="large" /></IconButton>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
+                        <Route exact path="/proposals/:id(\d+)" component={ ProposalPage }/>
                         <Route exact path="/proposals" component={ ProposalsPage }/>
                         <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
                         <Route path="/proposals/tic" component={ ProposalsByTic }/>

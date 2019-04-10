@@ -13,6 +13,7 @@ import {
     AttachMoney as BudgetIcon,
     LocalLaundryService as ServicesIcon,
     CheckCircle as ApprovedIcon,
+    Search as InspectIcon,
 } from '@material-ui/icons'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
@@ -27,12 +28,18 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'space-between',
         marginBottom: 2 * theme.spacing.unit,
         borderBottom: `1px solid ${ theme.palette.grey[300] }`,
+        alignItems: 'center',
     },
     title: {
         padding: `${ 2 * theme.spacing.unit }px 0`,
         color: theme.palette.secondary.main,
         fontWeight: 'bold',
         letterSpacing: '1px',
+    },
+    actions: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     chip: {
         margin: theme.spacing.unit,

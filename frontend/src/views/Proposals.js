@@ -4,7 +4,7 @@ import { Heading } from '../components/Typography/Typography'
 import ProposalsTable from '../components/Charts/ProposalsTable'
 import BrowseMenu from '../components/Menus/BrowseMenu'
 
-const proposalsTable = (props) => {
+const ProposalsPage = (props) => {
     const [store, ] = useContext(StoreContext)
 
     return (
@@ -18,4 +18,4 @@ const proposalsTable = (props) => {
     )
 }
 
-export default proposalsTable
+export default ProposalsPage

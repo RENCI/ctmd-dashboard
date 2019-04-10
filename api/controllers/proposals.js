@@ -6,7 +6,37 @@ const db = require('../config/database')
 
 // /proposals/:id(\\d+)
 exports.getOne = (req, res) => {
-    const query = `SELECT * FROM "Proposal" WHERE "Proposal"."ProposalID"=${ req.params.id };`
+    const query = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
+            "Proposal"."ShortTitle" as "shortTitle",
+            "Proposal"."FullTitle" as "longTitle",
+            "Proposal"."ShortDescription" AS "shortDescription",
+            CAST("Proposal"."dateSubmitted" AS VARCHAR),
+            TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
+            name.description AS "proposalStatus",
+            name2.description AS "assignToInstitution",
+            name3.description AS "submitterInstitution",
+            name4.description AS "therapeuticArea",
+            name5.description AS "fundingStatus",
+            name6.description AS "fundingStatusWhenApproved",
+            "ProposalFunding"."totalBudget",
+            CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
+            CAST("ProposalFunding"."fundingStart" AS VARCHAR),
+            CAST("PATMeeting"."meetingDate" AS VARCHAR),
+            CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR)
+        FROM "Proposal" 
+        INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
+        INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
+        LEFT JOIN "AssignProposal" ON "Proposal"."ProposalID" = "AssignProposal"."ProposalID"
+        INNER JOIN "ProposalFunding" ON "Proposal"."ProposalID" = "ProposalFunding"."ProposalID"
+        LEFT JOIN "PATMeeting" ON "Proposal"."ProposalID" = "PATMeeting"."ProposalID"
+        LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
+        INNER JOIN name ON name.index = "Proposal"."proposalStatus" AND name."column" = 'proposalStatus'
+        LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
+        INNER JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
+        INNER JOIN name name4 ON name4.index = "ProposalDetails"."therapeuticArea" AND name4."column" = 'therapeuticArea'
+        INNER JOIN name name5 ON name5.index = "ProposalFunding"."currentFunding" AND name5."column" = 'currentFunding'
+        LEFT JOIN name name6 ON name6.index = "ProposalFunding"."newFundingStatus" AND name6."column" = 'newFundingStatus'
+        WHERE "Proposal"."ProposalID"=${ req.params.id }`
     db.any(query)
         .then(data => {
             res.status(200).send(data)
@@ -20,6 +50,7 @@ exports.getOne = (req, res) => {
 const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
             "Proposal"."ShortTitle" as "shortTitle",
             "Proposal"."FullTitle" as "longTitle",
+            "Proposal"."ShortDescription" AS "shortDescription",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
             name.description AS "proposalStatus",

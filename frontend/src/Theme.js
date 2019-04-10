@@ -69,9 +69,9 @@ theme = {
             },
             h3: {
                 fontFamily: 'Roboto',
-                color: theme.palette.primary.dark,
+                color: theme.palette.primary.light,
                 fontWeight: 'bold',
-                fontSize: '1.75rem',
+                fontSize: '1.5rem',
             },
             h4: {
                 fontFamily: 'Roboto',
