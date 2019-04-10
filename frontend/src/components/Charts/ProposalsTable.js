@@ -1,7 +1,8 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment, useState, useContext, useEffect } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText, Chip } from '@material-ui/core'
+import { Collapse } from '@material-ui/core'
 import {
     AccountBox as PiIcon,
     CalendarToday as CalendarIcon,
@@ -63,6 +64,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const ProposalDetailPanel = props => {
+    const [expanded, setExpanded] = useState(false)
     const {
         proposalID, shortTitle, piName, submitterInstitution, assignToInstitution,
         therapeuticArea, proposalStatus, totalBudget, fundingPeriod, fundingStatus, fundingStatusWhenApproved,
@@ -71,137 +73,140 @@ const ProposalDetailPanel = props => {
     } = props
     const classes = useStyles()
 
-    console.log(fundingStatusWhenApproved)
-    
+    useEffect(() => {
+        setExpanded(true)
+    }, [])
+
     const todaysDate = (new Date()).toISOString().slice(0,10)
 
     const timeSpan = (startDate, endDate) => Math.round(new Date(endDate) - new Date(startDate))/(1000 * 60 * 60 * 24)
 
     return (
-        <Grid container className={ classes.panel }>
-            <Grid item xs={ 12 } className={ classes.header }>
-                <Typography variant="h5" className={ classes.title }>{ shortTitle }</Typography>
-                <Chip label={ `#${ proposalID }` } className={ classes.chip } color="secondary"/>
-            </Grid>
-            <Grid item xs={ 4 } className={ classes.column1 }>
-                <List dense>
-                    <ListItem>
-                        <Tooltip title="PI" aria-label="PI"><ListItemIcon><PiIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ piName || '-' } />
-                    </ListItem>
-                    <ListItem>
-                        <Tooltip title="Submitting Institution" aria-label="Submitting Institution"><ListItemIcon><InstitutionIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ submitterInstitution || '-' } />
-                    </ListItem>
-                    <ListItem>
-                        <Tooltip title="Assigned TIC/RIC" aria-label="Assigned TIC/RIC"><ListItemIcon><TicIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ assignToInstitution || '-' } />
-                    </ListItem>
-                    <ListItem>
-                        <Tooltip title="Therapeutic Area" aria-label="Therapeutic Area"><ListItemIcon><TherapeuticAreaIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ therapeuticArea || '-' } />
-                    </ListItem>
-                    <ListItem>
-                        <Tooltip title="Proposal Status" aria-label="Proposal Status"><ListItemIcon><ProposalStatusIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ proposalStatus || '-' } />
-                    </ListItem>
-                </List>
-            </Grid>
-            <Grid item xs={ 4 } className={ classes.column2 }>
-                <List dense>
-                    <ListItem>
-                        <Tooltip title="Funding" aria-label="Funding"><ListItemIcon><BudgetIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary={ fundingStatus || '-' } secondary={ `${ fundingPeriod || '-' } / ${ totalBudget || '-' }` } />
-                    </ListItem>
-                    {
-                        fundingStatusWhenApproved ? (
-                            <ListItem>
-                                <Tooltip title="Funding" aria-label="Funding"><ListItemIcon><ApprovedIcon /></ListItemIcon></Tooltip>
-                                <ListItemText primary="Approval Funding Status" secondary={ fundingStatusWhenApproved || '-' } />
-                            </ListItem>
-
-                        ) : null
-                    }
-                </List>
-            </Grid>
-            <Grid item xs={ 4 }>
-                <List dense>
-                    <ListItem className={ classes.servicesRow }>
-                        <Tooltip title="Services" aria-label="Requested and Approved Services"><ListItemIcon><ServicesIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary="Requested Services" secondary={
-                            <Fragment>
-                                {
-                                    requestedServices.length > 0 ? requestedServices.map(
-                                        service => <span className={ classes.service } key={ service }>{ service }</span>
-                                    ) : 'N/A'
-                                }
-                            </Fragment>
-                        }/>
-                        <ListItemText primary="Approved Services" secondary={
-                            <Fragment>
-                                {
-                                    approvedServices.length > 0 ? approvedServices.map(
-                                        service => <span className={ classes.service } key={ service }>{ service }</span>
-                                    ) : 'N/A'
-                                }
-                            </Fragment>
-                        }/>
-                    </ListItem>
-                </List>
-            </Grid>
-            <Grid item xs={ 12 }>
-                <List dense>
-                    <ListItem className={ classes.timelineRow }>
-                        <Tooltip title="Submission and Approval Dates" aria-label="Submission and Approval Dates"><ListItemIcon><CalendarIcon /></ListItemIcon></Tooltip>
-                        <ListItemText primary="Submission Date" secondary={
-                            dateSubmitted ? (
+        <Collapse in={ expanded }>
+            <Grid container className={ classes.panel }>
+                <Grid item xs={ 12 } className={ classes.header }>
+                    <Typography variant="h5" className={ classes.title }>{ shortTitle }</Typography>
+                    <Chip label={ `#${ proposalID }` } className={ classes.chip } color="secondary"/>
+                </Grid>
+                <Grid item xs={ 4 } className={ classes.column1 }>
+                    <List dense>
+                        <ListItem>
+                            <Tooltip title="PI" aria-label="PI"><ListItemIcon><PiIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary={ piName || '-' } />
+                        </ListItem>
+                        <ListItem>
+                            <Tooltip title="Submitting Institution" aria-label="Submitting Institution"><ListItemIcon><InstitutionIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary={ submitterInstitution || '-' } />
+                        </ListItem>
+                        <ListItem>
+                            <Tooltip title="Assigned TIC/RIC" aria-label="Assigned TIC/RIC"><ListItemIcon><TicIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary={ assignToInstitution || '-' } />
+                        </ListItem>
+                        <ListItem>
+                            <Tooltip title="Therapeutic Area" aria-label="Therapeutic Area"><ListItemIcon><TherapeuticAreaIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary={ therapeuticArea || '-' } />
+                        </ListItem>
+                        <ListItem>
+                            <Tooltip title="Proposal Status" aria-label="Proposal Status"><ListItemIcon><ProposalStatusIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary={ proposalStatus || '-' } />
+                        </ListItem>
+                    </List>
+                </Grid>
+                <Grid item xs={ 4 } className={ classes.column2 }>
+                    <List dense>
+                        <ListItem>
+                            <Tooltip title="Funding" aria-label="Funding"><ListItemIcon><BudgetIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary={ fundingStatus || '-' } secondary={ `${ fundingPeriod || '-' } / ${ totalBudget || '-' }` } />
+                        </ListItem>
+                        {
+                            fundingStatusWhenApproved ? (
+                                <ListItem>
+                                    <Tooltip title="Funding" aria-label="Funding"><ListItemIcon><ApprovedIcon /></ListItemIcon></Tooltip>
+                                    <ListItemText primary="Approval Funding Status" secondary={ fundingStatusWhenApproved || '-' } />
+                                </ListItem>
+                            ) : null
+                        }
+                    </List>
+                </Grid>
+                <Grid item xs={ 4 }>
+                    <List dense>
+                        <ListItem className={ classes.servicesRow }>
+                            <Tooltip title="Services" aria-label="Requested and Approved Services"><ListItemIcon><ServicesIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary="Requested Services" secondary={
                                 <Fragment>
-                                    <span className={ classes.date }>{ dateSubmitted }</span>
-                                    <span className={ classes.dayCount }>Day 0</span>
-                                    <span className={ classes.daysAgo }>{ timeSpan(dateSubmitted, todaysDate) } days ago</span>
+                                    {
+                                        requestedServices.length > 0 ? requestedServices.map(
+                                            service => <span className={ classes.service } key={ service }>{ service }</span>
+                                        ) : 'N/A'
+                                    }
                                 </Fragment>
-                            ) : <span className={ classes.date }>- - -</span>
-                        }/>
-                        <ListItemText primary="PAT Review Date" secondary={
-                            meetingDate ? (
+                            }/>
+                            <ListItemText primary="Approved Services" secondary={
                                 <Fragment>
-                                    <span className={ classes.date }>{ meetingDate }</span>
-                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, meetingDate) }</span>
-                                    <span className={ classes.daysAgo }>{ timeSpan(meetingDate, todaysDate) } days ago</span>
+                                    {
+                                        approvedServices.length > 0 ? approvedServices.map(
+                                            service => <span className={ classes.service } key={ service }>{ service }</span>
+                                        ) : 'N/A'
+                                    }
                                 </Fragment>
-                            ) : <span className={ classes.date }>- - -</span>
-                        }/>
-                        <ListItemText primary="Planned Grant Submission Date" secondary={
-                            plannedGrantSubmissionDate ? (
-                                <Fragment>
-                                    <span className={ classes.date }>{ plannedGrantSubmissionDate }</span>
-                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span>
-                                    <span className={ classes.daysAgo }>{ timeSpan(plannedGrantSubmissionDate, todaysDate) } days ago</span>
-                                </Fragment>
-                            ) : <span className={ classes.date }>- - -</span>
-                        }/>
-                        <ListItemText primary="Actual Grant Submission Date" secondary={
-                            plannedGrantSubmissionDate ? (
-                                <Fragment>
-                                    <span className={ classes.date }>{ actualGrantSubmissionDate }</span>
-                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, actualGrantSubmissionDate) }</span>
-                                    <span className={ classes.daysAgo }>{ timeSpan(actualGrantSubmissionDate, todaysDate) } days ago</span>
-                                </Fragment>
-                            ) : <span className={ classes.date }>- - -</span>
-                        }/>
-                        <ListItemText primary="Grant Award Date" secondary={
-                            fundingStart ? (
-                                <Fragment>
-                                    <span className={ classes.date }>{ fundingStart }</span>
-                                    <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, fundingStart) }</span>
-                                    <span className={ classes.daysAgo }>{ timeSpan(fundingStart, todaysDate) } days ago</span>
-                                </Fragment>
-                            ) : <span className={ classes.date }>- - -</span>
-                        }/>
-                    </ListItem>
-                </List>
+                            }/>
+                        </ListItem>
+                    </List>
+                </Grid>
+                <Grid item xs={ 12 }>
+                    <List dense>
+                        <ListItem className={ classes.timelineRow }>
+                            <Tooltip title="Submission and Approval Dates" aria-label="Submission and Approval Dates"><ListItemIcon><CalendarIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary="Submission Date" secondary={
+                                dateSubmitted ? (
+                                    <Fragment>
+                                        <span className={ classes.date }>{ dateSubmitted }</span>
+                                        <span className={ classes.dayCount }>Day 0</span>
+                                        <span className={ classes.daysAgo }>{ timeSpan(dateSubmitted, todaysDate) } days ago</span>
+                                    </Fragment>
+                                ) : <span className={ classes.date }>- - -</span>
+                            }/>
+                            <ListItemText primary="PAT Review Date" secondary={
+                                meetingDate ? (
+                                    <Fragment>
+                                        <span className={ classes.date }>{ meetingDate }</span>
+                                        <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, meetingDate) }</span>
+                                        <span className={ classes.daysAgo }>{ timeSpan(meetingDate, todaysDate) } days ago</span>
+                                    </Fragment>
+                                ) : <span className={ classes.date }>- - -</span>
+                            }/>
+                            <ListItemText primary="Planned Grant Submission Date" secondary={
+                                plannedGrantSubmissionDate ? (
+                                    <Fragment>
+                                        <span className={ classes.date }>{ plannedGrantSubmissionDate }</span>
+                                        <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span>
+                                        <span className={ classes.daysAgo }>{ timeSpan(plannedGrantSubmissionDate, todaysDate) } days ago</span>
+                                    </Fragment>
+                                ) : <span className={ classes.date }>- - -</span>
+                            }/>
+                            <ListItemText primary="Actual Grant Submission Date" secondary={
+                                plannedGrantSubmissionDate ? (
+                                    <Fragment>
+                                        <span className={ classes.date }>{ actualGrantSubmissionDate }</span>
+                                        <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, actualGrantSubmissionDate) }</span>
+                                        <span className={ classes.daysAgo }>{ timeSpan(actualGrantSubmissionDate, todaysDate) } days ago</span>
+                                    </Fragment>
+                                ) : <span className={ classes.date }>- - -</span>
+                            }/>
+                            <ListItemText primary="Grant Award Date" secondary={
+                                fundingStart ? (
+                                    <Fragment>
+                                        <span className={ classes.date }>{ fundingStart }</span>
+                                        <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, fundingStart) }</span>
+                                        <span className={ classes.daysAgo }>{ timeSpan(fundingStart, todaysDate) } days ago</span>
+                                    </Fragment>
+                                ) : <span className={ classes.date }>- - -</span>
+                            }/>
+                        </ListItem>
+                    </List>
+                </Grid>
             </Grid>
-        </Grid>
+        </Collapse>
     )
 }
 
@@ -210,8 +215,6 @@ const ProposalsTable = (props) => {
     let { title, proposals } = props
     if (title) title += ` (${ proposals.length } Proposals)`
 
-    const sortNullFirst = (a, b, property) => a[property] < b[property] || a[property] === null ? -1 : 1
-    
     return (
         <MaterialTable
             title={ title || '-' }
@@ -220,62 +223,50 @@ const ProposalsTable = (props) => {
                 {
                     title: 'ID', field: 'proposalID',
                     hidden: !settings.visibleColumns.proposalID,
-                    customSort: (a, b) => sortNullFirst(a, b, 'proposalID')
                 },
                 {
                     title: 'Proposal Name', field: 'shortTitle',
                     hidden: !settings.visibleColumns.shortTitle,
-                    customSort: (a, b) => sortNullFirst(a, b, 'shortTitle')
                 },
                 {
                     title: 'PI', field: 'piName',
                     hidden: !settings.visibleColumns.piName,
-                    customSort: (a, b) => sortNullFirst(a, b, 'piName')
                 },
                 {
                     title: 'Status', field: 'proposalStatus',
                     hidden: !settings.visibleColumns.proposalStatus,
-                    customSort: (a, b) => sortNullFirst(a, b, 'proposalStatus')
                 },
                 {
                     title: 'Therapeutic Area', field: 'therapeuticArea',
                     hidden: !settings.visibleColumns.therapeuticArea,
-                    customSort: (a, b) => sortNullFirst(a, b, 'therapeuticArea')
                 },
                 {
                     title: 'Submitting Insitution', field: 'submitterInstitution',
                     hidden: !settings.visibleColumns.submitterInstitution,
-                    customSort: (a, b) => sortNullFirst(a, b, 'submitterInstitution')
                 },
                 {
                     title: 'Assigned TIC/RIC', field: 'assignToInstitution',
                     hidden: !settings.visibleColumns.assignToInstitution,
-                    customSort: (a, b) => sortNullFirst(a, b, 'assignToInstitution')
                 },
                 {
                     title: 'Submission Date', field: 'dateSubmitted',
                     hidden: !settings.visibleColumns.dateSubmitted, 
-                    customSort: (a, b) => sortNullFirst(a, b, 'dateSubmitted')
                 },
                 {
                     title: 'PAT Review Date', field: 'meetingDate',
                     hidden: !settings.visibleColumns.meetingDate,
-                    customSort: (a, b) => sortNullFirst(a, b, 'meetingDate')
                 },
                 {
                     title: 'Planned Grant Submission Date', field: 'plannedGrantSubmissionDate',
                     hidden: !settings.visibleColumns.plannedGrantSubmissionDate,
-                    customSort: (a, b) => sortNullFirst(a, b, 'plannedGrantSubmissionDate')
                 },
                 {
                     title: 'Actual Grant Submission Date', field: 'actualGrantSubmissionDate',
                     hidden: !settings.visibleColumns.actualGrantSubmissionDate,
-                    customSort: (a, b) => sortNullFirst(a, b, 'actualGrantSubmissionDate')
                 },
                 {
                     title: 'Grant Approval Date', field: 'fundingStart',
                     hidden: !settings.visibleColumns.fundingStart,
-                    customSort: (a, b) => sortNullFirst(a, b, 'fundingStart')
                 },
             ] }
             data={ proposals }
@@ -288,7 +279,7 @@ const ProposalsTable = (props) => {
                 pageSize: 15,
                 pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
-                detailPanelType: "single",
+                detailPanelType: 'multiple',
             }}
             detailPanel={rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}
