@@ -3,11 +3,11 @@
 
 ### UI Design
 
-See [https://material-ui.com/](https://material-ui.com/) for information on components.
+To ensure a clean and familiar interface, this application adheres to Google's Material Design standards by implementing their Material UI React component library. See [https://material-ui.com/](https://material-ui.com/) for information on the componentsand their usage.
 
 ### Accessing the API
 
-The ApiContext `frontend/src/contexts/ApiContext.js` holds all the knowledge about available API endpoints, and this context provider can be pulled in to make use of those endpoints.
+The ApiContext `frontend/src/contexts/ApiContext.js` holds all the knowledge about endpoints accessible in the API layer of the application.
 
 ```javascript
 export const endpoints = {
@@ -17,7 +17,7 @@ export const endpoints = {
 }
 ```
 
-Import the context at the top of your component file as usual, and define a variable inside your component by making use of React's new [useContext hook](https://reactjs.org/docs/hooks-reference.html#usecontext). Then the endpoint can be referenced in your component as a property of the `api` object. The following example uses the `/proposals` endpoint to grab the proposals and print them to the screen.
+This context provider can be pulled in to make use of those endpoints. Import the context at the top of your component file as usual, and define a variable, say `const api = useContext(ApiContext)`, inside your component by making use of React's new [useContext hook](https://reactjs.org/docs/hooks-reference.html#usecontext) so that the endpoint can be referenced within the component as a property of the `api` object. The following example uses the `/proposals` endpoint to grab the proposals and print them to the screen.
 
 
 ```jsx
@@ -40,11 +40,7 @@ export default props => {
 
     return (
         <pre>
-            {
-                proposals
-                    ? JSON.stringify(proposals, null, 2)
-                    : 'Loading proposals...'
-            }
+            { proposals ? JSON.stringify(proposals, null, 2) : 'Loading proposals...' }
         </pre>
     )
 }
@@ -53,11 +49,11 @@ export default props => {
 
 ### Global Store
 
-The above example would never actually have to be done because the proposals all live in a global store. However, the above method works great for items or information that don't live in the global store.
+The above example illustrates something that would never actually have to be done because the proposals all live in a global store, which sits at the top node of the application tree, and any descendant has access to it. The gloabl store contains all the often-used primitive elements of this application---proposals, institutions, TICs and RICs, therapeutic areas, etc.
 
-The global store sits at the top node of the application tree, and any descendant can access the global store, which contains all the often used primitive elements of this application---proposals, institutions, TICs, therapeutic areas, etc.
+Having this gloabl store eliminates the need to ever have to do soemthing like the above example to grab proposals, but it does work great for items or information that has no business living in the global store.
 
-The example below illustrates how to grab the proposals from the global store, exactly as the previous example does.
+The example below illustrates how, by having the global store, we can grab the proposals exactly as in the previous example.
 
 ```jsx
 import React, { useContext } from 'react'
@@ -68,15 +64,12 @@ export default props => {
 
     return (
         <pre>
-            {
-                store.proposals
-                    ? JSON.stringify(store.proposals, null, 2)
-                    : 'Loading proposals...'
-            }
+            { store.proposals ? JSON.stringify(store.proposals, null, 2) : 'Loading proposals...' }
         </pre>
     )
 }
 
 ```
 
-You'll notice how streamlined this approach is. More than that, though, this reduces the need to make excessive API calls and thus database queries.
+You'll notice how streamlined this approach is. Moreover, this reduces the need to make excessive API calls and thus database queries. The StoreContext Provider returns a two-element array, the two same two items one expects from the [`useState` hook](https://reactjs.org/docs/hooks-reference.html#usestate), although the `setStore` function can safely be omitted if it is not required, like so `const [store, ] = useContext(StoreContext)`.
+
