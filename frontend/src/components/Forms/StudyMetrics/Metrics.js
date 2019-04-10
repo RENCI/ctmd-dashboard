@@ -86,10 +86,7 @@ const MetricsForm = props => {
     
     useEffect(() => {
         setCurrentSubformNumer(0)
-        setValues({ ...emptyFormValues, proposalID: proposalID })
-    }, [props.proposalID])
-
-    useEffect(() => {
+        // setValues({ ...emptyFormValues, proposalID: proposalID })
         axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
             .then(response => {
                 const { data } = response
@@ -140,7 +137,7 @@ const MetricsForm = props => {
                 })
             })
             .catch(error => console.log('Error', error))
-    }, [props.proposalID])
+    }, [proposalID])
 
     useEffect(() => {
         setSubmitAllowed(true)

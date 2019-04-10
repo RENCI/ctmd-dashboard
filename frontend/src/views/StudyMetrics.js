@@ -93,7 +93,7 @@ const StudyMetricsPage = props => {
                         currentProposal
                         ? (
                             <Card>
-                                 <StudyMetricsForm proposalID={ currentProposal.proposaID } />
+                                 <StudyMetricsForm proposalID={ currentProposal.proposalID } />
                             </Card>
                         ) : null
                     }
