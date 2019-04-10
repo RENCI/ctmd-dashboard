@@ -1,7 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import * as d3 from 'd3-scale-chromatic'
-
-d3.interpolateBrBG(0.5)
+import { schemeSet2, interpolateBlues } from 'd3-scale-chromatic'
 
 let theme = createMuiTheme({
     palette: {
@@ -28,7 +26,8 @@ let theme = createMuiTheme({
             granite: '#B5B5B5',
             limestone: '#E5E5E5',
         },
-        chartColors: d3.schemeSet2,
+        chartColors: schemeSet2,
+        calendarColors: [...Array(8).keys()].map(i => interpolateBlues(0.3 + i * (1 - 0.3) / 8)),
         flashMessage: {
             success: '#63c0a5',
             info: '#999',

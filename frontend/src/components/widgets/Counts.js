@@ -1,10 +1,11 @@
 import React, { useContext } from 'react'
 import { NavLink }from 'react-router-dom'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { Grid, Card, CardContent, CardHeader, CardActions, Button } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../../components/Progress/Progress'
+import Widget from './Widget'
 
 const useStyles = makeStyles(theme => ({
     cardHeader: { },
@@ -50,43 +51,37 @@ const Count = props => {
     const today = new Date()
     const todayYYYYMM = `${ today.getFullYear() }-${ ('0' + (today.getMonth() + 1)).slice(-2) }`
     return (
-        <Card>
-            <CardHeader title="Submissions at a Glance" className={ classes.cardHeader }/>
-            <CardContent className={ classes.cardContent }>
-                <Grid container spacing={ 4 * theme.spacing.unit }>
-                    <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
-                        <span className={ classes.value }>
-                            { store.proposals ? store.proposals.length : <CircularLoader /> }
-                        </span> <span className={ classes.description }>Total</span>
-                    </Grid>
-                    <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
-                        <span className={ classes.value }>
-                            {
-                                store.proposals
-                                ? store.proposals.filter(
-                                    ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 4) === todayYYYYMM.substring(0, 4)
-                                ).length
-                                : <CircularLoader />
-                            }
-                        </span> <span className={ classes.description }>This Year</span>
-                    </Grid>
-                    <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
-                        <span className={ classes.value }>
-                            {
-                                store.proposals
-                                ? store.proposals.filter(
-                                    ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 7) === todayYYYYMM
-                                ).length
-                                : <CircularLoader />
-                            }
-                        </span> <span className={ classes.description }>This Month</span>
-                    </Grid>
+        <Widget title="Submissions at a Glance">
+            <Grid container spacing={ 4 * theme.spacing.unit }>
+                <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
+                    <span className={ classes.value }>
+                        { store.proposals ? store.proposals.length : <CircularLoader /> }
+                    </span> <span className={ classes.description }>Total</span>
                 </Grid>
-            </CardContent>
-            <CardActions className={ classes.actions }>
-                <Button component={ NavLink } to="/proposals">Browse Proposals<RightIcon /></Button>
-            </CardActions>
-        </Card>
+                <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
+                    <span className={ classes.value }>
+                        {
+                            store.proposals
+                            ? store.proposals.filter(
+                                ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 4) === todayYYYYMM.substring(0, 4)
+                            ).length
+                            : <CircularLoader />
+                        }
+                    </span> <span className={ classes.description }>This Year</span>
+                </Grid>
+                <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
+                    <span className={ classes.value }>
+                        {
+                            store.proposals
+                            ? store.proposals.filter(
+                                ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 7) === todayYYYYMM
+                            ).length
+                            : <CircularLoader />
+                        }
+                    </span> <span className={ classes.description }>This Month</span>
+                </Grid>
+            </Grid>
+        </Widget>
     )
 }
 

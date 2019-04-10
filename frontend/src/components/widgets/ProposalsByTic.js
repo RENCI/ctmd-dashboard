@@ -40,7 +40,7 @@ const proposalsGroupedByTicThenStatus = props => {
         anchor: 'top-right',
         direction: 'column',
         justify: false,
-        translateX: windowWidth < 1000 ? 0 : 156,
+        translateX: windowWidth < 1000 ? 0 : 256,
         translateY: -32,
         itemsSpacing: 1,
         itemWidth: 20,
@@ -64,7 +64,7 @@ const proposalsGroupedByTicThenStatus = props => {
                             data={ proposalGroups }
                             keys={ store.statuses.map(({ description }) => description) }
                             indexBy="name"
-                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 156, bottom: 50, left: 0 }}
+                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 256, bottom: 50, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"
@@ -74,17 +74,17 @@ const proposalsGroupedByTicThenStatus = props => {
                             borderColor="inherit:darker(1.6)"
                             axisLeft={ null }
                             axisBottom={{
-                                tickSize: 5,
-                                tickPadding: 5,
-                                tickRotation: 0,
-                                legend: '',
-                                legendPosition: 'middle',
-                                legendOffset: -40
+                                renderTick: tick => (
+                                    <g key={ tick.key } transform={ `translate(${ tick.x },${ tick.y + 16 }) `}>
+                                        <text style={{ fill: '#333', fontSize: 10 }} textAnchor="middle" alignmentBaseline="middle">
+                                            { tick.value }
+                                        </text>
+                                    </g>
+                                )
                             }}
                             enableGridX={ false }
                             enableGridY={ false }
-                            labelSkipWidth={ 12 }
-                            labelSkipHeight={ 12 }
+                            labelSkipHeight={ 30 }
                             labelTextColor="inherit:darker(1.6)"
                             animate={ true }
                             motionStiffness={ 90 }

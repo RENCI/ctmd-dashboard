@@ -1,10 +1,11 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
-import { Card, CardHeader, CardContent, Button, Menu, MenuItem } from '@material-ui/core'
+import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { ResponsiveCalendar } from '@nivo/calendar'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
+import Widget from './Widget'
 
 const tooltip = (event) => {
     const { day, value } = event
@@ -58,51 +59,59 @@ const ProposalsCalendar = props => {
             setCount(calendarData.filter(({ day }) => day && day.includes(year)).reduce((sum, { value }) => sum + value, 0))
         }
     }, [year])
-    
+
     return (
-        <Card>
-            <CardHeader
-                action={
-                    <Fragment>
-                        <Button variant="text" color="primary"
-                            aria-owns={ anchorEl ? 'year-menu' : undefined }
-                            aria-haspopup="true"
-                            onClick={ handleClick }
-                        >{ year }<MoreIcon/></Button>
-                        <Menu id="year-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
-                            <MenuItem onClick={ handleSelect } value="2016">2016</MenuItem>
-                            <MenuItem onClick={ handleSelect } value="2017">2017</MenuItem>
-                            <MenuItem onClick={ handleSelect } value="2018">2018</MenuItem>
-                            <MenuItem onClick={ handleSelect } value="2019">2019</MenuItem>
-                        </Menu>
-                    </Fragment>
-                }
-                title={ `Submissions in ${ year }` }
-                subheader={ `${ count } Submissions` }
-            />
-            <CardContent style={{ height: '180px' }}>
+        <Widget
+            title={ `Submissions in ${ year }` }
+            subtitle={ `${ count } Submissions` }
+            action={
+                <Fragment>
+                    <Button variant="text" color="primary"
+                        aria-owns={ anchorEl ? 'year-menu' : undefined }
+                        aria-haspopup="true"
+                        onClick={ handleClick }
+                    >{ year }<MoreIcon/></Button>
+                    <Menu id="year-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
+                        <MenuItem onClick={ handleSelect } value="2016">2016</MenuItem>
+                        <MenuItem onClick={ handleSelect } value="2017">2017</MenuItem>
+                        <MenuItem onClick={ handleSelect } value="2018">2018</MenuItem>
+                        <MenuItem onClick={ handleSelect } value="2019">2019</MenuItem>
+                    </Menu>
+                </Fragment>
+            }
+            info="This allows you to visualize proposal submissions over time. Highlighted dates indicate dates on which proposals were submitted."
+            footer={
+                <svg width={ 70 + 14 * theme.palette.calendarColors.length } height="14">
+                    <text x="0" y="10" font-size="12" fill={ theme.palette.grey[800] }>fewer</text>
+                    { theme.palette.calendarColors.map((color, i) => <rect key={ i } x={ 35 + i * 14 } y="0" width="14" height="14" fill={ color } />) }
+                    <text x={ 35 + 14 * theme.palette.calendarColors.length + 5 } y="10" font-size="12" fill={ theme.palette.grey[800] }>more</text>
+                </svg>
+            }
+        >
+            <div style={{ height: '180px' }}>
                 {
                     calendarData ? (
-                        <ResponsiveCalendar
-                            data={ calendarData }
-                            from={ `${ year }-01-01T12:00:00.000Z` }
-                            to={ `${ year }-12-31T12:00:00.000Z` }
-                            direction="horizontal"
-                            colors={ theme.palette.chartColors }
-                            emptyColor="#eee"
-                            margin={{ top: 20, right: 16, bottom: 0, left: 32, }}
-                            yearSpacing={ 40 }
-                            monthBorderColor="#fff"
-                            monthLegendOffset={ 10 }
-                            dayBorderWidth={ 1 }
-                            dayBorderColor="#fff"
-                            tooltip={ tooltip }
-                            domain={ [0, 5] }
-                        />
+                        <Fragment>
+                            <ResponsiveCalendar
+                                data={ calendarData }
+                                from={ `${ year }-01-01T12:00:00.000Z` }
+                                to={ `${ year }-12-31T12:00:00.000Z` }
+                                direction="horizontal"
+                                colors={ theme.palette.calendarColors }
+                                emptyColor="#e9e9e9"
+                                margin={{ top: 20, right: 16, bottom: 0, left: 32, }}
+                                yearSpacing={ 40 }
+                                monthBorderColor="#fff"
+                                monthLegendOffset={ 10 }
+                                dayBorderWidth={ 1 }
+                                dayBorderColor="#fff"
+                                tooltip={ tooltip }
+                            />
+                        </Fragment>
                     ) : <CircularLoader />
                 }
-            </CardContent>
-        </Card>
+            </div>
+        </Widget>
     )
 }
 

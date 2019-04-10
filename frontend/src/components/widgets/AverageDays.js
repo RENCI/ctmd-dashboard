@@ -13,6 +13,13 @@ const AverageDays = props => {
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
     })
+    const [medianDays, setMedianDays] = useState({
+        submsisionToPatApproval: 0,
+        approvalToGrantSubmission: 0,
+        submissionToGrantSubmission: 0,
+        grantSubmissionToGrantAward: 0,
+    })
+    const [mode, setMode] = useState('average')
     const theme = useTheme()
 
     const findAverageDaysBetween = (field1, field2) => {
@@ -20,52 +27,67 @@ const AverageDays = props => {
         const total = store.proposals.reduce((totalDays, proposal) => {
             if (proposal[field1] && proposal[field2]) {
                 count += 1
-                return totalDays + Math.round(Math.abs(new Date(proposal[field2]) - new Date(proposal[field1])))/(1000 * 60 * 60 * 24)
+                return totalDays + Math.round(new Date(proposal[field2]) - new Date(proposal[field1]))/(1000 * 60 * 60 * 24)
             }
             return totalDays
         }, 0)
         return [Math.round(total / count), count]
     }
     
+    const findMedianDaysBetween = (field1, field2) => {
+        const differences = store.proposals.filter(proposal => proposal[field1] && proposal[field2])
+            .map(proposal => Math.floor((new Date(proposal[field2]) - new Date(proposal[field1])) / (1000 * 60 * 60 * 24)))
+            .sort()
+        if (differences.length % 2 === 0) {
+            const index1 = differences.length / 2 - 1
+            const index2 = differences.length / 2
+            const median = (differences[index1] + differences[index2]) / 2
+            return [median, differences.length]
+        } else {
+            const middleIndex = (differences.length - 1) / 2
+            const median = differences[middleIndex]
+            return [median, differences.length]
+        }
+    }
+    
     useEffect(() => {
         if (store.proposals) {
-            const submsisionToPatApproval = findAverageDaysBetween('dateSubmitted', 'meetingDate')
-            const approvalToGrantSubmission = findAverageDaysBetween('meetingDate', 'actualGrantSubmissionDate')
-            const submissionToGrantSubmission = findAverageDaysBetween('dateSubmitted', 'actualGrantSubmissionDate')
-            const grantSubmissionToGrantAward = findAverageDaysBetween('actualGrantSubmissionDate', 'fundingStart')
             setAverageDays({
-                submsisionToPatApproval,
-                approvalToGrantSubmission,
-                submissionToGrantSubmission,
-                grantSubmissionToGrantAward,
+                submsisionToPatApproval: findAverageDaysBetween('dateSubmitted', 'meetingDate'),
+                approvalToGrantSubmission: findAverageDaysBetween('meetingDate', 'actualGrantSubmissionDate'),
+                submissionToGrantSubmission: findAverageDaysBetween('dateSubmitted', 'actualGrantSubmissionDate'),
+                grantSubmissionToGrantAward: findAverageDaysBetween('actualGrantSubmissionDate', 'fundingStart'),
+            }) 
+            setMedianDays({
+                submsisionToPatApproval: findMedianDaysBetween('dateSubmitted', 'meetingDate'),
+                approvalToGrantSubmission: findMedianDaysBetween('meetingDate', 'actualGrantSubmissionDate'),
+                submissionToGrantSubmission: findMedianDaysBetween('dateSubmitted', 'actualGrantSubmissionDate'),
+                grantSubmissionToGrantAward: findMedianDaysBetween('actualGrantSubmissionDate', 'fundingStart'),
             }) 
         }
     }, [store])
 
-    const averages = {
-        grantSubmissionToGrantAward: averageDays.grantSubmissionToGrantAward,
-        submissionToGrantSubmission: averageDays.submissionToGrantSubmission,
-        approvalToGrantSubmission: averageDays.approvalToGrantSubmission,
-        submsisionToPatApproval: averageDays.submsisionToPatApproval,
-    }
-
     return (
         <Card>
             <CardHeader title="Averages" subheader="Average number of days between notable times over the proposal lifespan" />
-            <CardContent style={{ height: '180px' }}>
+            <CardContent style={{ height: '280px' }}>
                 <ResponsiveBar
                     data={[
-                        { timespan: 'Grant Submission to Grant Award',    days: averages.grantSubmissionToGrantAward[0],    count: averages.grantSubmissionToGrantAward[1]},
-                        { timespan: 'Submission to Grant Submission',     days: averages.submissionToGrantSubmission[0],    count: averages.submissionToGrantSubmission[1]},
-                        { timespan: 'PAT Approval to Grant Submission',   days: averages.approvalToGrantSubmission[0],      count: averages.approvalToGrantSubmission[1]},
-                        { timespan: 'Submission to PAT Approval',         days: averages.submsisionToPatApproval[0],        count: averages.submsisionToPatApproval[1]},
+                        { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward[0],    count: averageDays.grantSubmissionToGrantAward[1]},
+                        { timespan: 'Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission[0],    count: averageDays.submissionToGrantSubmission[1]},
+                        { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission[0],      count: averageDays.approvalToGrantSubmission[1]},
+                        { timespan: 'Submission to PAT Approval',         days: averageDays.submsisionToPatApproval[0],        count: averageDays.submsisionToPatApproval[1]},
+                        // { timespan: 'Grant Submission to Grant Award',    days: medianDays.grantSubmissionToGrantAward[0],    count: medianDays.grantSubmissionToGrantAward[1]},
+                        // { timespan: 'Submission to Grant Submission',     days: medianDays.submissionToGrantSubmission[0],    count: medianDays.submissionToGrantSubmission[1]},
+                        // { timespan: 'PAT Approval to Grant Submission',   days: medianDays.approvalToGrantSubmission[0],      count: medianDays.approvalToGrantSubmission[1]},
+                        // { timespan: 'Submission to PAT Approval',         days: medianDays.submsisionToPatApproval[0],        count: medianDays.submsisionToPatApproval[1]},
                     ]}
                     keys={ ['days'] }
                     indexBy="timespan"
                     margin={{ top: 0, right: 32, bottom: 32, left: 186 }}
                     layout="horizontal"
                     enableGridY={ false }
-                    padding={ 0.2 }
+                    padding={ 0.1 }
                     colors={ theme.palette.chartColors }
                     colorBy="index"
                     borderColor="inherit:darker(1.6)"
@@ -80,8 +102,8 @@ const AverageDays = props => {
                         legendPosition: 'middle',
                         legendOffset: 0
                     }}
-                    labelSkipWidth={ 0 }
-                    labelSkipHeight={ 12 }
+                    labelSkipWidth={ 50 }
+                    labelFormat={ d => `${ d } days` }
                     labelTextColor="inherit:darker(1.6)"
                     animate={ true }
                     motionStiffness={ 90 }
