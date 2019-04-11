@@ -229,51 +229,51 @@ const ProposalsTable = (props) => {
             columns={ [
                 {
                     title: 'ID', field: 'proposalID',
-                    hidden: !settings.visibleColumns.proposalID,
+                    hidden: !settings.tables.visibleColumns.proposalID,
                 },
                 {
                     title: 'Proposal Name', field: 'shortTitle',
-                    hidden: !settings.visibleColumns.shortTitle,
+                    hidden: !settings.tables.visibleColumns.shortTitle,
                 },
                 {
                     title: 'PI', field: 'piName',
-                    hidden: !settings.visibleColumns.piName,
+                    hidden: !settings.tables.visibleColumns.piName,
                 },
                 {
                     title: 'Status', field: 'proposalStatus',
-                    hidden: !settings.visibleColumns.proposalStatus,
+                    hidden: !settings.tables.visibleColumns.proposalStatus,
                 },
                 {
                     title: 'Therapeutic Area', field: 'therapeuticArea',
-                    hidden: !settings.visibleColumns.therapeuticArea,
+                    hidden: !settings.tables.visibleColumns.therapeuticArea,
                 },
                 {
                     title: 'Submitting Insitution', field: 'submitterInstitution',
-                    hidden: !settings.visibleColumns.submitterInstitution,
+                    hidden: !settings.tables.visibleColumns.submitterInstitution,
                 },
                 {
                     title: 'Assigned TIC/RIC', field: 'assignToInstitution',
-                    hidden: !settings.visibleColumns.assignToInstitution,
+                    hidden: !settings.tables.visibleColumns.assignToInstitution,
                 },
                 {
                     title: 'Submission Date', field: 'dateSubmitted',
-                    hidden: !settings.visibleColumns.dateSubmitted, 
+                    hidden: !settings.tables.visibleColumns.dateSubmitted, 
                 },
                 {
                     title: 'PAT Review Date', field: 'meetingDate',
-                    hidden: !settings.visibleColumns.meetingDate,
+                    hidden: !settings.tables.visibleColumns.meetingDate,
                 },
                 {
                     title: 'Planned Grant Submission Date', field: 'plannedGrantSubmissionDate',
-                    hidden: !settings.visibleColumns.plannedGrantSubmissionDate,
+                    hidden: !settings.tables.visibleColumns.plannedGrantSubmissionDate,
                 },
                 {
                     title: 'Actual Grant Submission Date', field: 'actualGrantSubmissionDate',
-                    hidden: !settings.visibleColumns.actualGrantSubmissionDate,
+                    hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
                     title: 'Grant Approval Date', field: 'fundingStart',
-                    hidden: !settings.visibleColumns.fundingStart,
+                    hidden: !settings.tables.visibleColumns.fundingStart,
                 },
             ] }
             data={ proposals }
@@ -283,7 +283,7 @@ const ProposalsTable = (props) => {
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                pageSize: 15,
+                pageSize: settings.tables.pageSize,
                 pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
                 detailPanelType: 'multiple',
