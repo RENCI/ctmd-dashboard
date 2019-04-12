@@ -82,9 +82,9 @@ const ProposalsCalendar = props => {
             info="This allows you to visualize proposal submissions over time. Highlighted dates indicate dates on which proposals were submitted."
             footer={
                 <svg width={ 70 + 14 * theme.palette.calendarColors.length } height="14">
-                    <text x="0" y="10" font-size="12" fill={ theme.palette.grey[800] }>fewer</text>
+                    <text x="0" y="10" fontSize="12" fill={ theme.palette.grey[800] }>fewer</text>
                     { theme.palette.calendarColors.map((color, i) => <rect key={ i } x={ 35 + i * 14 } y="0" width="14" height="14" fill={ color } />) }
-                    <text x={ 35 + 14 * theme.palette.calendarColors.length + 5 } y="10" font-size="12" fill={ theme.palette.grey[800] }>more</text>
+                    <text x={ 35 + 14 * theme.palette.calendarColors.length + 5 } y="10" fontSize="12" fill={ theme.palette.grey[800] }>more</text>
                 </svg>
             }
         >
