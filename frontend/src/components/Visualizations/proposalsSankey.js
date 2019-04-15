@@ -204,12 +204,12 @@ export default function() {
         .attr("height", height);
 
     // Do Sankey layout
-    var sankey = d3Sankey.sankey()
+    const sankey = d3Sankey.sankey()
         .size([innerWidth(), innerHeight()])
         .nodePadding(2)
         .iterations(1000);
 
-    var {nodes, links} = sankey(network);
+    const {nodes, links} = sankey(network);
 
     // Color scale
     nodeColorScale.domain(nodeTypes);
@@ -231,9 +231,7 @@ export default function() {
 
       // Bind nodes
       let node = svg.select(".nodes").selectAll(".node")
-          .data(nodes, function(d) {
-            return d.id;
-          });
+          .data(nodes, d => d.id);
 
       // Node enter
       let nodeEnter = node.enter().append("g")

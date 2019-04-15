@@ -89,33 +89,35 @@ function ProposalsNetworkControls(props) {
 
     function dropDown(type, value, label, helperText, items, ref, labelWidth) {
         return (
-            <FormControl variant="outlined" fullWidth className={ classes.formControl }>
-                <InputLabel htmlFor="type" ref={ ref }>
-                    { label }
-                </InputLabel>
-                <Select
-                    className={ classes.select }
-                    value={ value }
-                    onChange={ e => handleSelect(type, e) }
-                    input={
-                        <OutlinedInput
-                            labelWidth={ labelWidth }
-                            name={ type }
-                            id={ type }
-                        />
-                    }
-                >
-                    { items }
-                </Select>
-                <FormHelperText>
-                    { "Specify " + helperText + " to highlight." }
-                </FormHelperText>
-            </FormControl>
+            <Grid item xs>
+                <FormControl variant="outlined" fullWidth className={ classes.formControl }>
+                    <InputLabel htmlFor="type" ref={ ref }>
+                        { label }
+                    </InputLabel>
+                    <Select
+                        className={ classes.select }
+                        value={ value }
+                        onChange={ e => handleSelect(type, e) }
+                        input={
+                            <OutlinedInput
+                                labelWidth={ labelWidth }
+                                name={ type }
+                                id={ type }
+                            />
+                        }
+                    >
+                        { items }
+                    </Select>
+                    <FormHelperText>
+                        { "Specify " + helperText + " to highlight." }
+                    </FormHelperText>
+                </FormControl>
+            </Grid>
         );
     }
 
     return (
-        <Grid container wrap={'nowrap'}>
+        <Grid container wrap={'wrap'}>
             { dropDown("tic", tic, "TIC", "TIC", ticItems, ticLabelRef, ticLabelWidth) }
             { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
             { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }

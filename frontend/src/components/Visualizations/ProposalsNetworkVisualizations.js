@@ -23,8 +23,7 @@ class ProposalsNetworkVisualizations extends Component {
         super(props);
 
         this.state = {
-            windowWidth: 0,
-            windowHeight: 0
+            windowWidth: 0
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -44,8 +43,7 @@ class ProposalsNetworkVisualizations extends Component {
     updateWindowDimensions() {
         // Should cause a re-render if the window size has changed
         this.setState({
-            windowWidth: window.width,
-            windowHeight: window.height
+            windowWidth: window.innerWidth
         });
     }
 
@@ -56,8 +54,6 @@ class ProposalsNetworkVisualizations extends Component {
 
     componentDidMount() {
         this.updateWindowDimensions();
-
-        this.drawVisualization(this.props, null, this.state);
 
         window.addEventListener('resize', this.updateWindowDimensions);
     }
@@ -89,29 +85,31 @@ class ProposalsNetworkVisualizations extends Component {
             .width(sankeyWidth)
             .height(sankeyHeight);
 
-        if (!oldProps || newProps.nodeData !== oldProps.nodeData) {
-            // Bind new data
-            d3.select(this.networkDiv)
-                .datum(newProps.nodeData)
-                .call(this.network);
+        // Bind data
+        d3.select(this.networkDiv)
+            .datum(newProps.nodeData)
+            .call(this.network);
 
-            d3.select(this.sankeyDiv)
-                .datum(newProps.nodeData)
-                .call(this.sankey);
-        }
+        d3.select(this.sankeyDiv)
+            .style('height', networkHeight + 'px')
+            .datum(newProps.nodeData)
+            .call(this.sankey);
 
         this.network.selectNodes(newProps.selectedNodes);
         this.sankey.selectNodes(newProps.selectedNodes);
     }
 
     render() {
-        let outerStyle = { display: 'flex', flexWrap: 'wrap', width: '100%'};
-        let innerStyle = { width: '800px', flex: '1 1 auto' };
+        const height = this.networkDiv ? this.networkDiv.clientWidth : '600px';
+
+        const outerStyle = { display: 'flex', flexWrap: 'wrap'};
+        const networkStyle = { width: '600px', flex: '1 0 auto' };
+        const sankeyStyle = { width: '600px', flex: '1 0 auto', height: height, overflowY: 'auto' };
 
         return (
-            <div style={outerStyle}>
-                <div style={innerStyle} ref={div => this.networkDiv = div}></div>
-                <div style={innerStyle} ref={div => this.sankeyDiv = div}></div>
+            <div style={outerStyle} ref={div => this.div = div}>
+                <div style={networkStyle} ref={div => this.networkDiv = div}></div>
+                <div style={sankeyStyle} id='sankey' ref={div => this.sankeyDiv = div}></div>
             </div>
         );
     }
