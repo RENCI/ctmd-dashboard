@@ -239,6 +239,12 @@ Alternatively, you may find that this needs to be done retrospectively, after a 
 
 Running this in production is quite similar to the development environment, but a few details need to be provided in order first.
 
+##### Environment variables
+
+`REDCAP_APPLICATION_TOKEN` pulling data from redcap data source
+
+`POSTGRES_DUMP_PATH` backing up postgres database
+
 ##### Prerequisites
 
 ###### HTTP Authentication
