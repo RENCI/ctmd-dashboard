@@ -6,6 +6,7 @@ import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import useWindowWidth from '../../hooks/useWindowWidth'
+import Widget from './Widget'
 
 Array.prototype.countBy = function(prop) {
     return this.reduce(function(groups, item) {
@@ -20,7 +21,6 @@ const proposalsGroupedByTicThenStatus = props => {
     const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
     const windowWidth = useWindowWidth()
-    const container = useRef(null)
     const theme = useTheme()
 
     useEffect(() => {
@@ -55,8 +55,10 @@ const proposalsGroupedByTicThenStatus = props => {
     }]
 
     return (
-        <Card ref={ container }>
-            <CardHeader title="" subheader="" />
+        <Widget
+            title="Proposals by Status"
+            subtitle="Grouped by TIC/RIC"
+        >
             <CardContent style={{ height: '450px' }}>
                 {
                     (proposalGroups && store.statuses) ? (
@@ -101,7 +103,7 @@ const proposalsGroupedByTicThenStatus = props => {
                     ) : <CircularLoader />
                 }
             </CardContent>
-        </Card>
+        </Widget>
     )
 }
 
