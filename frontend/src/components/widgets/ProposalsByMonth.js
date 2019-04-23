@@ -69,10 +69,11 @@ const proposalsByMonth = props => {
             action={
                 <div>
                     <Button disabled={ currentPosition === 0 } onClick={ handlePositionChange(-1) }>
-                        <LeftIcon />Prev
+                        <LeftIcon />
                     </Button>
+                    { '  ' }
                     <Button disabled={ currentPosition === proposalGroups.length - 12} onClick={ handlePositionChange(1) }>
-                        Next<RightIcon />
+                        <RightIcon />
                     </Button>
                 </div>
             }
