@@ -27,7 +27,8 @@ export default function() {
       backgroundColor = "#e5e5e5",
 
       // Scales
-      nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10),
+      colors = d3.schemeCategory10,
+      nodeColorScale = d3.scaleOrdinal(),
       radiusScale = d3.scaleSqrt(),
 
       // Start with empty selections
@@ -266,7 +267,9 @@ export default function() {
         .range(radiusRange);
 
     // Color scale
-    nodeColorScale.domain(nodeTypes);
+    nodeColorScale
+        .domain(nodeTypes)
+        .range(colors);
 
     // Set force directed network
     force
@@ -652,6 +655,12 @@ export default function() {
   proposalsNetwork.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return proposalsNetwork;
+  };
+
+  proposalsNetwork.colors = function(_) {
+    if (!arguments.length) return colors;
+    colors = _;
     return proposalsNetwork;
   };
 

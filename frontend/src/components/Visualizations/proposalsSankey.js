@@ -19,7 +19,8 @@ export default function() {
       typeActive = {},
 
       // Scales
-      nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10),
+      colors = d3.schemeCategory10,
+      nodeColorScale = d3.scaleOrdinal(),
       linkOpacityScale = d3.scaleLinear(),
 
       // Start with empty selections
@@ -212,7 +213,9 @@ export default function() {
     const {nodes, links} = sankey(network);
 
     // Color scale
-    nodeColorScale.domain(nodeTypes);
+    nodeColorScale
+        .domain(nodeTypes)
+        .range(colors);
 
     linkOpacityScale
           .domain([1, d3.max(links, function(d) { return d.value; })])
@@ -649,6 +652,12 @@ export default function() {
   proposalsSankey.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return proposalsSankey;
+  };
+
+  proposalsSankey.colors = function(_) {
+    if (!arguments.length) return colors;
+    colors = _;
     return proposalsSankey;
   };
 

@@ -79,11 +79,13 @@ class ProposalsNetworkVisualizations extends Component {
 
         this.network
             .width(networkWidth)
-            .height(networkHeight);
+            .height(networkHeight)
+            .colors(newProps.colors);
 
         this.sankey
             .width(sankeyWidth)
-            .height(sankeyHeight);
+            .height(sankeyHeight)
+            .colors(newProps.colors);
 
         // Bind data
         d3.select(this.networkDiv)
@@ -117,6 +119,7 @@ class ProposalsNetworkVisualizations extends Component {
 
 ProposalsNetworkVisualizations.propTypes = {
     nodeData: PropTypes.object.isRequired,
+    colors: PropTypes.arrayOf(PropTypes.string).isRequired,
     selectedNodes: PropTypes.arrayOf(PropTypes.object).isRequired,
     onSelectNodes: PropTypes.func,
     onDeselectNodes: PropTypes.func
