@@ -53,7 +53,7 @@ const proposalsGroupedByTicThenStatus = props => {
             style: { itemOpacity: 1.0 }
         }]
     }]
-
+    
     return (
         <Widget
             title="Proposals by Status"
@@ -80,6 +80,13 @@ const proposalsGroupedByTicThenStatus = props => {
                                     <g key={ tick.key } transform={ `translate(${ tick.x },${ tick.y + 16 }) `}>
                                         <text style={{ fill: '#333', fontSize: 10 }} textAnchor="middle" alignmentBaseline="middle">
                                             { tick.value }
+                                            { ' ' }
+                                            ({
+                                                Object.keys(proposalGroups[tick.tickIndex]).reduce((sum, status) => {
+                                                    if (status === 'name') return sum
+                                                    return sum + proposalGroups[tick.tickIndex][status]
+                                                }, 0)
+                                            })
                                         </text>
                                     </g>
                                 )
