@@ -105,7 +105,7 @@ const query2 = `SELECT "Proposal"."ProposalID" as "proposalID",
                     INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID"
                     INNER JOIN name ON name.index="Proposal"."proposalStatus" AND name."column"='proposalStatus'
                     LEFT JOIN name name2 ON name2.index="AssignProposal"."assignToInstitution" AND name2."column"='assignToInstitution'
-                    INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
+                    LEFT JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
                     INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
                     INNER JOIN name name5 ON name5.id="Proposal_NewServiceSelection"."serviceSelection" AND name5."column"='serviceSelection'
                     ORDER BY "proposalID";`
@@ -135,7 +135,7 @@ const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",
                     INNER JOIN "Proposal_ServicesApproved" ON "Proposal"."ProposalID" = "Proposal_ServicesApproved"."ProposalID"
                     INNER JOIN name ON name.index="Proposal"."proposalStatus" AND name."column"='proposalStatus'
                     LEFT JOIN name name2 ON name2.index="AssignProposal"."assignToInstitution" AND name2."column"='assignToInstitution'
-                    INNER JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
+                    LEFT JOIN name name3 ON name3.index="Submitter"."submitterInstitution" AND name3."column"='submitterInstitution'
                     INNER JOIN name name4 ON name4.index="ProposalDetails"."therapeuticArea" AND name4."column"='therapeuticArea'
                     INNER JOIN name name5 ON name5.id="Proposal_ServicesApproved"."servicesApproved" AND name5."column"='servicesApproved'
                     ORDER BY "proposalID";`
