@@ -51,7 +51,6 @@ const proposalsByMonth = props => {
                 }
             })
         }
-        console.table(timeline)
         setProposalGroups(timeline)
     }, [store])
 
