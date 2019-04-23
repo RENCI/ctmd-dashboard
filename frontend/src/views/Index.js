@@ -3,6 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
 import { Heading } from '../components/Typography/Typography'
 import ProposalsByTicBarChart from '../components/widgets/ProposalsByTic'
+import ProposalsByMonthBarChart from '../components/widgets/ProposalsByMonth'
 import ProposalsCalendar from '../components/widgets/ProposalsCalendar'
 import DayStats from '../components/widgets/DayStats'
 import Counts from '../components/widgets/Counts'
@@ -61,6 +62,9 @@ const HomePage = (props) => {
                 </Grid>
                 <Grid item xs={ 12 } sm={ 11 }>
                     <ProposalsByTicBarChart />
+                </Grid>
+                <Grid item xs={ 12 } sm={ 11 }>
+                    <ProposalsByMonthBarChart />
                 </Grid>
                 <Grid item xs={ 12 } sm={ 11 }>
                     <DayStats />
