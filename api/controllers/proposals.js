@@ -32,9 +32,9 @@ exports.getOne = (req, res) => {
         LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
         INNER JOIN name ON name.index = "Proposal"."proposalStatus" AND name."column" = 'proposalStatus'
         LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
-        INNER JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
+        LEFT JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
         INNER JOIN name name4 ON name4.index = "ProposalDetails"."therapeuticArea" AND name4."column" = 'therapeuticArea'
-        INNER JOIN name name5 ON name5.index = "ProposalFunding"."currentFunding" AND name5."column" = 'currentFunding'
+        LEFT JOIN name name5 ON name5.index = "ProposalFunding"."currentFunding" AND name5."column" = 'currentFunding'
         LEFT JOIN name name6 ON name6.index = "ProposalFunding"."newFundingStatus" AND name6."column" = 'newFundingStatus'
         WHERE "Proposal"."ProposalID"=${ req.params.id }`
     db.any(query)
@@ -74,9 +74,9 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
         LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
         INNER JOIN name ON name.index = "Proposal"."proposalStatus" AND name."column" = 'proposalStatus'
         LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
-        INNER JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
+        LEFT JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
         INNER JOIN name name4 ON name4.index = "ProposalDetails"."therapeuticArea" AND name4."column" = 'therapeuticArea'
-        INNER JOIN name name5 ON name5.index = "ProposalFunding"."currentFunding" AND name5."column" = 'currentFunding'
+        LEFT JOIN name name5 ON name5.index = "ProposalFunding"."currentFunding" AND name5."column" = 'currentFunding'
         LEFT JOIN name name6 ON name6.index = "ProposalFunding"."newFundingStatus" AND name6."column" = 'newFundingStatus'
         ORDER BY "proposalID";`
 

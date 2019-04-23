@@ -204,12 +204,12 @@ export default function() {
         .attr("height", height);
 
     // Do Sankey layout
-    var sankey = d3Sankey.sankey()
+    const sankey = d3Sankey.sankey()
         .size([innerWidth(), innerHeight()])
         .nodePadding(2)
         .iterations(1000);
 
-    var {nodes, links} = sankey(network);
+    const {nodes, links} = sankey(network);
 
     // Color scale
     nodeColorScale.domain(nodeTypes);
@@ -231,9 +231,7 @@ export default function() {
 
       // Bind nodes
       let node = svg.select(".nodes").selectAll(".node")
-          .data(nodes, function(d) {
-            return d.id;
-          });
+          .data(nodes, d => d.id);
 
       // Node enter
       let nodeEnter = node.enter().append("g")
@@ -390,27 +388,21 @@ export default function() {
 
       // Bind nodes
       var label = svg.select(".labels").selectAll(".nodeLabel")
-          .data(nodes, function(d) {
-            return d.id;
-          });
+          .data(nodes, d => d.id);
 
       // Label enter
       var labelEnter = label.enter().append("g")
           .attr("class", "nodeLabel")
-          .style("font-size", "small")
+          .style("font-size", d => d.type === "tic" ? "small" : "x-small")
           .style("font-weight", "bold")
           .style("pointer-events", "none")
           .style("opacity", labelOpacity)
-          .attr("transform", function(d) {
-            return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
-          });
+          .attr("transform", d => "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")");
 
       labelEnter.append("text")
           .attr("class", "background")
           .attr("dy", dy)
-          .text(function(d) {
-            return d.name;
-          })
+          .text(d => d.name)
           .style("stroke", "white")
           .style("stroke-width", 3)
           .style("stroke-opacity", 0.5);
@@ -418,16 +410,12 @@ export default function() {
       labelEnter.append("text")
           .attr("class", "foreground")
           .attr("dy", dy)
-          .text(function(d) {
-            return d.name;
-          })
+          .text(d => d.name)
           .style("fill", "black");
 
       // Label update
       label//.transition()
-          .attr("transform", function(d) {
-            return "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")";
-          });
+          .attr("transform", d => "translate(" + d.x1 + "," + ((d.y1 + d.y0) / 2) + ")");
 
       // Label exit
       label.exit().remove();
