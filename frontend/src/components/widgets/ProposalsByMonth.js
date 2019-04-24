@@ -75,7 +75,9 @@ const proposalsByMonth = props => {
     }
 
     return (
-        <Widget title={ `Submissions by Month` }
+        <Widget
+            title={ `Submissions by Month` }
+            subtitle={ `${ startLabel } to ${ endLabel }` }
             action={
                 <div>
                     <Button disabled={ currentPosition === 0 } onClick={ handlePositionChange(-1) }>
@@ -87,7 +89,7 @@ const proposalsByMonth = props => {
                 </div>
             }
         >
-            <div style={{ height: '263px' }}>
+            <div style={{ height: '236px' }}>
                 {
                     (proposalGroups) ? (
                         <ResponsiveBar
@@ -96,7 +98,7 @@ const proposalsByMonth = props => {
                             indexBy="label"
                             layout="vertical"
                             margin={{ top: 0, left: 0, right: 0, bottom: 140 }}
-                            height={ 263 }
+                            height={ 236 }
                             colors={ theme.palette.chartColors }
                             colorBy='date'
                             // colorBy='index'
@@ -106,7 +108,7 @@ const proposalsByMonth = props => {
                                 tickSize: 5,
                                 tickPadding: 5,
                                 tickRotation: -90,
-                                legend: `${ startLabel } to ${ endLabel }`,
+                                legend: '',
                                 legendPosition: 'middle',
                                 legendOffset: 130
                             }}
