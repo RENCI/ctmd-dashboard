@@ -7,10 +7,10 @@ export const defaultSettings = {
         visibleColumns: {
             proposalID: true,
             shortTitle: true,
-            piName: true,
+            piName: false,
             proposalStatus: true,
-            therapeuticArea: true,
-            submitterInstitution: true,
+            therapeuticArea: false,
+            submitterInstitution: false,
             assignToInstitution: true,
             dateSubmitted: true,
             meetingDate: false,
