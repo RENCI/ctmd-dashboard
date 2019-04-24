@@ -17,7 +17,9 @@ const thisYear = (new Date()).getFullYear()
 const proposalsByMonth = props => {
     const [store, _] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState([])
-    const [currentPosition, setCurrentPosition] = useState(0)
+    const [currentPosition, setCurrentPosition] = useState(-1)
+    const [startLabel, setStartLabel] = useState('...')
+    const [endLabel, setEndLabel] = useState('...')
     const theme = useTheme()
 
     useEffect(() => {
@@ -56,7 +58,15 @@ const proposalsByMonth = props => {
 
     useEffect(() => {
         setCurrentPosition(proposalGroups.length - 12)
+        console.log(proposalGroups[currentPosition])
     }, [proposalGroups])
+
+    useEffect(() => {
+        if (proposalGroups && currentPosition >= 0) {
+            setStartLabel(proposalGroups[currentPosition].label)
+            setEndLabel(proposalGroups[currentPosition + 11].label)
+        }
+    }, [currentPosition])
 
     const handlePositionChange = delta => event => {
         if (currentPosition + delta >= 0 && currentPosition + delta <= proposalGroups.length) {
@@ -71,23 +81,22 @@ const proposalsByMonth = props => {
                     <Button disabled={ currentPosition === 0 } onClick={ handlePositionChange(-1) }>
                         <LeftIcon />
                     </Button>
-                    { '  ' }
                     <Button disabled={ currentPosition === proposalGroups.length - 12} onClick={ handlePositionChange(1) }>
                         <RightIcon />
                     </Button>
                 </div>
             }
         >
-            <div style={{ height: '400px' }}>
+            <div style={{ height: '263px' }}>
                 {
                     (proposalGroups) ? (
                         <ResponsiveBar
                             data={ proposalGroups.slice(currentPosition, currentPosition + 12) }
                             keys={ ['count'] }
                             indexBy="label"
-                            layout='vertical'
-                            margin={{ top: 0, left: 0, right: 0, bottom: 100 }}
-                            height={ 400 }
+                            layout="vertical"
+                            margin={{ top: 0, left: 0, right: 0, bottom: 140 }}
+                            height={ 263 }
                             colors={ theme.palette.chartColors }
                             colorBy='date'
                             // colorBy='index'
@@ -97,9 +106,9 @@ const proposalsByMonth = props => {
                                 tickSize: 5,
                                 tickPadding: 5,
                                 tickRotation: -90,
-                                legend: '',
+                                legend: `${ startLabel } to ${ endLabel }`,
                                 legendPosition: 'middle',
-                                legendOffset: 0
+                                legendOffset: 130
                             }}
                             axisLeft={ null }
                             enableGridX={ false }
