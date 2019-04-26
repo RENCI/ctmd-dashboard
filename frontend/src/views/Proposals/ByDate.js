@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
-import Heading from '../../components/Typography/Heading'
+import { Heading } from '../../components/Typography/Typography'
 import BrowseMenu from '../../components/Menus/BrowseMenu'
 import ProposalsTable from '../../components/Charts/ProposalsTable'
 
@@ -76,7 +76,7 @@ const PresetSelector = (props) => {
 
 const ProposalsByDate = (props) => {
     const classes = useStyles()
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [displayedProposals, setDisplayedProposals] = useState([])
     const [dates, setDates] = useState({
         start: '2016-01-01',

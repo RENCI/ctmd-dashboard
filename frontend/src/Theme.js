@@ -1,7 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import * as d3 from 'd3-scale-chromatic'
-
-d3.interpolateBrBG(0.5)
+import { schemeSet2, interpolateBlues } from 'd3-scale-chromatic'
 
 let theme = createMuiTheme({
     palette: {
@@ -28,19 +26,14 @@ let theme = createMuiTheme({
             granite: '#B5B5B5',
             limestone: '#E5E5E5',
         },
-        chartColors: d3.schemeSet2,
-    },
-    typography: {
-        useNextVariants: true,
-        htmlFontSize: 20,
-        h1: { fontFamily: 'EB Garamond', },
-        h2: { fontFamily: 'EB Garamond', },
-        h3: { fontFamily: 'EB Garamond', },
-        h4: { fontFamily: 'EB Garamond', },
-        h5: { fontFamily: 'Roboto', },
-        headline: { fontFamily: 'EB Garamond', },
-        body1: { fontFamily: 'Roboto', lineHeight: '1.75rem', },
-        body2: { fontFamily: 'Roboto', lineHeight: '1.5rem', }, // paragraph gets this by default
+        chartColors: schemeSet2,
+        calendarColors: [...Array(8).keys()].map(i => interpolateBlues(0.3 + i * (1 - 0.3) / 8)),
+        flashMessage: {
+            success: '#63c0a5',
+            info: '#999',
+            warning: '#ffd548',
+            error: '#ff8a66',
+        },
     },
     shape: { borderRadius: 8 },
     spacing: { unit: 8 },
@@ -57,15 +50,39 @@ let theme = createMuiTheme({
             }
         }
     },
+    typography: {
+        fontSize: 12,
+    }
 })
 
 theme = {
     ...theme,
     overrides: {
-        MuiGrid: {
-            item: {
-                marginBottom: 2 * theme.spacing.unit,
-            }
+        MuiTypography: {
+            // useNextVariants: true,
+            h1: { fontFamily: 'Roboto', },
+            h2: {
+                fontFamily: 'Roboto',
+                color: theme.palette.primary.light,
+                fontWeight: 'bold',
+                fontSize: '2rem',
+            },
+            h3: {
+                fontFamily: 'Roboto',
+                color: theme.palette.primary.light,
+                fontWeight: 'bold',
+                fontSize: '1.5rem',
+            },
+            h4: {
+                fontFamily: 'Roboto',
+                color: theme.palette.primary.dark,
+                fontWeight: 'bold',
+                fontSize: '1.5rem',
+            },
+            h5: { fontFamily: 'Roboto', },
+            subtitle1: { fontFamily: 'Roboto', },
+            body1: { fontFamily: 'Roboto', lineHeight: '1.75rem', },
+            body2: { fontFamily: 'Nanum Gothic', lineHeight: '1.5rem', }, // paragraph gets this by default
         },
         MuiCard:{
             root: {
@@ -76,15 +93,25 @@ theme = {
         },
         MuiCardHeader: {
             title: {
+                fontFamily: 'Nanum Gothic',
                 color: theme.palette.primary.light,
-                fontSize: '150%',
-                fontWeight: 'bold',
             },
             subheader: {
-                color: theme.palette.secondary.light,
-                fontSize: '110%',
+                fontFamily: 'Nanum Gothic',
+                color: theme.palette.secondary.main,
+            },
+        },
+        MuiDialogTitle: {
+            root: {
+                color: theme.palette.primary.light,
+                fontSize: '200%',
                 fontWeight: 'bold',
             },
+        },
+        MuiGrid: {
+            item: {
+                marginBottom: 2 * theme.spacing.unit,
+            }
         },
         MuiDrawer: {
             paper: {

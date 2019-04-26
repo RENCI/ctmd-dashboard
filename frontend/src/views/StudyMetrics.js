@@ -1,30 +1,33 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { useTheme } from '@material-ui/styles'
-import axios from 'axios'
+import React, { useState, useContext } from 'react'
+import { makeStyles, useTheme } from '@material-ui/styles'
 import { StoreContext } from '../contexts/StoreContext'
-import { ApiContext } from '../contexts/ApiContext'
-import { Grid, Card, CardHeader, CardActions, CardContent, Button } from '@material-ui/core'
-import { FormControl, TextField, InputLabel, Select, MenuItem, OutlinedInput, FormHelperText } from '@material-ui/core'
-import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, ExpansionPanelActions, Divider } from '@material-ui/core'
-import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon, ExpandMore as ExpandIcon } from '@material-ui/icons'
-import Heading from '../components/Typography/Heading'
-import Subheading from '../components/Typography/Subheading'
-import { CircularLoader } from '../components/Progress/Progress'
-import ProposalDetailsForm from '../components/Forms/ProposalDetails'
+import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
+import { FormControl, FormLabel, Select, MenuItem, OutlinedInput } from '@material-ui/core'
+import {
+    AccountBalance as InstitutionIcon,
+    Assignment as TicIcon,
+} from '@material-ui/icons'
+import { Heading } from '../components/Typography/Typography'
 import StudyMetricsForm from '../components/Forms/StudyMetrics/Metrics'
 
+const useStyles = makeStyles(theme => ({
+    card: { },
+    cardActions: {
+        flex: '3 0 auto',
+    },
+    details: {
+        width: '100%',
+    },
+}))
+
 const StudyMetricsPage = props => {
-    const [store, setStore] = useContext(StoreContext)
-    const [current, setCurrent] = useState(0)
-    const api = useContext(ApiContext)
+    const [store, ] = useContext(StoreContext)
+    const [currentProposal, setCurrentProposal] = useState(null)
+    const classes = useStyles()
     const theme = useTheme()
 
-    const handleNavigate = value => event => {
-        setCurrent((current + value + store.proposals.length) % store.proposals.length)
-    }
-
-    const handleChangeCurrent = event => {
-        setCurrent(event.target.value)
+    const handleChangeCurrentProposal = event => {
+        setCurrentProposal(store.proposals.find(proposal => proposal.proposalID === event.target.value))
     }
 
     return (
@@ -33,49 +36,66 @@ const StudyMetricsPage = props => {
             <Heading>Study Metrics</Heading>
             
             <Grid container spacing={ 2 * theme.spacing.unit }>
-                 <Grid item xs={ 12 }>
-                    {
-                        store.proposals
-                        ? (
-                            <Card>
-                                <CardHeader subheader="Proposal Details"/>
-                                <CardContent>
-                                    <FormControl fullWidth variant="outlined">
-                                        <InputLabel htmlFor="proposal-short-title">Proposal Short Title
-                                        </InputLabel>
-                                        <Select value={ current } onChange={ handleChangeCurrent }
-                                            input={ <OutlinedInput labelWidth={ 116 } name="proposal-short-title" id="proposal-short-title" /> }
-                                        >
-                                            {
-                                                store.proposals.map(
-                                                    (proposal, i) => <MenuItem key={ proposal.proposalID } value={ i }>{ proposal.shortTitle } - #{ proposal.proposalID }</MenuItem>
-                                                )
-                                            }
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl variant="outlined" fullWidth>
-                                        <TextField disabled id="proposal-full-name" label="Full Name" margin="normal" variant="outlined" value={ store.proposals[current].longTitle } />
-                                    </FormControl>
-                                    <FormControl variant="outlined" fullWidth>
-                                        <TextField disabled id="tic" label="Assigned TIC/RIC" margin="normal" variant="outlined" value={ store.proposals[current].assignToInstitution || '' } />
-                                    </FormControl>
-                                    <FormControl variant="outlined" fullWidth>
-                                        <TextField disabled id="submitting-institution" label="Submitting Institution" margin="normal" variant="outlined" value={ store.proposals[current].submitterInstitution || '' } />
-                                    </FormControl>
-                                </CardContent>
-                            </Card>
-                        ) : <CircularLoader />
-                    }
+                <Grid item xs={ 12 }>
+                    <Card classes={{ root: classes.card }}>
+                        <CardHeader title="Proposal Details" classes={{ action: classes.cardActions }} action={
+                            store.proposals
+                            ? (
+                                <FormControl fullWidth variant="outlined">
+                                    <FormLabel>Select Proposal</FormLabel>
+                                    <Select
+                                        value={ currentProposal ? currentProposal.proposalID : -1 }
+                                        onChange={ handleChangeCurrentProposal }
+                                        input={ <OutlinedInput fullWidth labelWidth={ 0 } name="network" id="network" style={{ marginTop: '16px' }}/> }
+                                    >
+                                        <MenuItem value="-1">-</MenuItem>
+                                        {
+                                            store.proposals
+                                                .filter(proposal => proposal.proposalStatus === 'Ready for Implementation')
+                                                .map(proposal => <MenuItem key={ proposal.proposalID } value={ proposal.proposalID }>{ proposal.shortTitle } (id: { proposal.proposalID })</MenuItem>)
+                                        }
+                                    </Select>
+                                </FormControl>
+                            ) : '...'
+                        }/>
+                        <CardContent>
+                            <CardHeader
+                                subheader={ currentProposal ? (
+                                    <div>
+                                        <div>{ currentProposal.longTitle } </div>
+                                        <div style={{ opacity: 0.5 }}>
+                                            { `${ currentProposal.shortTitle } (id: ${ currentProposal.proposalID })` }
+                                        </div>
+                                    </div>
+                                ) : null }
+                            />
+                            <List className={ classes.details } style={{ opacity: currentProposal ? 1 : 0.25 }}>
+                                <ListItem>
+                                    <Avatar><InstitutionIcon /></Avatar>
+                                    <ListItemText
+                                        primary="Submitting Institution"
+                                        secondary={ currentProposal ? (currentProposal.submitterInstitution || '-') : '-' }
+                                    />
+                                </ListItem>
+                                <ListItem>
+                                    <Avatar><TicIcon /></Avatar>
+                                    <ListItemText
+                                        primary="Assigned TIC/RIC"
+                                        secondary={ currentProposal ? (currentProposal.assignToInstitution || '-') : '-' }
+                                    />
+                                </ListItem>
+                            </List>
+                        </CardContent>
+                    </Card>
                 </Grid>
-
                 <Grid item xs={ 12 }>
                     {
-                        store.proposals && current >= 0
+                        currentProposal
                         ? (
                             <Card>
-                                 <StudyMetricsForm proposalID={ store.proposals[current].proposalID } />
+                                 <StudyMetricsForm proposalID={ currentProposal.proposalID } />
                             </Card>
-                        ) : <CircularLoader />
+                        ) : null
                     }
                 </Grid>
             </Grid>

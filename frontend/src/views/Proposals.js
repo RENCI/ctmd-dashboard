@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react'
-import axios from 'axios'
-import { ApiContext } from '../contexts/ApiContext'
+import React, { useContext } from 'react'
 import { StoreContext } from '../contexts/StoreContext'
-import Heading from '../components/Typography/Heading'
+import { Heading } from '../components/Typography/Typography'
 import ProposalsTable from '../components/Charts/ProposalsTable'
-import { CircularLoader } from '../components/Progress/Progress'
 import BrowseMenu from '../components/Menus/BrowseMenu'
 
-const proposalsTable = (props) => {
-    const [store, setStore] = useContext(StoreContext)
-    // const api = useContext(ApiContext)
+const ProposalsPage = (props) => {
+    const [store, ] = useContext(StoreContext)
 
     return (
         <div>
@@ -22,4 +18,4 @@ const proposalsTable = (props) => {
     )
 }
 
-export default proposalsTable
+export default ProposalsPage

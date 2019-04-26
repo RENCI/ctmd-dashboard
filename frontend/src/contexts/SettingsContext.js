@@ -3,17 +3,22 @@ import React, { useState } from 'react'
 export const SettingsContext = React.createContext({})
 
 export const defaultSettings = {
-    visibleColumns: {
-        shortTitle: true,
-        piName: true,
-        proposalStatus: true,
-        therapeuticArea: true,
-        submitterInstitution: true,
-        assignToInstitution: true,
-        dateSubmitted: true,
-        meetingDate: false,
-        plannedGrantSubmissionDate: false,
-        fundingStart: false,
+    tables: {
+        visibleColumns: {
+            proposalID: true,
+            shortTitle: true,
+            piName: false,
+            proposalStatus: true,
+            therapeuticArea: false,
+            submitterInstitution: false,
+            assignToInstitution: true,
+            dateSubmitted: true,
+            meetingDate: false,
+            plannedGrantSubmissionDate: false,
+            actualGrantSubmissionDate: false,
+            fundingStart: false,
+        },
+        pageSize: 50,
     },
     charts: {
         hideEmptyGroups: true,

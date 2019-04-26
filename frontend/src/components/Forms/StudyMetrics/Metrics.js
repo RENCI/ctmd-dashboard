@@ -1,18 +1,15 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
 import axios from 'axios'
-import ReactDOM from 'react-dom'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons'
-import { Grid, Card, CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
+import { CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
 import { ApiContext } from '../../../contexts/ApiContext'
-import Subheading from '../../Typography/Subheading'
+import { FlashMessageContext } from '../../../contexts/FlashMessageContext'
 import CharacteristicsForm from './Characterstics'
 import LinkedStudiesForm from './LinkedStudies'
 import ArchitectureForm from './Architecture'
 import ParticipationForm from './Participation'
 import FundingForm from './Funding'
-
 export const MetricsFormContext = React.createContext({})
 
 const useStyles = makeStyles(theme => ({
@@ -82,13 +79,75 @@ const MetricsForm = props => {
     const { proposalID } = props
     const [values, setValues] = useState(emptyFormValues)
     const [currentSubformNumber, setCurrentSubformNumer] = useState(0)
+    const [submitAllowed, setSubmitAllowed] = useState(false)
     const api = useContext(ApiContext)
+    const addFlashMessage = useContext(FlashMessageContext)
     const classes = useStyles()
     
     useEffect(() => {
         setCurrentSubformNumer(0)
-        setValues({ ...emptyFormValues, proposalID: proposalID })
-    }, [props.proposalID])
+        axios.get(api.studyMetrics, { params: { proposalID: proposalID } })
+            .then(response => {
+                const { data } = response
+                if (data) {
+                    // console.log(data)
+                    setValues({
+                        proposalID: data.ProposalID,
+                        // Characteristics
+                        network: data.network,
+                        primaryStudyType: data.primaryStudyType,
+                        tic: data.tic,
+                        ric: data.ric,
+                        collaborativeTic: data.collaborativeTIC,
+                        collaborativeTicDetails: data.collaborativeTIC_roleExplain,
+                        dcc: data.DCCinstitution,
+                        ccc: data.CCCinstitution,
+                        // Linked Data
+                        hasSuperStudy: data.sub_ancillaryStudy,
+                        superStudy: data.mainStudy,
+                        hasSubStudy: data.hasSubAncillaryStudy,
+                        subStudy: data.sub_ancillaryStudyName,
+                        studyDesign: data.studyDesign,
+                        // Architecture
+                        isRandomized: data.randomized,
+                        randomizationUnit: data.randomizationUnit,
+                        randomizationFeatures: JSON.parse(data.randomizationFeature),
+                        ascertainment: data.ascertainment,
+                        isPilotOrDemo: data.pilot_demoStudy,
+                        phase: data.phase,
+                        usesRegistryData: data.registry,
+                        usesEhrDataTransfer: data.EHRdataTransfer,
+                        ehrDataTransferType: data.EHRdataTransfer_option,
+                        isConsentRequired: data.consent,
+                        efic: data.EFIC,
+                        irbTypes: JSON.parse(data.IRBtype),
+                        regulatoryClassifications: JSON.parse(data.regulatoryClassification),
+                        clinicalTrialsGovId: data.clinicalTrialsIdentifier,
+                        isDsmbDmcRequired: data.dsmb_dmcUsed,
+                        // Funding
+                        initialParticipatingSiteNumber: data.initialPlannedNumberOfSites,
+                        enrollmentGoal: data.enrollmentGoal,
+                        initialProjectedEnrollmentDuration: data.initialProjectedEnrollmentDuration,
+                        leadPiNames: '',
+                        awardeeSiteAcronym: '',
+                        primaryFundingType: '',
+                        primarilyFundedByInfrastructure: '',
+                        fundingSource: '',
+                        fundingAwardDate: '',
+                        previousFunding: '',
+                    })
+                } else {
+                    setValues({ ...emptyFormValues, proposalID: proposalID })
+                }
+            })
+            .catch(error => {
+                console.log('Error', error)
+            })
+    }, [proposalID])
+
+    useEffect(() => {
+        setSubmitAllowed(true)
+    }, [values])
 
     useEffect(() => {
         axios.get(api.studyMetrics, { params: { proposalID: props.proposalID } })
@@ -148,10 +207,15 @@ const MetricsForm = props => {
     }
     
     const handleSave = () => {
-        console.log(values)
         axios.post(api.studyMetrics, values)
-            .then(response => console.log(response))
-            .catch(error => console.log('Error', error))
+            .then(response => {
+                addFlashMessage({ type: 'success', text: 'Study Metrics Saved!'})
+                setSubmitAllowed(false)
+            })
+            .catch(error => {
+                addFlashMessage({ type: 'error', text: 'Failed to save Study Metrics!'})
+                console.log('Error', error)
+            })
     }
 
     const subforms = [
@@ -191,7 +255,12 @@ const MetricsForm = props => {
                 </CardActions>
                 <Divider />
                 <CardActions className={ classes.actions }>
-                    <Button color="primary" onClick={ handleSave }>Save</Button>
+                    <Button variant="contained" color="secondary"
+                        disabled={ !submitAllowed }
+                        onClick={ handleSave }
+                    >
+                        { submitAllowed ? 'Save' : 'Saved!' }
+                    </Button>
                 </CardActions>
             </div>
         </MetricsFormContext.Provider>

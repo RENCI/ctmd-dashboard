@@ -6,6 +6,7 @@ import { Card, CardHeader, CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import useWindowWidth from '../../hooks/useWindowWidth'
+import Widget from './Widget'
 
 Array.prototype.countBy = function(prop) {
     return this.reduce(function(groups, item) {
@@ -17,10 +18,9 @@ Array.prototype.countBy = function(prop) {
 }
 
 const proposalsGroupedByTicThenStatus = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
     const windowWidth = useWindowWidth()
-    const container = useRef(null)
     const theme = useTheme()
 
     useEffect(() => {
@@ -40,7 +40,7 @@ const proposalsGroupedByTicThenStatus = props => {
         anchor: 'top-right',
         direction: 'column',
         justify: false,
-        translateX: windowWidth < 1000 ? 0 : 156,
+        translateX: windowWidth < 1000 ? 0 : 256,
         translateY: -32,
         itemsSpacing: 1,
         itemWidth: 20,
@@ -53,10 +53,12 @@ const proposalsGroupedByTicThenStatus = props => {
             style: { itemOpacity: 1.0 }
         }]
     }]
-
+    
     return (
-        <Card ref={ container }>
-            <CardHeader title="" subheader="" />
+        <Widget
+            title="Proposals by Status"
+            subtitle="Grouped by TIC/RIC"
+        >
             <CardContent style={{ height: '450px' }}>
                 {
                     (proposalGroups && store.statuses) ? (
@@ -64,7 +66,7 @@ const proposalsGroupedByTicThenStatus = props => {
                             data={ proposalGroups }
                             keys={ store.statuses.map(({ description }) => description) }
                             indexBy="name"
-                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 156, bottom: 50, left: 0 }}
+                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 256, bottom: 50, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"
@@ -74,17 +76,24 @@ const proposalsGroupedByTicThenStatus = props => {
                             borderColor="inherit:darker(1.6)"
                             axisLeft={ null }
                             axisBottom={{
-                                tickSize: 5,
-                                tickPadding: 5,
-                                tickRotation: 0,
-                                legend: '',
-                                legendPosition: 'middle',
-                                legendOffset: -40
+                                renderTick: tick => (
+                                    <g key={ tick.key } transform={ `translate(${ tick.x },${ tick.y + 16 }) `}>
+                                        <text style={{ fill: '#333', fontSize: 10 }} textAnchor="middle" alignmentBaseline="middle">
+                                            { tick.value }
+                                            { ' ' }
+                                            ({
+                                                Object.keys(proposalGroups[tick.tickIndex]).reduce((sum, status) => {
+                                                    if (status === 'name') return sum
+                                                    return sum + proposalGroups[tick.tickIndex][status]
+                                                }, 0)
+                                            })
+                                        </text>
+                                    </g>
+                                )
                             }}
                             enableGridX={ false }
                             enableGridY={ false }
-                            labelSkipWidth={ 12 }
-                            labelSkipHeight={ 12 }
+                            labelSkipHeight={ 30 }
                             labelTextColor="inherit:darker(1.6)"
                             animate={ true }
                             motionStiffness={ 90 }
@@ -101,7 +110,7 @@ const proposalsGroupedByTicThenStatus = props => {
                     ) : <CircularLoader />
                 }
             </CardContent>
-        </Card>
+        </Widget>
     )
 }
 

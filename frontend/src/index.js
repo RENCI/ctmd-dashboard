@@ -11,6 +11,7 @@ WebFont.load({
         families: [
             'EB+Garamond:400,700',
             'Roboto:300,400,700',
+            'Nanum+Gothic:400,700,800',
             'sans-serif',
         ]
     }

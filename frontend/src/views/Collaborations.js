@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { ApiContext } from '../contexts/ApiContext'
-import Heading from '../components/Typography/Heading'
+import { Heading } from '../components/Typography/Typography'
 import { Grid } from '@material-ui/core'
 import ProposalsNetwork from '../components/Visualizations/ProposalsNetworkContainer'
 import ProposalsTable from '../components/Charts/ProposalsTable'

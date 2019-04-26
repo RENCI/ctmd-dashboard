@@ -1,13 +1,5 @@
 const db = require('../config/database')
-
-const stringToInteger = s => {
-    let i = parseInt(s)
-    if (isNaN(i)) {
-        return 0
-    } else {
-        return i
-    }
-}
+const stringToInteger = require('./utils').stringToInteger
 
 exports.post = (req, res) => {
     const newMetric = req.body
@@ -188,6 +180,7 @@ exports.post = (req, res) => {
 
 exports.get = (req, res) => {
     const id = req.query.proposalID
+    console.log(`Retrieving study-metrics for proposal ${ id }`)
     query = 'SELECT * from "UtahRecommendation" where "ProposalID"=$1'
     db.oneOrNone(query, id)
         .then(data => {

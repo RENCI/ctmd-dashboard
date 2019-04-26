@@ -1,20 +1,10 @@
 import React, { useContext } from 'react'
-import {
-    FormControl, FormHelperText, FormControlLabel, FormLabel,
-    OutlinedInput,
-    Select, MenuItem,
-    RadioGroup, Radio,
-    Checkbox,
-    TextField,
-} from '@material-ui/core'
+import { FormControl, FormHelperText, FormControlLabel, FormLabel, Checkbox, TextField } from '@material-ui/core'
 import { MetricsFormContext } from './Metrics'
 
 const StudyCharacteristicsForms = props => {
     const [values, setValues] = useContext(MetricsFormContext)
     const { classes } = props
-
-    console.log(values.subStudy)
-    console.log(typeof values.subStudy)
 
     const handleToggle = name => event => {
         setValues({ ...values, [name]: event.target.checked })

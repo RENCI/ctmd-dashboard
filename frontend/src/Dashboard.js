@@ -1,20 +1,16 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
-import { Drawer, Hidden, CssBaseline, Toolbar, IconButton } from '@material-ui/core'
-import {
-    Menu as MenuIcon,
-    Settings as SettingsIcon,
-    ExitToApp as LogoutIcon,
-} from '@material-ui/icons'
+import { Drawer, Hidden, CssBaseline, IconButton } from '@material-ui/core'
+import { Menu as MenuIcon } from '@material-ui/icons'
 
 import ScrollToTop from './utils/ScrollToTop'
 
 import SideMenu from './components/Menus/SideMenu'
-import UserMenu from './components/Menus/UserMenu'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
+import ProposalPage from './views/ProposalInspector'
 import ProposalsPage from './views/Proposals'
 import ProposalsByOrganization from './views/Proposals/ByOrganization'
 import ProposalsByTic from './views/Proposals/ByTic'
@@ -23,8 +19,9 @@ import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
 import ProposalsByDate from './views/Proposals/ByDate'
 import ProposalsByApprovedServices from './views/Proposals/ByApprovedServices'
 import ProposalsByRequestedServices from './views/Proposals/ByRequestedServices'
-import SiteReportPage from './views/SiteReport'
 import StudyMetricsPage from './views/StudyMetrics'
+import SiteReportsPage from './views/SiteReports/SiteReports'
+import StudiesPage from './views/SiteReports/Studies'
 import CollaborationsPage from './views/Collaborations'
 
 const drawerWidth = 240
@@ -70,7 +67,7 @@ const useStyles = makeStyles(theme => ({
     },
     main: {
         minHeight: '100vh',
-        backgroundColor: theme.palette.extended.limestone,
+        backgroundColor: theme.palette.grey[100],
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
         paddingTop: `${ 8 * theme.spacing.unit }px`,
@@ -85,7 +82,6 @@ const useStyles = makeStyles(theme => ({
 const Dashboard = props => {
     const classes = useStyles()
     const [mobileOpen, setMobileOpen] = useState()
-
     
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen)
@@ -130,6 +126,7 @@ const Dashboard = props => {
                     ><MenuIcon fontSize="large" /></IconButton>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
+                        <Route exact path="/proposals/:id(\d+)" component={ ProposalPage }/>
                         <Route exact path="/proposals" component={ ProposalsPage }/>
                         <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
                         <Route path="/proposals/tic" component={ ProposalsByTic }/>
@@ -139,7 +136,8 @@ const Dashboard = props => {
                         <Route path="/proposals/requested-services" component={ ProposalsByRequestedServices }/>
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
-                        <Route path="/site-report" component={ SiteReportPage }/>
+                        <Route path="/site-reports/:id(\d+)" component={ SiteReportsPage }/>
+                        <Route path="/site-reports" component={ StudiesPage }/>
                         <Route path="/study-metrics" component={ StudyMetricsPage }/>
                         <Route path="/" component={ HomePage }/>
                     </Switch>

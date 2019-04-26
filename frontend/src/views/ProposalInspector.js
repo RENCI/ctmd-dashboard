@@ -1,0 +1,66 @@
+import React, { Fragment, useState, useEffect, useContext } from 'react'
+import axios from 'axios'
+import { useTheme } from '@material-ui/styles'
+import { useProposal } from '../hooks/useProposal'
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Heading, Subheading, Paragraph } from '../components/Typography/Typography'
+import ProposalsTable from '../components/Charts/ProposalsTable'
+import { CircularLoader } from '../components/Progress/Progress'
+import BrowseMenu from '../components/Menus/BrowseMenu'
+
+const Detail = props => {
+    const { name, info } = props
+    return (
+        <div>
+            <Subheading>{ name }</Subheading>
+            <Paragraph>{ info }</Paragraph>
+            <br/>
+        </div>
+    )
+}
+
+const ProposalInspector = props => {
+    const proposal = useProposal(props.match.params.id)
+    const theme = useTheme()
+    
+    return proposal ? (
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Heading>
+                    { proposal.shortTitle }
+                </Heading>
+                <Subheading>
+                    { proposal.proposalID }
+                </Subheading>
+            </div>
+            
+            <Grid container spacing={ 2 * theme.spacing.unit }>
+                <Grid item xs={ 12 }>
+                    <Card>
+                        <CardHeader
+                            title={ proposal.shortTitle }
+                            subheader={ proposal.longTitle }
+                        />
+                        <CardContent>
+                            <Detail name="Study Description" info={ proposal.shortDescription } />
+                            <Detail name="Principal Investigator" info={ proposal.piName } />
+                            <Detail name="Submission Date" info={ proposal.dateSubmitted } />
+                            <Detail name="Proposal Status" info={ proposal.proposalStatus } />
+                            <Detail name="Assigned TIC/RIC" info={ proposal.assignToInstitution } />
+                            <Detail name="Submitting Institution" info={ proposal.submitterInstitution } />
+                            <Detail name="Therapeutic Area" info={ proposal.therapeuticArea } />
+                            <Detail name="Funding Status" info={ proposal.fundingStatus } />
+                            <Detail name="Funding Status at Time of Approval" info={ proposal.fundingStatusWhenApproved } />
+                            <Detail name="Total Budget" info={ proposal.totalBudget } />
+                            <Detail name="Funding Duration" info={ proposal.fundingPeriod } />
+                            <Detail name="PAT Meeting Date" info={ proposal.meetingDate } />
+                            <Detail name="Planned Grant Submission Date" info={ proposal.plannedGrantSubmissionDate } />
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+        </div>
+    ) : <CircularLoader />
+}
+
+export default ProposalInspector

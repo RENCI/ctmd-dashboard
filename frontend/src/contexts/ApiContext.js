@@ -6,6 +6,7 @@ const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_
 
 export const endpoints = {
     proposals: apiRoot + 'proposals',
+    oneProposal: id => apiRoot + `proposals/${ id }`,
     proposalsByTic: apiRoot + 'proposals/by-tic',
     proposalsByDate: apiRoot + 'proposals/by-date',
     proposalsByStatus: apiRoot + 'proposals/by-status',
@@ -29,5 +30,7 @@ export const endpoints = {
     therapeuticAreas: apiRoot + 'therapeutic-areas',
     services: apiRoot + 'services',
     studyMetrics: apiRoot + 'study-metrics',
+    sites: apiRoot + 'sites',
+    saveSiteReport: apiRoot + 'sites/reports',
 }
 

@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react'
-import axios from 'axios'
+import React from 'react'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
-import Heading from '../components/Typography/Heading'
-import { CircularLoader } from '../components/Progress/Progress'
+import { Heading } from '../components/Typography/Typography'
 import ProposalsByTicBarChart from '../components/widgets/ProposalsByTic'
-import ProposalsByStatusBarChart from '../components/widgets/ProposalsByStatus'
+import ProposalsByMonthBarChart from '../components/widgets/ProposalsByMonth'
 import ProposalsCalendar from '../components/widgets/ProposalsCalendar'
-import AverageDays from '../components/widgets/AverageDays'
+import DayStats from '../components/widgets/DayStats'
 import Counts from '../components/widgets/Counts'
 
 const useStyles = makeStyles(theme => ({
@@ -65,11 +63,14 @@ const HomePage = (props) => {
                 <Grid item xs={ 12 } sm={ 11 }>
                     <ProposalsByTicBarChart />
                 </Grid>
-                <Grid item xs={ 12 } sm={ 11 } lg={ 5 } >
-                    <AverageDays />
+                <Grid item xs={ 12 } sm={ 11 } lg={ 5 }>
+                    <ProposalsByMonthBarChart />
                 </Grid>
                 <Grid item xs={ 12 } sm={ 11 } lg={ 6 } >
                     <ProposalsCalendar />
+                </Grid>
+                <Grid item xs={ 12 } sm={ 11 }>
+                    <DayStats />
                 </Grid>
             </Grid>
         </div>

@@ -1,12 +1,13 @@
 # Trial Innovation Center Dashboard
+
 - [Server Setup](#server-setup)
   + [Install Docker](#install-docker)
   + [Docker Post-Installation Steps](#docker-post-installation-steps)
   + [Install Docker Compose](#install-docker-compose)
 - [Application Setup](#application-setup)
   + [Clone](#clone)
-  + [Set up environment variables file](#set-up-environment-variables-file)
-  + [Copy the existing database](#copy-the-existing-database)
+  + [Set up Environment Variables](#set-up-environment-variables)
+  + [Take a Snapshot of the Existing Database](#take-a-snapshot-of-the-existing-database)
 - [Start](#start)
   + [Development](#development)
     * [Hot Reloading](#hot-reloading)
@@ -144,21 +145,27 @@ docker-compose version 1.23.2, build 1110ad01
 
 ### Clone
 
-Fork or clone this repo.
+Clone this repo or fork and clone your own.
 
 ```bash
 $ git clone https://github.com/renci/dashboard.git
 ```
 
-### Set up environment variables file
+### Set up Environment Variables
 
-There are two places we specify environemt-specific variables `./.env` and `./frontend/.env`. The former will contain database credentials necessary for building the Docker images. The latter indicates the URL at which the frontend can access the API. It is necessary that the names of variables used in the React frontend begin with `REACT_APP_`. The variable is referenced in the `ApiContext`, which resides at `'./frontend/src/contexts/ApiContext.js`, providing access to the API's endpoints across the frontend application.
+Environemt variables should live in the file called `./.env`. Important information lives in this file to build the docker images so that the containers can communicate. The set of variables consists of database credentials, variables describing how to access the API, RedCap database credentials, and the location to store Postgres data dumps. A brief desription of each environment variable follows.
 
-There is a `.env.sample` file in each location that can be copied to get things working out of the box. Changes must be made to the `REACT_APP_API_ROOT` variable for various environments throughout the development workflow, so be sure make changes to that file accordingly--`http://localhost/api/` will work for testing development locally.
+- `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`: These are all credentials to connect to the database container.
+- `REACT_APP_API_ROOT`: Environment variables used in React begin with `REACT_APP_`. This variable is referenced in the `ApiContext`, which resides at `'./frontend/src/contexts/ApiContext.js`, providing access to the API's endpoints across the entire frontend of the application. This is only used in production.
+- `API_PORT`: This is the port the `pmd-api` container should serve the API.
+- `REDCAP_APPLICATION_TOKEN`: This token grants access to the RedCap database. \* This is only used in production.
+- `POSTGRES_DUMP_PATH`: This is the location on the host where Postgres backups (via `pg_dump`) will be stored. \* This is only used in production.
 
-### Copy the existing database
+The `.env.sample` file can be used as a guide (and it can be copied to get things working out of the box for local development).
 
-On the PMD VM, dump a snapshot of the database. In the example here, we're `pg_dump`ing the database called `duketicheal`.
+### Take a Snapshot of the Existing Database
+
+On the PMD VM, dump a snapshot of the database. In the example here, we're `pg_dump`ing the database called `duketicheal` from the production server to ensure we have a recent snapshot of the data.
 
 ```bash
 $ pg_dump duketicheal > duketic.sql
@@ -172,15 +179,15 @@ Copy that dumped data to the `db` directory.
 /cloned/repo/db/ $ scp username@pmd-host:/path/to/duketic.sql .
 ```
 
-The `postgres` container looks for that file--`./db/duketic.sql`--to populate a copy of the database.
+The database container looks for that file--`./db/duketic.sql`--to populate its database to mimic the actual data.
 
 ### Start 
 
-There are three services that we need to run--they are named `frontend`, `api`, and `db`, and the assodicated containers are prepended with `pmd-`. the development containers are named similarly, but appended with `-dev`.
+In development, there are three services that we need to run. They are named `frontend`, `api`, and `db`, and the associated containers are prepended with `pmd-`, and the development containers are appended with `-dev`. For example, the API is served in development from the container named `pmd-api-dev`. One additional container called `pipeline` runs in production, which handles choreographing the persistence of data from the production host to the containerized application.
 
 #### Development
 
-Start all three services:
+Start all three development services:
 
 ```bash
 $ docker-compose up
@@ -223,11 +230,11 @@ pmd-frontend-dev  |
   .
 ```
 
-Once everything is started up, point your browser to `http://localhost:3000` to access the dashboard. The API is served to `http://localhost:3030` in case you need to play with it directly the browser or in Postman, say.
+Once everything is started up, point your browser to `http://localhost:3000` to access the dashboard. The API is served to `http://localhost:3030` in case you need to play with it directly the browser or in Postman, say. Check the console for any errors that may prevent access to the application's frontend or API.
 
 ##### Hot Reloading
 
-Note that the development `frontend` and `api` services start with React's development server and nodemon, respectively, allowing hot reloading.
+Note that the development `frontend` and `api` services start with React's development server and nodemon, respectively, allowing hot reloading, which causes your browser to refresh the page upon saving changes to any files used by the frontend. 
 
 ##### Installing New Modules
 
@@ -235,15 +242,33 @@ If a new npm module is installed, for example, someone on the project executes `
 
 Alternatively, you may find that this needs to be done retrospectively, after a container is already running. Perhaps you've received an error in the browser such as `Module not found: Can't resolve '@name-space/module' in '/usr/src/app/src/components/someComponent'`, in which case you can log into the running `pmd-frontend-dev` container and `npm install` it there in (the default location) `/usr/src/app`. Simply executing `docker exec -it pmd-frontend-dev npm install` is a quick, easy way to handle this.
 
+##### Frontend Development
+
+- See the specific documentation for details on [frontend](frontend/README.md) and [API](api/README.md) development for this application.
+
 #### Production
 
-Running this in production is quite similar to the development environment, but a few details need to be provided in order first.
+Running this in production is quite similar to the development environment, but a few things need to be in place first. We need to set up the aforementioned environment variables and set up authentication.
 
 ##### Prerequisites
 
+###### API URL
+
+The first thing the application needs set is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
+
+If this is not done, you will see progress/loading spinners when you view the dashboard in your browser. This is because the frontend will be reaching out for data from the wrong location and thus never receive it.
+
+###### RedCap Token
+
+The `pmd-pipeline` container must communicate with the RedCap database, thus the `REDCAP_APPLICATION_TOKEN` token must be set to access its API.
+
+###### Postgres Dump Location
+
+The `pmd-pipeline` container manages taking snapshots of the postgres database in the `pmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`.
+
 ###### HTTP Authentication
 
-The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. It holds usernames and hashed passwords, as the sample file--`./frontend/.htpasswd.sample` illustrates. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils` or `httpd-tools`. To use `htpasswd`, you can execute `htpasswd -c ./frontend/.htpasswd [username]`, where you replace `[username]` with the desired username. Then you'll be prompted to enter a password twice.
+The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. It holds usernames and hashed passwords, as the sample file--`./frontend/.htpasswd.sample` illustrates. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils` or `httpd-tools`. To use `htpasswd`, you can execute `htpasswd -c ./frontend/.htpasswd [username]`, where `[username]` is replaced with the desired login username. Then you'll be prompted to enter a password twice.
 
 The entire interaction shows output like the following.
 
@@ -254,36 +279,24 @@ Re-type new password:
 Adding password for user myusername
 ```
 
-If this is not done, Nginx will throw a `500 Internal Server Error` at your browser whne you try to access the site.
-
-###### API URL
-<<<<<<< HEAD
-
-The second thing that you'll need to specify is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
-
-=======
-
-The second thing that you'll need to specify is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
-
->>>>>>> bfe2b406085456736278f72b7e0bf3de413e4274
-If this is not done, you will see progress/loading spinners in the browser. This is because the frontend will be reaching out for data from the wrong location and never receive it.
+If this is not done, Nginx will throw a `500 Internal Server Error` at your browser when you try to access the site.
 
 ##### OK, Let's Go
 
-Start all three services using the production Docker Compose file, `docker-compose.prod.yml`:
+Build and start all three services using the production Docker Compose file, `docker-compose.prod.yml`.
+In production, we almost always need to rebuild the images when we start the services and ru them in detached mode.
 
 ```bash
 $ docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
-This serves the frontend to port `80` on the host, and is thus reachable simply at `http://localhost` (or your domain name). The API is publicly accessible via `http://localhost/api`.
-<<<<<<< HEAD
+This serves the frontend to port `80` on the host, and is thus reachable simply at `http://you-domain-name.com` (or http://localhost if running in production locally). The API is publicly accessible via `http://localhost/api`.
 
 ### Notes About Docker
 
 #### Detaching
 
-It's nice to leave your session attached to keep an eye on errors throughout the development process, but of course you want to rebuild and/or detach in some cases:
+It's nice to leave your session attached to keep an eye on errors throughout the development process, but of course you'll want to rebuild and/or detach in some cases:
 
 ```bash
 $ docker-compose up --build -d
@@ -309,46 +322,13 @@ To tinker and test various things, one often needs to log into an individual con
 docker exec -it pmd-db bash
 ```
 
-=======
-
-### Notes About Docker
-
-#### Detaching
-
-It's nice to leave your session attached to keep an eye on errors throughout the development process, but of course you want to rebuild and/or detach in some cases:
-
-```bash
-$ docker-compose up --build -d
-```
-
-Only start a couple services, you may specify them explicitly:
-
-```bash
-$ docker-compose up api
-```
-
-The above command starts the development `api` and its dependency, the `db` service (indicated with the `depends_on` tag in the `docker-compose.yml` file. Similarly, one can also just build specific images and start containers based on them. The following command behaves just like the previous one, except that it rebuilds the images first.
-
-```bash
-$ docker-compose up --build api
-```
-
-#### Tinkering in a Running Container
-
-To tinker and test various things, one often needs to log into an individual container with `docker exec`. (This was mentioned earlier when describing the installation of new npm modules.) To, say, run some database queries inside the database container, we can attach to it with the following command.
-
-```bash
-docker exec -it pmd-db bash
-```
-
->>>>>>> bfe2b406085456736278f72b7e0bf3de413e4274
-Now you're inside the container and can proceed normally -- switch to the `postgres` user with something like `sudo -u postgres -i`, access the database `psql duketic`, and execute queries to your heart's content, `select * from proposal where false;` is a fun one.
+This will plop you inside the container, and you may proceed normally -- switch to the `postgres` user with something like `sudo -u postgres -i`, access the database `psql duketic`, and execute queries to your heart's content, `select * from "Proposal" where false;` is a fun one.
 
 ## Tear it Down
 
-If you started without the detach flag, `-d`, you can stop the containers running with `CTRL+C`, and Docker will clean up after itself. If you ran things in detched mode (_with_ the `-d` flag), then bring everything down with `$ docker-compose down`
+If you started without the detach flag, `-d`, you can stop the containers running with `CTRL+C`, and Docker will clean up after itself. If you ran things in detatched mode (_with_ the `-d` flag), then bring everything down with `$ docker-compose down` from withing the project's root directory.
 
-\* Note: the postgres storage (at `/db/pgdata`) is persisted on the host and is created with root privileges. If the `db` image needs to be rebuilt (with a new `.sql` file perhaps), docker qill squawk at you with a permission error. Remove this directory with `$ sudo rm -r /db/pgdata`. Then the next time it builds, the new `.sql` file will be used to populate the database.
+\* Note: the postgres storage (at `/db/pgdata`) is persisted on the host and is created with root privileges. If the `db` image needs to be rebuilt (with a new `.sql` file perhaps), Docker will squawk at you with a permission error. Remove this directory (with `$ sudo rm -r /db/pgdata`). Then the next time it builds, your new `.sql` file will be used repopulate the database with your updated data.
 
 ## References
 
