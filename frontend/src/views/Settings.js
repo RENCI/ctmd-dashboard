@@ -1,11 +1,10 @@
 import React, { Fragment, useContext } from 'react'
 import { Heading } from '../components/Typography/Typography'
 import {
-    Grid, Card, CardHeader, CardContent,
+    Grid, 
     FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
-    Select, OutlinedInput, MenuItem, Collapse, IconButton
+    Select, OutlinedInput, MenuItem, 
 } from '@material-ui/core'
-import { ExpandMore as ExpandIcon } from '@material-ui/icons'
 import { SettingsContext } from '../contexts/SettingsContext'
 import { CollapsibleCard } from '../components/CollapsibleCard/CollapsibleCard'
 
