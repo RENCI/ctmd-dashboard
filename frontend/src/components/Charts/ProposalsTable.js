@@ -275,6 +275,14 @@ const ProposalsTable = (props) => {
                     title: 'Grant Approval Date', field: 'fundingStart',
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
+                {
+                    title: 'Funding Amount', field: 'totalBudget',
+                    hidden: !settings.tables.visibleColumns.totalBudget,
+                },
+                {
+                    title: 'Funding Period', field: 'fundingPeriod',
+                    hidden: !settings.tables.visibleColumns.fundingPeriod,
+                },
             ] }
             data={ proposals }
             options={{

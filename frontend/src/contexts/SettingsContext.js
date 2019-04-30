@@ -17,6 +17,8 @@ export const defaultSettings = {
             plannedGrantSubmissionDate: false,
             actualGrantSubmissionDate: false,
             fundingStart: false,
+            totalBudget: false,
+            fundingPeriod: false,
         },
         pageSize: 50,
     },
