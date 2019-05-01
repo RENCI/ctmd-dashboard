@@ -23,7 +23,7 @@ const collaborationsPage = (props) => {
                 <ProposalsNetwork apiUrl={ api.proposals } onSelectProposals={ handleSelectProposals }/>
               </Grid>
 
-              <Grid items xs={ 12 }>
+              <Grid item xs={ 12 }>
                 <ProposalsTable proposals={ proposals } paging={ false } />
               </Grid>
 
