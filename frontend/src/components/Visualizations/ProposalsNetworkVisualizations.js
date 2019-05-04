@@ -4,20 +4,6 @@ import * as d3 from 'd3';
 import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
 
-function combine(a, b) {
-    if (a.length > 0 && b.length > 0) {
-        return a.filter(function(item) {
-            return b.indexOf(item) !== -1;
-        });
-    }
-    else if (a.length > 0) {
-        return a.slice();
-    }
-    else {
-      return b.slice();
-    }
-}
-
 class ProposalsNetworkVisualizations extends Component {
     constructor(props) {
         super(props);

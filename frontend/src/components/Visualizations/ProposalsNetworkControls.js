@@ -75,6 +75,7 @@ function ProposalsNetworkControls(props) {
            case "tic": setTic(value); break;
            case "status": setStatus(value); break;
            case "area": setArea(value); break;
+           default: console.log("Invalid type: " + type);
         }
 
         onChange(type, event);
