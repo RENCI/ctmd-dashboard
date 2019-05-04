@@ -6,8 +6,8 @@ export default function() {
   var margin = { top: 5, left: 5, bottom: 5, right: 5 },
       width = 800,
       height = 800,
-      //innerWidth = function() { return width - margin.left - margin.right; },
-      //innerHeight = function() { return height - margin.top - margin.bottom; },
+      innerWidth = function() { return width - margin.left - margin.right; },
+      innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
       allNodes = [],
@@ -236,6 +236,28 @@ export default function() {
       });
     }
 
+    // Adjust forces to maintain approximate size of layout
+    const r = innerWidth() / 2;
+    const avgDist = d3.mean(network.nodes, d => {
+      const x = d.x - r,
+            y = d.y - r;
+      return Math.sqrt(x * x + y * y);
+    });
+
+    const k = Math.max(0.95, Math.min(avgDist / (r * 0.5), 1.05));
+    const sManyBody = force.force("manyBody").strength()();
+    const sXY = force.force("x").strength()();
+    force.force("manyBody").strength(sManyBody / k);
+    force.force("x").strength(Math.max(sXY * k, 1));
+    force.force("y").strength(Math.max(sXY * k, 1));
+
+    // Ensure all nodes are visible
+    network.nodes.forEach(d => {
+      d.x = Math.max(0, Math.min(d.x, innerWidth()));
+      d.y = Math.max(0, Math.min(d.y, innerHeight()));
+    });
+
+    // Update the visualization
     svg.select(".network").selectAll(".node")
         .attr("transform", function(d) {
           return "translate(" + d.x + "," + d.y + ")";
@@ -258,7 +280,7 @@ export default function() {
     svg.attr("width", width)
         .attr("height", height);
 
-    var manyBodyStrength = -0.02 / network.nodes.length * width * height;
+    const k = Math.sqrt(network.nodes.length / (innerWidth() * innerHeight()));
 
     radiusScale
         .domain([0, d3.max(allNodes, function(d) {
@@ -274,11 +296,11 @@ export default function() {
     // Set force directed network
     force
         .nodes(network.nodes)
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("manyBody", d3.forceManyBody().strength(manyBodyStrength))
+        .force("center", d3.forceCenter(innerWidth() / 2, innerHeight() / 2))
+        .force("manyBody", d3.forceManyBody().strength(-0.5 / k))
         .force("collide", d3.forceCollide().radius(nodeRadius))
-        .force("x", d3.forceX(width / 2))
-        .force("y", d3.forceY(height / 2))
+        .force("x", d3.forceX(innerWidth() / 2).strength(0.1))
+        .force("y", d3.forceY(innerHeight() / 2).strength(0.1))
         .force("link").links(network.links);
 
     force
@@ -379,7 +401,7 @@ export default function() {
 
       const widthScale = d3.scaleLinear()
           .domain([1, maxLink])
-          .range([1, 30]);
+          .range([1, radiusRange[0]]);
 
       // Bind data for links
       var link = svg.select(".network").selectAll(".link")

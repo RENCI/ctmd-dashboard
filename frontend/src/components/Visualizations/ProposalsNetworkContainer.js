@@ -131,7 +131,7 @@ function createNodeData(data) {
 }
 
 const ProposalsNetworkContainer = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [proposals, setProposals] = useState([]);
     const [nodeData, setNodeData] = useState({ nodes: [], nodeTypes: [] });
     const [selectedNodes, selectedNodesDispatcher] = useReducer(updateSelectedNodes, []);
