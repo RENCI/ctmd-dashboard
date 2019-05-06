@@ -236,42 +236,35 @@ export default function() {
       });
     }
 
-    // Adjust forces to maintain approximate size of layout
+    // Scale to fit svg
     const r = innerWidth() / 2;
-    const avgDist = d3.mean(network.nodes, d => {
+    const maxDist = d3.max(network.nodes, d => {
       const x = d.x - r,
             y = d.y - r;
       return Math.sqrt(x * x + y * y);
     });
+    const scale = r / maxDist;
 
-    const k = Math.max(0.95, Math.min(avgDist / (r * 0.5), 1.05));
-    const sManyBody = force.force("manyBody").strength()();
-    const sXY = force.force("x").strength()();
-    force.force("manyBody").strength(sManyBody / k);
-    force.force("x").strength(Math.max(sXY * k, 1));
-    force.force("y").strength(Math.max(sXY * k, 1));
-
-    // Ensure all nodes are visible
     network.nodes.forEach(d => {
-      d.x = Math.max(0, Math.min(d.x, innerWidth()));
-      d.y = Math.max(0, Math.min(d.y, innerHeight()));
+      d.sx = (d.x - r) * scale + r;
+      d.sy = (d.y - r) * scale + r;
     });
 
     // Update the visualization
     svg.select(".network").selectAll(".node")
         .attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
+          return "translate(" + d.sx + "," + d.sy + ")";
         });
 
     svg.select(".network").selectAll(".link")
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+        .attr("x1", function(d) { return d.source.sx; })
+        .attr("y1", function(d) { return d.source.sy; })
+        .attr("x2", function(d) { return d.target.sx; })
+        .attr("y2", function(d) { return d.target.sy; });
 
     svg.select(".labels").selectAll(".ticLabel")
         .attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
+          return "translate(" + d.sx + "," + d.sy + ")";
         });
   }
 
