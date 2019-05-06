@@ -235,7 +235,7 @@ export default function() {
         d.y = tic.y + vy * nr;
       });
     }
-
+    
     // Scale to fit svg
     const r = innerWidth() / 2;
     const maxDist = d3.max(network.nodes, d => {
