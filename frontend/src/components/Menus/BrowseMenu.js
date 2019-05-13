@@ -67,11 +67,11 @@ const BrowseMenu = (props) => {
                 <Divider />
                 <MenuItem component={ NavLink } to="/proposals/requested-services">
                     <ListItemIcon><ServicesIcon /></ListItemIcon>
-                    <ListItemText primary="Services Requested"/>
+                    <ListItemText primary="Resources Requested"/>
                 </MenuItem>
                 <MenuItem component={ NavLink } to="/proposals/approved-services">
                     <ListItemIcon><ServicesIcon /></ListItemIcon>
-                    <ListItemText primary="Services Approved"/>
+                    <ListItemText primary="Resources Approved"/>
                 </MenuItem>
                 <Divider />
                 <MenuItem component={ NavLink } to="/proposals/status">

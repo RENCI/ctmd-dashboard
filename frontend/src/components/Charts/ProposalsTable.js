@@ -138,8 +138,8 @@ const ProposalDetailPanel = props => {
                 <Grid item xs={ 4 }>
                     <List dense>
                         <ListItem className={ classes.servicesRow }>
-                            <Tooltip title="Services" aria-label="Requested and Approved Services"><ListItemIcon><ServicesIcon /></ListItemIcon></Tooltip>
-                            <ListItemText primary="Requested Services" secondary={
+                            <Tooltip title="Resources" aria-label="Requested and Approved Resources"><ListItemIcon><ServicesIcon /></ListItemIcon></Tooltip>
+                            <ListItemText primary="Requested Resources" secondary={
                                 <Fragment>
                                     {
                                         requestedServices.length > 0 ? requestedServices.map(
@@ -148,7 +148,7 @@ const ProposalDetailPanel = props => {
                                     }
                                 </Fragment>
                             }/>
-                            <ListItemText primary="Approved Services" secondary={
+                            <ListItemText primary="Approved Resources" secondary={
                                 <Fragment>
                                     {
                                         approvedServices.length > 0 ? approvedServices.map(
