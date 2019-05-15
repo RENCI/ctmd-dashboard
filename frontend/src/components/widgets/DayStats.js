@@ -1,13 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Button, Menu, MenuItem } from '@material-ui/core'
+import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 import Widget from './Widget'
 
 const DayStats = props => {
     const [store, ] = useContext(StoreContext)
+    const [proposals, setProposals] = useState(null)
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const [tic, setTic] = useState('')
+    const theme = useTheme()
     const [averageDays, setAverageDays] = useState({
         submsisionToPatApproval: 0,
         approvalToGrantSubmission: 0,
@@ -20,12 +26,19 @@ const DayStats = props => {
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
     })
-    const [mode, setMode] = useState('average')
-    const theme = useTheme()
 
-    const findAverageDaysBetween = (field1, field2) => {
+    const handleClick = event => setAnchorEl(event.currentTarget)
+    
+    const handleSelect = event => {
+        setTic(event.target.getAttribute('value'))
+        setAnchorEl(null)
+    }
+    
+    const handleClose = () => setAnchorEl(null)
+
+    const findAverageDaysBetween = (proposals, field1, field2) => {
         let count = 0
-        const total = store.proposals.reduce((totalDays, proposal) => {
+        const total = proposals.reduce((totalDays, proposal) => {
             if (proposal[field1] && proposal[field2]) {
                 count += 1
                 return totalDays + Math.floor(new Date(proposal[field2]) - new Date(proposal[field1]))/(1000 * 60 * 60 * 24)
@@ -35,8 +48,8 @@ const DayStats = props => {
         return [Math.round(total / count), count]
     }
     
-    const findMedianDaysBetween = (field1, field2) => {
-        const differences = store.proposals.filter(proposal => proposal[field1] && proposal[field2])
+    const findMedianDaysBetween = (proposals, field1, field2) => {
+        const differences = proposals.filter(proposal => proposal[field1] && proposal[field2])
             .map(proposal => Math.floor((new Date(proposal[field2]) - new Date(proposal[field1])) / (1000 * 60 * 60 * 24)))
             .sort()
         if (differences.length % 2 === 0) {
@@ -52,26 +65,51 @@ const DayStats = props => {
     }
     
     useEffect(() => {
-        if (store.proposals) {
+        setProposals(store.proposals)
+    }, [store])
+
+    useEffect(() => {
+        if (tic !== '') {
+            setProposals(store.proposals.filter(proposal => proposal.assignToInstitution === tic))
+        } else {
+            setProposals(store.proposals)
+        }
+    }, [tic])
+    
+    useEffect(() => {
+        if (proposals) {
             setAverageDays({
-                submsisionToPatApproval: findAverageDaysBetween('dateSubmitted', 'meetingDate'),
-                approvalToGrantSubmission: findAverageDaysBetween('meetingDate', 'actualGrantSubmissionDate'),
-                submissionToGrantSubmission: findAverageDaysBetween('dateSubmitted', 'actualGrantSubmissionDate'),
-                grantSubmissionToGrantAward: findAverageDaysBetween('actualGrantSubmissionDate', 'fundingStart'),
+                submsisionToPatApproval: findAverageDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
+                approvalToGrantSubmission: findAverageDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
+                submissionToGrantSubmission: findAverageDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
+                grantSubmissionToGrantAward: findAverageDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
             }) 
             setMedianDays({
-                submsisionToPatApproval: findMedianDaysBetween('dateSubmitted', 'meetingDate'),
-                approvalToGrantSubmission: findMedianDaysBetween('meetingDate', 'actualGrantSubmissionDate'),
-                submissionToGrantSubmission: findMedianDaysBetween('dateSubmitted', 'actualGrantSubmissionDate'),
-                grantSubmissionToGrantAward: findMedianDaysBetween('actualGrantSubmissionDate', 'fundingStart'),
+                submsisionToPatApproval: findMedianDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
+                approvalToGrantSubmission: findMedianDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
+                submissionToGrantSubmission: findMedianDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
+                grantSubmissionToGrantAward: findMedianDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
             }) 
         }
-    }, [store])
+    }, [proposals])
 
     return (
         <Widget
             title="Day Measures"
             info="These graphs show the number of days between notable times over the proposal lifespan&mdash;from the time of submission, PAT approval, to grant submission, and grant approval."
+            action={
+                <Fragment>
+                    <Button variant="text" color="primary"
+                        aria-owns={ anchorEl ? 'tic-menu' : undefined }
+                        aria-haspopup="true"
+                        onClick={ handleClick }
+                    >{ tic || 'All TICs' }<MoreIcon/></Button>
+                    <Menu id="tic-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
+                        <MenuItem onClick={ handleSelect } value="">All</MenuItem>
+                        { store.tics && store.tics.map(({ name }) => <MenuItem key={ name } onClick={ handleSelect } value={ name }>{ name }</MenuItem>) }
+                    </Menu>
+                </Fragment>
+            }
         >
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 }>
