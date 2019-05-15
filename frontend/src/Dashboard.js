@@ -24,7 +24,7 @@ import SiteReportsPage from './views/SiteReports/SiteReports'
 import StudiesPage from './views/SiteReports/Studies'
 import CollaborationsPage from './views/Collaborations'
 
-const drawerWidth = 240
+const drawerWidth = 220
 
 const useStyles = makeStyles(theme => ({
     layout: { display: 'flex', },
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
         fontFamily: 'EB Garamond',
         textAlign: 'center',
         padding: `${2 * theme.spacing.unit }px 0`,
-        margin: 4 * theme.spacing.unit,
+        margin: 2 * theme.spacing.unit,
         borderTopLeftRadius: 2 * theme.spacing.unit,
         borderBottomRightRadius: 2 * theme.spacing.unit,
         transition: 'background-color 250ms',
