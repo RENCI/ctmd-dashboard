@@ -30,7 +30,7 @@ const ProposalsCalendar = props => {
     }
 
     const handleSelect = event => {
-        setYear(event.target.value);
+        setYear(event.target.value)
         setAnchorEl(null)
     }
     
