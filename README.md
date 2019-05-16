@@ -4,6 +4,7 @@
   + [Install Docker](#install-docker)
   + [Docker Post-Installation Steps](#docker-post-installation-steps)
   + [Install Docker Compose](#install-docker-compose)
+- [Workflow](#workflow)
 - [Application Setup](#application-setup)
   + [Clone](#clone)
   + [Set up Environment Variables](#set-up-environment-variables)
@@ -140,6 +141,23 @@ This will print out the version you installed:
 ```bash
 docker-compose version 1.23.2, build 1110ad01
 ```
+
+## Workflow
+
+Although unusual in this type of application, we follow a semantic versioning workflow and release pattern.
+
+### Branches
+
+- The `master` branch is the development branch.
+- Feature branches are named `feature/some-cool-feature`.
+- Patches are named `patch/short-term-fix-for-weird-thing`.
+- Bug fixes are named `bugfix/fix-for-weird-thing`.
+- `1.0-staging`, `1.1-staging`, `1.2-staging`, ... are test release branches branched fror deployment on the staging server.
+- `1.0`, `1.1`, `1.2`, ... are production release branches, branched off the corresponding staging branch, to be deployed on the production server.
+
+### Merging
+
+Please make pull requests for any feature, patch, or bugfix branch, tagging existing related issues where appropriate. When in doubt about creating a feature, patch, or bugfix branch, create an issue to discuss possible paths with the team.
 
 ## Application Setup
 
