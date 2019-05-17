@@ -79,18 +79,20 @@ const Menu = ({ expanded, clickHandler }) => {
             <MenuList>
                 {
                     menuItems.map(item => (
-                        <MenuItem key={ item.path }
-                            component={ NavLink } exact to={ item.path }
-                            className={ classes.menuItem } activeClassName={ classes.active }
-                            onClick={ clickHandler }
-                        >
-                            <ListItemIcon classes={{ root: classes.listItemIcon }}>
-                                <item.icon />
-                            </ListItemIcon>
-                            <ListItemText primary={ item.text }
-                                classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
-                            />
-                        </MenuItem>
+                        <Tooltip title={ expanded ? '' : item.text } placement="right">
+                            <MenuItem key={ item.path }
+                                component={ NavLink } exact to={ item.path }
+                                className={ classes.menuItem } activeClassName={ classes.active }
+                                onClick={ clickHandler }
+                            >
+                                <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                                    <item.icon />
+                                </ListItemIcon>
+                                <ListItemText primary={ item.text }
+                                    classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
+                                />
+                            </MenuItem>
+                        </Tooltip>
                     ))
                 }
             </MenuList>
