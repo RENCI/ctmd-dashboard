@@ -5,6 +5,7 @@ import { Paper, Tooltip, IconButton, ClickAwayListener } from '@material-ui/core
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowRight as ExpandIcon, Settings as SettingsIcon } from '@material-ui/icons'
 import Menu from './Menu'
+import Brand from '../../Brand/Brand'
 
 const useStyles = makeStyles(theme => ({
     tray: {
@@ -74,6 +75,10 @@ const Tray = ({ children }) => {
 
                 <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
 
+                <Brand />
+                
+                <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
+                    
                 <Tooltip title="Dashboard Settings" placement="top">
                     <IconButton component={ NavLink } to={ '/settings' } className={ classes.settingsButton } activeClassName={ classes.activeSettingsButton }>
                         <SettingsIcon className={ classes.settingsIcon } />

@@ -5,9 +5,7 @@ import { CssBaseline, IconButton } from '@material-ui/core'
 import { Menu as MenuIcon } from '@material-ui/icons'
 
 import ScrollToTop from './utils/ScrollToTop'
-
 import MenuTray from './components/Menus/MainMenu/Tray'
-
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
 import ProposalPage from './views/ProposalInspector'
@@ -25,21 +23,9 @@ import StudiesPage from './views/SiteReports/Studies'
 import CollaborationsPage from './views/Collaborations'
 
 const useStyles = makeStyles(theme => ({
-    layout: { display: 'flex', },
-    brand: {
-        backgroundColor: 'transparent',
-        border: `1px solid ${ theme.palette.primary.light }`,
-        color: theme.palette.primary.light,
-        fontFamily: 'EB Garamond',
-        textAlign: 'center',
-        padding: `${2 * theme.spacing.unit }px 0`,
-        margin: 2 * theme.spacing.unit,
-        borderTopLeftRadius: 2 * theme.spacing.unit,
-        borderBottomRightRadius: 2 * theme.spacing.unit,
-        transition: 'background-color 250ms',
-        '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        }
+    layout: {
+        display: 'flex',
+        backgroundColor: theme.palette.grey[100],
     },
     menuToggleButton: {
         transform: 'translateX(0)',
@@ -56,11 +42,10 @@ const useStyles = makeStyles(theme => ({
     },
     main: {
         minHeight: '100vh',
-        backgroundColor: theme.palette.grey[100],
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
         paddingTop: `${ 8 * theme.spacing.unit }px`,
-        marginLeft: '4rem',
+        marginLeft: '5rem',
         transition: 'padding-top 250ms',
     },
 }))
@@ -73,26 +58,12 @@ const Dashboard = props => {
         setMobileOpen(!mobileOpen)
     }
 
-    const brand = (
-        <div className={ classes.brand }>
-            <div style={{ fontSize: '360%', lineHeight: '4rem', }}>Duke</div>
-            <div style={{ fontSize: '180%', lineHeight: '2rem', }}>Vanderbilt</div>
-            <div style={{ fontSize: '400%', lineHeight: '4rem', }}>TIC</div>
-        </div>
-    )
-
     return (
         <div className={ classes.layout }>
             <MenuTray />
             <main className={ classes.main }>
                 <CssBaseline />
                 <ScrollToTop>
-                    <IconButton
-                        color="default"
-                        aria-label="Open drawer"
-                        onClick={ handleDrawerToggle }
-                        className={ classes.menuToggleButton }
-                    ><MenuIcon fontSize="large" /></IconButton>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
                         <Route exact path="/proposals/:id(\d+)" component={ ProposalPage }/>
