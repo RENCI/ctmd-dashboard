@@ -1,12 +1,9 @@
-import React, { Fragment, useState, useEffect, useContext } from 'react'
-import axios from 'axios'
+import React from 'react'
 import { useTheme } from '@material-ui/styles'
 import { useProposal } from '../hooks/useProposal'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { Heading, Subheading, Paragraph } from '../components/Typography/Typography'
-import ProposalsTable from '../components/Charts/ProposalsTable'
 import { CircularLoader } from '../components/Progress/Progress'
-import BrowseMenu from '../components/Menus/BrowseMenu'
 
 const Detail = props => {
     const { name, info } = props

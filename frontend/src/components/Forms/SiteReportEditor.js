@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 const SiteReportFormContext = React.createContext({})
 
 const SiteReportEditor = props => {
-    const { proposalID, readOnly } = props
+    const { readOnly } = props
     const [values, setValues] = useState({ })
     const [tabNumber, setTabNumber] = useState(0)
     const classes = useStyles()

@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { NavLink } from 'react-router-dom'
-import { MenuList, MenuItem, ListItemIcon, ListItemText, IconButton, Tooltip } from '@material-ui/core'
+import { MenuList, MenuItem, ListItemIcon, ListItemText, Tooltip } from '@material-ui/core'
 import {
     Dashboard as DashboardIcon,
     Description as ProposalsIcon,

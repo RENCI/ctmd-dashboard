@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Grid, CardHeader } from '@material-ui/core'
 import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
