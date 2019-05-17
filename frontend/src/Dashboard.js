@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
         paddingTop: `${ 8 * theme.spacing.unit }px`,
-        marginLeft: '3rem',
+        marginLeft: '4rem',
         transition: 'padding-top 250ms',
     },
 }))
