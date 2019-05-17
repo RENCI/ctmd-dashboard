@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import classnames from 'classnames'
 import { NavLink } from 'react-router-dom'
-import { Paper, Tooltip, IconButton } from '@material-ui/core'
+import { Paper, Tooltip, IconButton, ClickAwayListener } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowRight as ExpandIcon, Settings as SettingsIcon } from '@material-ui/icons'
 import Menu from './Menu'
@@ -64,21 +64,23 @@ const Tray = ({ children }) => {
     const handleClose = () => setOpen(false)
 
     return (
-        <Paper className={ classnames(classes.tray, open ? classes.open : null) }>
-            <IconButton className={ classnames(classes.toggler, open ? classes.rotated : null) } onClick={ handleToggleOpen }>
-                <ExpandIcon />
-            </IconButton>
-
-            <Menu expanded={ open } clickHandler={ handleClose } />
-
-            <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
-
-            <Tooltip title="Dashboard Settings" placement="top">
-                <IconButton component={ NavLink } to={ '/settings' } className={ classes.settingsButton } activeClassName={ classes.activeSettingsButton }>
-                    <SettingsIcon className={ classes.settingsIcon } />
+        <ClickAwayListener onClickAway={ open ? handleClose : null }>
+            <Paper className={ classnames(classes.tray, open ? classes.open : null) }>
+                <IconButton className={ classnames(classes.toggler, open ? classes.rotated : null) } onClick={ handleToggleOpen }>
+                    <ExpandIcon />
                 </IconButton>
-            </Tooltip>
-        </Paper>
+
+                <Menu expanded={ open } clickHandler={ handleClose } />
+
+                <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
+
+                <Tooltip title="Dashboard Settings" placement="top">
+                    <IconButton component={ NavLink } to={ '/settings' } className={ classes.settingsButton } activeClassName={ classes.activeSettingsButton }>
+                        <SettingsIcon className={ classes.settingsIcon } />
+                    </IconButton>
+                </Tooltip>
+            </Paper>
+        </ClickAwayListener>
     )
 }
 
