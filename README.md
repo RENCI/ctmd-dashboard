@@ -144,7 +144,7 @@ docker-compose version 1.23.2, build 1110ad01
 
 ## Workflow
 
-Although unusual in this type of application, we follow a semantic versioning workflow and release pattern.
+Although unusual in this type of application, we attempt to follow a version of a semantic versioning workflow and release pattern.
 
 ### Branches
 
@@ -157,7 +157,7 @@ Although unusual in this type of application, we follow a semantic versioning wo
 
 ### Merging
 
-Please make pull requests for any feature, patch, or bugfix branch, tagging existing related issues where appropriate. When in doubt about creating a feature, patch, or bugfix branch, create an issue to discuss possible paths with the team.
+We won't commit to master. Please make pull requests for any feature, patch, or bugfix branch, tagging existing related issues where appropriate. When in doubt about creating a feature, patch, or bugfix branch, create an issue to discuss possible paths with the team.
 
 ## Application Setup
 
