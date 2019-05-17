@@ -6,7 +6,7 @@ import { Menu as MenuIcon } from '@material-ui/icons'
 
 import ScrollToTop from './utils/ScrollToTop'
 
-import SideMenu from './components/Menus/SideMenu'
+import MenuTray from './components/Menus/MainMenu/Tray'
 
 import HomePage from './views/Index'
 import SettingsPage from './views/Settings'
@@ -24,19 +24,8 @@ import SiteReportsPage from './views/SiteReports/SiteReports'
 import StudiesPage from './views/SiteReports/Studies'
 import CollaborationsPage from './views/Collaborations'
 
-const drawerWidth = 220
-
 const useStyles = makeStyles(theme => ({
     layout: { display: 'flex', },
-    drawerPaper: { width: drawerWidth, },
-    nav: {
-        minWidth: 0,
-        transition: 'min-width 250ms',
-        [theme.breakpoints.up('sm')]: {
-            minWidth: drawerWidth,
-            flexShrink: 0,
-        },
-    },
     brand: {
         backgroundColor: 'transparent',
         border: `1px solid ${ theme.palette.primary.light }`,
@@ -71,11 +60,8 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
         paddingTop: `${ 8 * theme.spacing.unit }px`,
+        marginLeft: '3rem',
         transition: 'padding-top 250ms',
-        [theme.breakpoints.up('sm')]: {
-            padding: `${ 4 * theme.spacing.unit }px`,
-            paddingTop: `${ 5 * theme.spacing.unit }px`,
-        },
     },
 }))
 
@@ -97,24 +83,7 @@ const Dashboard = props => {
 
     return (
         <div className={ classes.layout }>
-            <nav className={ classes.nav }>
-                <Hidden smUp implementation="css">
-                    <Drawer anchor={ 'left' } variant="temporary"
-                        open={ mobileOpen } onClose={ handleDrawerToggle }
-                        classes={{ paper: classes.drawerPaper, }} container={ props.container }
-                        ModalProps={{ keepMounted: true, }} // Better open performance on mobile.
-                    >
-                        <a href="/">{ brand }</a>
-                        <SideMenu />
-                    </Drawer>
-                </Hidden>
-                <Hidden xsDown implementation="css">
-                    <Drawer open variant="permanent" classes={{ paper: classes.drawerPaper }}>
-                        <a href="/">{ brand }</a>
-                        <SideMenu />
-                    </Drawer>
-                </Hidden>
-            </nav>
+            <MenuTray />
             <main className={ classes.main }>
                 <CssBaseline />
                 <ScrollToTop>
