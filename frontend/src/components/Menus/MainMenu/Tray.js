@@ -26,10 +26,10 @@ const useStyles = makeStyles(theme => ({
     },
     toggler: {
         margin: '0.5rem',
-        transition: 'transform 250ms',
-        '&.rotated': {
-            transform: 'rotate(180deg)',
-        }
+        transition: 'transform 500ms',
+    },
+    rotated: {
+        transform: 'rotate(-180deg)',
     },
     flexer: { flex: 1, },
     settingsButton: {
