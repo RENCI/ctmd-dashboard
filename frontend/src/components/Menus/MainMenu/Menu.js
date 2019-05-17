@@ -79,8 +79,8 @@ const Menu = ({ expanded, clickHandler }) => {
             <MenuList>
                 {
                     menuItems.map(item => (
-                        <Tooltip title={ expanded ? '' : item.text } placement="right">
-                            <MenuItem key={ item.path }
+                        <Tooltip key={ item.path } title={ expanded ? '' : item.text } placement="right">
+                            <MenuItem
                                 component={ NavLink } exact to={ item.path }
                                 className={ classes.menuItem } activeClassName={ classes.active }
                                 onClick={ clickHandler }
