@@ -42,9 +42,8 @@ const useStyles = makeStyles(theme => ({
     activeSettingsButton: {
         color: theme.palette.secondary.main,
         '& $settingsIcon': {
-            transform: 'scale(1.1)',
+            transform: 'scale(1.1) rotate(120deg)',
             color: theme.palette.secondary.main,
-            transform: 'rotate(120deg)',
         },
         '&:hover $settingsIcon': {
             color: theme.palette.secondary.main,

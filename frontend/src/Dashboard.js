@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
-import { Drawer, Hidden, CssBaseline, IconButton } from '@material-ui/core'
+import { CssBaseline, IconButton } from '@material-ui/core'
 import { Menu as MenuIcon } from '@material-ui/icons'
 
 import ScrollToTop from './utils/ScrollToTop'
@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
         paddingTop: `${ 8 * theme.spacing.unit }px`,
-        marginLeft: '3rem',
+        marginLeft: '4rem',
         transition: 'padding-top 250ms',
     },
 }))

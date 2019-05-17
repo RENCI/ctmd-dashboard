@@ -13,7 +13,6 @@ import {
     AttachMoney as BudgetIcon,
     LocalLaundryService as ServicesIcon,
     CheckCircle as ApprovedIcon,
-    Search as InspectIcon,
 } from '@material-ui/icons'
 import { SettingsContext } from '../../contexts/SettingsContext'
 

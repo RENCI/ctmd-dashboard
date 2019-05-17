@@ -1,8 +1,6 @@
 import React, { useContext } from 'react'
-import { NavLink }from 'react-router-dom'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
-import { KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../../components/Progress/Progress'
 import Widget from './Widget'

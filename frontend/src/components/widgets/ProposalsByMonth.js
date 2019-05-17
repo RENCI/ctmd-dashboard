@@ -15,7 +15,7 @@ const thisYear = (new Date()).getFullYear()
 // const yyyymmToLabel => date => {}
 
 const proposalsByMonth = props => {
-    const [store, _] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState([])
     const [currentPosition, setCurrentPosition] = useState(-1)
     const [startLabel, setStartLabel] = useState('...')
