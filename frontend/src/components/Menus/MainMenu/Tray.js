@@ -65,7 +65,7 @@ const Tray = ({ children }) => {
     const handleClose = () => setOpen(false)
 
     return (
-        <ClickAwayListener onClickAway={ open ? handleClose : null }>
+        <ClickAwayListener onClickAway={ open ? handleClose : () => {} }>
             <Paper className={ classnames(classes.tray, open ? classes.open : null) }>
                 <IconButton className={ classnames(classes.toggler, open ? classes.rotated : null) } onClick={ handleToggleOpen }>
                     <ExpandIcon />
