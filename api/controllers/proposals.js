@@ -60,6 +60,7 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             name5.description AS "fundingStatus",
             name6.description AS "fundingStatusWhenApproved",
             "ProposalFunding"."totalBudget",
+            "ProposalFunding"."amountAward" as "fundingAmount",
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
             CAST("ProposalFunding"."fundingStart" AS VARCHAR),
             CAST("PATMeeting"."meetingDate" AS VARCHAR),
