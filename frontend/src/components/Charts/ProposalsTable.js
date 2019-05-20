@@ -84,8 +84,15 @@ const ProposalDetailPanel = props => {
     }, [])
 
     const todaysDate = (new Date()).toISOString().slice(0,10)
+    
+    const timeSpan = (startDate, endDate) => {
+        return Math.round(new Date(endDate) - new Date(startDate))/(1000 * 60 * 60 * 24)
+    }
 
-    const timeSpan = (startDate, endDate) => Math.round(new Date(endDate) - new Date(startDate))/(1000 * 60 * 60 * 24)
+    const timeSpanPhrase = (startDate, endDate) => {
+        const span = timeSpan(startDate, endDate)
+        return span > 0 ? `${ span } days ago` : `${ Math.abs(span) } days from now` 
+    }
 
     return (
         <Collapse in={ expanded }>
@@ -168,7 +175,7 @@ const ProposalDetailPanel = props => {
                                     <Fragment>
                                         <span className={ classes.date }>{ dateSubmitted }</span>
                                         <span className={ classes.dayCount }>Day 0</span>
-                                        <span className={ classes.daysAgo }>{ timeSpan(dateSubmitted, todaysDate) } days ago</span>
+                                        <span className={ classes.daysAgo }>{ timeSpanPhrase(dateSubmitted, todaysDate) }</span>
                                     </Fragment>
                                 ) : <span className={ classes.date }>- - -</span>
                             }/>
@@ -177,7 +184,7 @@ const ProposalDetailPanel = props => {
                                     <Fragment>
                                         <span className={ classes.date }>{ meetingDate }</span>
                                         <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, meetingDate) }</span>
-                                        <span className={ classes.daysAgo }>{ timeSpan(meetingDate, todaysDate) } days ago</span>
+                                        <span className={ classes.daysAgo }>{ timeSpanPhrase(meetingDate, todaysDate) }</span>
                                     </Fragment>
                                 ) : <span className={ classes.date }>- - -</span>
                             }/>
@@ -186,7 +193,7 @@ const ProposalDetailPanel = props => {
                                     <Fragment>
                                         <span className={ classes.date }>{ plannedGrantSubmissionDate }</span>
                                         <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, plannedGrantSubmissionDate) }</span>
-                                        <span className={ classes.daysAgo }>{ timeSpan(plannedGrantSubmissionDate, todaysDate) } days ago</span>
+                                        <span className={ classes.daysAgo }>{ timeSpanPhrase(plannedGrantSubmissionDate, todaysDate) }</span>
                                     </Fragment>
                                 ) : <span className={ classes.date }>- - -</span>
                             }/>
@@ -195,7 +202,7 @@ const ProposalDetailPanel = props => {
                                     <Fragment>
                                         <span className={ classes.date }>{ actualGrantSubmissionDate }</span>
                                         <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, actualGrantSubmissionDate) }</span>
-                                        <span className={ classes.daysAgo }>{ timeSpan(actualGrantSubmissionDate, todaysDate) } days ago</span>
+                                        <span className={ classes.daysAgo }>{ timeSpanPhrase(actualGrantSubmissionDate, todaysDate) }</span>
                                     </Fragment>
                                 ) : <span className={ classes.date }>- - -</span>
                             }/>
@@ -204,7 +211,7 @@ const ProposalDetailPanel = props => {
                                     <Fragment>
                                         <span className={ classes.date }>{ fundingStart }</span>
                                         <span className={ classes.dayCount }>Day { timeSpan(dateSubmitted, fundingStart) }</span>
-                                        <span className={ classes.daysAgo }>{ timeSpan(fundingStart, todaysDate) } days ago</span>
+                                        <span className={ classes.daysAgo }>{ timeSpanPhrase(fundingStart, todaysDate) }</span>
                                     </Fragment>
                                 ) : <span className={ classes.date }>- - -</span>
                             }/>
@@ -271,7 +278,7 @@ const ProposalsTable = (props) => {
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
-                    title: 'Grant Approval Date', field: 'fundingStart',
+                    title: 'Grant Award Date', field: 'fundingStart',
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
                 {
