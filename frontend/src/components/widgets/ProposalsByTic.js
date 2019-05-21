@@ -40,7 +40,7 @@ const proposalsGroupedByTicThenStatus = props => {
         anchor: 'top-right',
         direction: 'column',
         justify: false,
-        translateX: windowWidth < 1000 ? 0 : 256,
+        translateX: windowWidth < 1000 ? 0 : 288,
         translateY: -32,
         itemsSpacing: 1,
         itemWidth: 20,
@@ -66,7 +66,7 @@ const proposalsGroupedByTicThenStatus = props => {
                             data={ proposalGroups }
                             keys={ store.statuses.map(({ description }) => description) }
                             indexBy="name"
-                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 256, bottom: 50, left: 0 }}
+                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 288, bottom: 24, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"
