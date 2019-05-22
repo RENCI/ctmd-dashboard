@@ -33,4 +33,3 @@ export const endpoints = {
     sites: apiRoot + 'sites',
     saveSiteReport: apiRoot + 'sites/reports',
 }
-
