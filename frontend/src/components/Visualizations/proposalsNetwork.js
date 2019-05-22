@@ -235,7 +235,7 @@ export default function() {
         d.y = tic.y + vy * nr;
       });
     }
-    
+
     // Scale to fit svg
     const r = innerWidth() / 2;
     const maxDist = d3.max(network.nodes, d => {
@@ -311,9 +311,9 @@ export default function() {
     function drawNodes() {
       // Drag behavior, based on:
       // http://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7
-      var dragNode = null;
+      let dragNode = null;
 
-      var drag = d3.drag()
+      const drag = d3.drag()
           .on("drag", function(d) {
             if (!dragNode) {
               dragNode = d;
@@ -349,27 +349,12 @@ export default function() {
           });
 
       // Bind nodes
-      var node = svg.select(".network").selectAll(".node")
-          .data(network.nodes, function(d) {
-            return d.id;
-          });
+      const node = svg.select(".network").selectAll(".node")
+          .data(network.nodes, d => d.id);
 
       // Node enter
-      var nodeEnter = node.enter().append("g")
-          .attr("class", "node")
-          .on("mouseover", function(d) {
-            if (dragNode) return;
-
-            tip.show(d, this);
-            dispatcher.call("highlightNodes", this, [d]);
-          })
-          .on("mouseout", function() {
-            if (dragNode) return;
-
-            tip.hide();
-            dispatcher.call("highlightNodes", this, null);
-          })
-          .call(drag);
+      const nodeEnter = node.enter().append("g")
+          .attr("class", "node");
 
       nodeEnter.append("circle")
           .attr("class", "background")
@@ -384,6 +369,22 @@ export default function() {
           .attr("class", "border")
           .attr("r", nodeRadius)
           .style("fill", "none");
+
+      // Node update
+      nodeEnter.merge(node)
+          .on("mouseover", function(d) {
+            if (dragNode) return;
+
+            tip.show(d, this);
+            dispatcher.call("highlightNodes", this, [d]);
+          })
+          .on("mouseout", function() {
+            if (dragNode) return;
+
+            tip.hide();
+            dispatcher.call("highlightNodes", this, null);
+          })
+          .call(drag);
 
       // Node exit
       node.exit().remove();
