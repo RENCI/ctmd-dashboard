@@ -25,7 +25,7 @@ import CollaborationsPage from './views/Collaborations'
 const useStyles = makeStyles(theme => ({
     layout: {
         display: 'flex',
-        backgroundColor: theme.palette.grey[100],
+        backgroundColor: `${ theme.palette.primary.main }11`,
     },
     menuToggleButton: {
         transform: 'translateX(0)',
@@ -44,7 +44,6 @@ const useStyles = makeStyles(theme => ({
         minHeight: '100vh',
         flexGrow: 1,
         padding: `${ 4 * theme.spacing.unit }px`,
-        paddingTop: `${ 8 * theme.spacing.unit }px`,
         marginLeft: '5rem',
         transition: 'padding-top 250ms',
     },
