@@ -73,7 +73,7 @@ const ProposalDetailPanel = props => {
     const [expanded, setExpanded] = useState(false)
     const {
         proposalID, shortTitle, piName, submitterInstitution, assignToInstitution,
-        therapeuticArea, proposalStatus, totalBudget, fundingPeriod, fundingStatus, fundingStatusWhenApproved,
+        therapeuticArea, proposalStatus, fundingAmount, fundingPeriod, fundingStatus, fundingStatusWhenApproved,
         dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate, actualGrantSubmissionDate,
         requestedServices, approvedServices,
     } = props
@@ -129,7 +129,7 @@ const ProposalDetailPanel = props => {
                     <List dense>
                         <ListItem>
                             <Tooltip title="Funding" aria-label="Funding"><ListItemIcon><BudgetIcon /></ListItemIcon></Tooltip>
-                            <ListItemText primary={ fundingStatus || '-' } secondary={ `${ fundingPeriod || '-' } / ${ totalBudget || '-' }` } />
+                            <ListItemText primary={ fundingStatus || '-' } secondary={ `${ fundingPeriod || '-' } / ${ fundingAmount || '-' }` } />
                         </ListItem>
                         {
                             fundingStatusWhenApproved ? (
@@ -282,8 +282,8 @@ const ProposalsTable = (props) => {
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
                 {
-                    title: 'Funding Amount', field: 'totalBudget',
-                    hidden: !settings.tables.visibleColumns.totalBudget,
+                    title: 'Funding Amount', field: 'fundingAmount',
+                    hidden: !settings.tables.visibleColumns.fundingAmount,
                 },
                 {
                     title: 'Funding Period', field: 'fundingPeriod',
