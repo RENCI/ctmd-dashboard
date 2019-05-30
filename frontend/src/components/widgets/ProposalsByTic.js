@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useReducer } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
@@ -7,6 +7,71 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import useWindowWidth from '../../hooks/useWindowWidth'
 import Widget from './Widget'
+
+const statusMap = [
+    {
+        displayName: 'Initial Consult Ongoing',
+        statuses: [
+            'Ready for Initial Consultation',
+            'Approved for Initial Consultation',
+        ],
+    },
+    {
+        displayName: 'Approved for Resources Pending Funding',
+        statuses: [
+            'Approved for Resource(s) Pending Receipt of Funding',
+        ],
+    },
+    {
+        displayName: 'Resources Ongoing',
+        statuses: [
+            'Approved for Resource(s)',
+        ],
+    },
+    {
+        displayName: 'Comprehensive Consultation Ongoing',
+        statuses: [
+            'Approved for Comprehensive Consultation',
+        ],
+    },
+    {
+        displayName: 'Resources Complete',
+        statuses: [
+            'Resource(s) Complete',
+        ],
+    },
+    {
+        displayName: 'Comprehensive Consult Complete Grant Submitted',
+        statuses: [
+            'Comprehensive Complete - Grant Submitted',
+        ],
+    },
+    {
+        displayName: 'Implementation Ongoing',
+        statuses: [
+            'Ready for Implementation',
+        ],
+    },
+    {
+        displayName: 'No Further Network Support',
+        statuses: [
+            'No Further Network Support',
+        ],
+    },
+    {
+        displayName: 'Withdrawn by PI',
+        statuses: [
+            'Withdrawn by PI',
+            'Withdrawn by PI post-award',
+        ]
+    },
+]
+
+const getDisplayName = status => {
+    const index = statusMap.findIndex(({ statuses }) => statuses.includes(status))
+    const displayName = index > -1 ? statusMap[index].displayName : status
+    return displayName
+}
 
 Array.prototype.countBy = function(prop) {
     return this.reduce(function(groups, item) {
@@ -27,6 +92,7 @@ const proposalsGroupedByTicThenStatus = props => {
         if (store.proposals && store.tics) {
             const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] }))
             store.proposals.forEach(proposal => {
+                proposal.proposalStatus = getDisplayName(proposal.proposalStatus)
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
                 if (index >= 0) tics[index].proposals.push(proposal)
             })
@@ -64,7 +130,18 @@ const proposalsGroupedByTicThenStatus = props => {
                     (proposalGroups && store.statuses) ? (
                         <ResponsiveBar
                             data={ proposalGroups }
-                            keys={ store.statuses.map(({ description }) => description) }
+                            keys={
+                                [...new Set(store.statuses.map(({ description }) => description)
+                                    .concat(statusMap.map(({ displayName }) => displayName)))
+                                ].sort(
+                                    (s, t) => {
+                                        const sIndex = statusMap.findIndex(({ displayName }) => displayName === s)
+                                        const tIndex = statusMap.findIndex(({ displayName }) => displayName === t)
+                                        return tIndex - sIndex
+                                        // return statusMap.findIndex(s) - statusMap.findIndex(t)
+                                    }
+                                )
+                            }
                             indexBy="name"
                             margin={{ top: 32, right: windowWidth < 1000 ? 0 : 288, bottom: 24, left: 0 }}
                             padding={ 0.05 }
@@ -85,7 +162,7 @@ const proposalsGroupedByTicThenStatus = props => {
                                                 Object.keys(proposalGroups[tick.tickIndex]).reduce((sum, status) => {
                                                     if (status === 'name') return sum
                                                     return sum + proposalGroups[tick.tickIndex][status]
-                                                }, 0)
+                                               }, 0)
                                             })
                                         </text>
                                     </g>
