@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useReducer } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
