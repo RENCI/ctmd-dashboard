@@ -138,7 +138,6 @@ const proposalsGroupedByTicThenStatus = props => {
                                         const sIndex = statusMap.findIndex(({ displayName }) => displayName === s)
                                         const tIndex = statusMap.findIndex(({ displayName }) => displayName === t)
                                         return tIndex - sIndex
-                                        // return statusMap.findIndex(s) - statusMap.findIndex(t)
                                     }
                                 )
                             }
