@@ -181,24 +181,6 @@ Environemt variables should live in the file called `./.env`. Important informat
 
 The `.env.sample` file can be used as a guide (and it can be copied to get things working out of the box for local development).
 
-### Take a Snapshot of the Existing Database
-
-On the PMD VM, dump a snapshot of the database. In the example here, we're `pg_dump`ing the database called `duketicheal` from the production server to ensure we have a recent snapshot of the data.
-
-```bash
-$ pg_dump duketicheal > duketic.sql
-```
-
-The dumped file needs to live in this project's `db` directory.
-Running the above `pg_dump` command after switching to the `postgres` user with no directory-changing puts the dumped data into the `/var/lib/pgsql` directory. 
-Copy that dumped data to the `db` directory.
-
-```bash
-/cloned/repo/db/ $ scp username@pmd-host:/path/to/duketic.sql .
-```
-
-The database container looks for that file--`./db/duketic.sql`--to populate its database to mimic the actual data.
-
 ### Start 
 
 In development, there are three services that we need to run. They are named `frontend`, `api`, and `db`, and the associated containers are prepended with `pmd-`, and the development containers are appended with `-dev`. For example, the API is served in development from the container named `pmd-api-dev`. One additional container called `pipeline` runs in production, which handles choreographing the persistence of data from the production host to the containerized application.
@@ -282,7 +264,7 @@ The `pmd-pipeline` container must communicate with the RedCap database, thus the
 
 ###### Postgres Dump Location
 
-The `pmd-pipeline` container manages taking snapshots of the postgres database in the `pmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`.
+The `pmd-pipeline` container manages taking snapshots of the postgres database in the `pmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`. The backup of data dictionary is also stored at this path.
 
 ###### HTTP Authentication
 
