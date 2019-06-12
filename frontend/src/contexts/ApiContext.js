@@ -31,6 +31,7 @@ export const endpoints = {
     therapeuticAreas: apiRoot + 'therapeutic-areas',
     services: apiRoot + 'services',
     studyMetrics: apiRoot + 'study-metrics',
+    tempStudyMetrics: studyName => apiRoot + `study-metrics/retrieve/${ studyName }`,
     sites: apiRoot + 'sites',
     saveSiteReport: apiRoot + 'sites/reports',
     dataGetBackups: dataApiRoot + 'backup', // GET to return list of available backups
