@@ -1,10 +1,10 @@
 #db
 pgdata
 .env
-db/temp
 
 #api
 node_modules
 duketic.sql
+api/temp
 
 # frontend
