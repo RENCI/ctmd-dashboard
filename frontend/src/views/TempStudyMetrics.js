@@ -17,9 +17,6 @@ const useStyles = makeStyles(theme => ({
     cardActions: {
         flex: '3 0 auto',
     },
-    details: {
-        width: '100%',
-    },
 }))
 
 const StudyMetricsPage = props => {
@@ -76,7 +73,8 @@ const StudyMetricsPage = props => {
                 <Grid item xs={ 12 }>
                     {
                         currentStudy && currentMetrics
-                        ? <MetricsTable studyData={ currentMetrics } paging={ true } />
+                        ? <div>Metrics Table</div>
+                        // <MetricsTable studyData={ currentMetrics } paging={ true } />
                         : null
                     }
                 </Grid>
