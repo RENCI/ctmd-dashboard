@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
     main: {
         minHeight: '100vh',
         flexGrow: 1,
-        padding: `${ 4 * theme.spacing.unit }px`,
+        padding: `${ theme.spacing(4) }px`,
         marginLeft: '5rem',
         transition: 'padding-top 250ms',
     },

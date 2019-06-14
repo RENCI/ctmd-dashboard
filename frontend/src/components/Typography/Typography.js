@@ -7,16 +7,16 @@ const useStyles = makeStyles(theme => ({
     title: {},
     heading: {
         margin: 0,
-        marginBottom: 4 * theme.spacing.unit,
+        marginBottom: theme.spacing(4),
         transition: 'margin 250ms',
         [theme.breakpoints.up('sm')]: {
-            margin: `0 ${ 2 * theme.spacing.unit } ${ 2 * theme.spacing.unit } ${ 2 * theme.spacing.unit }`,
+            margin: `0 ${ theme.spacing(2) } ${ theme.spacing(2) } ${ theme.spacing(2) }`,
         }
     },
     subheading: {},
     paragraph: {
         color: theme.palette.grey[700],
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     textlink: {
         color: theme.palette.secondary.main,

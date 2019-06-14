@@ -32,7 +32,7 @@ const BrowseMenu = (props) => {
                 aria-owns={ anchorEl ? 'browse-menu' : undefined }
                 aria-haspopup="true"
                 onClick={ handleClick }
-                style={{ marginLeft: 2 * theme.spacing.unit, backgroundColor: theme.palette.common.white }}
+                style={{ marginLeft: theme.spacing(2), backgroundColor: theme.palette.common.white }}
             >
                 Browse By<SubmenuIcon />
             </Button>

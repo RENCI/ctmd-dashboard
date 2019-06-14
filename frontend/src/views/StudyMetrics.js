@@ -35,7 +35,7 @@ const StudyMetricsPage = props => {
 
             <Heading>Study Metrics</Heading>
             
-            <Grid container spacing={ 2 * theme.spacing.unit }>
+            <Grid container spacing={ theme.spacing(2) }>
                 <Grid item xs={ 12 }>
                     <Card classes={{ root: classes.card }}>
                         <CardHeader title="Proposal Details" classes={{ action: classes.cardActions }} action={

@@ -18,19 +18,19 @@ import { SettingsContext } from '../../contexts/SettingsContext'
 
 const useStyles = makeStyles(theme => ({
     panel: {
-        padding: `${ 2 * theme.spacing.unit }px ${ 4 * theme.spacing.unit }px`,
+        padding: `${ theme.spacing(2) }px ${ theme.spacing(4) }px`,
         backgroundColor: theme.palette.extended.gingerBeer,
     },
     header: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 2 * theme.spacing.unit,
+        marginBottom: theme.spacing(2),
         borderBottom: `1px solid ${ theme.palette.grey[300] }`,
         alignItems: 'center',
     },
     title: {
-        padding: `${ 2 * theme.spacing.unit }px 0`,
+        padding: `${ theme.spacing(2) }px 0`,
         color: theme.palette.secondary.main,
         fontWeight: 'bold',
         letterSpacing: '1px',
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
     },
     chip: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
         fontWeight: 'bold',
     },
     column1: {

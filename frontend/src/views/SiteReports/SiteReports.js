@@ -24,16 +24,16 @@ const useStyles = makeStyles(theme => ({
         flex: 8,
     },
     openReportButton: {
-        marginTop: 2 * theme.spacing.unit,
-        padding: theme.spacing.unit,
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(1),
     },
     dialog: {},
     dialogTitle: {},
     dialogContent: {
-        // paddingTop: 2 * theme.spacing.unit,
+        // paddingTop: theme.spacing(2),
     },
     dialogActions: {
-        padding: 2 * theme.spacing.unit,
+        padding: theme.spacing(2),
     },
 }))
 
@@ -61,7 +61,7 @@ const SiteReportsPage = props => {
     return (
         <div>
             <Heading>Site Reports</Heading>
-            <Grid container spacing={ 2 * theme.spacing.unit }>
+            <Grid container spacing={ theme.spacing(2) }>
                 <Grid item xs={ 12 }>
                     <Card xs={ 12 }>
                     <CardHeader

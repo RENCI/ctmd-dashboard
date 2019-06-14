@@ -11,7 +11,7 @@ import {
 
 const styles = (theme) => ({
     formControl: {
-        margin: `${ 2 * theme.spacing.unit }px 0`,
+        margin: `${ theme.spacing(2) }px 0`,
     },
     formControlLabel: {},
     select: {}

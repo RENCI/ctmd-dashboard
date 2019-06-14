@@ -26,7 +26,7 @@ const StudiesPage = props => {
         <div>
             <Heading>Site Report Cards</Heading>
 
-            <Grid container spacing={ 2 * theme.spacing.unit }>
+            <Grid container spacing={ theme.spacing(2) }>
                 {
                     studies ?
                     studies.map(study => {

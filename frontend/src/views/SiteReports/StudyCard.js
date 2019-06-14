@@ -16,10 +16,10 @@ const useStyles = makeStyles(theme => ({
         flex: 8,
     },
     cardActions: {
-        padding: theme.spacing.unit,
+        padding: theme.spacing(1),
     },
     button: {
-        padding: `${ theme.spacing.unit }px ${ 2 * theme.spacing.unit }`,
+        padding: `${ theme.spacing(1) }px ${ theme.spacing(2) }`,
     },
 }))
 

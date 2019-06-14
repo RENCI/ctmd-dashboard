@@ -11,10 +11,10 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
     },
     textField: {
-        marginBottom: 2 * theme.spacing.unit,
+        marginBottom: theme.spacing(2),
     },
     fieldsContainer: {
-        padding: `${ 4 * theme.spacing.unit }px ${ 2 * theme.spacing.unit }px 0 ${ 2 * theme.spacing.unit }px`,
+        padding: `${ theme.spacing(4) }px ${ theme.spacing(2) }px 0 ${ theme.spacing(2) }px`,
     },
 }))
 
