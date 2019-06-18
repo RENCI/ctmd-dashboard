@@ -73,8 +73,7 @@ const StudyMetricsPage = props => {
                 <Grid item xs={ 12 }>
                     {
                         currentStudy && currentMetrics
-                        ? <div>Metrics Table</div>
-                        // <MetricsTable studyData={ currentMetrics } paging={ true } />
+                        ? <MetricsTable studyData={ currentMetrics } paging={ true } />
                         : null
                     }
                 </Grid>
