@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         alignItems: 'center',
         minWidth: '2rem',
+        maxWidth: '4.5rem',
         transition: 'min-width 250ms',
         padding: 0,
     },

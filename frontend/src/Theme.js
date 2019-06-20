@@ -86,7 +86,8 @@ theme = {
         },
         MuiCard:{
             root: {
-                padding: theme.spacing(2),
+                padding: theme.spacing(4),
+                marginBottom: theme.spacing(2),
                 backgroundColor: theme.palette.common.white,
                 borderRadius: theme.shape.borderRadius,
             }
