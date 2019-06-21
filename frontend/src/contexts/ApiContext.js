@@ -3,6 +3,7 @@ import React from 'react'
 export const ApiContext = React.createContext({})
 
 const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
+const dataApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3000/data/'
 
 export const endpoints = {
     proposals: apiRoot + 'proposals',
@@ -30,6 +31,11 @@ export const endpoints = {
     therapeuticAreas: apiRoot + 'therapeutic-areas',
     services: apiRoot + 'services',
     studyMetrics: apiRoot + 'study-metrics',
+    tempStudyMetrics: studyName => apiRoot + `study-metrics/retrieve/${ studyName }`,
     sites: apiRoot + 'sites',
     saveSiteReport: apiRoot + 'sites/reports',
+    dataGetBackups: dataApiRoot + 'backup', // GET to return list of available backups
+    dataPostBackup: dataApiRoot + 'backup', // POST to back up database
+    dataRestore: dataApiRoot + 'restore', // /data/restore/<timestamp> to restore to backup given in
+    dataSync: dataApiRoot + 'sync', // POST to sync with redcap
 }

@@ -50,7 +50,7 @@ const Count = props => {
     const todayYYYYMM = `${ today.getFullYear() }-${ ('0' + (today.getMonth() + 1)).slice(-2) }`
     return (
         <Widget title="Submissions at a Glance">
-            <Grid container spacing={ 4 * theme.spacing.unit }>
+            <Grid container spacing={ theme.spacing(4) }>
                 <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
                     <span className={ classes.value }>
                         { store.proposals ? store.proposals.length : <CircularLoader /> }

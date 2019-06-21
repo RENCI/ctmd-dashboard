@@ -56,6 +56,7 @@ const statusMap = [
         displayName: 'No Further Network Support',
         statuses: [
             'No Further Network Support',
+            'Not approved',
         ],
     },
     {

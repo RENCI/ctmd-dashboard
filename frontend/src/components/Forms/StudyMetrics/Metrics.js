@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     },
     formControl: {
         width: '100%',
-        marginBottom: `${ 4 * theme.spacing.unit }px`,
+        marginBottom: `${ theme.spacing(4) }px`,
     },
     actions: {
         display: 'flex',

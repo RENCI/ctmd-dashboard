@@ -21,17 +21,17 @@ const useStyles = makeStyles(theme => ({
     },
     snackbar: {
         position: 'relative',
-        marginBottom: theme.spacing.unit,
+        marginBottom: theme.spacing(1),
     },
     flashMessage: {
-        borderRadius: theme.spacing.unit,
+        borderRadius: theme.spacing(1),
     },
     messageSpan: {
         display: 'flex',
         alignItems: 'center',
     },
     icon: {
-        marginRight: theme.spacing.unit,
+        marginRight: theme.spacing(1),
     },
     success: { backgroundColor: theme.palette.flashMessage.success, },
     info: { backgroundColor: theme.palette.flashMessage.info, },

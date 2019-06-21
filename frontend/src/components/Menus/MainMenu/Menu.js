@@ -19,14 +19,24 @@ const useStyles = makeStyles(theme => ({
     nav: {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'stretch',
+        padding: theme.spacing(1),
+        width: '100%',
+    },
+    menuList: {
+        // minWidth: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
     },
     menuItem: {
-        padding: theme.spacing.unit,
+        // ...theme.mixins.debug,
+        padding: 0,
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        margin: `${theme.spacing.unit / 4}px ${ theme.spacing.unit }px`,
+        margin: 0,
+        padding: 0,
         borderRadius: theme.shape.borderRadius,
         transition: 'background-color 250ms',
         letterSpacing: '1px',
@@ -44,21 +54,22 @@ const useStyles = makeStyles(theme => ({
         transition: 'transform 250ms',
         padding: 0,
         margin: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        maxWidth: '2rem',
     },
     listItemText: {
         padding: 0,
         margin: 0,
         color: theme.palette.grey[600],
-        transition: 'max-width 250ms, opacity 250ms, margin-left 100ms',
+        transition: 'max-width 250ms, opacity 250ms',
     },
     expandedItemText: {
-        maxWidth: '240px',
-        marginLeft: `${ theme.spacing.unit }px`,
+        maxWidth: '180px',
         opacity: 1,
     },
     collapsedItemText: {
         maxWidth: 0,
-        marginLeft: 0,
         opacity: 0,
     },
 }))
@@ -76,7 +87,7 @@ const Menu = ({ expanded, clickHandler }) => {
 
     return (
         <nav className={ classes.nav }>
-            <MenuList>
+            <MenuList clsasname={ classes.menuList }>
                 {
                     menuItems.map(item => (
                         <Tooltip key={ item.path } title={ expanded ? '' : item.text } placement="right">

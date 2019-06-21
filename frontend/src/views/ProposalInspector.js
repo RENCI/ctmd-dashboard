@@ -31,7 +31,7 @@ const ProposalInspector = props => {
                 </Subheading>
             </div>
             
-            <Grid container spacing={ 2 * theme.spacing.unit }>
+            <Grid container spacing={ theme.spacing(2) }>
                 <Grid item xs={ 12 }>
                     <Card>
                         <CardHeader

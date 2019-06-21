@@ -36,7 +36,7 @@ let theme = createMuiTheme({
         },
     },
     shape: { borderRadius: 8 },
-    spacing: { unit: 8 },
+    spacing: 8,
     mixins: {
         container: {
             width: '100%',
@@ -86,7 +86,7 @@ theme = {
         },
         MuiCard:{
             root: {
-                padding: 2 * theme.spacing.unit,
+                padding: theme.spacing(2),
                 backgroundColor: theme.palette.common.white,
                 borderRadius: theme.shape.borderRadius,
             }
@@ -110,7 +110,7 @@ theme = {
         },
         MuiGrid: {
             item: {
-                marginBottom: 2 * theme.spacing.unit,
+                marginBottom: theme.spacing(1),
             }
         },
         MuiDrawer: {
@@ -131,7 +131,7 @@ theme = {
         },
         MuiOutlinedInput: {
             root: {
-                // marginTop: `${ theme.spacing.unit }px`,
+                // marginTop: `${ theme.spacing(1) }px`,
             }
         },
     }

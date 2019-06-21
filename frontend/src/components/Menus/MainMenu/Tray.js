@@ -9,6 +9,7 @@ import Brand from '../../Brand/Brand'
 
 const useStyles = makeStyles(theme => ({
     tray: {
+        // ...theme.mixins.debug,
         borderRadius: 0,
         position: 'fixed',
         left: 0,
@@ -17,13 +18,14 @@ const useStyles = makeStyles(theme => ({
         zIndex: 99,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center',
         minWidth: '2rem',
         transition: 'min-width 250ms',
+        padding: 0,
     },
     open: {
-        minWidth: '180px',
+        minWidth: '200px',
     },
     toggler: {
         margin: '0.5rem',
@@ -34,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     },
     flexer: { flex: 1, },
     settingsButton: {
-        marginBottom: 4 * theme.spacing.unit,
+        marginBottom: theme.spacing(4),
         '&:hover $settingsIcon': {
             transform: 'scale(1.1) rotate(120deg)',
             color: theme.palette.grey[800],

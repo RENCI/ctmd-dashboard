@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => ({
         fontFamily: 'EB Garamond',
         fontSize: '200%',
         backgroundColor: 'transparent',
-        padding: `${2 * theme.spacing.unit }px`,
+        padding: `${ theme.spacing(2) }px`,
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',

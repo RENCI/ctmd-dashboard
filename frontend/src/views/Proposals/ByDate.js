@@ -9,25 +9,25 @@ import ProposalsTable from '../../components/Charts/ProposalsTable'
 const useStyles = makeStyles(theme => ({
     page: { },
     card: {
-        marginBottom: 2 * theme.spacing.unit,
+        marginBottom: theme.spacing(2),
         backgroundColor: theme.palette.grey[100],
     },
     datePickersContainer: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 2 * theme.spacing.unit,
+        marginBottom: theme.spacing(2),
     },
     dateField: {
-        marginLeft: theme.spacing.unit,
-        marginRight: theme.spacing.unit,
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
         width: 200,
     },
     filterButton: {
-        margin: `0 ${ theme.spacing.unit }px`
+        margin: `0 ${ theme.spacing(1) }px`
     },
     table: {
-        padding: 2 * theme.spacing.unit,
+        padding: theme.spacing(2),
         overflowY: 'scroll',
     },
 }))

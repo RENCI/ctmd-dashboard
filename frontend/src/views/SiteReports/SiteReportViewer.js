@@ -8,10 +8,10 @@ const useStyles = makeStyles(theme => ({
     card: {},
     cardTitle: {},
     cardContent: {
-        // paddingTop: 2 * theme.spacing.unit,
+        // paddingTop: theme.spacing(2),
     },
     cardActions: {
-        padding: 2 * theme.spacing.unit,
+        padding: theme.spacing(2),
     },
 }))
 
