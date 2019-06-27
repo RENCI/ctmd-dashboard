@@ -8,12 +8,13 @@ import {
     Description as ProposalsIcon,
     // Assessment as ReportsIcon,
     // Timeline as ForecastsIcon,
-    Star as MetricsIcon,
+    Star as SiteMetricsIcon,
     // LocationOn as SiteReportIcon,
     Share as CollaborationsIcon,
     // Build as QueryBuilderIcon,
     // ExitToApp as LogoutIcon,
 } from '@material-ui/icons'
+import { UtahIcon as StudyMetricsIcon } from '../../Icons/Utah'
 
 const useStyles = makeStyles(theme => ({
     nav: {
@@ -78,7 +79,8 @@ const menuItems = [
     { text: 'Home', path: '/', icon: DashboardIcon, },
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
-    { text: 'Study Metrics', path: '/study-metrics', icon: MetricsIcon, },
+    { text: 'Study Metrics', path: '/study-metrics', icon: StudyMetricsIcon, },
+    { text: 'Site Metrics', path: '/site-metrics', icon: SiteMetricsIcon, },
     // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
 ]
 

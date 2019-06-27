@@ -1,9 +1,9 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
 import axios from 'axios'
+import api from '../../../Api'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import { CardHeader, CardContent, CardActions, Divider, Button } from '@material-ui/core'
-import { ApiContext } from '../../../contexts/ApiContext'
 import { FlashMessageContext } from '../../../contexts/FlashMessageContext'
 import CharacteristicsForm from './Characterstics'
 import LinkedStudiesForm from './LinkedStudies'
@@ -80,7 +80,6 @@ const MetricsForm = props => {
     const [values, setValues] = useState(emptyFormValues)
     const [currentSubformNumber, setCurrentSubformNumer] = useState(0)
     const [submitAllowed, setSubmitAllowed] = useState(false)
-    const api = useContext(ApiContext)
     const addFlashMessage = useContext(FlashMessageContext)
     const classes = useStyles()
     

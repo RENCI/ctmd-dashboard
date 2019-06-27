@@ -1,13 +1,9 @@
-import React from 'react'
+import React, { Fragment } from 'react'
+import createSvgIcon from '@material-ui/icons/utils/createSvgIcon'
 
-export const UtahIcon = () => (
-    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="600px" height="600px" viewBox="0 0 600 600" style="enable-background:new 0 0 600 600;" xml:space="preserve">
-        <g>
-            <path d="M525.2,600H63.6V0h291.9v121.5h169.7V600z M101,562.7h386.9V158.8H318.2V37.3H101V562.7z"/>
-        </g>
-        <g>
-            <path d="M245.7,351.4c-0.2,13.2-3.7,22.9-10.7,29.6c-7.3,7.1-16.3,10.5-27.6,10.5c-11.3,0-20.2-3.4-27.2-10.5l-0.1-0.1 c-7.2-6.7-10.8-16.3-10.9-29.4V209h-42.5v146c0.2,23.8,8.2,43,23.8,57c15.2,14.4,34.4,21.8,57,22c23-0.2,42.3-7.6,57.4-22 c15.1-14.1,23-33.2,23.4-57.1V209h-42.5L245.7,351.4z" />
-            <polygon points="302.9,209 302.9,248 361.2,248 361.2,432.3 403.9,432.3 403.9,248 462.2,248 462.2,209  "/>
-        </g>
-    </svg>
+export const UtahIcon = createSvgIcon(
+    <Fragment>
+        <path d="m11.68 4.86v-4.86h-11.68v24h18.464v-19.14zm-2.692 9.34c-0.016 0.952-0.332 1.72-0.936 2.284-0.604 0.576-1.376 0.872-2.296 0.88-0.908-8e-3 -1.672-0.304-2.28-0.88-0.624-0.56-0.944-1.328-0.952-2.28v-5.844h1.7v5.7c8e-3 0.524 0.152 0.912 0.436 1.176l4e-3 4e-3c0.284 0.284 0.64 0.42 1.088 0.42 0.452 0 0.812-0.136 1.104-0.42 0.284-0.268 0.424-0.656 0.428-1.184v-5.696h1.7v5.84zm6.956-4.28h-2.332v7.372h-1.704v-7.372h-2.332v-1.56h6.368z" strokeWidth=".04"/>
+    </Fragment>
+    , 'UtahIcon'
 )
