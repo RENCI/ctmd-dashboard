@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { ApiContext } from '../contexts/ApiContext'
+import api from '../Api'
 import { Heading } from '../components/Typography/Typography'
 import { Grid } from '@material-ui/core'
 import ProposalsNetwork from '../components/Visualizations/ProposalsNetworkContainer'
@@ -7,7 +7,6 @@ import ProposalsTable from '../components/Charts/ProposalsTable'
 
 const collaborationsPage = (props) => {
     const [proposals, setProposals] = useState()
-    const api = useContext(ApiContext)
 
     const handleSelectProposals = proposals => {
         setProposals(proposals)

@@ -3,7 +3,7 @@ import axios from 'axios'
 import { makeStyles } from '@material-ui/styles'
 import { Grid, Button, Divider } from '@material-ui/core'
 import { Paragraph } from '../Typography/Typography'
-import { ApiContext } from '../../contexts/ApiContext'
+import api from '../../Api'
 
 const useStyles = makeStyles(theme => ({
     expand: {
@@ -26,7 +26,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const DangerZone = props => {
-    const api = useContext(ApiContext)
     const classes = useStyles()
     const [backups, setBackups] = useState(['06/04/2019 04:07:30', '05/01/2019 12:52:27', '04/08/2019 13:41:06', '03/13/2019 19:56:58', '01/05/2019 19:08:05'])
 

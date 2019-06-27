@@ -1,9 +1,8 @@
 import { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
-import { ApiContext } from '../contexts/ApiContext'
+import api from '../Api'
 
 export const useProposal = id => {
-    const api = useContext(ApiContext)
     const [proposal, setProposal] = useState(null)
     
     useEffect(() => {
