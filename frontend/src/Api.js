@@ -1,11 +1,7 @@
-import React from 'react'
-
-export const ApiContext = React.createContext({})
-
 const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
 const dataApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3000/data/'
 
-export const endpoints = {
+export default {
     proposals: apiRoot + 'proposals',
     oneProposal: id => apiRoot + `proposals/${ id }`,
     proposalsByTic: apiRoot + 'proposals/by-tic',

@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { ApiContext } from './ApiContext'
+import api from '../Api'
 
 export const StoreContext = React.createContext({})
 
 export const StoreProvider = ({ children }) => {
     const [store, setStore] = useState({ })
-    const api = useContext(ApiContext)
     
     // Endpoints used from API Context Provider
     const promises = [

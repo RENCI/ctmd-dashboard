@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import axios from 'axios'
+import api from '../Api'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { StoreContext } from '../contexts/StoreContext'
 import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
@@ -10,7 +11,6 @@ import {
 } from '@material-ui/icons'
 import { Heading, Subheading, Paragraph } from '../components/Typography/Typography'
 import SiteReport from '../components/Charts/SiteReport'
-import { endpoints as api } from '../contexts/ApiContext'
 import DropZone from '../components/Forms/DropZone'
 
 const useStyles = makeStyles(theme => ({
@@ -35,7 +35,7 @@ const StudyMetricsPage = props => {
     
     useEffect(() => {
         if (currentStudy) {
-            axios.get(api.tempStudyMetrics(currentStudy))
+            axios.get(api.siteMetrics(currentStudy))
                 .then(response => setCurrentSites(response.data))
                 .catch(error => console.error(error))
         }
