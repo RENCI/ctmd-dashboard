@@ -11,6 +11,7 @@ import {
 import { Heading, Subheading, Paragraph } from '../components/Typography/Typography'
 import SiteReport from '../components/Charts/SiteReport'
 import { endpoints as api } from '../contexts/ApiContext'
+import DropZone from '../components/Forms/DropZone'
 
 const useStyles = makeStyles(theme => ({
     card: { },
@@ -75,6 +76,17 @@ const StudyMetricsPage = props => {
                         </CardContent>
                         <CardContent>
                             { currentSite !== -1 && <SiteReport currentSite={ currentSite } paging={ true } /> }
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item>
+                    <Card>
+                        <CardHeader title="Upload File" />
+                        <CardContent>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatum voluptate eum enim, necessitatibus. Molestiae delectus ratione quos necessitatibus, distinctio eius eum et aliquid. Neque aspernatur quis velit fugit voluptate maiores.
+                        </CardContent>
+                        <CardContent>
+                            <DropZone onFilesAdded={ console.log } />
                         </CardContent>
                     </Card>
                 </Grid>
