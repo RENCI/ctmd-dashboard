@@ -36,7 +36,7 @@ const SiteReport = ({ currentSite }) => {
             </Paragraph>
             <Paragraph>
                 <strong>IRB approval cycle time (Full Committee Review)</strong>:&nbsp; 
-                { dayCount(currentSite['IRB Submission'], currentSite['IRB Approval']) } ({ currentSite['IRB Approval'] + ' to ' + currentSite['IRB Approval'] })
+                { dayCount(currentSite['IRB Submission'], currentSite['IRB Approval']) } ({ currentSite['IRB Submission'] + ' to ' + currentSite['IRB Approval'] })
             </Paragraph>
             <Paragraph>
                 <strong>Site open to accrual to First Patient / First Visit (FPFV)</strong>:&nbsp; 
