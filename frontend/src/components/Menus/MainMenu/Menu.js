@@ -6,13 +6,8 @@ import { MenuList, MenuItem, ListItemIcon, ListItemText, Tooltip } from '@materi
 import {
     Dashboard as DashboardIcon,
     Description as ProposalsIcon,
-    // Assessment as ReportsIcon,
-    // Timeline as ForecastsIcon,
-    Star as SiteMetricsIcon,
-    // LocationOn as SiteReportIcon,
+    LocationOn as SiteMetricsIcon,
     Share as CollaborationsIcon,
-    // Build as QueryBuilderIcon,
-    // ExitToApp as LogoutIcon,
 } from '@material-ui/icons'
 import { UtahIcon as StudyMetricsIcon } from '../../Icons/Utah'
 

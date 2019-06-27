@@ -18,6 +18,7 @@ import ProposalsByDate from './views/Proposals/ByDate'
 import ProposalsByApprovedServices from './views/Proposals/ByApprovedServices'
 import ProposalsByRequestedServices from './views/Proposals/ByRequestedServices'
 import StudyMetricsPage from './views/StudyMetrics'
+import SiteMetricsPage from './views/SiteMetrics'
 import CollaborationsPage from './views/Collaborations'
 
 const useStyles = makeStyles(theme => ({
@@ -74,6 +75,7 @@ const Dashboard = props => {
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route path="/study-metrics" component={ StudyMetricsPage }/>
+                        <Route path="/site-metrics" component={ SiteMetricsPage }/>
                         <Route path="/" component={ HomePage }/>
                     </Switch>
                 </ScrollToTop>
