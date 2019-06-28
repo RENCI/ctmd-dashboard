@@ -6,7 +6,7 @@ const csv = require('csv-parser')
 exports.retrieve = (req, res) => {
     const results = []
     const studyName = req.params.studyName || ''
-    const metricsFile = __dirname + `/../temp/Metrics_${ studyName }.csv`
+    const metricsFile = __dirname + `/../temp/metrics/Metrics_${ studyName }.csv`
     console.log(`Retriving metrics from ${ metricsFile }...`)
     stream = fs.createReadStream(metricsFile)
     stream.on('error', error => {
