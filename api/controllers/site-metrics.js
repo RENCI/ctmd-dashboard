@@ -3,10 +3,12 @@ const stringToInteger = require('./utils').stringToInteger
 const fs = require('fs')
 const csv = require('csv-parser')
 
+const metricsDirectory = '/../temp/metrics'
+
 exports.retrieve = (req, res) => {
     const results = []
     const studyName = req.params.studyName || ''
-    const metricsFile = __dirname + `/../temp/metrics/Metrics_${ studyName }.csv`
+    const metricsFile = __dirname + `${ metricsDirectory }/Metrics_${ studyName }.csv`
     console.log(`Retriving metrics from ${ metricsFile }...`)
     stream = fs.createReadStream(metricsFile)
     stream.on('error', error => {
@@ -24,4 +26,20 @@ exports.retrieve = (req, res) => {
         .on('end', () => {
             res.status(200).send(results)
         })
+}
+
+exports.downloadTemplate = (req, res) => {
+    console.log('It looks like you want the metrics template!')
+    res.download(
+        __dirname + `${ metricsDirectory }/template.csv`,
+        'Metrics-TEMPLATE.csv',
+        (error) => {
+            if (error) {
+                console.log(error)
+                return
+            } else {
+                console.log('File sent!')
+            }
+        }
+    )
 }

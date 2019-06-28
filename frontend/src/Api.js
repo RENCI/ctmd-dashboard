@@ -28,6 +28,7 @@ export default {
     services: apiRoot + 'services',
     studyMetrics: apiRoot + 'study-metrics',
     siteMetrics: studyName => apiRoot + `site-metrics/retrieve/${ studyName }`,
+    siteMetricsTemplateDownload: apiRoot + `site-metrics/template`,
     sites: apiRoot + 'sites',
     saveSiteReport: apiRoot + 'sites/reports',
     dataGetBackups: dataApiRoot + 'backup', // GET to return list of available backups

@@ -3,7 +3,7 @@ import axios from 'axios'
 import api from '../Api'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { StoreContext } from '../contexts/StoreContext'
-import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import { FormControl, FormLabel, Select, MenuItem, OutlinedInput } from '@material-ui/core'
 import {
     AccountBalance as InstitutionIcon,
@@ -16,7 +16,7 @@ import DropZone from '../components/Forms/DropZone'
 const useStyles = makeStyles(theme => ({
     card: { },
     cardActions: {
-        flex: '3 0 auto',
+        flex: '3 0 auto',api
     },
 }))
 
@@ -40,6 +40,21 @@ const StudyMetricsPage = props => {
                 .catch(error => console.error(error))
         }
     }, [currentStudy])
+    
+    const downloadMetricsTemplate = async () => {
+        await axios({
+            url: api.siteMetricsTemplateDownload,
+            method: 'GET',
+            responseType: 'blob',
+        }).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', 'Metrics_TEMPLATE.csv')
+            document.body.appendChild(link)
+            link.click()
+        })
+    }
 
     const handleChangeCurrentStudy = event => setCurrentStudy(event.target.value === '-1' ? null : event.target.value)
     const handleChangeCurrentSite = event => setCurrentSite(currentSites.find(site => site['Site #'] === event.target.value))
@@ -83,10 +98,15 @@ const StudyMetricsPage = props => {
                     <Card>
                         <CardHeader title="Upload File" />
                         <CardContent>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatum voluptate eum enim, necessitatibus. Molestiae delectus ratione quos necessitatibus, distinctio eius eum et aliquid. Neque aspernatur quis velit fugit voluptate maiores.
+                            Select site metrics files from your computer to upload here.
+                            Note that site metrics can only be read from files adhering to the format
+                            outlined in the template CSV, which can be downloaded below.
                         </CardContent>
                         <CardContent>
                             <DropZone onFilesAdded={ console.log } />
+                        </CardContent>
+                        <CardContent>
+                            Site metrics template <Button color="secondary" variant="outlined" onClick={ downloadMetricsTemplate }>CSV Template</Button>
                         </CardContent>
                     </Card>
                 </Grid>
