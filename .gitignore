@@ -5,6 +5,7 @@ pgdata
 #api
 node_modules
 duketic.sql
-api/temp/metrics
+api/temp/metrics/*
+!api/temp/metrics/template.csv
 
 # frontend
