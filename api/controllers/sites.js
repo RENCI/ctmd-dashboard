@@ -1,4 +1,7 @@
 const db = require('../config/database')
+const fs = require('fs')
+const path = require('path')
+const csv = require('csv-parser')
 const {stringToInteger, stringToDate} = require('./utils')
 
 exports.addReport = (req, res) => {
@@ -80,19 +83,29 @@ exports.addReport = (req, res) => {
         })
 }
 
+const tempSiteMetricsFile = path.join(__dirname, '/../temp/sites.csv')
+
 exports.list = (req, res) => {
-    query = 'SELECT *, CAST("ProposalID" AS INT) from "SiteInformation";'
-    db.any(query)
-        .then(data => {
-            console.log(`Returning site list`)
-            data.sort((p, q) => p.ProposalID <= q.ProposalID)
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('Error', error)
-            res.status(500).send('Error', error)
+    const results = []
+    console.log(`Retriving metrics from ${ tempSiteMetricsFile }...`)
+    stream = fs.createReadStream(tempSiteMetricsFile)
+    stream.on('error', error => {
+        console.log('An error occurred', error)
+        if (error.code === 'ENOENT') {
+            const fileNotFoundMessage = `Site metrics file not found!`
+            console.log(fileNotFoundMessage);
+            res.status(500).send(fileNotFoundMessage)
+        } else {
+            res.status(500).send('An error occurred!')
+        }
+    })
+    stream.pipe(csv())
+        .on('data', data => results.push(data))
+        .on('end', () => {
+            res.status(200).send(results)
         })
 }
+
 
 exports.siteReport = (req, res) => {
     res.status(200).send('Get site report')
