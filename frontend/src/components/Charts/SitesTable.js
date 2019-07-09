@@ -28,20 +28,20 @@ const useStyles = makeStyles(theme => ({
 const SiteDetailPanel = ({
     shortTitle: proposalShortTitle,
     siteName, 
-    regPacksentdate,
-    contractsent_date,
-    irbsubmission_date,
-    IRBOriginalApproval,
-    contractexecution_date,
-    mostRecentEnrolled,
-    siteActivatedDate,
-    dateOfFirstPtEnrolled,
-    noOfPtsSignedConsent,
-    noOfPtsEnrolled_site,
-    noOfPtsWithdrawn_site,
-    projectedEnrollmentPerMonth,
-    noOfUnresolvedQueries_site,
-    noOfSignificantProtocolDeviations_site,
+    dateRegPacketSent,
+    dateContractSent,
+    dateIrbSubmission,
+    dateIrbApproval,
+    dateContractExecution,
+    lpfv,
+    dateSiteActivated,
+    fpfv,
+    patientsConsentedCount,
+    patientsEnrolledCount,
+    patientsWithdrawnCount,
+    patientsExpectedCount,
+    queriesCount,
+    protocolDeviationsCount,
 }) => {
     const [expanded, setExpanded] = useState(false)
     const classes = useStyles()
@@ -79,34 +79,34 @@ const SiteDetailPanel = ({
                 </Grid>
                 <Grid item xs={ 12 }>
                     <Paragraph>
-                        Protocol Available to FPFV: { dateOfFirstPtEnrolled }
+                        Protocol Available to FPFV: { fpfv }
                     </Paragraph>
                     <Paragraph>
-                        Contract approval/execution cycle time: { dayCount(contractsent_date, contractexecution_date) }
+                        Contract approval/execution cycle time: { dayCount(dateContractSent, dateContractExecution) }
                     </Paragraph>
                     <Paragraph>
-                        IRB approval cycle time (Full Committee Review): { dayCount(irbsubmission_date, IRBOriginalApproval) }
+                        IRB approval cycle time (Full Committee Review): { dayCount(dateIrbSubmission, dateIrbApproval) }
                     </Paragraph>
                     <Paragraph>
-                        Site open to accrual to First Patient / First Visit (FPFV): { dateOfFirstPtEnrolled || 'N/A' }
+                        Site open to accrual to First Patient / First Visit (FPFV): { fpfv || 'N/A' }
                     </Paragraph>
                     <Paragraph>
-                        Site open to accrual to Last Patient / First Visit: { mostRecentEnrolled || 'N/A' }
+                        Site open to accrual to Last Patient / First Visit: { lpfv || 'N/A' }
                     </Paragraph>
                     <Paragraph>
-                        Randomized patients / Consented patients: { displayRatio(noOfPtsEnrolled_site, noOfPtsSignedConsent) }
+                        Randomized patients / Consented patients: { displayRatio(patientsEnrolledCount, patientsConsentedCount) }
                     </Paragraph>
                     <Paragraph>
-                        Actual vs expected randomized patient ratio: { displayRatio(noOfPtsEnrolled_site, projectedEnrollmentPerMonth) }
+                        Actual vs expected randomized patient ratio: { displayRatio(patientsEnrolledCount, patientsExpectedCount) }
                     </Paragraph>
                     <Paragraph>
-                        Ratio of randomized patients that dropout of the study: { displayRatio(noOfPtsWithdrawn_site, noOfPtsEnrolled_site) }
+                        Ratio of randomized patients that dropout of the study: { displayRatio(patientsWithdrawnCount, patientsEnrolledCount) }
                     </Paragraph>
                     <Paragraph>
-                        Major protocol deviations / randomized patient: { displayRatio(noOfSignificantProtocolDeviations_site, noOfPtsEnrolled_site) }
+                        Major protocol deviations / randomized patient: { displayRatio(protocolDeviationsCount, patientsEnrolledCount) }
                     </Paragraph>
                     <Paragraph>
-                        Queries per eCRF page: { noOfUnresolvedQueries_site || 'N/A' }
+                        Queries per eCRF page: { queriesCount || 'N/A' }
                     </Paragraph>
                 </Grid>
             </Grid>
@@ -142,20 +142,20 @@ const SitesTable = (props) => {
                     { title: 'Protocol', field: 'protocol', hidden: false, },
                     { title: 'Facility Name', field: 'siteName', hidden: false, },
                     { title: 'Site Name', field: 'principalInvestigator', hidden: true, },
-                    { title: 'regPacksentdate', field: 'regPacksentdate', hidden: true, },
-                    { title: 'contractsent_date', field: 'contractsent_date', hidden: true, },
-                    { title: 'irbsubmission_date', field: 'irbsubmission_date', hidden: true, },
-                    { title: 'IRBOriginalApproval', field: 'IRBOriginalApproval', hidden: true, },
-                    { title: 'contractexecution_date', field: 'contractexecution_date', hidden: true, },
-                    { title: 'mostRecentEnrolled', field: 'mostRecentEnrolled', hidden: true, },
-                    { title: 'siteActivatedDate', field: 'siteActivatedDate', hidden: true, },
-                    { title: 'dateOfFirstPtEnrolled', field: 'dateOfFirstPtEnrolled', hidden: true, },
-                    { title: 'noOfPtsSignedConsent', field: 'noOfPtsSignedConsent', hidden: true, },
-                    { title: 'noOfPtsEnrolled_site', field: 'noOfPtsEnrolled_site', hidden: true, },
-                    { title: 'noOfPtsWithdrawn_site', field: 'noOfPtsWithdrawn_site', hidden: true, },
-                    { title: 'projectedEnrollmentPerMonth', field: 'projectedEnrollmentPerMonth', hidden: true, },
-                    { title: 'noOfUnresolvedQueries_site', field: 'noOfUnresolvedQueries_site', hidden: true, },
-                    { title: 'noOfSignificantProtocolDeviations_site', field: 'noOfSignificantProtocolDeviations_site', hidden: true, },
+                    { title: 'dateRegPacketSent', field: 'dateRegPacketSent', hidden: true, },
+                    { title: 'dateContractSent', field: 'dateContractSent', hidden: true, },
+                    { title: 'dateIrbSubmission', field: 'dateIrbSubmission', hidden: true, },
+                    { title: 'dateIrbApproval', field: 'dateIrbApproval', hidden: true, },
+                    { title: 'dateContractExecution', field: 'dateContractExecution', hidden: true, },
+                    { title: 'lpfv', field: 'lpfv', hidden: true, },
+                    { title: 'dateSiteActivated', field: 'dateSiteActivated', hidden: true, },
+                    { title: 'fpfv', field: 'fpfv', hidden: true, },
+                    { title: 'patientsConsentedCount', field: 'patientsConsentedCount', hidden: true, },
+                    { title: 'patientsEnrolledCount', field: 'patientsEnrolledCount', hidden: true, },
+                    { title: 'patientsWithdrawnCount', field: 'patientsWithdrawnCount', hidden: true, },
+                    { title: 'patientsExpectedCount', field: 'patientsExpectedCount', hidden: true, },
+                    { title: 'queriesCount', field: 'queriesCount', hidden: true, },
+                    { title: 'protocolDeviationsCount', field: 'protocolDeviationsCount', hidden: true, },
                 ]
             }
             data={ sites }
