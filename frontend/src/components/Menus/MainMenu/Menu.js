@@ -68,6 +68,15 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 0,
         opacity: 0,
     },
+    active: {
+        '& > $listItemIcon': {
+            color: theme.palette.secondary.main,
+            transform: 'scale(1.1)',
+        },
+        '& > $listItemText': {
+            color: theme.palette.secondary.main,
+        },
+    },
 }))
 
 const menuItems = [
