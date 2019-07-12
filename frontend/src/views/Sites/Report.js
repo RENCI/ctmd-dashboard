@@ -1,33 +1,17 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import api from '../../Api'
-import { makeStyles, useTheme } from '@material-ui/styles'
-import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent, Button } from '@material-ui/core'
-import { FormControl, FormLabel, Select, MenuItem, OutlinedInput } from '@material-ui/core'
-import {
-    AccountBalance as InstitutionIcon,
-    Assignment as TicIcon,
-} from '@material-ui/icons'
-import { Heading, Subheading, Paragraph } from '../../components/Typography'
+import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
+import { Select, MenuItem, OutlinedInput } from '@material-ui/core'
+import { Heading } from '../../components/Typography'
 import { SiteReport } from '../../components/Charts'
 import DropZone from '../../components/Forms/DropZone'
 
-const useStyles = makeStyles(theme => ({
-    card: { },
-    cardActions: {
-        flex: '3 0 auto',api
-    },
-}))
-
 export const SiteReportPage = props => {
-    const [store, ] = useContext(StoreContext)
     const [studies, setStudies] = useState([])
     const [currentStudy, setCurrentStudy] = useState(-1)
     const [currentSites, setCurrentSites] = useState(null)
     const [currentSite, setCurrentSite] = useState(-1)
-    const classes = useStyles()
-    const theme = useTheme()
 
     useEffect(() => {
         setStudies(['SPIRRIT', 'STRESS'])

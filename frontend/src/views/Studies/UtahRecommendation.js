@@ -1,8 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, List, ListItem, ListItemAvatar, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
-import { FormControl, FormLabel, Select, MenuItem, OutlinedInput } from '@material-ui/core'
+import { List, ListItem, ListItemAvatar, Avatar, ListItemText, Card, CardHeader, CardContent } from '@material-ui/core'
 import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
@@ -29,14 +28,11 @@ const useStyles = makeStyles(theme => ({
 export const UtahRecommendationPage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
     const classes = useStyles()
-    const theme = useTheme()
     
     useEffect(() => {
         if (store.proposals) {
             setStudy(store.proposals.find(proposal => proposal.proposalID === parseInt(props.match.params.proposalID)))
-            setIsLoading(false)
         }
     }, [store.proposals])
 

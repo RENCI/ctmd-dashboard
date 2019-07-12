@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import api from '../Api'
 import { Heading } from '../components/Typography'
 import { Grid } from '@material-ui/core'

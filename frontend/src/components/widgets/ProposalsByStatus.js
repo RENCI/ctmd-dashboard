@@ -16,7 +16,7 @@ Array.prototype.countBy = function(prop) {
 }
 
 export const proposalsGroupedByStatusThenTic = props => {
-    const [store, setStore] = useContext(StoreContext)
+    const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
     const theme = useTheme()
 

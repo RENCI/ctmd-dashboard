@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import ChartTooltip from '../Tooltip/ChartTooltip'
 import { Button } from '@material-ui/core'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'

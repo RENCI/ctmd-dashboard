@@ -1,8 +1,8 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Heading, Subheading } from '../../components/Typography'
+import { Heading } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import SitesTable from '../../components/Tables/SitesTable'
 
@@ -10,14 +10,12 @@ export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
     const [sites, setSites] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
     const theme = useTheme()
 
     useEffect(() => {
         if (store.proposals) {
             try {
-                setIsLoading(true)
-                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
+                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID === props.match.params.proposalID)
                 const studySites = store.sites.filter(site => site.proposalID == props.match.params.proposalID)
                 console.log(store.sites)
                 console.log(studySites)
@@ -31,7 +29,7 @@ export const StudyReportPage = props => {
 
     return (
         <div>
-            <Heading>Study Report for { study && study.shortTitle || '...' }</Heading>
+            <Heading>Study Report for { study && (study.shortTitle || '...') }</Heading>
 
             {
                 study && sites ? (

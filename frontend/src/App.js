@@ -2,7 +2,6 @@ import React from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import Theme from './Theme'
 import Dashboard from './Dashboard'
-import api from './Api'
 import { ThemeProvider } from '@material-ui/styles'
 import { SettingsProvider, StoreProvider, FlashMessageProvider } from './contexts'
 

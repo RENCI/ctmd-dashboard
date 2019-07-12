@@ -32,7 +32,6 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'flex-start',
         alignItems: 'center',
         margin: 0,
-        padding: 0,
         borderRadius: theme.shape.borderRadius,
         transition: 'background-color 250ms',
         letterSpacing: '1px',

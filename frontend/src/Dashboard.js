@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
-import { CssBaseline, IconButton } from '@material-ui/core'
-import { Menu as MenuIcon } from '@material-ui/icons'
+import { CssBaseline } from '@material-ui/core'
 import ScrollToTop from './utils/ScrollToTop'
 import { MenuTray } from './components/Menus/MainMenu'
 import { HomePage } from './views/Index'
@@ -51,12 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 const Dashboard = props => {
     const classes = useStyles()
-    const [mobileOpen, setMobileOpen] = useState()
     
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen)
-    }
-
     return (
         <div className={ classes.layout }>
             <MenuTray />
