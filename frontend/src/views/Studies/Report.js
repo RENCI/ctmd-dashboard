@@ -15,7 +15,7 @@ export const StudyReportPage = props => {
     useEffect(() => {
         if (store.proposals) {
             try {
-                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID === props.match.params.proposalID)
+                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
                 const studySites = store.sites.filter(site => site.proposalID == props.match.params.proposalID)
                 console.log(store.sites)
                 console.log(studySites)
