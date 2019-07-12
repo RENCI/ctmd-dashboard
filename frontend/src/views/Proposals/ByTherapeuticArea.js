@@ -6,7 +6,7 @@ import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import { CircularLoader } from '../../components/Progress/Progress'
-import ProposalsTable from '../../components/Charts/ProposalsTable'
+import ProposalsTable from '../../components/Tables/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
 import { SettingsContext } from '../../contexts/SettingsContext'
 

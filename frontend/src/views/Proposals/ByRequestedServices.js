@@ -7,7 +7,7 @@ import ProposalsPieChart from '../../components/Charts/ProposalsPie'
 import ProposalsBarChart from '../../components/Charts/ProposalsBar'
 import ChartOptions from '../../components/Menus/ChartOptions'
 import { CircularLoader } from '../../components/Progress/Progress'
-import ProposalsTable from '../../components/Charts/ProposalsTable'
+import ProposalsTable from '../../components/Tables/ProposalsTable'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
 const ProposalsByRequestedServices = props => {

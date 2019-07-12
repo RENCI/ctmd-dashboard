@@ -19,7 +19,7 @@ import { SettingsContext } from '../../contexts/SettingsContext'
 const useStyles = makeStyles(theme => ({
     panel: {
         padding: `${ theme.spacing(2) }px ${ theme.spacing(4) }px`,
-        backgroundColor: theme.palette.extended.gingerBeer,
+        backgroundColor: theme.palette.extended.limestone,
     },
     header: {
         display: 'flex',

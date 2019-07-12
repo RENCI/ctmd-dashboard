@@ -35,8 +35,8 @@ let theme = createMuiTheme({
             error: '#ff8a66',
         },
     },
-    shape: { borderRadius: 8 },
-    spacing: 8,
+    shape: { borderRadius: 4 },
+    spacing: 4,
     mixins: {
         container: {
             width: '100%',

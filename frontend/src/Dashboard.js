@@ -17,7 +17,9 @@ import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
 import ProposalsByDate from './views/Proposals/ByDate'
 import ProposalsByApprovedServices from './views/Proposals/ByApprovedServices'
 import ProposalsByRequestedServices from './views/Proposals/ByRequestedServices'
-import StudyMetricsPage from './views/StudyMetrics'
+import StudiesPage from './views/Studies'
+import UtahRecommendationPage from './views/Studies/UtahRecommendation'
+import StudyReportPage from './views/Studies/StudyReport'
 import SiteMetricsPage from './views/SiteMetrics'
 import SitesPage from './views/Sites'
 import CollaborationsPage from './views/Collaborations'
@@ -75,7 +77,9 @@ const Dashboard = props => {
                         <Route path="/proposals/requested-services" component={ ProposalsByRequestedServices }/>
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
-                        <Route path="/study-metrics" component={ StudyMetricsPage }/>
+                        <Route exact path="/studies" component={ StudiesPage }/>
+                        <Route path="/studies/:proposalID/utah" component={ UtahRecommendationPage }/>
+                        <Route path="/studies/:proposalID/report" component={ StudyReportPage }/>
                         <Route path="/sites" component={ SitesPage }/>
                         <Route path="/" component={ HomePage }/>
                     </Switch>

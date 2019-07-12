@@ -8,7 +8,7 @@ import {
     Assignment as TicIcon,
 } from '@material-ui/icons'
 import { Heading } from '../components/Typography/Typography'
-import SitesTable from '../components/Charts/SitesTable'
+import SitesTable from '../components/Tables/SitesTable'
 
 const useStyles = makeStyles(theme => ({
     card: { },

@@ -6,10 +6,10 @@ import { MenuList, MenuItem, ListItemIcon, ListItemText, Tooltip } from '@materi
 import {
     Dashboard as DashboardIcon,
     Description as ProposalsIcon,
+    Assignment as StudiesIcon,
     LocationOn as SitesIcon,
     Share as CollaborationsIcon,
 } from '@material-ui/icons'
-import { UtahIcon as StudyMetricsIcon } from '../../Icons/Utah'
 
 const useStyles = makeStyles(theme => ({
     nav: {
@@ -82,8 +82,8 @@ const useStyles = makeStyles(theme => ({
 const menuItems = [
     { text: 'Home', path: '/', icon: DashboardIcon, },
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
+    { text: 'Studies', path: '/studies', icon: StudiesIcon, },
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
-    { text: 'Study Metrics', path: '/study-metrics', icon: StudyMetricsIcon, },
     { text: 'Sites', path: '/sites', icon: SitesIcon, },
     // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
 ]
