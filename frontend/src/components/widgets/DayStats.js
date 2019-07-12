@@ -5,7 +5,7 @@ import { Grid, CardHeader } from '@material-ui/core'
 import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
-import ChartTooltip from '../Tooltip/ChartTooltip'
+import { ChartTooltip } from '../Tooltip'
 import { Widget } from './Widget'
 
 export const DayStats = props => {

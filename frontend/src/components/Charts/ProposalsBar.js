@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import ChartTooltip from '../Tooltip/ChartTooltip'
+import { ChartTooltip } from '../Tooltip'
 
 export const ProposalsBarChart = props => {
     const { proposals, height, sorting, clickHandler } = props

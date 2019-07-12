@@ -1,5 +1,5 @@
 import React from 'react'
-import ChartTooltip from '../Tooltip/ChartTooltip'
+import { ChartTooltip } from '../Tooltip'
 import { ResponsivePie } from '@nivo/pie'
 import { useTheme } from '@material-ui/styles'
 
