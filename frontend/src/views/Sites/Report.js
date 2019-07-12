@@ -1,17 +1,17 @@
 import React, { useEffect, useContext, useState } from 'react'
 import axios from 'axios'
-import api from '../Api'
+import api from '../../Api'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { StoreContext } from '../contexts/StoreContext'
+import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, List, ListItem, Avatar, ListItemText, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import { FormControl, FormLabel, Select, MenuItem, OutlinedInput } from '@material-ui/core'
 import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
 } from '@material-ui/icons'
-import { Heading, Subheading, Paragraph } from '../components/Typography/Typography'
-import SiteReport from '../components/Charts/SiteReport'
-import DropZone from '../components/Forms/DropZone'
+import { Heading, Subheading, Paragraph } from '../../components/Typography/Typography'
+import SiteReport from '../../components/Charts/SiteReport'
+import DropZone from '../../components/Forms/DropZone'
 
 const useStyles = makeStyles(theme => ({
     card: { },
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const StudyMetricsPage = props => {
+export const SiteReportPage = props => {
     const [store, ] = useContext(StoreContext)
     const [studies, setStudies] = useState([])
     const [currentStudy, setCurrentStudy] = useState(-1)
@@ -114,5 +114,3 @@ const StudyMetricsPage = props => {
         </div>
     )
 }
-
-export default StudyMetricsPage

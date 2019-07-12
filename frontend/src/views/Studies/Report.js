@@ -6,7 +6,7 @@ import { Heading, Subheading } from '../../components/Typography/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import SitesTable from '../../components/Tables/SitesTable'
 
-const StudyReportPage = props => {
+export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
     const [sites, setSites] = useState(null)
@@ -66,5 +66,3 @@ const StudyReportPage = props => {
         </div>
     )
 }
-
-export default StudyReportPage

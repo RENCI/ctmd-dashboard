@@ -16,7 +16,7 @@ const Detail = props => {
     )
 }
 
-const ProposalInspector = props => {
+export const ProposalInspectorPage = props => {
     const proposal = useProposal(props.match.params.id)
     const theme = useTheme()
     
@@ -59,5 +59,3 @@ const ProposalInspector = props => {
         </div>
     ) : <CircularLoader />
 }
-
-export default ProposalInspector

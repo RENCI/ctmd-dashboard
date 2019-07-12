@@ -10,7 +10,7 @@ import ProposalsTable from '../../components/Tables/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
-const ProposalsByTic = props => {
+export const ProposalsByTic = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
     const [proposalsByTic, setProposalsByTic] = useState()
@@ -90,5 +90,3 @@ const ProposalsByTic = props => {
         </div>
     )
 }
-
-export default ProposalsByTic

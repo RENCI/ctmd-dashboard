@@ -8,7 +8,7 @@ import DangerZone from '../components/Forms/DangerZone'
 import { SettingsContext } from '../contexts/SettingsContext'
 import { CollapsibleCard } from '../components/CollapsibleCard/CollapsibleCard'
 
-const SettingsPage = props => {
+export const SettingsPage = props => {
     const [settings, setSettings] = useContext(SettingsContext)
 
     const handleChangeVisibleColumns = event => {
@@ -115,5 +115,3 @@ const SettingsPage = props => {
         </Fragment>
     )
 }
-
-export default SettingsPage

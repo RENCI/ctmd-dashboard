@@ -10,7 +10,7 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Tables/ProposalsTable'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
-const ProposalsByStatus = props => {
+export const ProposalsByStatus = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
     const [proposalsByStatus, setProposalsByStatus] = useState()
@@ -91,5 +91,3 @@ const ProposalsByStatus = props => {
         </div>
     )
 }
-
-export default ProposalsByStatus

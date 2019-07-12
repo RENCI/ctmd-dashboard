@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
-import { StoreContext } from '../contexts/StoreContext'
-import { Heading } from '../components/Typography/Typography'
-import ProposalsTable from '../components/Tables/ProposalsTable'
-import BrowseMenu from '../components/Menus/BrowseMenu'
+import { StoreContext } from '../../contexts/StoreContext'
+import { Heading } from '../../components/Typography/Typography'
+import ProposalsTable from '../../components/Tables/ProposalsTable'
+import BrowseMenu from '../../components/Menus/BrowseMenu'
 
-const ProposalsPage = (props) => {
+export const ProposalsListPage = (props) => {
     const [store, ] = useContext(StoreContext)
 
     return (
@@ -17,5 +17,3 @@ const ProposalsPage = (props) => {
         </div>
     )
 }
-
-export default ProposalsPage

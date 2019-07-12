@@ -10,7 +10,7 @@ import ProposalsTable from '../../components/Tables/ProposalsTable'
 import ChartOptions from '../../components/Menus/ChartOptions'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
-const ProposalsByTherapeuticArea = props => {
+export const ProposalsByTherapeuticArea = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState()
@@ -91,5 +91,3 @@ const ProposalsByTherapeuticArea = props => {
         </div>
     )
 }
-
-export default ProposalsByTherapeuticArea

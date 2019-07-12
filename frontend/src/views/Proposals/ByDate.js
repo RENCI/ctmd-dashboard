@@ -74,7 +74,7 @@ const PresetSelector = (props) => {
     )
 }
 
-const ProposalsByDate = (props) => {
+export const ProposalsByDate = (props) => {
     const classes = useStyles()
     const [store, ] = useContext(StoreContext)
     const [displayedProposals, setDisplayedProposals] = useState([])
@@ -172,5 +172,3 @@ const ProposalsByDate = (props) => {
         </div>
     )
 }
-
-export default ProposalsByDate

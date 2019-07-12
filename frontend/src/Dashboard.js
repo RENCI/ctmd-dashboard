@@ -3,26 +3,24 @@ import { Switch, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { CssBaseline, IconButton } from '@material-ui/core'
 import { Menu as MenuIcon } from '@material-ui/icons'
-
 import ScrollToTop from './utils/ScrollToTop'
 import MenuTray from './components/Menus/MainMenu/Tray'
-import HomePage from './views/Index'
-import SettingsPage from './views/Settings'
-import ProposalPage from './views/ProposalInspector'
-import ProposalsPage from './views/Proposals'
-import ProposalsByOrganization from './views/Proposals/ByOrganization'
-import ProposalsByTic from './views/Proposals/ByTic'
-import ProposalsByStatus from './views/Proposals/ByStatus'
-import ProposalsByTherapeuticArea from './views/Proposals/ByTherapeuticArea'
-import ProposalsByDate from './views/Proposals/ByDate'
-import ProposalsByApprovedServices from './views/Proposals/ByApprovedServices'
-import ProposalsByRequestedServices from './views/Proposals/ByRequestedServices'
-import StudiesPage from './views/Studies'
-import UtahRecommendationPage from './views/Studies/UtahRecommendation'
-import StudyReportPage from './views/Studies/StudyReport'
-import SiteMetricsPage from './views/SiteMetrics'
-import SitesPage from './views/Sites'
-import CollaborationsPage from './views/Collaborations'
+import { HomePage } from './views/Index'
+import { SettingsPage } from './views/Settings'
+import { ProposalInspectorPage } from './views/ProposalInspector'
+import {
+    ProposalsListPage,
+    ProposalsByOrganization,
+    ProposalsByTic,
+    ProposalsByStatus,
+    ProposalsByTherapeuticArea,
+    ProposalsByDate,
+    ProposalsByApprovedServices,
+    ProposalsByRequestedServices
+} from './views/Proposals'
+import { StudiesListPage, StudyReportPage, UtahRecommendationPage } from './views/Studies'
+import { SitesListPage } from './views/Sites'
+import { CollaborationsPage } from './views/Collaborations'
 
 const useStyles = makeStyles(theme => ({
     layout: {
@@ -67,8 +65,8 @@ const Dashboard = props => {
                 <ScrollToTop>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
-                        <Route exact path="/proposals/:id(\d+)" component={ ProposalPage }/>
-                        <Route exact path="/proposals" component={ ProposalsPage }/>
+                        <Route exact path="/proposals/:id(\d+)" component={ ProposalInspectorPage }/>
+                        <Route exact path="/proposals" component={ ProposalsListPage }/>
                         <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
                         <Route path="/proposals/tic" component={ ProposalsByTic }/>
                         <Route path="/proposals/status" component={ ProposalsByStatus }/>
@@ -77,10 +75,10 @@ const Dashboard = props => {
                         <Route path="/proposals/requested-services" component={ ProposalsByRequestedServices }/>
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
-                        <Route exact path="/studies" component={ StudiesPage }/>
+                        <Route exact path="/studies" component={ StudiesListPage }/>
                         <Route path="/studies/:proposalID/utah" component={ UtahRecommendationPage }/>
                         <Route path="/studies/:proposalID/report" component={ StudyReportPage }/>
-                        <Route path="/sites" component={ SitesPage }/>
+                        <Route path="/sites" component={ SitesListPage }/>
                         <Route path="/" component={ HomePage }/>
                     </Switch>
                 </ScrollToTop>

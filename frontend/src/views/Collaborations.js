@@ -5,7 +5,7 @@ import { Grid } from '@material-ui/core'
 import ProposalsNetwork from '../components/Visualizations/ProposalsNetworkContainer'
 import ProposalsTable from '../components/Tables/ProposalsTable'
 
-const collaborationsPage = (props) => {
+export const CollaborationsPage = (props) => {
     const [proposals, setProposals] = useState()
 
     const handleSelectProposals = proposals => {
@@ -30,5 +30,3 @@ const collaborationsPage = (props) => {
         </div>
     )
 }
-
-export default collaborationsPage

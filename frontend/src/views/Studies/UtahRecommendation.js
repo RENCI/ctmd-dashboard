@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const UtahRecommendationPage = props => {
+export const UtahRecommendationPage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -85,5 +85,3 @@ const UtahRecommendationPage = props => {
         </div>
     )
 }
-
-export default UtahRecommendationPage
