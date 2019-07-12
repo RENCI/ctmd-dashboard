@@ -5,7 +5,7 @@ import { BrowseMenu, ChartOptions } from '../../components/Menus'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
 import { CircularLoader } from '../../components/Progress/Progress'
-import ProposalsTable from '../../components/Tables/ProposalsTable'
+import { ProposalsTable } from '../../components/Tables'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
 export const ProposalsByApprovedServices = props => {

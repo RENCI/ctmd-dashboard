@@ -114,7 +114,7 @@ const SiteDetailPanel = ({
     )
 }
 
-const SitesTable = (props) => {
+export const SitesTable = (props) => {
     let { title, sites } = props
     const [store, ] = useContext(StoreContext)
     if (title) title += ` (${ sites.length } Sites)`
@@ -175,5 +175,3 @@ const SitesTable = (props) => {
         />
     )
 }
-
-export default SitesTable

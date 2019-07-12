@@ -4,7 +4,7 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { Heading } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
-import SitesTable from '../../components/Tables/SitesTable'
+import { SitesTable } from '../../components/Tables'
 
 export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)

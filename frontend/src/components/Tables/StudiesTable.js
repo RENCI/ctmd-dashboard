@@ -52,7 +52,7 @@ const StudyReport = props => {
     )
 }
 
-const StudiesTable = ({ title, studies, paging }) => {
+export const StudiesTable = ({ title, studies, paging }) => {
     const [settings] = useContext(SettingsContext)
     if (title) title += ` (${ studies.length } Studies)`
 
@@ -140,5 +140,3 @@ const StudiesTable = ({ title, studies, paging }) => {
         />
     )
 }
-
-export default StudiesTable

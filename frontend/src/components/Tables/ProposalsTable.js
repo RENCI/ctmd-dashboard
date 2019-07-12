@@ -223,7 +223,7 @@ const ProposalDetailPanel = props => {
     )
 }
 
-const ProposalsTable = (props) => {
+export const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
     let { title, proposals } = props
     if (title) title += ` (${ proposals.length } Proposals)`
@@ -307,5 +307,3 @@ const ProposalsTable = (props) => {
         />
     )
 }
-
-export default ProposalsTable

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Heading } from '../../components/Typography'
-import StudiesTable from '../../components/Tables/StudiesTable'
+import { StudiesTable } from '../../components/Tables'
 
 const studiesIds = [171, 186]
 
@@ -19,9 +19,7 @@ export const StudiesListPage = props => {
     return (
         <div>
 
-            <Heading>
-                Studies
-            </Heading>
+            <Heading>Studies</Heading>
             
             <StudiesTable studies={ studies } paging={ true } />
             

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Heading } from '../../components/Typography'
-import ProposalsTable from '../../components/Tables/ProposalsTable'
+import { ProposalsTable } from '../../components/Tables'
 import { BrowseMenu } from '../../components/Menus'
 
 export const ProposalsListPage = (props) => {

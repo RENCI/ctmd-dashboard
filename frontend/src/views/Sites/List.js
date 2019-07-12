@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Heading } from '../../components/Typography'
-import SitesTable from '../../components/Tables/SitesTable'
+import { SitesTable } from '../../components/Tables'
 
 export const SitesListPage = props => {
     const [store, ] = useContext(StoreContext)

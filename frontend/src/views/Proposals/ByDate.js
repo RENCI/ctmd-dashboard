@@ -4,7 +4,7 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import { Heading } from '../../components/Typography'
 import { BrowseMenu } from '../../components/Menus'
-import ProposalsTable from '../../components/Tables/ProposalsTable'
+import { ProposalsTable } from '../../components/Tables'
 
 const useStyles = makeStyles(theme => ({
     page: { },

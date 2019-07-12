@@ -3,7 +3,7 @@ import api from '../Api'
 import { Heading } from '../components/Typography'
 import { Grid } from '@material-ui/core'
 import ProposalsNetwork from '../components/Visualizations/ProposalsNetworkContainer'
-import ProposalsTable from '../components/Tables/ProposalsTable'
+import { ProposalsTable } from '../components/Tables'
 
 export const CollaborationsPage = (props) => {
     const [proposals, setProposals] = useState()
