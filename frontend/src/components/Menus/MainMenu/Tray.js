@@ -4,8 +4,8 @@ import { NavLink } from 'react-router-dom'
 import { Paper, Tooltip, IconButton, ClickAwayListener } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowRight as ExpandIcon, Settings as SettingsIcon } from '@material-ui/icons'
-import Menu from './Menu'
-import Brand from '../../Brand/Brand'
+import { Menu } from './Menu'
+import { Brand } from '../../Brand'
 
 const useStyles = makeStyles(theme => ({
     tray: {
@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Tray = ({ children }) => {
+export const MenuTray = ({ children }) => {
     const [open, setOpen] = useState()
     const classes = useStyles()
     
@@ -91,5 +91,3 @@ const Tray = ({ children }) => {
         </ClickAwayListener>
     )
 }
-
-export default Tray

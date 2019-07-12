@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Brand = props => {
+export const Brand = props => {
     const classes = useStyles()
     
     return (
@@ -29,5 +29,3 @@ const Brand = props => {
         </div>
     )
 }
-
-export default Brand

@@ -5,7 +5,7 @@ import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { ResponsiveCalendar } from '@nivo/calendar'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
-import Widget from './Widget'
+import { Widget } from './Widget'
 
 const tooltip = (event) => {
     const { day, value } = event
@@ -17,7 +17,7 @@ const tooltip = (event) => {
     )
 }
 
-const ProposalsCalendar = props => {
+export const ProposalsCalendar = props => {
     const [store, ] = useContext(StoreContext)
     const [calendarData, setCalendarData] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null)
@@ -114,5 +114,3 @@ const ProposalsCalendar = props => {
         </Widget>
     )
 }
-
-export default ProposalsCalendar

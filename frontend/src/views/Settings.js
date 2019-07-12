@@ -1,5 +1,5 @@
 import React, { Fragment, useContext } from 'react'
-import { Heading } from '../components/Typography/Typography'
+import { Heading } from '../components/Typography'
 import {
     Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
     Select, OutlinedInput, MenuItem,

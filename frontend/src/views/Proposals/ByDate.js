@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
-import { Heading } from '../../components/Typography/Typography'
-import BrowseMenu from '../../components/Menus/BrowseMenu'
+import { Heading } from '../../components/Typography'
+import { BrowseMenu } from '../../components/Menus'
 import ProposalsTable from '../../components/Tables/ProposalsTable'
 
 const useStyles = makeStyles(theme => ({

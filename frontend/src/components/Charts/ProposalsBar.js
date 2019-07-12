@@ -3,7 +3,7 @@ import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
 import ChartTooltip from '../Tooltip/ChartTooltip'
 
-const ProposalsBarChart = props => {
+export const ProposalsBarChart = props => {
     const { proposals, height, sorting, clickHandler } = props
     const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
     const theme = useTheme()
@@ -49,5 +49,3 @@ const ProposalsBarChart = props => {
        </div>
     )
 }
-
-export default ProposalsBarChart

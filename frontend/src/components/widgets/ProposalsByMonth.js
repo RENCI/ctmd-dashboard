@@ -6,7 +6,7 @@ import { Button } from '@material-ui/core'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
-import Widget from './Widget'
+import { Widget } from './Widget'
 
 let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const thisMonth = (new Date()).getMonth() + 1
@@ -14,7 +14,7 @@ const thisYear = (new Date()).getFullYear()
 
 // const yyyymmToLabel => date => {}
 
-const proposalsByMonth = props => {
+export const ProposalsByMonthBarChart = props => {
     const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState([])
     const [currentPosition, setCurrentPosition] = useState(-1)
@@ -129,5 +129,3 @@ const proposalsByMonth = props => {
         </Widget>
     )
 }
-
-export default proposalsByMonth

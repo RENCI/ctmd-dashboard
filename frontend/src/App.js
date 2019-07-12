@@ -4,9 +4,7 @@ import Theme from './Theme'
 import Dashboard from './Dashboard'
 import api from './Api'
 import { ThemeProvider } from '@material-ui/styles'
-import { SettingsProvider } from './contexts/SettingsContext'
-import { StoreProvider } from './contexts/StoreContext'
-import { FlashMessageProvider } from './contexts/FlashMessageContext'
+import { SettingsProvider, StoreProvider, FlashMessageProvider } from './contexts'
 
 const App = props => {
     return (

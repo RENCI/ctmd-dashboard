@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Paragraph } from '../Typography/Typography'
+import { Paragraph } from '../Typography'
 
 const dayCount = (dateString1, dateString2) => {
     if (dateString1 && dateString2) {
@@ -23,7 +23,7 @@ const ratioString = (a, b, precision = 2) => {
         : `N/A`
 }
 
-const SiteReport = ({ currentSite }) => {
+export const SiteReport = ({ currentSite }) => {
     return (
         <Fragment>
             <Paragraph>
@@ -69,5 +69,3 @@ const SiteReport = ({ currentSite }) => {
         </Fragment>
     )
 }
-
-export default SiteReport

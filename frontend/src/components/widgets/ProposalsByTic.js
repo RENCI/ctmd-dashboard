@@ -5,8 +5,8 @@ import ChartTooltip from '../Tooltip/ChartTooltip'
 import { CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
-import useWindowWidth from '../../hooks/useWindowWidth'
-import Widget from './Widget'
+import { useWindowWidth } from '../../hooks'
+import { Widget } from './Widget'
 
 const statusMap = [
     {
@@ -83,7 +83,7 @@ Array.prototype.countBy = function(prop) {
     }, {})
 }
 
-const proposalsGroupedByTicThenStatus = props => {
+export const ProposalsByTicBarChart = props => {
     const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
     const windowWidth = useWindowWidth()
@@ -190,5 +190,3 @@ const proposalsGroupedByTicThenStatus = props => {
         </Widget>
     )
 }
-
-export default proposalsGroupedByTicThenStatus

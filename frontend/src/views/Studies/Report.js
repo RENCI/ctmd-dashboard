@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Heading, Subheading } from '../../components/Typography/Typography'
+import { Heading, Subheading } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import SitesTable from '../../components/Tables/SitesTable'
 

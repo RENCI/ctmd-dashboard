@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 export const Title = props => {
     const { children } = props
     const classes = useStyles()
+    
     return (
         <Typography variant="h1" className={ classes.heading }>
             { children }
@@ -40,6 +41,7 @@ export const Title = props => {
 export const Heading = props => {
     const { children } = props
     const classes = useStyles()
+    
     return (
         <Typography variant="h2" className={ classes.heading }>
             { children }
@@ -50,6 +52,7 @@ export const Heading = props => {
 export const Subheading = props => {
     const { children } = props
     const classes = useStyles()
+    
     return (
         <Typography variant="h3" className={ classes.subheading }>
             { children }
@@ -60,6 +63,7 @@ export const Subheading = props => {
 export const Paragraph = props => {
     const { children } = props
     const classes = useStyles()
+    
     return (
         <Typography paragraph className={ classes.paragraph }>
             { children }
@@ -70,6 +74,7 @@ export const Paragraph = props => {
 export const TextLink = props => {
     const { children } = props
     const classes = useStyles()
+    
     return (
         <Link
             to={ props.to }

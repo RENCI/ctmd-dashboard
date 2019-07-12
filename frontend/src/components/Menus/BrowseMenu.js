@@ -13,7 +13,7 @@ import {
     LocalLaundryService as ServicesIcon,
 } from '@material-ui/icons'
 
-const BrowseMenu = (props) => {
+export const BrowseMenu = (props) => {
     const [anchorEl, setAnchorEl] = useState(null)
     const theme  = useTheme()
 
@@ -82,5 +82,3 @@ const BrowseMenu = (props) => {
         </Fragment>
     )
 }
-
-export default BrowseMenu

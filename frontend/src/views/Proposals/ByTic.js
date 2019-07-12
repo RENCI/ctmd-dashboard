@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Heading } from '../../components/Typography/Typography'
-import BrowseMenu from '../../components/Menus/BrowseMenu'
+import { Heading } from '../../components/Typography'
+import { BrowseMenu, ChartOptions } from '../../components/Menus'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import ProposalsPieChart from '../../components/Charts/ProposalsPie'
-import ProposalsBarChart from '../../components/Charts/ProposalsBar'
+import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
 import { CircularLoader } from '../../components/Progress/Progress'
 import ProposalsTable from '../../components/Tables/ProposalsTable'
-import ChartOptions from '../../components/Menus/ChartOptions'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
 export const ProposalsByTic = props => {

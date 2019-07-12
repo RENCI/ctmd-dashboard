@@ -2,7 +2,7 @@ import React, { Fragment, useState, useContext, useEffect } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { Grid, Typography } from '@material-ui/core'
-import { Paragraph } from '../../components/Typography/Typography'
+import { Paragraph } from '../../components/Typography'
 import { Collapse } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 

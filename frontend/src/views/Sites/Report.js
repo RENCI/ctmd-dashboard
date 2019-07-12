@@ -9,8 +9,8 @@ import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
 } from '@material-ui/icons'
-import { Heading, Subheading, Paragraph } from '../../components/Typography/Typography'
-import SiteReport from '../../components/Charts/SiteReport'
+import { Heading, Subheading, Paragraph } from '../../components/Typography'
+import { SiteReport } from '../../components/Charts'
 import DropZone from '../../components/Forms/DropZone'
 
 const useStyles = makeStyles(theme => ({

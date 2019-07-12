@@ -6,7 +6,7 @@ import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
 } from '@material-ui/icons'
-import { Heading } from '../../components/Typography/Typography'
+import { Heading } from '../../components/Typography'
 import SitesTable from '../../components/Tables/SitesTable'
 
 export const SitesListPage = props => {

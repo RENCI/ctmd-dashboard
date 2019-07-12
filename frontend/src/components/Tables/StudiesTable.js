@@ -7,7 +7,7 @@ import { Collapse } from '@material-ui/core'
 import { BarChart as ReportIcon } from '@material-ui/icons'
 import { UtahIcon } from '../Icons/Utah'
 import { SettingsContext } from '../../contexts/SettingsContext'
-import { Subheading, Paragraph } from '../../components/Typography/Typography'
+import { Subheading, Paragraph } from '../../components/Typography'
 
 const useDetailPanelStyles = makeStyles(theme => ({
     detailPanel: {

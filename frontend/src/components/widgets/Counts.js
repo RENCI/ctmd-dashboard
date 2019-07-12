@@ -3,7 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../../components/Progress/Progress'
-import Widget from './Widget'
+import { Widget } from './Widget'
 
 const useStyles = makeStyles(theme => ({
     cardHeader: { },
@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Count = props => {
+export const Counts = props => {
     const [store, ] = useContext(StoreContext)
     const classes = useStyles()
     const theme = useTheme()
@@ -82,5 +82,3 @@ const Count = props => {
         </Widget>
     )
 }
-
-export default Count

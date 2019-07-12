@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { AuthConsumer } from '../contexts/AuthContext'
 
-const privateRoute = ({ component: Component, ...rest }) => {
+export const privateRoute = ({ component: Component, ...rest }) => {
     return (
         <AuthConsumer>
             {
@@ -25,5 +25,3 @@ const privateRoute = ({ component: Component, ...rest }) => {
         </AuthConsumer>
     )
 }
-
-export default privateRoute

@@ -4,7 +4,7 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import { NavLink } from 'react-router-dom'
-import { Heading } from '../../components/Typography/Typography'
+import { Heading } from '../../components/Typography'
 import StudiesTable from '../../components/Tables/StudiesTable'
 
 const useStyles = makeStyles(theme => ({

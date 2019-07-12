@@ -6,9 +6,9 @@ import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import ChartTooltip from '../Tooltip/ChartTooltip'
-import Widget from './Widget'
+import { Widget } from './Widget'
 
-const DayStats = props => {
+export const DayStats = props => {
     const [store, ] = useContext(StoreContext)
     const [proposals, setProposals] = useState(null)
     const [anchorEl, setAnchorEl] = React.useState(null)
@@ -196,5 +196,3 @@ const DayStats = props => {
         </Widget>
     )
 }
-
-export default DayStats

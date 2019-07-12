@@ -1,8 +1,8 @@
 import React from 'react'
 import { useTheme } from '@material-ui/styles'
-import { useProposal } from '../hooks/useProposal'
+import { useProposal } from '../hooks'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Heading, Subheading, Paragraph } from '../components/Typography/Typography'
+import { Heading, Subheading, Paragraph } from '../components/Typography'
 import { CircularLoader } from '../components/Progress/Progress'
 
 const Detail = props => {

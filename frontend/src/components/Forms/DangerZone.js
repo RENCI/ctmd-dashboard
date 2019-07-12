@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { makeStyles } from '@material-ui/styles'
 import { Grid, Button, Divider } from '@material-ui/core'
-import { Paragraph } from '../Typography/Typography'
+import { Paragraph } from '../Typography'
 import api from '../../Api'
 
 const useStyles = makeStyles(theme => ({

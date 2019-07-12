@@ -6,7 +6,7 @@ import {
     PieChart as PieChartIcon, BarChart as BarChartIcon
 } from '@material-ui/icons'
 
-const ChartOptions = (props) => {
+export const ChartOptions = (props) => {
     const {
         typeSelectionHandler, currentType,
         sortingSelectionHandler, currentSorting,
@@ -50,6 +50,3 @@ const ChartOptions = (props) => {
        </div>
     )
 }
-
-export default ChartOptions
-

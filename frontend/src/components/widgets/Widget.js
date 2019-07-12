@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const Widget = props => {
+export const Widget = props => {
     const { title, subtitle, action, info, footer, children } = props
     const [infoOpen, setInfoOpen] = useState(false)
     const classes = useStyles()
@@ -71,5 +71,3 @@ const Widget = props => {
         </Fragment>
     )
 }
-
-export default Widget

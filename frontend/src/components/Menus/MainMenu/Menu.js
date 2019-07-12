@@ -88,7 +88,7 @@ const menuItems = [
     // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
 ]
 
-const Menu = ({ expanded, clickHandler }) => {
+export const Menu = ({ expanded, clickHandler }) => {
     const classes = useStyles()
 
     return (
@@ -116,5 +116,3 @@ const Menu = ({ expanded, clickHandler }) => {
         </nav>
     )
 }
-
-export default Menu

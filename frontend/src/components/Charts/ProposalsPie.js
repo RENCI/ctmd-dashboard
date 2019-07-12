@@ -3,7 +3,7 @@ import ChartTooltip from '../Tooltip/ChartTooltip'
 import { ResponsivePie } from '@nivo/pie'
 import { useTheme } from '@material-ui/styles'
 
-const ProposalsPieChart = props => {
+export const ProposalsPieChart = props => {
     const { proposals, clickHandler, height, sorting } = props
     const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
     const theme = useTheme()
@@ -48,5 +48,3 @@ const ProposalsPieChart = props => {
         </div>
     )
 }
-
-export default ProposalsPieChart

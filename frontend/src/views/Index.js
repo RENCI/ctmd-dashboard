@@ -1,11 +1,9 @@
 import React from 'react'
 import { Grid } from '@material-ui/core'
-import { Heading } from '../components/Typography/Typography'
-import ProposalsByTicBarChart from '../components/widgets/ProposalsByTic'
-import ProposalsByMonthBarChart from '../components/widgets/ProposalsByMonth'
-import ProposalsCalendar from '../components/widgets/ProposalsCalendar'
-import DayStats from '../components/widgets/DayStats'
-import Counts from '../components/widgets/Counts'
+import { Heading } from '../components/Typography'
+import {
+    ProposalsByTicBarChart, ProposalsByMonthBarChart, ProposalsCalendar, DayStats, Counts
+} from '../components/widgets'
 
 export const HomePage = (props) => {
 
