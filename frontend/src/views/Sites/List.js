@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Heading } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { SitesTable } from '../../components/Tables'
 
 export const SitesListPage = props => {
@@ -8,7 +8,7 @@ export const SitesListPage = props => {
 
     return (
         <div>
-            <Heading>Sites</Heading>
+            <Title>Sites</Title>
             
             <SitesTable sites={ store.sites } paging={ true } />
         </div>

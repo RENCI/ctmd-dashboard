@@ -107,7 +107,7 @@ export const ProposalsByTicBarChart = props => {
         anchor: 'top-right',
         direction: 'column',
         justify: false,
-        translateX: windowWidth < 1000 ? 0 : 288,
+        translateX: windowWidth < 1000 ? 0 : 336,
         translateY: -32,
         itemsSpacing: 1,
         itemWidth: 20,
@@ -143,7 +143,7 @@ export const ProposalsByTicBarChart = props => {
                                 )
                             }
                             indexBy="name"
-                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 288, bottom: 24, left: 0 }}
+                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 336, bottom: 24, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"

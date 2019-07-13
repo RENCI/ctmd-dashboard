@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
-import { Heading } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { BrowseMenu } from '../../components/Menus'
 import { ProposalsTable } from '../../components/Tables'
 
@@ -119,10 +119,10 @@ export const ProposalsByDate = (props) => {
 
     return (
         <div>
-            <Heading>
+            <Title>
                 Proposals by Submission Date
                 <BrowseMenu />
-            </Heading>
+            </Title>
             
             <Grid container spacing={ 16 }>
                 <Grid item xs={ 12 }>

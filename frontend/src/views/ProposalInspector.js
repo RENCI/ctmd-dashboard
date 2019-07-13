@@ -2,7 +2,7 @@ import React from 'react'
 import { useTheme } from '@material-ui/styles'
 import { useProposal } from '../hooks'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Heading, Subheading, Paragraph } from '../components/Typography'
+import { Title, Subheading, Paragraph } from '../components/Typography'
 import { CircularLoader } from '../components/Progress/Progress'
 
 const Detail = props => {
@@ -23,9 +23,9 @@ export const ProposalInspectorPage = props => {
     return proposal ? (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Heading>
+                <Title>
                     { proposal.shortTitle }
-                </Heading>
+                </Title>
                 <Subheading>
                     { proposal.proposalID }
                 </Subheading>

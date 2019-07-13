@@ -59,35 +59,44 @@ theme = {
     ...theme,
     overrides: {
         MuiTypography: {
-            // useNextVariants: true,
-            h1: { fontFamily: 'Roboto', },
+            h1: {
+                fontFamily: 'Roboto',
+                fontSize: '3.5rem',
+                color: theme.palette.primary.light,
+                marginTop: theme.spacing(4),
+                marginBottom: theme.spacing(6),
+            },
             h2: {
                 fontFamily: 'Roboto',
-                color: theme.palette.primary.light,
-                fontWeight: 'bold',
+                color: theme.palette.primary.main,
+                // fontWeight: 'bold',
                 fontSize: '2rem',
             },
             h3: {
                 fontFamily: 'Roboto',
                 color: theme.palette.primary.light,
-                fontWeight: 'bold',
+                fontWeight: '400',
                 fontSize: '1.5rem',
             },
             h4: {
                 fontFamily: 'Roboto',
-                color: theme.palette.primary.dark,
-                fontWeight: 'bold',
-                fontSize: '1.5rem',
+                color: theme.palette.secondary.light,
+                fontWeight: '300',
+                fontSize: '1.25rem',
             },
             h5: { fontFamily: 'Roboto', },
             subtitle1: { fontFamily: 'Roboto', },
             body1: { fontFamily: 'Roboto', lineHeight: '1.75rem', },
             body2: { fontFamily: 'Nanum Gothic', lineHeight: '1.5rem', }, // paragraph gets this by default
         },
+        MuiGrid: {
+            item: {
+                spacing: 4,
+            }
+        },
         MuiCard:{
             root: {
-                padding: theme.spacing(4),
-                marginBottom: theme.spacing(2),
+                padding: theme.spacing(1),
                 backgroundColor: theme.palette.common.white,
                 borderRadius: theme.shape.borderRadius,
             }
@@ -108,11 +117,6 @@ theme = {
                 fontSize: '200%',
                 fontWeight: 'bold',
             },
-        },
-        MuiGrid: {
-            item: {
-                marginBottom: theme.spacing(1),
-            }
         },
         MuiDrawer: {
             paper: {

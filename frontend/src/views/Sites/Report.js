@@ -3,7 +3,7 @@ import axios from 'axios'
 import api from '../../Api'
 import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import { Select, MenuItem, OutlinedInput } from '@material-ui/core'
-import { Heading } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { SiteReport } from '../../components/Charts'
 import DropZone from '../../components/Forms/DropZone'
 
@@ -46,7 +46,7 @@ export const SiteReportPage = props => {
     return (
         <div>
 
-            <Heading>Site Metrics</Heading>
+            <Title>Site Metrics</Title>
             
             <Grid container>
                 <Grid item xs={ 12 }>

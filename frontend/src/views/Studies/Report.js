@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Heading } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 
@@ -29,11 +29,11 @@ export const StudyReportPage = props => {
 
     return (
         <div>
-            <Heading>Study Report for { study && (study.shortTitle || '...') }</Heading>
+            <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
 
             {
                 study && sites ? (
-                    <Grid container spacing={ theme.spacing(2) }>
+                    <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
                             <SitesTable sites={ sites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
                         </Grid>

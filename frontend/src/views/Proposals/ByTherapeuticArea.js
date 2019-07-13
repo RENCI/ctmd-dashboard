@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Heading } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { BrowseMenu, ChartOptions } from '../../components/Menus'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
@@ -49,10 +49,10 @@ export const ProposalsByTherapeuticArea = props => {
 
     return (
         <div>
-            <Heading>
+            <Title>
                 Proposals by Therapeutic Area
                 <BrowseMenu />
-            </Heading>
+            </Title>
 
             <Grid container>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import api from '../Api'
-import { Heading } from '../components/Typography'
+import { Title } from '../components/Typography'
 import { Grid } from '@material-ui/core'
 import ProposalsNetwork from '../components/Visualizations/ProposalsNetworkContainer'
 import { ProposalsTable } from '../components/Tables'
@@ -14,7 +14,7 @@ export const CollaborationsPage = (props) => {
 
     return (
         <div>
-            <Heading>Collaborations</Heading>
+            <Title>Collaborations</Title>
 
             <Grid container>
 

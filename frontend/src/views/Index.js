@@ -1,6 +1,6 @@
 import React from 'react'
 import { Grid } from '@material-ui/core'
-import { Heading } from '../components/Typography'
+import { Title } from '../components/Typography'
 import {
     ProposalsByTicBarChart, ProposalsByMonthBarChart, ProposalsCalendar, DayStats, Counts
 } from '../components/widgets'
@@ -9,11 +9,9 @@ export const HomePage = (props) => {
 
     return (
         <div>
-            <div>
-                <Heading>Dashboard Home</Heading>
-            </div>
+            <Title>Dashboard Home</Title>
 
-            <Grid container spacing={ 2 }>
+            <Grid container spacing={ 4 } alignItems="stretch">
                 <Grid item xs={ 12 } sm={ 11 }>
                     <Counts/>
                 </Grid>

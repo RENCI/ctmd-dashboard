@@ -1,53 +1,117 @@
-import React, { useContext } from 'react'
-import { NavLink } from 'react-router-dom'
-import { makeStyles } from '@material-ui/styles'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import MaterialTable from 'material-table'
-import { IconButton } from '@material-ui/core'
+import { NavLink } from 'react-router-dom'
+import { Grid, IconButton, Tooltip } from '@material-ui/core'
+import { makeStyles, useTheme } from '@material-ui/styles'
 import { BarChart as ReportIcon } from '@material-ui/icons'
 import { UtahIcon } from '../Icons/Utah'
-import { SettingsContext } from '../../contexts/SettingsContext'
-import { Subheading, Paragraph } from '../../components/Typography'
+import { SettingsContext, StoreContext } from '../../contexts'
+import { Subheading, Subsubheading, Paragraph, Caption } from '../../components/Typography'
+import { CircularLoader } from '../../components/Progress/Progress'
+import { formatDate } from '../../utils'
+import { isSiteActive } from '../../utils/sites'
+import { SitesActivationPieChart } from '../../components/Charts'
 
 const useDetailPanelStyles = makeStyles(theme => ({
     detailPanel: {
         backgroundColor: theme.palette.extended.hatteras,
-        padding: theme.spacing(2)
+        padding: theme.spacing(4)
     },
     actions: {
         textAlign: 'right',
     },
 }))
 
-const StudyReport = props => {
+const StudyDetailPanel = props => {
+    const [store, ] = useContext(StoreContext)
+    const theme = useTheme()
     const {
         proposalID, shortTitle, piName, submitterInstitution, assignToInstitution,
         therapeuticArea, proposalStatus, fundingAmount, fundingPeriod, fundingStatus, fundingStatusWhenApproved,
         dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate, actualGrantSubmissionDate,
         requestedServices, approvedServices,
     } = props
+    const [sites, setSites] = useState(null)
     const classes = useDetailPanelStyles()
+
+    useEffect(() => {
+        if (proposalID) {
+            const studySites = store.sites.filter(site => site.proposalID == proposalID)
+            setSites(studySites)
+        }
+    }, [props.proposalID])
+
+    const activeSitesCount = () => {
+        const reducer = (count, site) => isSiteActive(site) ? count + 1 : count
+        return sites.reduce(reducer, 0)
+    }
+
+    const activeSitesPercentage = () => 100 * (activeSitesCount() / sites.length).toFixed(2)
+    
+    const total = property => {
+        const reducer = (count, site) => site[property] ? count + parseInt(site[property]) : count
+        return sites.reduce(reducer, 0)
+    }
+
+    const earliestDate = property => {
+        const dates = sites.filter(site => site[property] !== '')
+                           .map(site => new Date(site[property]))
+        const reducer = (earliest, thisDate) => earliest < thisDate ? earliest : thisDate
+        const minDate = dates.reduce(reducer, new Date()) 
+        return minDate
+    }
 
     return (
         <section className={ classes.detailPanel }>
-            <Subheading>{ shortTitle } Report</Subheading>
-            <Paragraph>
-                Brief summary on sites <br/>
-                How many / How many active <br/>
-                Enrollment numbers / Activation dates <br/>
-                Enrollment Numbers and milestones overview
-            </Paragraph>
-            <div className={ classes.actions }>
-                <IconButton aria-label="View Utah Recommendation" size="large"
-                    component={ NavLink } to={ `/studies/${ proposalID }/utah` }
-                >
-                    <UtahIcon />
-                </IconButton>
-                <IconButton aria-label="View Detailed Report" size="large"
-                    component={ NavLink } to={ `/studies/${ proposalID }/report` }
-                >
-                    <ReportIcon />
-                </IconButton>
-        </div>
+            {
+                sites ? (
+                    <Grid container spacing={ theme.spacing(2) }>
+                        <Grid item xs={ 10 }>
+                            <Subheading>{ shortTitle } Summary</Subheading>
+                        </Grid>
+                        <Grid item xs={ 2 } className={ classes.actions }>
+                            <Tooltip title="Utah Recommendation" placement="bottom">
+                                <IconButton aria-label="View Utah Recommendation" size="large" component={ NavLink } to={ `/studies/${ proposalID }/utah` }>
+                                    <UtahIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Detailed Study Report" placement="bottom">
+                                <IconButton aria-label="View Detailed Report" size="large" component={ NavLink } to={ `/studies/${ proposalID }/report` }>
+                                    <ReportIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Grid>
+                        <Grid item xs={ 3 }>
+                            <Subsubheading align="center">Site Activation</Subsubheading>
+                            <SitesActivationPieChart percentage={ activeSitesPercentage() } />
+                            <Caption align="center">
+                                { activeSitesCount() } of { sites.length } sites
+                            </Caption>
+                        </Grid>
+                        <Grid item xs={ 5 }>
+                            <Paragraph>
+                                Patient Counts
+                            </Paragraph>
+                            <ul>
+                                <li>Consented: { total('patientsConsentedCount') }</li>
+                                <li>Expected: { total('patientsExpectedCount') }</li>
+                                <li>Withdrawn: { total('patientsWithdrawnCount') }</li>
+                                <li>Enrolled: { total('patientsEnrolledCount') }</li>
+                            </ul>
+                        </Grid>
+                        <Grid item xs={ 4 }>
+                            <Paragraph>
+                                Notable Dates
+                            </Paragraph>
+                            <ul>
+                                <li>First Activation: { formatDate(earliestDate('dateSiteActivated')) }</li>
+                                <li>First IRB Submission: { formatDate(earliestDate('dateIrbSubmission')) }</li>
+                                <li>First IRB Approval:  { formatDate(earliestDate('dateIrbApproval')) }</li>
+                            </ul>
+                        </Grid>
+                    </Grid>
+                ) : <CircularLoader />
+            }
         </section>
     )
 }
@@ -133,7 +197,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
             detailPanel={[
                 {
                     tooltip: 'View Report',
-                    render: rowData => <StudyReport { ...rowData } />,
+                    render: rowData => <StudyDetailPanel { ...rowData } />,
                 },
             ]}
             onRowClick={ (event, rowData, togglePanel) => togglePanel() }

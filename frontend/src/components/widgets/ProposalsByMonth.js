@@ -6,6 +6,7 @@ import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
+import { ChartTooltip } from '../Tooltip'
 
 let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const thisMonth = (new Date()).getMonth() + 1
@@ -121,6 +122,12 @@ export const ProposalsByMonthBarChart = props => {
                             motionStiffness={ 90 }
                             motionDamping={ 15 }
                             legends={ [] }
+                            tooltip={ ({ id, value, color, indexValue }) => (
+                                <ChartTooltip color={ color }>
+                                    <div><strong>{ indexValue }</strong></div>
+                                    <div>{ value } Proposal{ value > 1 ? 's' : null }</div>
+                                </ChartTooltip>
+                            )}
                         />
                     ) : <CircularLoader />
                 }

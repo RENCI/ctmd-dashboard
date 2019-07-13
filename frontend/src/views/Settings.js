@@ -1,5 +1,5 @@
 import React, { Fragment, useContext } from 'react'
-import { Heading } from '../components/Typography'
+import { Title } from '../components/Typography'
 import {
     Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
     Select, OutlinedInput, MenuItem,
@@ -28,7 +28,7 @@ export const SettingsPage = props => {
 
     return (
         <Fragment>
-            <Heading>Settings</Heading>
+            <Title>Settings</Title>
             
             <Grid container spacing={ 4 }>
                 <Grid item xs={ 12 }>

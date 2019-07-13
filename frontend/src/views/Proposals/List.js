@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Heading } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { ProposalsTable } from '../../components/Tables'
 import { BrowseMenu } from '../../components/Menus'
 
@@ -9,9 +9,9 @@ export const ProposalsListPage = (props) => {
 
     return (
         <div>
-            <Heading>
+            <Title>
                 Proposals <BrowseMenu />
-            </Heading>
+            </Title>
             
             <ProposalsTable proposals={ store.proposals } paging={ true } />
         </div>

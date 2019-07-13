@@ -88,26 +88,24 @@ export const ProposalsCalendar = props => {
                 </svg>
             }
         >
-            <div style={{ height: '180px' }}>
+            <div style={{ height: '184px' }}>
                 {
                     calendarData ? (
-                        <Fragment>
-                            <ResponsiveCalendar
-                                data={ calendarData }
-                                from={ `${ year }-01-01T12:00:00.000Z` }
-                                to={ `${ year }-12-31T12:00:00.000Z` }
-                                direction="horizontal"
-                                colors={ theme.palette.calendarColors }
-                                emptyColor="#e9e9e9"
-                                margin={{ top: 20, right: 16, bottom: 0, left: 32, }}
-                                yearSpacing={ 40 }
-                                monthBorderColor="#fff"
-                                monthLegendOffset={ 10 }
-                                dayBorderWidth={ 1 }
-                                dayBorderColor="#fff"
-                                tooltip={ tooltip }
-                            />
-                        </Fragment>
+                        <ResponsiveCalendar
+                            data={ calendarData }
+                            from={ `${ year }-01-01T12:00:00.000Z` }
+                            to={ `${ year }-12-31T12:00:00.000Z` }
+                            direction="horizontal"
+                            colors={ theme.palette.calendarColors }
+                            emptyColor="#e9e9e9"
+                            margin={{ top: 20, right: 16, bottom: 0, left: 32, }}
+                            yearSpacing={ 40 }
+                            monthBorderColor="#fff"
+                            monthLegendOffset={ 10 }
+                            dayBorderWidth={ 1 }
+                            dayBorderColor="#fff"
+                            tooltip={ tooltip }
+                        />
                     ) : <CircularLoader />
                 }
             </div>
