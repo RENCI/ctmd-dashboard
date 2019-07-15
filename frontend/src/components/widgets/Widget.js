@@ -2,6 +2,7 @@ import React, { Fragment, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { Card, CardHeader, CardActions, IconButton, CardContent, Dialog, DialogTitle, DialogContent } from '@material-ui/core'
 import { Info as InfoIcon } from '@material-ui/icons'
+import { Paragraph } from '../Typography'
 
 const useStyles = makeStyles(theme => ({
     cardActions: {
@@ -14,6 +15,9 @@ const useStyles = makeStyles(theme => ({
         '&:hover': {
             color: theme.palette.grey[700],
         }
+    },
+    dialogContent: {
+        marginBottom: theme.spacing(4),
     }
 }))
 
@@ -62,8 +66,10 @@ export const Widget = props => {
                 ? (
                     <Dialog open={ infoOpen } onClose={ handleClose } aria-labelledby="information-dialog">
                         <DialogTitle id="information-dialog">Information</DialogTitle>
-                        <DialogContent>
-                            { info }
+                        <DialogContent className={ classes.dialogContent }>
+                            <Paragraph>
+                                { info }
+                            </Paragraph>
                         </DialogContent>
                     </Dialog>
                 ) : null
