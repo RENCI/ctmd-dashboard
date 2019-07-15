@@ -3,7 +3,7 @@ import MaterialTable from 'material-table'
 import { NavLink } from 'react-router-dom'
 import { Grid, IconButton, Tooltip } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { BarChart as ReportIcon } from '@material-ui/icons'
+import { Assessment as ReportIcon } from '@material-ui/icons'
 import { UtahIcon } from '../Icons/Utah'
 import { SettingsContext, StoreContext } from '../../contexts'
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../components/Typography'
@@ -77,7 +77,7 @@ const StudyDetailPanel = props => {
                             </Tooltip>
                             <Tooltip title="Detailed Study Report" placement="bottom">
                                 <IconButton aria-label="View Detailed Report" size="large" component={ NavLink } to={ `/studies/${ proposalID }/report` }>
-                                    <ReportIcon />
+                                    <ReportIcon style={{ fontSize: 24 }} />
                                 </IconButton>
                             </Tooltip>
                         </Grid>
