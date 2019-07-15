@@ -82,8 +82,8 @@ const menuItems = [
     { text: 'Home', path: '/', icon: DashboardIcon, },
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
     { text: 'Studies', path: '/studies', icon: StudiesIcon, },
-    { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
     { text: 'Sites', path: '/sites', icon: SitesIcon, },
+    { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
     // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
 ]
 
