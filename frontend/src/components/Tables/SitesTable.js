@@ -1,19 +1,37 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
-import { Grid, Typography } from '@material-ui/core'
-import { Paragraph } from '../../components/Typography'
 import { Collapse } from '@material-ui/core'
+import { Grid, Typography, Divider } from '@material-ui/core'
+import { List, ListItem, ListItemText, ListItemIcon, ListItemAvatar, Avatar } from '@material-ui/core'
+import { Star as MetricsIcon } from '@material-ui/icons'
+import { Subheading, Paragraph } from '../../components/Typography'
 import { StoreContext } from '../../contexts/StoreContext'
 
-const useStyles = makeStyles(theme => ({
+const useBulletStyles = makeStyles(theme => ({
+    bullet: {
+        fontSize: 24,
+        color: theme.palette.primary.light,
+        opacity: 0.25,
+    }
+}))
+
+const Bullet = props => {
+    const classes = useBulletStyles()
+    return (
+        <ListItemIcon>
+            <MetricsIcon className={ classes.bullet } />
+        </ListItemIcon>
+    )
+}
+
+const usePanelStyles = makeStyles(theme => ({
     panel: {
         padding: `${ theme.spacing(2) }px ${ theme.spacing(4) }px`,
         backgroundColor: theme.palette.extended.hatteras,
     },
     header: {
         marginBottom: theme.spacing(2),
-        borderBottom: `1px solid ${ theme.palette.grey[300] }`,
         alignItems: 'center',
     },
     title: {
@@ -44,7 +62,7 @@ const SiteDetailPanel = ({
     protocolDeviationsCount,
 }) => {
     const [expanded, setExpanded] = useState(false)
-    const classes = useStyles()
+    const classes = usePanelStyles()
 
     useEffect(() => {
         setExpanded(true)
@@ -60,6 +78,11 @@ const SiteDetailPanel = ({
     }
 
     const displayRatio = (a, b, precision = 2) => {
+        a = parseInt(a)
+        b = parseInt(b)
+        if ( !a || !b ) {
+            return 'N/A'
+        }
         if (a === 0) {
             if (b === 0) return `N/A`
             return `0% (${ a }/${ b })`
@@ -69,46 +92,54 @@ const SiteDetailPanel = ({
             : `N/A`
     }
 
-
-
     return (
         <Collapse in={ expanded }>
             <Grid container className={ classes.panel }>
                 <Grid item xs={ 12 } className={ classes.header }>
-                    <Typography variant="h5" className={ classes.title }>{ siteName }</Typography>
+                    <Subheading>{ siteName }</Subheading>
                 </Grid>
-                <Grid item xs={ 12 }>
-                    <Paragraph>
-                        Protocol Available to FPFV: { fpfv }
-                    </Paragraph>
-                    <Paragraph>
-                        Contract approval/execution cycle time: { dayCount(dateContractSent, dateContractExecution) }
-                    </Paragraph>
-                    <Paragraph>
-                        IRB approval cycle time (Full Committee Review): { dayCount(dateIrbSubmission, dateIrbApproval) }
-                    </Paragraph>
-                    <Paragraph>
-                        Site open to accrual to First Patient / First Visit (FPFV): { fpfv || 'N/A' }
-                    </Paragraph>
-                    <Paragraph>
-                        Site open to accrual to Last Patient / First Visit: { lpfv || 'N/A' }
-                    </Paragraph>
-                    <Paragraph>
-                        Randomized patients / Consented patients: { displayRatio(patientsEnrolledCount, patientsConsentedCount) }
-                    </Paragraph>
-                    <Paragraph>
-                        Actual vs expected randomized patient ratio: { displayRatio(patientsEnrolledCount, patientsExpectedCount) }
-                    </Paragraph>
-                    <Paragraph>
-                        Ratio of randomized patients that dropout of the study: { displayRatio(patientsWithdrawnCount, patientsEnrolledCount) }
-                    </Paragraph>
-                    <Paragraph>
-                        Major protocol deviations / randomized patient: { displayRatio(protocolDeviationsCount, patientsEnrolledCount) }
-                    </Paragraph>
-                    <Paragraph>
-                        Queries per eCRF page: { queriesCount || 'N/A' }
-                    </Paragraph>
+
+                <Grid item component={ Divider } xs={ 12 } style={{ padding: 0 }}/>
+
+                <Grid item xs={ 12 } md={ 6 }>
+                    <List>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Contract approval/execution cycle time:" secondary={ dayCount(dateContractSent, dateContractExecution) } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="IRB approval cycle time (Full Committee Review):" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv || 'N/A' } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv || 'N/A' } />
+                        </ListItem>
+                    </List>
                 </Grid>
+                <Grid item xs={ 12 } md={ 6 }>
+                    <List>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Randomized patients / Consented patients:" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Actual vs expected randomized patient ratio:" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Major protocol deviations / randomized patient:" secondary={ displayRatio(protocolDeviationsCount, patientsEnrolledCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <Bullet /><ListItemText primary="Queries per eCRF page:" secondary={ queriesCount || 'N/A' } />
+                        </ListItem>
+                    </List>
+                </Grid>
+
             </Grid>
         </Collapse>
     )
