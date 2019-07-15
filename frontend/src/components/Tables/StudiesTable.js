@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import MaterialTable from 'material-table'
 import { NavLink } from 'react-router-dom'
-import { Grid, IconButton, Tooltip } from '@material-ui/core'
+import { Grid, IconButton, Tooltip, Divider } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { Assessment as ReportIcon } from '@material-ui/icons'
 import { UtahIcon } from '../Icons/Utah'
@@ -67,7 +67,8 @@ const StudyDetailPanel = props => {
                 sites ? (
                     <Grid container spacing={ theme.spacing(2) }>
                         <Grid item xs={ 10 }>
-                            <Subheading>{ shortTitle } Summary</Subheading>
+                            <Subheading>{ shortTitle }</Subheading>
+                            <Subsubheading>Study Summary</Subsubheading>
                         </Grid>
                         <Grid item xs={ 2 } className={ classes.actions }>
                             <Tooltip title="Utah Recommendation" placement="bottom">
@@ -81,6 +82,9 @@ const StudyDetailPanel = props => {
                                 </IconButton>
                             </Tooltip>
                         </Grid>
+                        
+                        <Grid item component={ Divider } xs={ 12 } style={{ padding: 0 }}/>
+
                         <Grid item xs={ 3 }>
                             <Subsubheading align="center">Site Activation</Subsubheading>
                             <SitesActivationPieChart percentage={ activeSitesPercentage() } />
