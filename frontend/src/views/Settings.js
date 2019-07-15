@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core'
 import DangerZone from '../components/Forms/DangerZone'
 import { SettingsContext } from '../contexts/SettingsContext'
-import { CollapsibleCard } from '../components/CollapsibleCard/CollapsibleCard'
+import { CollapsibleCard } from '../components/CollapsibleCard'
 
 export const SettingsPage = props => {
     const [settings, setSettings] = useContext(SettingsContext)
