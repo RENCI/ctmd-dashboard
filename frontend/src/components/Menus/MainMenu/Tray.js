@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
         minWidth: '200px',
     },
     toggler: {
-        margin: '0.5rem',
+        marginTop: '0.5rem',
         transition: 'transform 500ms',
     },
     rotated: {

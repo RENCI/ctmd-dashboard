@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { NavLink } from 'react-router-dom'
-import { MenuList, MenuItem, ListItemIcon, ListItemText, Tooltip } from '@material-ui/core'
+import { MenuList, MenuItem, ListItemIcon, ListItemText, Tooltip, Divider } from '@material-ui/core'
 import {
     Dashboard as DashboardIcon,
     Description as ProposalsIcon,
@@ -79,10 +79,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const menuItems = [
+    { }, // an empty object causes a Divider component to render in the menu 
     { text: 'Home', path: '/', icon: DashboardIcon, },
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
     { text: 'Studies', path: '/studies', icon: StudiesIcon, },
     { text: 'Sites', path: '/sites', icon: SitesIcon, },
+    { }, // an empty object causes a Divider component to render in the menu 
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
     // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
 ]
@@ -95,20 +97,22 @@ export const Menu = ({ expanded, clickHandler }) => {
             <MenuList clsasname={ classes.menuList }>
                 {
                     menuItems.map(item => (
-                        <Tooltip key={ item.path } title={ expanded ? '' : item.text } placement="right">
-                            <MenuItem
-                                component={ NavLink } exact to={ item.path }
-                                className={ classes.menuItem } activeClassName={ classes.active }
-                                onClick={ clickHandler }
-                            >
-                                <ListItemIcon classes={{ root: classes.listItemIcon }}>
-                                    <item.icon />
-                                </ListItemIcon>
-                                <ListItemText primary={ item.text }
-                                    classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
-                                />
-                            </MenuItem>
-                        </Tooltip>
+                        item.text && item.path && item.icon ? (
+                            <Tooltip key={ item.path } title={ expanded ? '' : item.text } placement="right">
+                                <MenuItem
+                                    component={ NavLink } exact to={ item.path }
+                                    className={ classes.menuItem } activeClassName={ classes.active }
+                                    onClick={ clickHandler }
+                                >
+                                    <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                                        <item.icon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={ item.text }
+                                        classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
+                                    />
+                                </MenuItem>
+                            </Tooltip>
+                        ) : <Divider style={{ margin: '1rem 0' }} />
                     ))
                 }
             </MenuList>
