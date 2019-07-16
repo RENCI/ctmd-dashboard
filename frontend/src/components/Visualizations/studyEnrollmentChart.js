@@ -155,6 +155,8 @@ export default function() {
 
     function drawTimeSeries(d) {
       const yScale = d.name === "enrolled" ? enrolledScale : sitesScale;
+      const color1 = d.name === "enrolled" ? "#2166ac" : "#1b7837";
+      const color2 = d.name === "enrolled" ? "#b2182b" : "#762a83";
 
       // Draw area
       d3.select(this).select(".area")
@@ -195,7 +197,8 @@ export default function() {
               .attr("y1", d => yScale(d[0].value))
               .attr("x2", d => xScale(d[1].date))
               .attr("y2", d => yScale(d[1].value))
-              .style("stroke", i === 0 ? "#999" : "#000");
+              .style("stroke", "#666")
+              .style("stroke-width", 2);
         }
       }
 
@@ -226,7 +229,7 @@ export default function() {
                         diff1 = d[1].actual - d[1].target,
                         diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
 
-                  return diff > 0 ? "#2166ac" : "#b2182b";
+                  return diff > 0 ? color1 : color2;
               })
               .style("fill-opacity", 0.5);
         }
