@@ -36,7 +36,7 @@ export default function() {
           .style("background", "rgba(0, 0, 0, 0.8)")
           .style("color", "#fff")
           .style("border-radius", "2px")
-          .style("pointer-events", "noe")
+          .style("pointer-events", "none")
           .html(function(d) {
             if (d.source) {
               // Link

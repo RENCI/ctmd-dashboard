@@ -8,6 +8,7 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import { isSiteActive } from '../../utils/sites'
 import { SitesActivationPieChart } from '../../components/Charts'
+import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 
 export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
@@ -65,7 +66,7 @@ export const StudyReportPage = props => {
                             <Card>
                                 <CardHeader title="Enrollment Graphic" />
                                 <CardContent>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum maxime aspernatur, perspiciatis modi, ad, repellat provident placeat libero itaque hic quod corrupti! Nobis facilis ducimus alias officiis, dignissimos, nemo eum.
+                                    <StudyEnrollment study={ study } sites={ sites }/>
                                 </CardContent>
                             </Card>
                         </Grid>
