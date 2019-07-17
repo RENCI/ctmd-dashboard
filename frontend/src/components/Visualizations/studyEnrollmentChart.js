@@ -3,7 +3,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  let margin = { top: 10, left: 10, bottom: 10, right: 10 },
+  let margin = { top: 10, left: 30, bottom: 20, right: 30 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -78,7 +78,7 @@ export default function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      const groups = ["chart"];
+      const groups = ["chart", "axes"];
 
       g.selectAll("g")
           .data(groups)
@@ -135,97 +135,141 @@ export default function() {
         .domain([0, Math.max(maxActualSites, maxTargetSites)])
         .range([innerHeight(), 0]);
 
-    // Bind time series data
-    const timeSeries = svg.select(".chart").selectAll(".timeSeries")
-        .data(timeSeriesData);
+    drawData();
+    drawAxes();
 
-    // Enter
-    const timeSeriesEnter = timeSeries.enter().append("g")
-        .attr("class", "timeSeries");
-
-    timeSeriesEnter.append("g").attr("class", "area");
-    timeSeriesEnter.append("g").attr("class", "lines");
-
-    // Enter + update
-    timeSeriesEnter.merge(timeSeries)
-        .each(drawTimeSeries);
-
-    // Exit
-    timeSeries.exit().remove();
-
-    function drawTimeSeries(d) {
-      const yScale = d.name === "enrolled" ? enrolledScale : sitesScale;
-      const color = d.name === "enrolled" ? "#8da0cb" : "#66c2a5";
-
-      // Draw area
-      d3.select(this).select(".area")
-          .call(drawArea);
-
-      // Line generator
-      const lineShape = d3.line()
-          .x(d => xScale(d.date))
-          .y(d => yScale(d.value));
-
-      // Bind data for lines
-      const line = d3.select(this).select(".lines").selectAll(".line")
-          .data([
-            d.data.map(d => ({ date: d.date, value: d.actual })),
-            d.data.map(d => ({ date: d.date, value: d.target }))
-          ]);
+    function drawData() {
+      // Bind time series data
+      const timeSeries = svg.select(".chart").selectAll(".timeSeries")
+          .data(timeSeriesData);
 
       // Enter
-      const lineEnter = line.enter().append("path")
-          .attr("class", "line");
+      const timeSeriesEnter = timeSeries.enter().append("g")
+          .attr("class", "timeSeries");
+
+      timeSeriesEnter.append("g").attr("class", "area");
+      timeSeriesEnter.append("g").attr("class", "lines");
 
       // Enter + update
-      lineEnter.merge(line)
-          .attr("d", lineShape)
-          .style("fill", "none")
-          .style("stroke", color)
-          .style("stroke-width", 2)
-          .style("stroke-dasharray", (d, i) => actual(i) ? null : "5 5");
+      timeSeriesEnter.merge(timeSeries)
+          .each(drawTimeSeries);
 
       // Exit
-      line.exit().remove();
+      timeSeries.exit().remove();
 
-      function actual(d, i) {
-        return i === 0;
-      }
+      function drawTimeSeries(d) {
+        const yScale = d.name === "enrolled" ? enrolledScale : sitesScale;
+        const color = d.name === "enrolled" ? "#8da0cb" : "#66c2a5";
 
-      function drawArea(selection) {
-        // Bind data
-        const section = selection.selectAll(".section")
-            .data(d => d3.pairs(d.data));
+        // Draw area
+        d3.select(this).select(".area")
+            .call(drawArea);
+
+        // Line generator
+        const lineShape = d3.line()
+            .x(d => xScale(d.date))
+            .y(d => yScale(d.value));
+
+        // Bind data for lines
+        const line = d3.select(this).select(".lines").selectAll(".line")
+            .data([
+              d.data.map(d => ({ date: d.date, value: d.actual })),
+              d.data.map(d => ({ date: d.date, value: d.target }))
+            ]);
+
+        // Enter
+        const lineEnter = line.enter().append("path")
+            .attr("class", "line");
 
         // Enter + update
-        section.enter().append("polygon")
-            .attr("class", ".section")
-          .merge(section)
-            .call(drawSection);
+        lineEnter.merge(line)
+            .attr("d", lineShape)
+            .style("fill", "none")
+            .style("stroke", color)
+            .style("stroke-width", 2)
+            .style("stroke-dasharray", (d, i) => i === 0 ? null : "5 5");
 
         // Exit
-        section.exit().remove();
+        line.exit().remove();
 
-        function drawSection(selection) {
-          selection
-              .attr("points", function(d) {
-                return xScale(d[0].date) + "," + yScale(d[0].actual) + " " +
-                       xScale(d[0].date) + "," + yScale(d[0].target) + " " +
-                       xScale(d[1].date) + "," + yScale(d[1].target) + " " +
-                       xScale(d[1].date) + "," + yScale(d[1].actual);
-              })
-              .style("fill", color)
-              .style("fill-opacity", d => actualBigger(d) ? 0.1 : 0.5);
+        function drawArea(selection) {
+          // Bind data
+          const section = selection.selectAll(".section")
+              .data(d => d3.pairs(d.data));
 
-          function actualBigger(d) {
-            const diff0 = d[0].actual - d[0].target,
-                  diff1 = d[1].actual - d[1].target,
-                  diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
+          // Enter + update
+          section.enter().append("polygon")
+              .attr("class", ".section")
+            .merge(section)
+              .call(drawSection);
 
-            return diff > 0;
+          // Exit
+          section.exit().remove();
+
+          function drawSection(selection) {
+            selection
+                .attr("points", function(d) {
+                  return xScale(d[0].date) + "," + yScale(d[0].actual) + " " +
+                         xScale(d[0].date) + "," + yScale(d[0].target) + " " +
+                         xScale(d[1].date) + "," + yScale(d[1].target) + " " +
+                         xScale(d[1].date) + "," + yScale(d[1].actual);
+                })
+                .style("fill", color)
+                .style("fill-opacity", d => actualBigger(d) ? 0.1 : 0.5);
+
+            function actualBigger(d) {
+              const diff0 = d[0].actual - d[0].target,
+                    diff1 = d[1].actual - d[1].target,
+                    diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
+
+              return diff > 0;
+            }
           }
         }
       }
+    }
+
+    function drawAxes() {
+      // Axes
+      const xAxis = d3.axisBottom(xScale)
+          .ticks(d3.timeMonth.every(1));
+      const enrolledAxis = d3.axisRight(enrolledScale);
+      const sitesAxis = d3.axisLeft(sitesScale);
+
+      // Get group for axes
+      const axes = svg.select(".axes");
+
+      // Draw x axis
+      const gX = axes.selectAll(".xAxis")
+          .data([0]);
+
+      // Enter + upate
+      gX.enter().append("g")
+          .attr("class", "xAxis")
+        .merge(gX)
+          .attr("transform", "translate(0," + innerHeight() + ")")
+          .call(xAxis);
+
+      // Draw enrolled axis
+      const gEnrolled = axes.selectAll(".enrolledAxis")
+          .data([0]);
+
+      // Enter + upate
+      gEnrolled.enter().append("g")
+          .attr("class", "enrolledAxis")
+        .merge(gEnrolled)
+          .attr("transform", "translate(" + innerWidth() + ",0)")
+          .call(enrolledAxis);
+
+      // Draw sites axis
+      const gSites = axes.selectAll(".sitesAxis")
+          .data([0]);
+
+      // Enter + upate
+      gSites.enter().append("g")
+          .attr("class", "sitesAxis")
+        .merge(gSites)
+          .call(sitesAxis);
     }
   }
 
