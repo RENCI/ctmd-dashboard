@@ -79,7 +79,7 @@ export default function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      const groups = ["chart", "axes"];
+      const groups = ["legend", "chart", "axes"];
 
       g.selectAll("g")
           .data(groups)
@@ -138,6 +138,7 @@ export default function() {
 
     drawData();
     drawAxes();
+    drawLegend();
 
     function drawData() {
       // Bind time series data
@@ -311,6 +312,53 @@ export default function() {
           .attr("dy", ".8em")
         .merge(labelSites)
           .attr("transform", "translate(" + (-margin.left) +"," + innerHeight() / 2 + ")rotate(-90)");
+    }
+
+    function drawLegend() {
+      const entries = [
+        "Actual enrolled",
+        "Target enrolled",
+        "Actual sites",
+        "Projected sites"
+      ];
+
+      const s = 20;
+      const w = 35;
+
+      const yScale = d3.scaleOrdinal()
+          .domain(entries)
+          .range([s * 3, s * 4, 0, s, ]);
+
+      const colorScale = d3.scaleOrdinal()
+          .domain(entries)
+          .range([enrolledColor, enrolledColor, sitesColor, sitesColor]);
+
+      const dashScale = d3.scaleOrdinal()
+          .domain(entries)
+          .range(["", "5 5", "", "5 5"]);
+
+      // Bind data
+      const entry = svg.select(".legend")
+          .attr("transform", "translate(30, 0)")
+        .selectAll(".entry")
+          .data(entries);
+
+      // Enter
+      const entryEnter = entry.enter().append("g")
+          .attr("class", "entry")
+          .attr("transform", d => "translate(0," + yScale(d) + ")");
+
+      entryEnter.append("line")
+          .attr("x2", w)
+          .style("stroke", d => colorScale(d))
+          .style("stroke-width", 2)
+          .style("stroke-dasharray", d => dashScale(d));
+
+      entryEnter.append("text")
+          .text(d => d)
+          .attr("x", w)
+          .attr("dx", ".5em")
+          .style("dominant-baseline", "middle");
     }
   }
 
