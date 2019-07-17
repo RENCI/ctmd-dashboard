@@ -231,31 +231,26 @@ export default function() {
 
           // Enter + update
           section.enter().append("polygon")
-              .attr("class", ".section")
+              .attr("class", "section")
             .merge(section)
-              .call(drawSection);
+              .attr("points", d => {
+                return xScale(d[0].date) + "," + yScale(d[0].actual) + " " +
+                       xScale(d[0].date) + "," + yScale(d[0].target) + " " +
+                       xScale(d[1].date) + "," + yScale(d[1].target) + " " +
+                       xScale(d[1].date) + "," + yScale(d[1].actual);
+              })
+              .style("fill", color)
+              .style("fill-opacity", d => actualBigger(d) ? 0.1 : 0.5);
 
           // Exit
           section.exit().remove();
 
-          function drawSection(selection) {
-            selection
-                .attr("points", function(d) {
-                  return xScale(d[0].date) + "," + yScale(d[0].actual) + " " +
-                         xScale(d[0].date) + "," + yScale(d[0].target) + " " +
-                         xScale(d[1].date) + "," + yScale(d[1].target) + " " +
-                         xScale(d[1].date) + "," + yScale(d[1].actual);
-                })
-                .style("fill", color)
-                .style("fill-opacity", d => actualBigger(d) ? 0.1 : 0.5);
+          function actualBigger(d) {
+            const diff0 = d[0].actual - d[0].target,
+                  diff1 = d[1].actual - d[1].target,
+                  diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
 
-            function actualBigger(d) {
-              const diff0 = d[0].actual - d[0].target,
-                    diff1 = d[1].actual - d[1].target,
-                    diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
-
-              return diff > 0;
-            }
+            return diff > 0;
           }
         }
       }
