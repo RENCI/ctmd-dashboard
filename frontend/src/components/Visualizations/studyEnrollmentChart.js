@@ -10,9 +10,11 @@ export default function() {
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
-      study = null,
-      sites = [],
+//      study = null,
+//      sites = [],
       enrollment = null,
+      enrolled = [],
+      sites = [],
 
       // Keys
       dateKey = "CE01-120",
@@ -30,17 +32,43 @@ export default function() {
 
       // Tooltip
       tip = d3Tip()
-          //.attr("class", "d3-tip")
+          .attr("class", "d3-tip")
           .style("line-height", 1)
-          .style("font-weight", "bold")
-          .style("font-size", "small")
+          //.style("font-weight", "bold")
+          //.style("font-size", "small")
           .style("padding", "12px")
-          .style("background", "rgba(0, 0, 0, 0.8)")
-          .style("color", "#fff")
-          .style("border-radius", "2px")
+          .style("background", "rgba(255, 255, 255)")
+          //.style("color", "#fff")
+          .style("border", "1px solid #999")
+          .style("border-radius", "5px")
           .style("pointer-events", "none")
-          .html(d => {
-            console.log(d);
+          .offset([-10, 0])
+          .html(i => {
+            const dateFormat = d3.timeFormat("%B, %Y");
+
+            return "<div style='font-weight: bold; margin-bottom: 10px;'>" + dateFormat(enrolled[i].date) + "</div>" +
+                    "<div style='padding-left: 5px; margin-bottom: 10px; border-left: 2px solid " + sitesColor + ";'>" +
+                      "<div style='font-weight: bold;'>Sites</div>" +
+                      "<div style='padding-left: 10px'>" +
+                        valueString(sites, "actual") + "<br>" +
+                        valueString(sites, "target") +
+                      "</div>" +
+                    "</div>" +
+                    "<div style='padding-left: 5px; border-left: 2px solid " + enrolledColor + ";'>" +
+                      "<div style='font-weight: bold;'>Enrolled</div>" +
+                      "<div style='padding-left: 10px'>" +
+                        valueString(enrolled, "actual") + "<br>" +
+                        valueString(enrolled, "target") +
+                      "</div>" +
+                    "</div>";
+
+              function valueString(type, key) {
+                const v1 = type[i][key],
+                      v2 = type[i + 1][key];
+
+                return (key === "actual" ? "Actual: " : "Target: ") +
+                        v1 + (v2 !== v1 ? " ⮕ " + type[i + 1][key] : "");
+              }
           }),
 
       // Event dispatcher
@@ -50,8 +78,8 @@ export default function() {
   function enrollmentChart(selection) {
     selection.each(function(d) {
       // Save data
-      study = d.study;
-      sites = d.sites;
+//      study = d.study;
+//      sites = d.sites;
       enrollment = d3.csvParse(d.enrollmentString);
 
       // Process data
@@ -79,7 +107,7 @@ export default function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      const groups = ["legend", "chart", "axes"];
+      const groups = ["background", "legend", "chart", "axes"];
 
       g.selectAll("g")
           .data(groups)
@@ -111,12 +139,13 @@ export default function() {
         .attr("height", height);
 
     // Generate data
-    const enrolled = createTimeSeries(actualEnrolledKey, targetEnrolledKey, dateKey),
-          sites = createTimeSeries(actualSitesKey, targetSitesKey, dateKey),
-          timeSeriesData = [
-            { name: "sites", data: sites },
-            { name: "enrolled", data: enrolled }
-          ];
+    enrolled = createTimeSeries(actualEnrolledKey, targetEnrolledKey, dateKey);
+    sites = createTimeSeries(actualSitesKey, targetSitesKey, dateKey);
+
+    const timeSeriesData = [
+      { name: "sites", data: sites },
+      { name: "enrolled", data: enrolled }
+    ];
 
     // Scales
     const xScale = d3.scaleTime()
@@ -137,6 +166,7 @@ export default function() {
         .range([innerHeight(), 0]);
 
     drawData();
+    drawBackground();
     drawAxes();
     drawLegend();
 
@@ -229,6 +259,49 @@ export default function() {
           }
         }
       }
+    }
+
+    function drawBackground() {
+      // Bind data for rectangles
+      const rects = svg.select(".background").selectAll(".backgroundRect")
+          .data(d3.pairs(enrolled.map(d => d.date)));
+
+      // Enter + update
+      rects.enter().append("rect")
+          .attr("class", "backgroundRect")
+          .style("fill", "none")
+          .style("pointer-events", "all")
+          .on("mouseover", function(d, i) {
+            tip.show(i, this);
+            d3.select(this).style("fill", "#fcfcfc");
+          })
+          .on("mouseout",  function(d, i) {
+            tip.hide();
+            d3.select(this).style("fill", "none");
+          })
+        .merge(rects)
+          .attr("x", d => xScale(d[0]))
+          .attr("width", d => xScale(d[1]) - xScale(d[0]))
+          .attr("height", innerHeight());
+
+      // Exit
+      rects.exit().remove();
+
+      // Bind data for lines
+      const lines = svg.select(".background").selectAll(".backgroundLine")
+          .data(enrolled.map(d => d.date));
+
+      // Enter + update
+      lines.enter().append("line")
+          .attr("class", "backgroundLine")
+          .style("stroke", "#eee")
+        .merge(lines)
+          .attr("x1", d => xScale(d))
+          .attr("y1", innerHeight())
+          .attr("x2", d => xScale(d));
+
+      // Exit
+      lines.exit().remove();
     }
 
     function drawAxes() {
