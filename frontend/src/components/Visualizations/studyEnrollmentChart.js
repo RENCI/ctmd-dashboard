@@ -172,7 +172,9 @@ export default function() {
 
     function drawData() {
       // Bind time series data
-      const timeSeries = svg.select(".chart").selectAll(".timeSeries")
+      const timeSeries = svg.select(".chart")
+          .style("pointer-events", "none")
+        .selectAll(".timeSeries")
           .data(timeSeriesData);
 
       // Enter
@@ -290,6 +292,7 @@ export default function() {
       lines.enter().append("line")
           .attr("class", "backgroundLine")
           .style("stroke", "#eee")
+          .style("pointer-events", "none")
         .merge(lines)
           .attr("x1", d => xScale(d))
           .attr("y1", innerHeight())
@@ -307,7 +310,8 @@ export default function() {
       const sitesAxis = d3.axisLeft(sitesScale);
 
       // Get group for axes
-      const axes = svg.select(".axes");
+      const axes = svg.select(".axes")
+          .style("pointer-events", "none");
 
       // Draw x axis
       const gX = axes.selectAll(".xAxis")
@@ -414,6 +418,7 @@ export default function() {
       // Bind data
       const entry = svg.select(".legend")
           .attr("transform", "translate(30, 0)")
+          .style("pointer-events", "none")
         .selectAll(".entry")
           .data(entries);
 
