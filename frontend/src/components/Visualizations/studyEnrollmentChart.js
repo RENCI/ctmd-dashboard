@@ -320,6 +320,12 @@ export default function() {
           .attr("transform", "translate(0," + innerHeight() + ")")
           .call(xAxis);
 
+      // Set year format
+      axes.select(".xAxis").selectAll(".tick text")
+          .style("font-weight", d => {
+            return d.getMonth() === 0 ? "bold" : null;
+          });
+
       // Draw enrolled axis
       const gEnrolled = axes.selectAll(".enrolledAxis")
           .data([0]);
