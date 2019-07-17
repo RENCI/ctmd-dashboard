@@ -155,51 +155,41 @@ export default function() {
 
     function drawTimeSeries(d) {
       const yScale = d.name === "enrolled" ? enrolledScale : sitesScale;
-      const color1 = d.name === "enrolled" ? "#2166ac" : "#1b7837";
-      const color2 = d.name === "enrolled" ? "#b2182b" : "#762a83";
+      const color = d.name === "enrolled" ? "#8da0cb" : "#66c2a5";
 
       // Draw area
       d3.select(this).select(".area")
           .call(drawArea);
 
+      // Line generator
+      const lineShape = d3.line()
+          .x(d => xScale(d.date))
+          .y(d => yScale(d.value));
+
       // Bind data for lines
       const line = d3.select(this).select(".lines").selectAll(".line")
           .data([
-            d3.pairs(d.data.map(d => ({ date: d.date, value: d.actual }))),
-            d3.pairs(d.data.map(d => ({ date: d.date, value: d.target })))
+            d.data.map(d => ({ date: d.date, value: d.actual })),
+            d.data.map(d => ({ date: d.date, value: d.target }))
           ]);
 
       // Enter
-      const lineEnter = line.enter().append("g")
+      const lineEnter = line.enter().append("path")
           .attr("class", "line");
 
       // Enter + update
       lineEnter.merge(line)
-          .each(drawLine);
+          .attr("d", lineShape)
+          .style("fill", "none")
+          .style("stroke", color)
+          .style("stroke-width", 2)
+          .style("stroke-dasharray", (d, i) => actual(i) ? null : "5 5");
 
-      function drawLine(d, i) {
-        // Bind data for line segments
-        const segment = d3.select(this).selectAll(".segment")
-            .data(d);
+      // Exit
+      line.exit().remove();
 
-        // Enter + update
-        segment.enter().append("line")
-            .attr("class", "segment")
-          .merge(segment)
-            .call(drawSegment);
-
-        // Exit
-        segment.exit().remove();
-
-        function drawSegment(selection) {
-          selection
-              .attr("x1", d => xScale(d[0].date))
-              .attr("y1", d => yScale(d[0].value))
-              .attr("x2", d => xScale(d[1].date))
-              .attr("y2", d => yScale(d[1].value))
-              .style("stroke", "#666")
-              .style("stroke-width", 2);
-        }
+      function actual(d, i) {
+        return i === 0;
       }
 
       function drawArea(selection) {
@@ -224,14 +214,16 @@ export default function() {
                        xScale(d[1].date) + "," + yScale(d[1].target) + " " +
                        xScale(d[1].date) + "," + yScale(d[1].actual);
               })
-              .style("fill", d => {
-                  const diff0 = d[0].actual - d[0].target,
-                        diff1 = d[1].actual - d[1].target,
-                        diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
+              .style("fill", color)
+              .style("fill-opacity", d => actualBigger(d) ? 0.1 : 0.5);
 
-                  return diff > 0 ? color1 : color2;
-              })
-              .style("fill-opacity", 0.5);
+          function actualBigger(d) {
+            const diff0 = d[0].actual - d[0].target,
+                  diff1 = d[1].actual - d[1].target,
+                  diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
+
+            return diff > 0;
+          }
         }
       }
     }
