@@ -3,7 +3,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  let margin = { top: 10, left: 30, bottom: 20, right: 30 },
+  let margin = { top: 10, left: 40, bottom: 20, right: 40 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -21,8 +21,9 @@ export default function() {
       actualSitesKey = "Actual Sites",
       targetSitesKey = "Revised Projected Sites",
 
-      // Scales
-      colors = d3.schemeCategory10,
+      // Colors
+      enrolledColor = "#8da0cb",
+      sitesColor = "#66c2a5",
 
       // Start with empty selection
       svg = d3.select(),
@@ -159,7 +160,7 @@ export default function() {
 
       function drawTimeSeries(d) {
         const yScale = d.name === "enrolled" ? enrolledScale : sitesScale;
-        const color = d.name === "enrolled" ? "#8da0cb" : "#66c2a5";
+        const color = d.name === "enrolled" ? enrolledColor : sitesColor;
 
         // Draw area
         d3.select(this).select(".area")
@@ -261,6 +262,26 @@ export default function() {
           .attr("transform", "translate(" + innerWidth() + ",0)")
           .call(enrolledAxis);
 
+      // Draw enrolled label
+      const labelEnrolled = axes.selectAll(".labelEnrolled")
+          .data([0]);
+
+      // Enter + update
+      labelEnrolled.enter().append("text")
+          .text("Patients enrolled")
+          .attr("class", "labelEnrolled")
+          .style("text-anchor", "middle")
+          .attr("dy", "-.2em")
+        .merge(labelEnrolled)
+          .attr("transform", "translate(" + (innerWidth() + margin.right) +"," + innerHeight() / 2 + ")rotate(-90)");
+
+      // Set tick color
+      axes.select(".enrolledAxis").selectAll(".tick line")
+          .style("stroke", enrolledColor);
+
+      axes.select(".enrolledAxis").select(".domain")
+          .style("stroke", enrolledColor);
+
       // Draw sites axis
       const gSites = axes.selectAll(".sitesAxis")
           .data([0]);
@@ -270,6 +291,26 @@ export default function() {
           .attr("class", "sitesAxis")
         .merge(gSites)
           .call(sitesAxis);
+
+      // Set tick color
+      axes.select(".sitesAxis").selectAll(".tick line")
+          .style("stroke", sitesColor);
+
+      axes.select(".sitesAxis").select(".domain")
+          .style("stroke", sitesColor);
+
+      // Draw sites label
+      const labelSites = axes.selectAll(".labelSites")
+          .data([0]);
+
+      // Enter + update
+      labelSites.enter().append("text")
+          .text("Sites")
+          .attr("class", "labelSites")
+          .style("text-anchor", "middle")
+          .attr("dy", ".8em")
+        .merge(labelSites)
+          .attr("transform", "translate(" + (-margin.left) +"," + innerHeight() / 2 + ")rotate(-90)");
     }
   }
 
@@ -284,12 +325,6 @@ export default function() {
   enrollmentChart.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    return enrollmentChart;
-  };
-
-  enrollmentChart.colors = function(_) {
-    if (!arguments.length) return colors;
-    colors = _;
     return enrollmentChart;
   };
 
