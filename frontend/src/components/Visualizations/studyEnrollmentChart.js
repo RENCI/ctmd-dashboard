@@ -227,19 +227,76 @@ export default function() {
         line.exit().remove();
 
         function drawArea(selection) {
+          const data = selection.data()[0].data;
+
+          // Create regions
+          const regions = [];
+          let region = null;
+          let currentSign = 0;
+
+          data.forEach((d, i, a) => {
+            const sign = Math.sign(d.actual - d.target);
+
+            if (sign !== 0 && currentSign === 0) {
+              // Start new region
+              region = [
+                { x: xScale(a[i - 1].date), y1: yScale(a[i - 1].actual), y2: yScale(a[i - 1].target) },
+                { x: xScale(d.date), y1: yScale(d.actual), y2: yScale(d.target) },
+              ];
+              regions.push(region);
+            }
+            else if (sign === currentSign && currentSign !== 0) {
+              // Continue region
+              region.push({ x: xScale(d.date), y1: yScale(d.actual), y2: yScale(d.target) });
+            }
+            else if (sign === 0 && currentSign !== 0) {
+              // Continue region
+              region.push({ x: xScale(d.date), y1: yScale(d.actual), y2: yScale(d.target) });
+            }
+            else if (sign !== currentSign) {
+              // Compute intersection
+              const ax = xScale(a[i - 1].date),
+                    ay1 = yScale(a[i - 1].actual),
+                    ay2 = yScale(a[i - 1].target),
+                    bx = xScale(d.date),
+                    by1 = yScale(d.actual),
+                    by2 = yScale(d.target);
+
+              const p = lineSegmentIntersection([ax, ay1], [bx, by1], [ax, ay2], [bx, by2]);
+
+              // Finish previous region
+              region.push({ x: p[0], y1: p[1], y2: p[1] });
+
+              // Start new region
+              region = [
+                { x: p[0], y1: p[1], y2: p[1] },
+                { x: xScale(d.date), y1: yScale(d.actual), y2: yScale(d.target) },
+              ];
+              regions.push(region);
+            }
+
+            currentSign = sign;
+          });
+
           // Bind data
           const section = selection.selectAll(".section")
-              .data(d => d3.pairs(d.data));
+              .data(regions);
 
           // Enter + update
           section.enter().append("polygon")
               .attr("class", "section")
             .merge(section)
               .attr("points", d => {
-                return xScale(d[0].date) + "," + yScale(d[0].actual) + " " +
-                       xScale(d[0].date) + "," + yScale(d[0].target) + " " +
-                       xScale(d[1].date) + "," + yScale(d[1].target) + " " +
-                       xScale(d[1].date) + "," + yScale(d[1].actual);
+                let s = "";
+
+                d.forEach(d => {
+                  s += d.x + "," + d.y1 + " ";
+                });
+                d.reverse().forEach(d => {
+                  s += d.x + "," + d.y2 + " ";
+                });
+
+                return s;
               })
               .style("fill", color)
               .style("fill-opacity", d => actualBigger(d) ? 0.1 : 0.5);
@@ -248,11 +305,41 @@ export default function() {
           section.exit().remove();
 
           function actualBigger(d) {
-            const diff0 = d[0].actual - d[0].target,
-                  diff1 = d[1].actual - d[1].target,
-                  diff = Math.abs(diff0) > Math.abs(diff1) ? diff0 : diff1;
+            // See if the biggest difference between actual and target is positive or negative
+            return d.reduce((p, c) => {
+              const diff = c.y1 - c.y2;
+              return Math.abs(diff) > Math.abs(p) ? diff : p;
+            }, 0) < 0;
+          }
 
-            return diff > 0;
+          // Return intersection point of two line segments
+          // Based on technique described here: http://paulbourke.net/geometry/pointlineplane/
+          function lineSegmentIntersection(p1, p2, p3, p4) {
+            // Check that none of the lines are of length 0
+          	if ((p1[0] === p2[0] && p1[1] === p2[1]) || (p3[0] === p4[0] && p3[1] === p4[1])) {
+          		return false;
+          	}
+
+          	const denominator = ((p4[1] - p3[1]) * (p2[0] - p1[0]) - (p4[0] - p3[0]) * (p2[1] - p1[1]));
+
+            // Lines are parallel
+          	if (denominator === 0) {
+          		return null;
+          	}
+
+          	const ua = ((p4[0] - p3[0]) * (p1[1] - p3[1]) - (p4[1] - p3[1]) * (p1[0] - p3[0])) / denominator,
+          	      ub = ((p2[0] - p1[0]) * (p1[1] - p3[1]) - (p2[1] - p1[1]) * (p1[0] - p3[0])) / denominator;
+
+            // Is the intersection along the segments?
+          	if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+          		return null;
+          	}
+
+            // Return the x and y coordinates of the intersection
+          	const x = p1[0] + ua * (p2[0] - p1[0]),
+          	      y = p1[1] + ua * (p2[1] - p1[1]);
+
+          	return [x, y];
           }
         }
       }
