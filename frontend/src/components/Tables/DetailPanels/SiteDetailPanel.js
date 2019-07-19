@@ -80,7 +80,7 @@ export const SiteDetailPanel = ({
     }
 
     return (
-        <DetailPanel heading={ siteName } subheading="Metrics Report">
+        <DetailPanel heading={ siteName } subheading="Coordinating Center Metrics Report">
 
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 }>

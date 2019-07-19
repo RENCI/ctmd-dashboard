@@ -64,8 +64,8 @@ export const StudyReportPage = props => {
                         <Grid item xs={ 12 }>
                             <Card>
                                 <CardHeader
-                                    title="Aggregate Sites Report"
-                                    subheader="According to the Ten Metrics"
+                                    title="All-Sites Report"
+                                    subheader="According to the Coordinating Center Metrics"
                                 />
                                 <CardContent>
                                     { sites ? <SitesReport sites={ sites } /> : <CircularLoader /> }
