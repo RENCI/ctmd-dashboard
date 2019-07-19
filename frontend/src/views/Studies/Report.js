@@ -9,6 +9,8 @@ import { SitesTable } from '../../components/Tables'
 import { isSiteActive } from '../../utils/sites'
 import { SitesActivationPieChart } from '../../components/Charts'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
+import { CollapsibleCard } from '../../components/CollapsibleCard'
+import { SitesReport } from './SitesReport'
 
 export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
@@ -59,6 +61,17 @@ export const StudyReportPage = props => {
             {
                 study && sites ? (
                     <Grid container spacing={ 4 }>
+                        <Grid item xs={ 12 }>
+                            <Card>
+                                <CardHeader
+                                    title="Aggregate Sites Report"
+                                    subheader="According to the Ten Metrics"
+                                />
+                                <CardContent>
+                                    { sites ? <SitesReport sites={ sites } /> : <CircularLoader /> }
+                                </CardContent>
+                            </Card>
+                        </Grid>
                         <Grid item xs={ 12 }>
                             <SitesTable sites={ sites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
                         </Grid>

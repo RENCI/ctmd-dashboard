@@ -16,23 +16,7 @@ import {
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../../components/Typography'
 import { Star as MetricsIcon } from '@material-ui/icons'
 import { DetailPanel } from './DetailPanel'
-
-const useBulletStyles = makeStyles(theme => ({
-    bullet: {
-        fontSize: 24,
-        color: theme.palette.primary.light,
-        opacity: 0.25,
-    }
-}))
-
-const Bullet = props => {
-    const classes = useBulletStyles()
-    return (
-        <ListItemIcon>
-            <MetricsIcon className={ classes.bullet } />
-        </ListItemIcon>
-    )
-}
+import { StarBullet } from '../../Bullets' 
 
 const useStyles = makeStyles(theme => ({
     panel: {
@@ -102,19 +86,24 @@ export const SiteDetailPanel = ({
                 <Grid item xs={ 12 } md={ 6 }>
                     <List>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Contract approval/execution cycle time:" secondary={ dayCount(dateContractSent, dateContractExecution) } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Contract approval/execution cycle time:" secondary={ dayCount(dateContractSent, dateContractExecution) } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="IRB approval cycle time (Full Committee Review):" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="IRB approval cycle time (Full Committee Review):" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv || 'N/A' } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv || 'N/A' } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv || 'N/A' } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv || 'N/A' } />
                         </ListItem>
                     </List>
                 </Grid>
@@ -122,19 +111,24 @@ export const SiteDetailPanel = ({
                 <Grid item xs={ 12 } md={ 6 }>
                     <List>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Randomized patients / Consented patients:" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount) } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Randomized patients / Consented patients:" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount) } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Actual vs expected randomized patient ratio:" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Actual vs expected randomized patient ratio:" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Major protocol deviations / randomized patient:" secondary={ displayRatio(protocolDeviationsCount, patientsEnrolledCount) } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Major protocol deviations / randomized patient:" secondary={ displayRatio(protocolDeviationsCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
-                            <Bullet /><ListItemText primary="Queries per eCRF page:" secondary={ queriesCount || 'N/A' } />
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Queries per eCRF page:" secondary={ queriesCount || 'N/A' } />
                         </ListItem>
                     </List>
                 </Grid>
