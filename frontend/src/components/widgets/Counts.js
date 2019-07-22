@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
@@ -44,10 +44,19 @@ const useStyles = makeStyles(theme => ({
 
 export const Counts = props => {
     const [store, ] = useContext(StoreContext)
+    const [thisYear, setThisYear] = useState()
+    const [FYStartDate, setFYStartDate] = useState()
+    const [FYEndDate, setFYEndDate] = useState()
     const classes = useStyles()
     const theme = useTheme()
     const today = new Date()
     const todayYYYYMM = `${ today.getFullYear() }-${ ('0' + (today.getMonth() + 1)).slice(-2) }`
+    
+    useEffect(() => {
+        setFYStartDate(`${ today.getMonth() > 5 ? today.getFullYear() : today.getFullYear() - 1 }-07-01`)
+        setFYEndDate(`${ today.getMonth() > 5 ? today.getFullYear() + 1 : today.getFullYear() }-06-30`)
+    }, [store.proposals])
+
     return (
         <Widget title="Submissions at a Glance">
             <Grid container spacing={ theme.spacing(4) }>
@@ -61,7 +70,8 @@ export const Counts = props => {
                         {
                             store.proposals
                             ? store.proposals.filter(
-                                ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 4) === todayYYYYMM.substring(0, 4)
+                                // ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 4) === todayYYYYMM.substring(0, 4)
+                                ({ dateSubmitted }) => dateSubmitted && FYStartDate < dateSubmitted && dateSubmitted < FYEndDate
                             ).length
                             : <CircularLoader />
                         }
