@@ -6,9 +6,9 @@ import ScrollToTop from './utils/ScrollToTop'
 import { MenuTray } from './components/Menus/MainMenu'
 import { HomePage } from './views/Index'
 import { SettingsPage } from './views/Settings'
-import { ProposalInspectorPage } from './views/ProposalInspector'
 import {
     ProposalsListPage,
+    ProposalReportPage,
     ProposalsByOrganization,
     ProposalsByTic,
     ProposalsByStatus,
@@ -59,7 +59,7 @@ const Dashboard = props => {
                 <ScrollToTop>
                     <Switch>
                         <Route exact path="/settings" component={ SettingsPage }/>
-                        <Route exact path="/proposals/:id(\d+)" component={ ProposalInspectorPage }/>
+                        <Route exact path="/proposals/:id(\d+)" component={ ProposalReportPage }/>
                         <Route exact path="/proposals" component={ ProposalsListPage }/>
                         <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
                         <Route path="/proposals/tic" component={ ProposalsByTic }/>

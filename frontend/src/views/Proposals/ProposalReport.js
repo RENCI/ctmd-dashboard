@@ -1,9 +1,9 @@
 import React from 'react'
 import { useTheme } from '@material-ui/styles'
-import { useProposal } from '../hooks'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Title, Subheading, Paragraph } from '../components/Typography'
-import { CircularLoader } from '../components/Progress/Progress'
+import { useProposal } from '../../hooks'
+import { Title, Subheading, Paragraph } from '../../components/Typography'
+import { CircularLoader } from '../../components/Progress/Progress'
 
 const Detail = props => {
     const { name, info } = props
@@ -16,7 +16,7 @@ const Detail = props => {
     )
 }
 
-export const ProposalInspectorPage = props => {
+export const ProposalReportPage = props => {
     const proposal = useProposal(props.match.params.id)
     const theme = useTheme()
     
