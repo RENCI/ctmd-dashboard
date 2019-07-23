@@ -22,6 +22,10 @@
 - [Tear it Down](#tear-it-down)
 - [References](#references)
 
+## Server Setup
+
+### Install Docker
+
 Follow instructions in Docker docs for your OS. Here, we'll outline the steps for installing Docker on [CentOS](https://docs.docker.com/install/linux/docker-ce/centos/).
 
 1. Ensure necessary utils are installed.
