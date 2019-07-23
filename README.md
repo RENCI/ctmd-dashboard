@@ -287,8 +287,7 @@ If this is not done, Nginx will throw a `500 Internal Server Error` at your brow
 
 ##### OK, Let's Go
 
-Build and start all three services using the production Docker Compose file, `docker-compose.prod.yml`.
-In production, we almost always need to rebuild the images when we start the services and ru them in detached mode.
+Build and start all three services using the production Docker Compose file, `docker-compose.prod.yml`, which is specified by the `-f` flag. In production, we commonly need to rebuild the images when we start the services and ru them in detached mode.
 
 ```bash
 $ docker-compose -f docker-compose.prod.yml up --build -d
@@ -303,19 +302,25 @@ This serves the frontend to port `80` on the host, and is thus reachable simply 
 It's nice to leave your session attached to keep an eye on errors throughout the development process, but of course you'll want to rebuild and/or detach in some cases:
 
 ```bash
-$ docker-compose up --build -d
+$ docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
 Only start a couple services, you may specify them explicitly:
 
 ```bash
-$ docker-compose up api
+$ docker-compose -f docker-compose.prod.yml up api
 ```
 
 The above command starts the development `api` and its dependency, the `db` service (indicated with the `depends_on` tag in the `docker-compose.yml` file. Similarly, one can also just build specific images and start containers based on them. The following command behaves just like the previous one, except that it rebuilds the images first.
 
 ```bash
-$ docker-compose up --build api
+$ docker-compose -f docker-compose.prod.yml up --build api
+```
+
+If development on only one of the services has occurred, say the front-end f the application, simply rebuild and redeploy that service. There's no need to stop everything; Docker Compose handles everything:
+
+```bash
+$ docker-compose -f docker-compose.prod.yml up --build -d frontend
 ```
 
 #### Tinkering in a Running Container
