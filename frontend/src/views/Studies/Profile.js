@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export const UtahRecommendationPage = props => {
+export const StudyProfilePage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
     const classes = useStyles()
@@ -39,7 +39,7 @@ export const UtahRecommendationPage = props => {
     return (
         <div>
 
-            <Title>Utah Recommendation</Title>
+            <Title>Study Profile</Title>
             
             {
                 study ? (

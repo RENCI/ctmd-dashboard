@@ -8,8 +8,8 @@ import {
     DescriptionOutlined as ProposalOpenIcon,
     Assessment as ReportIcon,
     AssessmentOutlined as ReportOpenIcon,
+    Info as ProfileIcon,
 } from '@material-ui/icons'
-import { UtahIcon } from '../Icons/Utah'
 import { SettingsContext, StoreContext } from '../../contexts'
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'

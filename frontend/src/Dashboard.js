@@ -17,7 +17,7 @@ import {
     ProposalsByApprovedServices,
     ProposalsByRequestedServices
 } from './views/Proposals'
-import { StudiesListPage, StudyReportPage, UtahRecommendationPage } from './views/Studies'
+import { StudiesListPage, StudyReportPage, StudyProfilePage } from './views/Studies'
 import { SitesListPage } from './views/Sites'
 import { CollaborationsPage } from './views/Collaborations'
 
@@ -70,7 +70,7 @@ const Dashboard = props => {
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route exact path="/studies" component={ StudiesListPage }/>
-                        <Route path="/studies/:proposalID/utah" component={ UtahRecommendationPage }/>
+                        <Route path="/studies/:proposalID/profile" component={ StudyProfilePage }/>
                         <Route path="/studies/:proposalID/report" component={ StudyReportPage }/>
                         <Route path="/sites" component={ SitesListPage }/>
                         <Route path="/" component={ HomePage }/>

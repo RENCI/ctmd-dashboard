@@ -12,11 +12,11 @@ import {
     AttachMoney as BudgetIcon,
     LocalLaundryService as ServicesIcon,
     CheckCircle as ApprovedIcon,
+    Info as ProfileIcon
 } from '@material-ui/icons'
 import { SettingsContext, StoreContext } from '../../../contexts'
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../../components/Typography'
 import { NavLink } from 'react-router-dom'
-import { UtahIcon } from '../../Icons/Utah'
 import { SitesActivationPieChart } from '../../../components/Charts'
 import { CircularLoader } from '../../../components/Progress/Progress'
 import {
@@ -102,9 +102,9 @@ export const StudyDetailPanel = ({ proposalID, shortTitle }) => {
                             </ul>
                         </Grid>
                         <Grid item xs={ 12 } style={{ textAlign: 'right' }}>
-                            <Tooltip title="Utah Recommendation" placement="bottom">
-                                <IconButton aria-label="View Utah Recommendation" size="large" component={ NavLink } to={ `/studies/${ proposalID }/utah` }>
-                                    <UtahIcon />
+                            <Tooltip title="Study Profile" placement="bottom">
+                                <IconButton aria-label="View Study Profile" size="large" component={ NavLink } to={ `/studies/${ proposalID }/profile` }>
+                                    <ProfileIcon />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Detailed Study Report" placement="bottom">
