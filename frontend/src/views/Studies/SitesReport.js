@@ -13,18 +13,6 @@ export const SitesReport = ({ sites }) => {
     const [protocolDeviations, setProtocolDeviations] = useState()
     const [queries, setQueries] = useState()
 
-    // useEffect(() => {
-    //     setFpfv()
-    //     setContractCycleTime()
-    //     setIrbCycleTime()
-    //     setLpfv()
-    //     setRandomizedPatientRatio()
-    //     setExpectedPatientRatio()
-    //     setWithdrawnPatientRatio()
-    //     setProtocolDeviations()
-    //     setQueries()
-    // }, [sites])
-
     return (
         <Grid container>
             <Grid item xs={ 12 } md={ 6 }>

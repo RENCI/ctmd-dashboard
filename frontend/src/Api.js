@@ -47,7 +47,7 @@ endpoints = {
 
 endpoints = {
     ...endpoints,
-    studyProfile: apiRoot + 'study-profile/profile',
+    studyProfile: proposalId => apiRoot + `study-profile/${ proposalId }`,
 }
 
 endpoints = {
