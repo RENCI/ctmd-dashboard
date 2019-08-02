@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
+import axios from 'axios'
+import api from '../../Api'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
@@ -15,7 +17,7 @@ import { formatDate } from '../../utils'
 
 Array.prototype.chunk = function(size) {
     var chunks = []
-    for (var i = 0; i < this.length; i+= size) {
+    for (var i = 0; i < this.length; i += size) {
         chunks.push(this.slice(i,i + size))
     }
     return chunks
@@ -125,12 +127,19 @@ export const StudyReportPage = props => {
     const theme = useTheme()
 
     useEffect(() => {
+        const retrieveSites = async (proposalID) => {
+            await axios.get(api.studyProfile(proposalID))
+                .then(response => {
+                    setSites(response.data['Sites'])
+                })
+                .catch(error => console.error(error))
+        }
         if (store.proposals) {
+            console.log(store.proposals)
             try {
                 const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
-                const studySites = store.sites.filter(site => site.proposalID == props.match.params.proposalID)
                 setStudy(studyFromRoute)
-                setSites(studySites)
+                retrieveSites(studyFromRoute.proposalID)
             } catch (error) {
                 console.log(error)
             }
