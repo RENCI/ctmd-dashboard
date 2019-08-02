@@ -103,7 +103,7 @@ export const StudyDetailPanel = ({ proposalID, shortTitle }) => {
                         </Grid>
                         <Grid item xs={ 12 } style={{ textAlign: 'right' }}>
                             <Tooltip title="Study Profile" placement="bottom">
-                                <IconButton aria-label="View Study Profile" size="large" component={ NavLink } to={ `/studies/${ proposalID }/profile` }>
+                                <IconButton aria-label="View Study Profile" size="large" component={ NavLink } to={ `/studies/${ proposalID }` }>
                                     <ProfileIcon />
                                 </IconButton>
                             </Tooltip>
