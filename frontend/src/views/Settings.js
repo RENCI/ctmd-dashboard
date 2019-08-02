@@ -4,7 +4,7 @@ import {
     Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
     Select, OutlinedInput, MenuItem,
 } from '@material-ui/core'
-import DangerZone from '../components/Forms/DangerZone'
+import { DangerZone } from '../components/Forms'
 import { SettingsContext } from '../contexts/SettingsContext'
 import { CollapsibleCard } from '../components/CollapsibleCard'
 
