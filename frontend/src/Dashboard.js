@@ -70,7 +70,7 @@ const Dashboard = props => {
                         <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route exact path="/studies" component={ StudiesListPage }/>
-                        <Route path="/studies/:proposalID" component={ StudyProfilePage }/>
+                        <Route exact path="/studies/:proposalID" component={ StudyProfilePage }/>
                         <Route path="/studies/:proposalID/report" component={ StudyReportPage }/>
                         <Route path="/sites" component={ SitesListPage }/>
                         <Route path="/" component={ HomePage }/>
