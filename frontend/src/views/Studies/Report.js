@@ -92,25 +92,25 @@ const Milestones = ({ sites }) => {
             <CardContent>
                 <List dense>
                     <ListItem>
-                        <ListItemText primary="First IRB Approved" secondary={ firstIRBApprovedDate }></ListItemText>
+                        <ListItemText primary="First IRB Approved" secondary={ firstIRBApprovedDate } />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="First Site Activated" secondary={ firstSiteActivationDate }></ListItemText>
+                        <ListItemText primary="First Site Activated" secondary={ firstSiteActivationDate } />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="First Subject Enrolled" secondary={ firstSubjectEnrolled }></ListItemText>
+                        <ListItemText primary="First Subject Enrolled" secondary={ firstSubjectEnrolled } />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="25% Enrolled" secondary={ siteActivationPercentages[0] }></ListItemText>
+                        <ListItemText primary="25% Enrolled" secondary={ siteActivationPercentages[0] } />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="50% Enrolled" secondary={ siteActivationPercentages[1] }></ListItemText>
+                        <ListItemText primary="50% Enrolled" secondary={ siteActivationPercentages[1] } />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="75% Enrolled" secondary={ siteActivationPercentages[2] }></ListItemText>
+                        <ListItemText primary="75% Enrolled" secondary={ siteActivationPercentages[2] } />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="100% Enrolled" secondary={ siteActivationPercentages[3] }></ListItemText>
+                        <ListItemText primary="100% Enrolled" secondary={ siteActivationPercentages[3] } />
                     </ListItem>
                 </List>
             </CardContent>
