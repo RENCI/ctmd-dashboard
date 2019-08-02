@@ -5,7 +5,7 @@ import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import { Select, MenuItem, OutlinedInput } from '@material-ui/core'
 import { Title } from '../../components/Typography'
 import { SiteReport } from '../../components/Charts'
-import DropZone from '../../components/Forms/DropZone'
+import { DropZone } from '../../components/Forms'
 
 export const SiteReportPage = props => {
     const [studies, setStudies] = useState([])
