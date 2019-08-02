@@ -5,9 +5,6 @@ import { CloudUpload as UploadIcon } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
     dropzone: {
-        // backgroundColor: theme.palette.grey[200],
-        // borderRadius: theme.shape.borderRadius,
-        // padding: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
     },
@@ -42,6 +39,12 @@ export const DropZone = props => {
         if (files.length > 0) {
             console.log(`Uploading ${ files.length } files:`)
             files.forEach(file => console.log(`- ${ file.name }`))
+            const data = new FormData() 
+            data.append('file', files[0])
+            axios.post(api.studyProfileUpload, data, { })
+                .then(res => {
+                    console.log(res.statusText)
+                })
         } else {
             console.log('No files selected')
         }
