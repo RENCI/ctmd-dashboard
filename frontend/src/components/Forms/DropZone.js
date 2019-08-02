@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const DropZone = props => {
+export const DropZone = ({ proposalID }) => {
     const classes = useStyles()
     const fileInputRef = useRef()
     const [files, setFiles] = useState([])
@@ -43,7 +43,7 @@ export const DropZone = props => {
             files.forEach(file => console.log(`- ${ file.name }`))
             const data = new FormData() 
             data.append('file', files[0])
-            axios.post(api.studyProfileUpload, data, { })
+            axios.post(api.studyProfileUpload(proposalID), data, { })
                 .then(res => {
                     console.log(res.statusText)
                 })
