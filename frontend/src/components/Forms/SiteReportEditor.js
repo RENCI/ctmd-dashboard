@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 const SiteReportFormContext = React.createContext({})
 
-const SiteReportEditor = props => {
+export const SiteReportEditor = props => {
     const { readOnly } = props
     const [values, setValues] = useState({ })
     const [tabNumber, setTabNumber] = useState(0)
@@ -138,5 +138,3 @@ const SiteReportEditor = props => {
         </SiteReportFormContext.Provider>
     )
 }
-
-export default SiteReportEditor

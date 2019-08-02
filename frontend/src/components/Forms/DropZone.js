@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const DropZone = props => {
+export const DropZone = props => {
     const classes = useStyles()
     const fileInputRef = useRef()
     const [files, setFiles] = useState([])
@@ -60,5 +60,3 @@ const DropZone = props => {
         </div>
     )
 }
-
-export default DropZone

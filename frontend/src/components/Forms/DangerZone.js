@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const DangerZone = props => {
+export const DangerZone = props => {
     const classes = useStyles()
     const [backups, setBackups] = useState(['06/04/2019 04:07:30', '05/01/2019 12:52:27', '04/08/2019 13:41:06', '03/13/2019 19:56:58', '01/05/2019 19:08:05'])
 
@@ -137,5 +137,3 @@ const DangerZone = props => {
         </Grid>
     )
 }
-
-export default DangerZone
