@@ -88,7 +88,7 @@ export const StudyProfilePage = props => {
                             subheader="Note that this will replace existing study data"
                         />
                         <CardContent>
-                            <DropZone />
+                            <DropZone proposalID={ study.proposalID }/>
                         </CardContent>
                     </Card>
                 </Grid>
