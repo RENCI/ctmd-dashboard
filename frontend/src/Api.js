@@ -38,7 +38,7 @@ endpoints = {
     tics: apiRoot + 'tics',
     therapeuticAreas: apiRoot + 'therapeutic-areas',
     services: apiRoot + 'services',
-    sites: apiRoot + 'sites',
+    // sites: apiRoot + 'sites',
     studyMetrics: apiRoot + 'study-metrics',
     siteMetrics: studyName => apiRoot + `site-metrics/retrieve/${ studyName }`,
     siteMetricsTemplateDownload: apiRoot + `site-metrics/template`,
