@@ -1,12 +1,14 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import api from '../../Api'
+import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Paper, Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Paper, Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
+    Assessment as ReportIcon,
 } from '@material-ui/icons'
 import { Title } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -47,9 +49,6 @@ export const StudyProfilePage = props => {
         }
     }, [store.proposals])
 
-    useEffect(() => {
-    }, [study])
-
     return (
         <div>
 
@@ -63,6 +62,14 @@ export const StudyProfilePage = props => {
                                 <CardHeader
                                     title={ study.longTitle }
                                     subheader={ `${ study.shortTitle } (id: ${ study.proposalID })` }
+                                    action={
+                                        <Button
+                                            component={ Link } to={ `/studies/${ study.proposalID }/report` }
+                                            aria-label="View Report"
+                                        >
+                                            <ReportIcon />
+                                        </Button>
+                                    }
                                 />
                                 <CardContent>
                                     { profile && <pre>{ JSON.stringify(profile, null, 2) }</pre> }
