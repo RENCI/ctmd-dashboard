@@ -47,8 +47,8 @@ endpoints = {
 
 endpoints = {
     ...endpoints,
-    studyProfile: proposalId => apiRoot + `study-profile/${ proposalId }`,
-    studyProfileUpload: apiRoot + `study-profile`, // POST to send json file containing study profile and sites
+    studyProfile: proposalId => apiRoot + `study-profile/${ proposalId }`, // GET study profile for a given proposal id
+    studyProfileUpload: proposalID => apiRoot + `study-profile/${ proposalID }`, // POST to send json file containing study profile and sites
 }
 
 endpoints = {
