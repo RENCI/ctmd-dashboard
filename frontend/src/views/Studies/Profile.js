@@ -4,14 +4,18 @@ import api from '../../Api'
 import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Paper, Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
+import {
+    Grid, Card, CardHeader, CardContent, Button,
+} from '@material-ui/core'
 import {
     AccountBalance as InstitutionIcon,
     Assignment as TicIcon,
     Assessment as ReportIcon,
+    CloudUpload as DropZoneIcon,
 } from '@material-ui/icons'
 import { Title } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
+import { DropZone } from '../../components/Forms'
 
 const useStyles = makeStyles(theme => ({
     card: { },
@@ -48,37 +52,47 @@ export const StudyProfilePage = props => {
             retrieveProfile(thisProposal.proposalID)
         }
     }, [store.proposals])
-
+    
     return (
         <div>
 
             <Title>Study Profile</Title>
             
-            {
-                study && profile ? (
-                    <Grid container spacing={ 4 }>
-                        <Grid item xs={ 12 }>
-                            <Card>
-                                <CardHeader
-                                    title={ study.longTitle }
-                                    subheader={ `${ study.shortTitle } (id: ${ study.proposalID })` }
-                                    action={
-                                        <Button
-                                            component={ Link } to={ `/studies/${ study.proposalID }/report` }
-                                            aria-label="View Report"
-                                        >
-                                            <ReportIcon />
-                                        </Button>
-                                    }
-                                />
-                                <CardContent>
-                                    { profile && <pre>{ JSON.stringify(profile, null, 2) }</pre> }
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid>
-                ) : <CircularLoader />
-            }
+            <Grid container spacing={ 4 }>
+                <Grid item xs={ 12 }>
+                    <Card>
+                        {
+                            study && profile ? (
+                                <Fragment>
+                                    <CardHeader
+                                        title={ study.longTitle }
+                                        subheader={ `${ study.shortTitle } (id: ${ study.proposalID })` }
+                                        action={
+                                            <Button aria-label="View Report" component={ Link } to={ `/studies/${ study.proposalID }/report` }>
+                                                <ReportIcon />
+                                            </Button>
+                                        }
+                                    />
+                                    <CardContent>
+                                        { profile && <pre>{ JSON.stringify(profile, null, 2) }</pre> }
+                                    </CardContent>
+                                </Fragment>
+                            ) : <CircularLoader />
+                        }
+                    </Card>
+                </Grid>
+                <Grid item xs={ 12 }>
+                    <Card>
+                        <CardHeader
+                            title="Upload Study Profile"
+                            subheader="Note that this will replace existing study data"
+                        />
+                        <CardContent>
+                            <DropZone />
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
         </div>
     )
 }
