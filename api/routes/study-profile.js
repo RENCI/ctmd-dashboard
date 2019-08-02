@@ -6,6 +6,6 @@ const studyProfileController = require('../controllers/study-profile')
 
 router.route('/').post(studyProfileController.post)
 router.route('/').get(studyProfileController.get)
-router.route('/retrieve/:studyName').get(studyProfileController.retrieve)
+router.route('/profile').get(studyProfileController.profile)
 
 module.exports = router
