@@ -206,5 +206,5 @@ exports.profile = (req, res) => {
     var contents = fs.readFileSync(studyProfileFile)
     var jsonContent = JSON.parse(contents)
     console.log(jsonContent)
-    res.send('ok')
+    res.send(jsonContent)
 }
