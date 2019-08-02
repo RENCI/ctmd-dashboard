@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
         cb(null, 'temp')
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
+        cb(null, req.params.id + '.json')
     }
 })
 const upload = multer({ storage: storage }).array('file')
@@ -17,14 +17,19 @@ const upload = multer({ storage: storage }).array('file')
 //
 
 exports.upload = (req, res) => {
-    upload(req, res, error => {
-        if (error instanceof multer.MulterError) {
-            return res.status(500).json(error)
-        } else if (error) {
-            return res.status(500).json(error)
-        }
-        return res.status(200).send(req.file)
-    })
+    const proposalID = req.params.id
+    if (proposalID) {
+        upload(req, res, error => {
+            if (error instanceof multer.MulterError) {
+                return res.status(500).json(error)
+            } else if (error) {
+                return res.status(500).json(error)
+            }
+            return res.status(200).send(req.file)
+        })
+    } else {
+        return 'Invalid proposal ID'
+    }
 }
 
 exports.get = (req, res) => {
