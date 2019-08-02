@@ -4,7 +4,7 @@ const studyProfileController = require('../controllers/study-profile')
 
 // Routes beginning with "HOSTNAME/study-profile/..."
 
-router.route('/').post(studyProfileController.upload)
+router.route('/:id(\\d+)').post(studyProfileController.upload)
 // router.route('/').get(studyProfileController.get)
 router.route('/:id(\\d+)').get(studyProfileController.profile)
 
