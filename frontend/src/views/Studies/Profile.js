@@ -33,22 +33,22 @@ export const StudyProfilePage = props => {
     const classes = useStyles()
     
     useEffect(() => {
-        if (store.proposals) {
-            setStudy(store.proposals.find(proposal => proposal.proposalID === parseInt(props.match.params.proposalID)))
-        }
-    }, [store.proposals])
-
-    useEffect(() => {
-        const retrieveProfile = async () => {
-            await axios.get(api.studyProfile)
+        const retrieveProfile = async (proposalID) => {
+            await axios.get(api.studyProfile(proposalID))
                 .then(response => {
-                    console.log(response.data)
                     setProfile(response.data['Study Profile'])
                 })
                 .catch(error => console.error(error))
         }
-        retrieveProfile()
-    }, [])
+        if (store.proposals) {
+            const thisProposal = store.proposals.find(proposal => proposal.proposalID === parseInt(props.match.params.proposalID))
+            setStudy(thisProposal)
+            retrieveProfile(thisProposal.proposalID)
+        }
+    }, [store.proposals])
+
+    useEffect(() => {
+    }, [study])
 
     return (
         <div>
