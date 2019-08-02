@@ -201,7 +201,8 @@ exports.get = (req, res) => {
 }
 
 exports.profile = (req, res) => {
-    const studyProfileFile = __dirname + `/../temp/study_profile.json`
+    console.log(req.params)
+    const studyProfileFile = __dirname + `/../temp/${ req.params.id }.json`
     console.log(`Retriving study profile...`)
     var contents = fs.readFileSync(studyProfileFile)
     var jsonContent = JSON.parse(contents)
