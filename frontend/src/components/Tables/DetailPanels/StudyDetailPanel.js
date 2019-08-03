@@ -1,5 +1,7 @@
 import React, { Fragment, useState, useContext, useEffect } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
+import axios from 'axios'
+import api from '../../../Api'
+import { useTheme } from '@material-ui/styles'
 import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText, Chip, IconButton, Divider } from '@material-ui/core'
 import { Collapse } from '@material-ui/core'
 import {
@@ -18,7 +20,7 @@ import { SettingsContext, StoreContext } from '../../../contexts'
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../../components/Typography'
 import { NavLink } from 'react-router-dom'
 import { SitesActivationPieChart } from '../../../components/Charts'
-import { CircularLoader } from '../../../components/Progress/Progress'
+import { CircularLoader } from '../../Progress/Progress'
 import {
     Description as ProposalIcon,
     DescriptionOutlined as ProposalOpenIcon,
@@ -29,21 +31,35 @@ import { formatDate } from '../../../utils'
 import { isSiteActive } from '../../../utils/sites'
 import { DetailPanel } from './DetailPanel'
 
-const useStyles = makeStyles(theme => ({
-}))
-
 export const StudyDetailPanel = ({ proposalID, shortTitle }) => {
     const [store, ] = useContext(StoreContext)
     const [sites, setSites] = useState(null)
-    const classes = useStyles()
     const theme = useTheme()
 
+    // useEffect(() => {
+    //     if (proposalID) {
+    //         const studySites = store.sites.filter(site => site.proposalID == proposalID)
+    //         setSites(studySites)
+    //     }
+    // }, [proposalID])
+
     useEffect(() => {
-        if (proposalID) {
-            const studySites = store.sites.filter(site => site.proposalID == proposalID)
-            setSites(studySites)
+        const retrieveSites = async (proposalID) => {
+            await axios.get(api.studyProfile(proposalID))
+                .then(response => {
+                    setSites(response.data['Sites'])
+                })
+                .catch(error => console.error(error))
         }
-    }, [proposalID])
+        if (store.proposals) {
+            try {
+                const proposal = store.proposals.find(proposal => proposal.proposalID == proposalID)
+                retrieveSites(proposal.proposalID)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }, [store.proposals])
 
     const activeSitesCount = () => {
         const reducer = (count, site) => isSiteActive(site) ? count + 1 : count
@@ -59,17 +75,14 @@ export const StudyDetailPanel = ({ proposalID, shortTitle }) => {
 
     const earliestDate = property => {
         const dates = sites.filter(site => site[property] !== '')
-                           .map(site => new Date(site[property]))
+                            .map(site => new Date(site[property]))
         const reducer = (earliest, thisDate) => earliest < thisDate ? earliest : thisDate
         const minDate = dates.reduce(reducer, new Date()) 
         return minDate
     }
 
     return (
-        <DetailPanel
-            heading={ shortTitle }
-            subheading="Study Summary"
-        >
+        <DetailPanel heading={ shortTitle } subheading="Study Summary">
             {
                 sites ? 
                     <Grid container>
