@@ -135,7 +135,6 @@ export const StudyReportPage = props => {
                 .catch(error => console.error(error))
         }
         if (store.proposals) {
-            console.log(store.proposals)
             try {
                 const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
                 setStudy(studyFromRoute)
