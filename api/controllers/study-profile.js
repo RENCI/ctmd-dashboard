@@ -53,11 +53,8 @@ exports.get = (req, res) => {
 }
 
 exports.profile = (req, res) => {
-    console.log(req.params)
     const studyProfileFile = __dirname + `/../temp/${ req.params.id }.json`
-    console.log(`Retriving study profile...`)
     var contents = fs.readFileSync(studyProfileFile)
     var jsonContent = JSON.parse(contents)
-    console.log(jsonContent)
     res.send(jsonContent)
 }
