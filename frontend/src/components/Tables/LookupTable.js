@@ -11,7 +11,7 @@ export const LookupTable = ({ title, data }) => {
             ] }
             data={ data }
             options={{
-                title: title,
+                showTitle: false,
                 columnsButton: true,
                 exportButton: true,
                 filtering: true,
