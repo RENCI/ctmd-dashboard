@@ -83,29 +83,13 @@ exports.addReport = (req, res) => {
         })
 }
 
-const tempSiteMetricsFile = path.join(__dirname, '/../temp/sites.csv')
+const sitesFilePath = path.join(__dirname, '/../temp/sites.json')
 
 exports.list = (req, res) => {
-    const results = []
-    console.log(`Retriving metrics from ${ tempSiteMetricsFile }...`)
-    stream = fs.createReadStream(tempSiteMetricsFile)
-    stream.on('error', error => {
-        console.log('An error occurred', error)
-        if (error.code === 'ENOENT') {
-            const fileNotFoundMessage = `Site metrics file not found!`
-            console.log(fileNotFoundMessage);
-            res.status(500).send(fileNotFoundMessage)
-        } else {
-            res.status(500).send('An error occurred!')
-        }
-    })
-    stream.pipe(csv())
-        .on('data', data => results.push(data))
-        .on('end', () => {
-            res.status(200).send(results)
-        })
+    const sitesFile = fs.readFileSync(sitesFilePath)
+    const sitesJson = JSON.parse(sitesFile)
+    res.send(sitesJson)
 }
-
 
 exports.siteReport = (req, res) => {
     res.status(200).send('Get site report')
