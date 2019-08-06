@@ -1,20 +1,29 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 import api from '../Api'
 import { Title } from '../components/Typography'
 import { Grid } from '@material-ui/core'
+import { CircularLoader } from '../components/Progress/Progress'
+import { LookupTable } from '../components/Tables/LookupTable'
 
 export const SitesPage = (props) => {
+    const [sites, setSites] = useState(null)
+
+    useEffect(() => {
+        const fetchSites = async () => {
+            await axios.get(api.sites)
+                .then(response => setSites(response.data))
+                .catch(error => console.error(error))
+        }
+        fetchSites()
+    }, [])
+
     return (
         <div>
             <Title>Sites</Title>
 
-            <Grid container>
+            { sites ? <LookupTable title="Sites" data={ sites } /> : <CircularLoader /> }
             
-              <Grid item xs={ 12 }>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa aut suscipit id.
-              </Grid>
-            
-            </Grid>
         </div>
     )
 }
