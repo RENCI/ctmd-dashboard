@@ -15,7 +15,6 @@ import { isSiteActive } from '../../utils/sites'
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesActivationPieChart } from '../../components/Charts'
-import { UtahIcon } from '../Icons/Utah'
 import { ProposalDetailPanel, StudyDetailPanel } from './DetailPanels'
 
 const useTableStyles = makeStyles(theme => ({
