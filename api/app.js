@@ -50,6 +50,8 @@ app.use('/study-profile', require('./routes/study-profile'))
 app.use('/site-metrics', require('./routes/site-metrics'))
 // Sites
 app.use('/sites', require('./routes/sites'))
+// CTSAs
+app.use('/ctsas', require('./routes/ctsas'))
 
 // Endpoint List/Documentation
 app.use('/list', require('./routes/documentation'))
