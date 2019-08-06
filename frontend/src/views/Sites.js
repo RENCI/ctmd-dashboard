@@ -22,7 +22,7 @@ export const SitesPage = (props) => {
         <div>
             <Title>Sites</Title>
 
-            { sites ? <LookupTable title="Sites" data={ sites } /> : <CircularLoader /> }
+            { sites ? <LookupTable data={ sites } /> : <CircularLoader /> }
             
         </div>
     )
