@@ -1,22 +1,9 @@
-import React, { Fragment, useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import axios from 'axios'
 import api from '../../../Api'
-import { useTheme } from '@material-ui/styles'
-import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText, Chip, IconButton, Divider } from '@material-ui/core'
-import { Collapse } from '@material-ui/core'
-import {
-    AccountBox as PiIcon,
-    CalendarToday as CalendarIcon,
-    AccountBalance as InstitutionIcon,
-    LocalOffer as TherapeuticAreaIcon,
-    Assignment as TicIcon,
-    Alarm as ProposalStatusIcon,
-    AttachMoney as BudgetIcon,
-    LocalLaundryService as ServicesIcon,
-    CheckCircle as ApprovedIcon,
-    Info as ProfileIcon
-} from '@material-ui/icons'
+import { Grid, Tooltip, IconButton, Divider } from '@material-ui/core'
 import { SettingsContext, StoreContext } from '../../../contexts'
+import { Info as ProfileIcon } from '@material-ui/icons'
 import { Subheading, Subsubheading, Paragraph, Caption } from '../../../components/Typography'
 import { NavLink } from 'react-router-dom'
 import { SitesActivationPieChart } from '../../../components/Charts'
@@ -34,7 +21,6 @@ import { DetailPanel } from './DetailPanel'
 export const StudyDetailPanel = ({ proposalID, shortTitle }) => {
     const [store, ] = useContext(StoreContext)
     const [sites, setSites] = useState(null)
-    const theme = useTheme()
 
     // useEffect(() => {
     //     if (proposalID) {
