@@ -17,10 +17,10 @@ export const SitesTable = (props) => {
         if (sites && store.proposals) {
             let protocols = {}
             sites.forEach(site => {
-                if (protocols.hasOwnProperty(site.proposalID)) {
-                    site.protocol = protocols[site.proposalID]
+                if (protocols.hasOwnProperty(site.proposalId)) {
+                    site.protocol = protocols[site.proposalId]
                 } else {
-                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalID == site.proposalID)
+                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalId == site.proposalId)
                     site.protocol = shortTitle
                 }
             })
@@ -34,10 +34,13 @@ export const SitesTable = (props) => {
             columns={
                 [
                     { title: 'Protocol', field: 'protocol', hidden: true, },
-                    { title: 'Facility Name', field: 'siteName', hidden: false, },
-                    { title: 'Site Name', field: 'principalInvestigator', hidden: false, },
-                    { title: 'Reg Packet Sent', field: 'dateRegPacketSent', hidden: false, },
-                    { title: 'Contract Sent', field: 'dateContractSent', hidden: false, },
+                    { title: 'Site ID', field: 'siteId', hidden: false, },
+                    { title: 'CTSA ID', field: 'ctsaId', hidden: true, },
+                    { title: 'Site Name', field: 'siteName', hidden: false, },
+                    { title: 'CTSA Name', field: 'siteName', hidden: false, },
+                    { title: 'PI', field: 'principalInvestigator', hidden: false, },
+                    { title: 'Reg Packet Sent', field: 'dateRegPacketSent', hidden: true, },
+                    { title: 'Contract Sent', field: 'dateContractSent', hidden: true, },
                     { title: 'IRB Submission', field: 'dateIrbSubmission', hidden: true, },
                     { title: 'IRB Approval', field: 'dateIrbApproval', hidden: true, },
                     { title: 'Contract Execution', field: 'dateContractExecution', hidden: true, },
