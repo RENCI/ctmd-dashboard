@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import api from '../Api'
 import { Title } from '../components/Typography'
-import { Grid } from '@material-ui/core'
+import { Grid, Paper, Card, CardContent } from '@material-ui/core'
 import { CircularLoader } from '../components/Progress/Progress'
 import { LookupTable } from '../components/Tables/LookupTable'
+import { FileDrop } from '../components/Forms'
 
 export const SitesPage = (props) => {
     const [sites, setSites] = useState(null)
@@ -21,6 +22,10 @@ export const SitesPage = (props) => {
     return (
         <div>
             <Title>Sites</Title>
+            
+            <Paper style={{ position: 'absolute', top: '1rem', right: '1rem', padding: '0 1rem', cursor: 'pointer' }}>
+                <FileDrop />
+            </Paper>
 
             { sites ? <LookupTable data={ sites } /> : <CircularLoader /> }
             
