@@ -123,14 +123,16 @@ const Milestones = ({ sites }) => {
 export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
-    const [sites, setSites] = useState(null)
+    const [studySites, setStudySites] = useState(null)
+    const [allSites, setAllSites] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
     const theme = useTheme()
-
+    
     useEffect(() => {
-        const retrieveSites = async (proposalID) => {
+        const retrieveStudySites = async (proposalID) => {
             await axios.get(api.studyProfile(proposalID))
                 .then(response => {
-                    setSites(response.data['Sites'])
+                    setStudySites(response.data['Sites'])
                 })
                 .catch(error => console.error(error))
         }
@@ -138,19 +140,45 @@ export const StudyReportPage = props => {
             try {
                 const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
                 setStudy(studyFromRoute)
-                retrieveSites(studyFromRoute.proposalID)
+                retrieveStudySites(studyFromRoute.proposalID)
             } catch (error) {
                 console.log(error)
             }
         }
     }, [store.proposals])
 
+    useEffect(() => {
+        const fetchAllSites = async () => {
+            axios.get(api.sites)
+                .then(response => setAllSites(response.data))
+                .catch(error => console.error(error))
+        }
+        if (study && studySites) {
+            console.log('Got study and sites')
+            fetchAllSites()
+        }
+    }, [studySites])
+
+    useEffect(() => {
+        if (allSites) {
+            console.log(allSites)
+            if (studySites) {
+                studySites.forEach(site => {
+                    const lookupSite = allSites.find(s => s.id === site.siteId)
+                    site.siteName = lookupSite.name
+                })
+            }
+            setIsLoading(false)
+        }
+    }, [allSites])
+
     return (
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
 
             {
-                study && sites ? (
+                isLoading ? <CircularLoader />
+                : (
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
                             <Card>
@@ -159,26 +187,26 @@ export const StudyReportPage = props => {
                                     subheader="According to the Coordinating Center Metrics"
                                 />
                                 <CardContent>
-                                    { sites ? <SitesReport sites={ sites } /> : <CircularLoader /> }
+                                    <SitesReport sites={ studySites } />
                                 </CardContent>
                             </Card>
                         </Grid>
                         <Grid item xs={ 12 }>
-                            <SitesTable sites={ sites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
+                            <SitesTable sites={ studySites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
                         </Grid>
                         <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
                             <Card>
                                 <CardHeader title="Enrollment Graphic" />
                                 <CardContent>
-                                    <StudyEnrollment study={ study } sites={ sites }/>
+                                    <StudyEnrollment study={ study } sites={ studySites }/>
                                 </CardContent>
                             </Card>
                         </Grid>
                         <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
-                            <Milestones sites={ sites } />
+                            <Milestones sites={ studySites } />
                         </Grid>
                     </Grid>
-                ) : <CircularLoader />
+                )
             }
         </div>
     )
