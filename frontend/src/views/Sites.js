@@ -21,11 +21,12 @@ export const SitesPage = (props) => {
 
     return (
         <div>
-            <Title>Sites</Title>
-            
-            <Paper style={{ position: 'absolute', top: '1rem', right: '1rem', padding: '0 1rem', cursor: 'pointer' }}>
-                <FileDrop />
-            </Paper>
+            <Grid container>
+                <Grid item xs={ 12 } sm={ 10 } component={ Title }>Sites</Grid>
+                <Grid item xs={ 12 } sm={ 2 }>
+                    <FileDrop />
+                </Grid>
+            </Grid>
 
             { sites ? <LookupTable data={ sites } /> : <CircularLoader /> }
             
