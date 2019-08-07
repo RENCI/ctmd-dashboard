@@ -188,20 +188,15 @@ export const StudyReportPage = props => {
                 : (
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
-                            <CollapsibleCard title={ study.longTitle } subheader={ `${ study.shortTitle } (id: ${ study.proposalID })` }>
-                                <CardContent>
-                                    <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
-                                </CardContent>
+                            <CollapsibleCard title="Study Profile" subheader={ `${ study.shortTitle } ( #${ study.proposalID } )` }>
+                                <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
                             </CollapsibleCard>
                         </Grid>
                         
                         <Grid item xs={ 12 }>
-                            <Card>
-                                <CardHeader title="Overall Sites Report" subheader="According to the Coordinating Center Metrics" />
-                                <CardContent>
-                                    <SitesReport sites={ studySites } />
-                                </CardContent>
-                            </Card>
+                            <CollapsibleCard title="Overall Sites Report" subheader="According to the Coordinating Center Metrics">
+                                <SitesReport sites={ studySites } />
+                            </CollapsibleCard>
                         </Grid>
                         
                         <Grid item xs={ 12 }>
