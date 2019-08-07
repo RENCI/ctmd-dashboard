@@ -124,11 +124,19 @@ export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
     const [studySites, setStudySites] = useState(null)
+    const [studyProfile, setStudyProfile] = useState(null)
     const [allSites, setAllSites] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const theme = useTheme()
     
     useEffect(() => {
+        const retrieveStudyProfile = async (proposalID) => {
+            await axios.get(api.studyProfile(proposalID))
+                .then(response => {
+                    setStudyProfile(response.data['Study Profile'])
+                })
+                .catch(error => console.error(error))
+        }
         const retrieveStudySites = async (proposalID) => {
             await axios.get(api.studyProfile(proposalID))
                 .then(response => {
@@ -141,6 +149,7 @@ export const StudyReportPage = props => {
                 const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
                 setStudy(studyFromRoute)
                 retrieveStudySites(studyFromRoute.proposalID)
+                retrieveStudyProfile(studyFromRoute.proposalID)
             } catch (error) {
                 console.log(error)
             }
@@ -179,6 +188,14 @@ export const StudyReportPage = props => {
                 : (
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
+                            <CollapsibleCard title={ study.longTitle } subheader={ `${ study.shortTitle } (id: ${ study.proposalID })` }>
+                                <CardContent>
+                                    <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
+                                </CardContent>
+                            </CollapsibleCard>
+                        </Grid>
+                        
+                        <Grid item xs={ 12 }>
                             <Card>
                                 <CardHeader title="Overall Sites Report" subheader="According to the Coordinating Center Metrics" />
                                 <CardContent>
@@ -186,9 +203,11 @@ export const StudyReportPage = props => {
                                 </CardContent>
                             </Card>
                         </Grid>
+                        
                         <Grid item xs={ 12 }>
                             <SitesTable sites={ studySites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
                         </Grid>
+                        
                         <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
                             <Card>
                                 <CardHeader title="Enrollment Graphic" />
@@ -197,6 +216,7 @@ export const StudyReportPage = props => {
                                 </CardContent>
                             </Card>
                         </Grid>
+                        
                         <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
                             <Milestones sites={ studySites } />
                         </Grid>
