@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { CloudUpload as FileDropIcon } from '@material-ui/icons'
+import { Card } from '@material-ui/core'
 
 const baseStyle = {
     flex: 1,
@@ -62,14 +63,14 @@ export const FileDrop = () => {
     return (
         <div {...getRootProps()}>
             <input { ...getInputProps() } />
-
             {
                 isDragActive
                 ? <p><FileDropIcon /> Drop File Here</p>
-                : <p><FileDropIcon /> { acceptedFiles && acceptedFilesDisplay }</p>
+                : <Card>
+                    <FileDropIcon />
+                    { acceptedFiles.length === 0 ? ' Upload file' : acceptedFilesDisplay }
+                </Card>
             }
-
-
         </div>
     )
 
