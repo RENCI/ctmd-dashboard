@@ -154,14 +154,12 @@ export const StudyReportPage = props => {
                 .catch(error => console.error(error))
         }
         if (study && studySites) {
-            console.log('Got study and sites')
             fetchAllSites()
         }
     }, [studySites])
 
     useEffect(() => {
         if (allSites) {
-            console.log(allSites)
             if (studySites) {
                 studySites.forEach(site => {
                     const lookupSite = allSites.find(s => s.id === site.siteId)
@@ -182,10 +180,7 @@ export const StudyReportPage = props => {
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
                             <Card>
-                                <CardHeader
-                                    title="All-Sites Report"
-                                    subheader="According to the Coordinating Center Metrics"
-                                />
+                                <CardHeader title="Overall Sites Report" subheader="According to the Coordinating Center Metrics" />
                                 <CardContent>
                                     <SitesReport sites={ studySites } />
                                 </CardContent>
