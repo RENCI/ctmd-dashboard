@@ -7,5 +7,6 @@ const ctsasFilePath = path.join(__dirname, '/../temp/ctsas.json')
 exports.list = (req, res) => {
     const ctsasFile = fs.readFileSync(ctsasFilePath)
     const ctsasJson = JSON.parse(ctsasFile)
-    res.send(ctsasJson)
+    console.log(ctsasJson)
+    res.status(200).send(ctsasJson)
 }
