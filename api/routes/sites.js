@@ -6,6 +6,7 @@ const sitesController = require('../controllers/sites')
 
 router.route('/').get(sitesController.list)
 router.route('/reports').post(sitesController.addReport)
+router.route('/').post(sitesController.uploadSites)
 // router.route('/metrics').get(sitesController.metrics)
 
 module.exports = router
