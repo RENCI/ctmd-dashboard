@@ -94,3 +94,7 @@ exports.list = (req, res) => {
 exports.siteReport = (req, res) => {
     res.status(200).send('Get site report')
 }
+
+exports.uploadSites = (req, res) => {
+    res.status(200).send('OK')
+}
