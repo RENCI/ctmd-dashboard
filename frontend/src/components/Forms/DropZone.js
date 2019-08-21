@@ -22,30 +22,39 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const DropZone = ({ uploadHandler }) => {
+export const DropZone = ({ endpoint, headers }) => {
     const classes = useStyles()
     const fileInputRef = useRef()
-    const [files, setFiles] = useState([])
+    const [file, setFile] = useState([])
 
     const onFilesAdded = event => {
         try {
-            const files = Array.from(event.target.files)
-            console.log('Files Selected!')
-            setFiles(files)
+            setFile(event.target.files[0])
+            console.log('file selected')
         } catch (error) {
             console.error(error)
         }
     }
 
     const handleClickUpload = event => {
-        if (files.length > 0) {
-            const data = new FormData() 
-            console.log(`Uploading ${ files.length } files:`)
-            files.forEach(file => console.log(`- ${ file.name }`))
-            data.append('file', files[0])
-            uploadHandler(data)
+        if (file) {
+            console.log('uploading', file.name)
+            const formdata = new FormData()
+            formdata.append('file', file)
+            console.log('headers:', headers)
+            console.log('formdata:', formdata)
+            axios({
+                url: endpoint,
+                method: 'POST',
+                headers: headers,
+                data: formdata
+            })
+            // axios.post(endpoint, headers, formdata)
+            //     .then(response => {
+            //         console.log(response.data)
+            //     })
         } else {
-            console.log('No files selected')
+            console.log('No file selected')
         }
     }
 

@@ -23,6 +23,7 @@ import {
     CheckBox as MetMilestoneIcon,
     CheckBoxOutlineBlank as UnmetMilestoneIcon,
 } from '@material-ui/icons'
+var formData = new FormData()
 
 Array.prototype.chunk = function(size) {
     var chunks = []
@@ -203,61 +204,56 @@ export const StudyReportPage = props => {
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
             
-            <Grid container spacing={ 4 }>
-                <Grid item xs={ 12 } sm={ 4 }>
-                    <Card>
-                        <CardHeader title="Upload Profile" />
-                        <CardContent>
-                            <DropZone uploadHandler={
-                                data => {
-                                    console.log('Uploading profile...', study.proposalID)
-                                    axios.post(api.studyUploadProfile(study.proposalID), data, { })
-                                        .then(response => {
-                                            console.log(response.data)
-                                        })
-                                }
-                            } />
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={ 12 } sm={ 4 }>
-                    <Card>
-                        <CardHeader title="Upload Sites" />
-                        <CardContent>
-                            <DropZone uploadHandler={
-                                data => {
-                                    console.log('Uploading sites...', data)
-                                    axios.post(api.studyUploadSites(study.proposalID), data, { })
-                                        .then(response => {
-                                            console.log(response.data)
-                                        })
-                                }
-                            } />
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={ 12 } sm={ 4 }>
-                    <Card>
-                        <CardHeader title="Upload Enrollment Data" />
-                        <CardContent>
-                            <DropZone uploadHandler={
-                                data => {
-                                    console.log('Uploading enrollment data...', data)
-                                    axios.post(api.studyUploadEnrollmentData(study.proposalID), data, { })
-                                        .then(response => {
-                                            console.log(response.data)
-                                        })
-                                }
-                            } />
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-
             {
                 isLoading ? <CircularLoader />
                 : (
                     <Grid container spacing={ 4 }>
+                        <Grid item xs={ 12 } sm={ 4 }>
+                            <Card>
+                                <CardHeader title="Upload Profile" />
+                                <CardContent>
+                                    <DropZone
+                                        endpoint={ api.studyUploadProfile(study.proposalID) }
+                                        headers={{
+                                            'content-type': 'application/json',
+                                            'json': '{}'
+                                        }}
+                                    />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={ 12 } sm={ 4 }>
+                            <Card>
+                                <CardHeader title="Upload Sites" />
+                                <CardContent>
+                                    <DropZone uploadHandler={
+                                        data => {
+                                            console.log('Uploading sites...', data)
+                                            axios.post(api.studyUploadSites(study.proposalID), data, { })
+                                                .then(response => {
+                                                    console.log(response.data)
+                                                })
+                                        }
+                                    } />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={ 12 } sm={ 4 }>
+                            <Card>
+                                <CardHeader title="Upload Enrollment Data" />
+                                <CardContent>
+                                    <DropZone uploadHandler={
+                                        data => {
+                                            console.log('Uploading enrollment data...', data)
+                                            axios.post(api.studyUploadEnrollmentData(study.proposalID), data, { })
+                                                .then(response => {
+                                                    console.log(response.data)
+                                                })
+                                        }
+                                    } />
+                                </CardContent>
+                            </Card>
+                        </Grid>
                         <Grid item xs={ 12 }>
                             <CollapsibleCard title="Study Profile" subheader={ `${ study.shortTitle } ( #${ study.proposalID } )` }>
                                 <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>

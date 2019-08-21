@@ -1,5 +1,5 @@
 const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
-const dataApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3000/data/'
+const dataApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_API_ROOT : 'http://localhost:3000/data/'
 
 // Proposals
 
