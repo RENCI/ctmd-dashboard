@@ -3,7 +3,7 @@ import axios from 'axios'
 import api from '../../Api'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Button, IconButton } from '@material-ui/core'
 import { List, ListItem, ListItemText } from '@material-ui/core'
 import { Title, Subsubheading, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -14,6 +14,9 @@ import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentCont
 import { CollapsibleCard } from '../../components/CollapsibleCard'
 import { SitesReport } from './SitesReport'
 import { formatDate } from '../../utils'
+import { FileDrop } from '../../components/Forms'
+import { DropZone } from '../../components/Forms'
+import { CloudUpload as UploadIcon } from '@material-ui/icons'
 
 Array.prototype.chunk = function(size) {
     var chunks = []
@@ -132,16 +135,12 @@ export const StudyReportPage = props => {
     useEffect(() => {
         const retrieveStudyProfile = async (proposalID) => {
             await axios.get(api.studyProfile(proposalID))
-                .then(response => {
-                    setStudyProfile(response.data['Study Profile'])
-                })
+                .then(response => setStudyProfile(response.data))
                 .catch(error => console.error(error))
         }
         const retrieveStudySites = async (proposalID) => {
-            await axios.get(api.studyProfile(proposalID))
-                .then(response => {
-                    setStudySites(response.data['Sites'])
-                })
+            await axios.get(api.studySites(proposalID))
+                .then(response => setStudySites(response.data))
                 .catch(error => console.error(error))
         }
         if (store.proposals) {
@@ -182,6 +181,57 @@ export const StudyReportPage = props => {
     return (
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
+            
+            <Grid container spacing={ 4 }>
+                <Grid item xs={ 12 } sm={ 4 }>
+                    <Card>
+                        <CardHeader title="Upload Profile" />
+                        <CardContent>
+                            <DropZone uploadHandler={
+                                data => {
+                                    console.log('Uploading profile...', study.proposalID)
+                                    axios.post(api.studyUploadProfile(study.proposalID), data, { })
+                                        .then(response => {
+                                            console.log(response.data)
+                                        })
+                                }
+                            } />
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={ 12 } sm={ 4 }>
+                    <Card>
+                        <CardHeader title="Upload Sites" />
+                        <CardContent>
+                            <DropZone uploadHandler={
+                                data => {
+                                    console.log('Uploading sites...', data)
+                                    axios.post(api.studyUploadSites(study.proposalID), data, { })
+                                        .then(response => {
+                                            console.log(response.data)
+                                        })
+                                }
+                            } />
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={ 12 } sm={ 4 }>
+                    <Card>
+                        <CardHeader title="Upload Enrollment Data" />
+                        <CardContent>
+                            <DropZone uploadHandler={
+                                data => {
+                                    console.log('Uploading enrollment data...', data)
+                                    axios.post(api.studyUploadEnrollmentData(study.proposalID), data, { })
+                                        .then(response => {
+                                            console.log(response.data)
+                                        })
+                                }
+                            } />
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
 
             {
                 isLoading ? <CircularLoader />

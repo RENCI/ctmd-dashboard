@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const DropZone = ({ proposalID }) => {
+export const DropZone = ({ uploadHandler }) => {
     const classes = useStyles()
     const fileInputRef = useRef()
     const [files, setFiles] = useState([])
@@ -39,14 +39,11 @@ export const DropZone = ({ proposalID }) => {
 
     const handleClickUpload = event => {
         if (files.length > 0) {
+            const data = new FormData() 
             console.log(`Uploading ${ files.length } files:`)
             files.forEach(file => console.log(`- ${ file.name }`))
-            const data = new FormData() 
             data.append('file', files[0])
-            axios.post(api.studyProfileUpload(proposalID), data, { })
-                .then(res => {
-                    console.log(res.statusText)
-                })
+            uploadHandler(data)
         } else {
             console.log('No files selected')
         }
@@ -54,7 +51,7 @@ export const DropZone = ({ proposalID }) => {
 
     return (
         <div className={ classes.dropzone }>
-            <input type="file" multiple
+            <input type="file" accept="application/json"
                 ref={ fileInputRef }
                 className={ classes.fileInput }
                 onChange={ onFilesAdded }

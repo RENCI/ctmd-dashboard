@@ -5,7 +5,7 @@ import { Title } from '../components/Typography'
 import { Grid } from '@material-ui/core'
 import { CircularLoader } from '../components/Progress/Progress'
 import { LookupTable } from '../components/Tables/LookupTable'
-import { FileDrop } from '../components/Forms'
+import { DropZone } from '../components/Forms'
 
 export const CtsasPage = (props) => {
     const [ctsas, setCtsas] = useState(null)
@@ -22,9 +22,16 @@ export const CtsasPage = (props) => {
     return (
         <div>
             <Grid container>
-                <Grid item xs={ 12 } sm={ 10 } component={ Title }>CTSAs</Grid>
-                <Grid item xs={ 12 } sm={ 2 }>
-                    <FileDrop />
+                <Grid item xs={ 12 } md={ 6 } component={ Title }>CTSAs</Grid>
+                <Grid item xs={ 12 } md={ 6 }>
+                    <DropZone uploadHandler={ () => {
+                            console.log('Uploading CTSAs...')
+                            axios.post(api.ctsasUpload)
+                                .then(response => {
+                                    console.log(response.data)
+                                })
+                        }
+                     } />
                 </Grid>
             </Grid>
 
