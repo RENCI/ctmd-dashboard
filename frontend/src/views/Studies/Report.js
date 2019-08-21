@@ -3,8 +3,10 @@ import axios from 'axios'
 import api from '../../Api'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Button, IconButton } from '@material-ui/core'
-import { List, ListItem, ListItemText } from '@material-ui/core'
+import {
+    Grid, Card, CardHeader, CardContent, Button, IconButton,
+    List, ListItem, ListItemIcon, ListItemText
+} from '@material-ui/core'
 import { Title, Subsubheading, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
@@ -16,7 +18,11 @@ import { SitesReport } from './SitesReport'
 import { formatDate } from '../../utils'
 import { FileDrop } from '../../components/Forms'
 import { DropZone } from '../../components/Forms'
-import { CloudUpload as UploadIcon } from '@material-ui/icons'
+import {
+    CloudUpload as UploadIcon,
+    CheckBox as MetMilestoneIcon,
+    CheckBoxOutlineBlank as UnmetMilestoneIcon,
+} from '@material-ui/icons'
 
 Array.prototype.chunk = function(size) {
     var chunks = []
@@ -97,24 +103,39 @@ const Milestones = ({ sites }) => {
             <CardContent>
                 <List dense>
                     <ListItem>
+                        <ListItemIcon><MetMilestoneIcon /></ListItemIcon>
                         <ListItemText primary="First IRB Approved" secondary={ firstIRBApprovedDate } />
                     </ListItem>
                     <ListItem>
+                        <ListItemIcon><MetMilestoneIcon /></ListItemIcon>
                         <ListItemText primary="First Site Activated" secondary={ firstSiteActivationDate } />
                     </ListItem>
                     <ListItem>
+                        <ListItemIcon><MetMilestoneIcon /></ListItemIcon>
                         <ListItemText primary="First Subject Enrolled" secondary={ firstSubjectEnrolled } />
                     </ListItem>
                     <ListItem>
+                        <ListItemIcon>
+                            { siteActivationPercentages[0] === 'N/A' ? <UnmetMilestoneIcon /> : <MetMilestoneIcon /> }
+                        </ListItemIcon>
                         <ListItemText primary="25% Enrolled" secondary={ siteActivationPercentages[0] } />
                     </ListItem>
                     <ListItem>
+                        <ListItemIcon>
+                            { siteActivationPercentages[1] === 'N/A' ? <UnmetMilestoneIcon /> : <MetMilestoneIcon /> }
+                        </ListItemIcon>
                         <ListItemText primary="50% Enrolled" secondary={ siteActivationPercentages[1] } />
                     </ListItem>
                     <ListItem>
+                        <ListItemIcon>
+                            { siteActivationPercentages[2] === 'N/A' ? <UnmetMilestoneIcon /> : <MetMilestoneIcon /> }
+                        </ListItemIcon>
                         <ListItemText primary="75% Enrolled" secondary={ siteActivationPercentages[2] } />
                     </ListItem>
                     <ListItem>
+                        <ListItemIcon>
+                            { siteActivationPercentages[3] === 'N/A' ? <UnmetMilestoneIcon /> : <MetMilestoneIcon /> }
+                        </ListItemIcon>
                         <ListItemText primary="100% Enrolled" secondary={ siteActivationPercentages[3] } />
                     </ListItem>
                 </List>
