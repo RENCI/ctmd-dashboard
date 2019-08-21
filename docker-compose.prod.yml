@@ -28,6 +28,8 @@ services:
       POSTGRES_DUMP_PATH: /backup
       REDCAP_URL_BASE: https://redcap.vanderbilt.edu/api/
       SERVER: 1
+      AUXILIARY_PATH: /auxiliary
+      FILTER_PATH: /filter
       SCHEDULE_RUN_TIME: 00:00
       REDIS_QUEUE_HOST: redis
       REDIS_QUEUE_PORT: 6379
@@ -39,6 +41,8 @@ services:
       REDIS_LOCK_TIMEOUT: 3600
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
+      - $AUXILIARY_PATH:/auxiliary
+      - $FILTER_PATH:/filter
     depends_on:
       - db
       - redis
