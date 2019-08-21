@@ -98,7 +98,7 @@ export const Menu = ({ expanded, clickHandler }) => {
         <nav className={ classes.nav }>
             <MenuList clsasname={ classes.menuList }>
                 {
-                    menuItems.map(item => (
+                    menuItems.map((item, i) => (
                         item.text && item.path && item.icon ? (
                             <Tooltip key={ item.path } title={ expanded ? '' : item.text } placement="right">
                                 <MenuItem
@@ -114,7 +114,7 @@ export const Menu = ({ expanded, clickHandler }) => {
                                     />
                                 </MenuItem>
                             </Tooltip>
-                        ) : <Divider style={{ margin: '1rem 0' }} />
+                        ) : <Divider key={ i } style={{ margin: '1rem 0' }} />
                     ))
                 }
             </MenuList>
