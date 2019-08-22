@@ -25,8 +25,13 @@ services:
       POSTGRES_PORT: $POSTGRES_PORT
       POSTGRES_HOST: db
       REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
+      REDCAP_URL_BASE: "http://redcap:5000/api/"
       POSTGRES_DUMP_PATH: /backup
-      REDCAP_URL_BASE: https://redcap.vanderbilt.edu/api/
+      AUXILIARY_PATH: /auxiliary
+      FILTER_PATH: /filter
+      RELOAD_SCHEDULE: $RELOAD_SCHEDULE
+      RELOAD_DATABASE: $RELOAD_DATABASE
+      SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
       SERVER: 1
       AUXILIARY_PATH: /auxiliary
       FILTER_PATH: /filter
@@ -39,6 +44,7 @@ services:
       REDIS_LOCK_DB: 1
       REDIS_LOCK_EXPIRE: 3600
       REDIS_LOCK_TIMEOUT: 3600
+      PAUSE: $PAUSE
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary

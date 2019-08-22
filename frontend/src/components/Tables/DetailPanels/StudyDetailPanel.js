@@ -31,9 +31,9 @@ export const StudyDetailPanel = ({ proposalID, shortTitle }) => {
 
     useEffect(() => {
         const retrieveSites = async (proposalID) => {
-            await axios.get(api.studyProfile(proposalID))
+            await axios.get(api.studySites(proposalID))
                 .then(response => {
-                    setSites(response.data['Sites'])
+                    setSites(response.data)
                 })
                 .catch(error => console.error(error))
         }

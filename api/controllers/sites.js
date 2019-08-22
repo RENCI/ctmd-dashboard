@@ -96,5 +96,5 @@ exports.siteReport = (req, res) => {
 }
 
 exports.uploadSites = (req, res) => {
-    res.status(200).send('OK')
+    res.status(200).send('OK!')
 }

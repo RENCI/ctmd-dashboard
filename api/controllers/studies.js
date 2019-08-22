@@ -16,21 +16,41 @@ const upload = multer({ storage: storage }).array('file')
 
 //
 
-exports.upload = (req, res) => {
-    const proposalID = req.params.id
-    if (proposalID) {
-        upload(req, res, error => {
-            if (error instanceof multer.MulterError) {
-                return res.status(500).json(error)
-            } else if (error) {
-                return res.status(500).json(error)
-            }
-            return res.status(200).send(req.file)
-        })
-    } else {
-        return 'Invalid proposal ID'
-    }
+// exports.upload = (req, res) => {
+//     const proposalID = req.params.id
+//     if (proposalID) {
+//         upload(req, res, error => {
+//             if (error instanceof multer.MulterError) {
+//                 return res.status(500).json(error)
+//             } else if (error) {
+//                 return res.status(500).json(error)
+//             }
+//             return res.status(200).send(req.file)
+//         })
+//     } else {
+//         return 'Invalid proposal ID'
+//     }
+// }
+
+//
+
+exports.uploadProfile = (req, res) => {
+    res.status(200).send(`Profile for ${ req.params.id } - OK!`)
 }
+
+//
+
+exports.uploadSites = (req, res) => {
+    res.status(200).send(`Sites for ${ req.params.id } - OK!`)
+}
+
+//
+
+exports.uploadEnrollmentData = (req, res) => {
+    res.status(200).send(`Enrollment Data for ${ req.params.id } - OK!`)
+}
+
+//
 
 // exports.get = (req, res) => {
 //     const id = req.query.proposalID
@@ -64,4 +84,8 @@ exports.getSites = (req, res) => {
     var contents = fs.readFileSync(studyProfileFile)
     var jsonContent = JSON.parse(contents)
     res.status(200).send(jsonContent)
+}
+
+exports.getEnrollmentData = (req, res) => {
+    res.status(200).send('OK!')
 }

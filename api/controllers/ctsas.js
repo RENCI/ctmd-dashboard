@@ -9,3 +9,7 @@ exports.list = (req, res) => {
     const ctsasJson = JSON.parse(ctsasFile)
     res.status(200).send(ctsasJson)
 }
+
+exports.upload = (req, res) => {
+    res.status(200).send('Upload CTSAs, OK!')
+}

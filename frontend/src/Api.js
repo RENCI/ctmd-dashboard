@@ -1,6 +1,8 @@
 const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
 const dataApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3000/data/'
 
+// Proposals
+
 let endpoints = {
     proposals: apiRoot + 'proposals',
     oneProposal: id => apiRoot + `proposals/${ id }`,
@@ -13,6 +15,8 @@ let endpoints = {
     // network: apiRoot + 'proposals/network',
 }
 
+// Counts
+
 endpoints = {
     ...endpoints,
     countByInstitution: apiRoot + 'proposals/submitted-for-services/count/by-institution',
@@ -22,6 +26,8 @@ endpoints = {
     countByMonth: apiRoot + 'proposals/submitted-for-services/count/by-month',
 }
 
+// Resubmissions
+
 endpoints = {
     ...endpoints,
     resubmissions: apiRoot + 'proposals/resubmissions',
@@ -30,6 +36,8 @@ endpoints = {
     resubmissionsCountByTic: apiRoot + 'proposals/resubmissions/count/by-tic',
     resubmissionsCountByTherapeuticArea: apiRoot + 'proposals/resubmissions/count/by-therapeutic-area',
 }
+
+// 
 
 endpoints = {
     ...endpoints,
@@ -46,11 +54,21 @@ endpoints = {
     saveSiteReport: apiRoot + 'sites/reports',
 }
 
+// Studies, Sites, & CTSAs
+
 endpoints = {
     ...endpoints,
-    studyProfile: proposalId => apiRoot + `study-profile/${ proposalId }`, // GET study profile for a given proposal id
-    studyProfileUpload: proposalID => apiRoot + `study-profile/${ proposalID }`, // POST to send json file containing study profile and sites
+    studyProfile: proposalID => apiRoot + `studies/${ proposalID }`, // GET - send json file containing study profile
+    studySites: proposalID => apiRoot + `studies/${ proposalID }/sites`, // GET - send json file containing study sites
+    studyEnrollmentData: proposalID => apiRoot + `studies/${ proposalID }/enrollment-data`, // GET - send json file containing study enrollment data
+    studyUploadProfile: proposalID => apiRoot + `studies/${ proposalID }`, // POST - to send json file containing study profile
+    studyUploadSites: proposalID => apiRoot + `studies/${ proposalID }/sites`, // POST - to send json file containing study sites
+    studyUploadEnrollmentData: proposalID => apiRoot + `studies/${ proposalID }/enrollment-data`, // POST - to send json file containing study enrollment data
+    // sitesUpload: apiRoot + `sites`, // POST to send json file containing site metrics for a study (indicated in file)
+    ctsasUpload: apiRoot + `ctsas`, // POST to send json file containing CTSAs
 }
+
+// Data - Sync, Backup, Restore
 
 endpoints = {
     ...endpoints,
