@@ -46,8 +46,8 @@ services:
     depends_on:
       - db
       - redis
-    expose:
-      - 5000
+    ports:
+      - 5000:5000
 
   db:
     container_name: pmd-db-dev
