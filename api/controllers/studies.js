@@ -89,5 +89,8 @@ exports.getSites = (req, res) => {
 }
 
 exports.getEnrollmentData = (req, res) => {
-    res.status(200).send('OK!')
+    const studyEnrollmentDataFile = __dirname + `/../temp/${ req.params.id }.enrollment-data.json`
+    var contents = fs.readFileSync(studyEnrollmentDataFile)
+    var jsonContent = JSON.parse(contents)
+    res.status(200).send(jsonContent)
 }

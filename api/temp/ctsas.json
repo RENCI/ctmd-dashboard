@@ -1,0 +1,262 @@
+[
+  {
+    "id": 1,
+    "name": "Albert Einstein College of Medicine (partnering with Montefiore Medical Center)"
+  },
+  {
+    "id": 2,
+    "name": "Boston University"
+  },
+  {
+    "id": 3,
+    "name": "Case Western Reserve University"
+  },
+  {
+    "id": 4,
+    "name": "Children's National with The George Washington University"
+  },
+  {
+    "id": 5,
+    "name": "Columbia University"
+  },
+  {
+    "id": 6,
+    "name": "Dartmouth College"
+  },
+  {
+    "id": 7,
+    "name": "Duke University"
+  },
+  {
+    "id": 8,
+    "name": "Emory University (partnering with Morehouse School of Medicine and Georgia Institute of Technology)"
+  },
+  {
+    "id": 9,
+    "name": "Georgetown University with Howard University"
+  },
+  {
+    "id": 10,
+    "name": "Harvard University"
+  },
+  {
+    "id": 11,
+    "name": "Icahn School of Medicine at Mount Sinai"
+  },
+  {
+    "id": 12,
+    "name": "Indiana University School of Medicine"
+  },
+  {
+    "id": 13,
+    "name": "Johns Hopkins University"
+  },
+  {
+    "id": 14,
+    "name": "Mayo Clinic"
+  },
+  {
+    "id": 15,
+    "name": "Medical College of Wisconsin"
+  },
+  {
+    "id": 16,
+    "name": "Medical University of South Carolina"
+  },
+  {
+    "id": 17,
+    "name": "New York University School of Medicine"
+  },
+  {
+    "id": 18,
+    "name": "Northwestern University"
+  },
+  {
+    "id": 19,
+    "name": "Oregon Health & Science University"
+  },
+  {
+    "id": 20,
+    "name": "Penn State Milton S. Hershey Medical Center"
+  },
+  {
+    "id": 21,
+    "name": "Stanford University"
+  },
+  {
+    "id": 22,
+    "name": "State University of New York at Buffalo"
+  },
+  {
+    "id": 23,
+    "name": "The Ohio State University"
+  },
+  {
+    "id": 24,
+    "name": "The Rockefeller University"
+  },
+  {
+    "id": 25,
+    "name": "The Scripps Research Institute"
+  },
+  {
+    "id": 26,
+    "name": "The University of Alabama at Birmingham"
+  },
+  {
+    "id": 27,
+    "name": "The University of Texas Health Science Center at San Antonio"
+  },
+  {
+    "id": 28,
+    "name": "The University of Utah"
+  },
+  {
+    "id": 29,
+    "name": "Tufts University"
+  },
+  {
+    "id": 30,
+    "name": "University of Arkansas for Medical Sciences"
+  },
+  {
+    "id": 31,
+    "name": "University of California,  Davis"
+  },
+  {
+    "id": 32,
+    "name": "University of California,  Irvine"
+  },
+  {
+    "id": 33,
+    "name": "University of California,  Los Angeles"
+  },
+  {
+    "id": 34,
+    "name": "University of California,  San Diego"
+  },
+  {
+    "id": 35,
+    "name": "University of California,  San Francisco"
+  },
+  {
+    "id": 36,
+    "name": "University of Chicago"
+  },
+  {
+    "id": 37,
+    "name": "University of Cincinnati"
+  },
+  {
+    "id": 38,
+    "name": "University of Colorado Denver"
+  },
+  {
+    "id": 39,
+    "name": "University of Florida"
+  },
+  {
+    "id": 40,
+    "name": "University of Illinois at Chicago"
+  },
+  {
+    "id": 41,
+    "name": "University of Iowa"
+  },
+  {
+    "id": 42,
+    "name": "University of Kansas Medical Center"
+  },
+  {
+    "id": 43,
+    "name": "University of Kentucky Research Foundations"
+  },
+  {
+    "id": 44,
+    "name": "University of Massachusetts Medical School, Worcester"
+  },
+  {
+    "id": 45,
+    "name": "University of Miami"
+  },
+  {
+    "id": 46,
+    "name": "University of Michigan at Ann Arbor"
+  },
+  {
+    "id": 47,
+    "name": "University of Minnesota Twin Cities"
+  },
+  {
+    "id": 48,
+    "name": "University of New Mexico Health Sciences Center"
+  },
+  {
+    "id": 49,
+    "name": "University of North Carolina"
+  },
+  {
+    "id": 50,
+    "name": "University of Pennsylvania"
+  },
+  {
+    "id": 51,
+    "name": "University of Pittsburgh"
+  },
+  {
+    "id": 52,
+    "name": "University of Rochester School of Medicine and Dentistry"
+  },
+  {
+    "id": 53,
+    "name": "University of Southern California"
+  },
+  {
+    "id": 54,
+    "name": "University of Texas Health Science Center at Houston"
+  },
+  {
+    "id": 55,
+    "name": "University of Texas Medical Branch"
+  },
+  {
+    "id": 56,
+    "name": "University of Texas Southwestern Medical Center at Dallas"
+  },
+  {
+    "id": 57,
+    "name": "University of Virginia"
+  },
+  {
+    "id": 58,
+    "name": "University of Washington"
+  },
+  {
+    "id": 59,
+    "name": "University of Wisconsin - Madison"
+  },
+  {
+    "id": 60,
+    "name": "Vanderbilt University Medical Center (partnering with Meharry Medical College)"
+  },
+  {
+    "id": 61,
+    "name": "Virginia Commonwealth University"
+  },
+  {
+    "id": 62,
+    "name": "Wake Forest Baptist Medical Center"
+  },
+  {
+    "id": 63,
+    "name": "Washington University"
+  },
+  {
+    "id": 64,
+    "name": "Weill Cornell Medical College (partnering with Hunter College)"
+  },
+  {
+    "id": 65,
+    "name": "Yale University"
+  }
+]

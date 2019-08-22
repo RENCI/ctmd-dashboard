@@ -1,0 +1,298 @@
+[
+  {
+    "id": 1,
+    "name": "Monroe Carell Jr. Children's Hospital at Vanderbilt"
+  },
+  {
+    "id": 2,
+    "name": "Duke University Medical Center"
+  },
+  {
+    "id": 3,
+    "name": "Johns Hopkins Hospital"
+  },
+  {
+    "id": 4,
+    "name": "Ann and Robert H. Lurie Childrens Hospital of Chicago"
+  },
+  {
+    "id": 5,
+    "name": "Medical College of Wisconsin"
+  },
+  {
+    "id": 6,
+    "name": "Morgan Stanley Children's Hospital of New York Presbyterian"
+  },
+  {
+    "id": 7,
+    "name": "Medical University of South Carolina"
+  },
+  {
+    "id": 8,
+    "name": "Cincinnati Childrens Hospital Medical Center"
+  },
+  {
+    "id": 9,
+    "name": "University of Texas Southwestern Medical Center Dallas"
+  },
+  {
+    "id": 10,
+    "name": "The Children's Hospital Colorado"
+  },
+  {
+    "id": 11,
+    "name": "Childrens Hospital Los Angeles"
+  },
+  {
+    "id": 12,
+    "name": "Childrens Mercy Hospital"
+  },
+  {
+    "id": 13,
+    "name": "Seattle Children's Hospital"
+  },
+  {
+    "id": 14,
+    "name": "Children's Hospital of Pittsburgh of UPMC"
+  },
+  {
+    "id": 15,
+    "name": "University of Florida Health Science Center"
+  },
+  {
+    "id": 16,
+    "name": "Primary Children's Medical Center- University of Utah"
+  },
+  {
+    "id": 17,
+    "name": "UCSF Benioff Children’s Hospital"
+  },
+  {
+    "id": 18,
+    "name": "Nationwide Children's Hospital"
+  },
+  {
+    "id": 19,
+    "name": "St. Louis Children's Hospital"
+  },
+  {
+    "id": 20,
+    "name": "Childrens Hospital and Medical Center"
+  },
+  {
+    "id": 21,
+    "name": "University of Rochester School of Medicine Children's Hospital"
+  },
+  {
+    "id": 22,
+    "name": "Kravis Children's Hospital at Mt. Sinai"
+  },
+  {
+    "id": 23,
+    "name": "Nicklaus Children's Hospital"
+  },
+  {
+    "id": 24,
+    "name": "Baylor College of  Medicine"
+  },
+  {
+    "id": 25,
+    "name": "Advocate Children's Hospital"
+  },
+  {
+    "id": 26,
+    "name": "Minnesota Children's Hospital"
+  },
+  {
+    "id": 27,
+    "name": "Cleveland Clinc"
+  },
+  {
+    "id": 28,
+    "name": "University Hospitals Rainbow Babies and Children's"
+  },
+  {
+    "id": 29,
+    "name": "University of Texas Health Science Center at San Antonio"
+  },
+  {
+    "id": 30,
+    "name": "University of Cincinnati Medical Center"
+  },
+  {
+    "id": 31,
+    "name": "Lester E Cox Health Systems"
+  },
+  {
+    "id": 32,
+    "name": "Queens Medical Center"
+  },
+  {
+    "id": 33,
+    "name": "University at Buffalo"
+  },
+  {
+    "id": 34,
+    "name": "Advanced Cardiovascular LLC"
+  },
+  {
+    "id": 35,
+    "name": "University of Miami Hospital"
+  },
+  {
+    "id": 36,
+    "name": "Penn State Milton S Hershey Medical Center"
+  },
+  {
+    "id": 37,
+    "name": "University of New Mexico Health Science Center"
+  },
+  {
+    "id": 38,
+    "name": "Baptist Hospital"
+  },
+  {
+    "id": 39,
+    "name": "Baylor University Medical Center"
+  },
+  {
+    "id": 40,
+    "name": "University of Michigan Medical Center"
+  },
+  {
+    "id": 41,
+    "name": "Rutgers University - Robert Wood Johnson Medical School"
+  },
+  {
+    "id": 42,
+    "name": "Stern Cardiovascular Center"
+  },
+  {
+    "id": 43,
+    "name": "Holy Cross Hospital"
+  },
+  {
+    "id": 44,
+    "name": "Brigham and Women's Hospital"
+  },
+  {
+    "id": 45,
+    "name": "Mount Sinai Medical Center"
+  },
+  {
+    "id": 46,
+    "name": "Duke University"
+  },
+  {
+    "id": 47,
+    "name": "MedStar Cardiovascular Research Network"
+  },
+  {
+    "id": 48,
+    "name": "Lakeland Cardiology"
+  },
+  {
+    "id": 49,
+    "name": "Newton-Wellesley Hospital"
+  },
+  {
+    "id": 50,
+    "name": "Shady Grove Adventist Hospital"
+  },
+  {
+    "id": 51,
+    "name": "WellStar Health System, Inc."
+  },
+  {
+    "id": 52,
+    "name": "University of Alabama at Birmingham"
+  },
+  {
+    "id": 53,
+    "name": "V.A. Medical Center - Memphis"
+  },
+  {
+    "id": 54,
+    "name": "John D. Dingell Medical Center"
+  },
+  {
+    "id": 55,
+    "name": "Howard University Hospital"
+  },
+  {
+    "id": 56,
+    "name": "University of Pittsburgh Medical Center"
+  },
+  {
+    "id": 57,
+    "name": "Pentucket Medical Associates"
+  },
+  {
+    "id": 58,
+    "name": "The Heart House Haddon Heights"
+  },
+  {
+    "id": 59,
+    "name": "St. Vincent Medical Group"
+  },
+  {
+    "id": 60,
+    "name": "Charles River Medical Associates"
+  },
+  {
+    "id": 61,
+    "name": "Alexian Brothers Medical Center"
+  },
+  {
+    "id": 62,
+    "name": "Mid Carolina Cardiology Research"
+  },
+  {
+    "id": 63,
+    "name": "Banner – University Medical Group"
+  },
+  {
+    "id": 64,
+    "name": "Ochsner Medical Center"
+  },
+  {
+    "id": 65,
+    "name": "Fox Valley Clinical Research Center, LLC"
+  },
+  {
+    "id": 66,
+    "name": "University of Washington Medical Center"
+  },
+  {
+    "id": 67,
+    "name": "Northwell Health - Manhasset"
+  },
+  {
+    "id": 68,
+    "name": "University of Illinois at Chicago"
+  },
+  {
+    "id": 69,
+    "name": "UC Davis Medical Center"
+  },
+  {
+    "id": 70,
+    "name": "Piedmont Atlanta Hospital"
+  },
+  {
+    "id": 71,
+    "name": "Detroit Medical Center and Wayne State University"
+  },
+  {
+    "id": 72,
+    "name": "Jefferson University Hospital"
+  },
+  {
+    "id": 73,
+    "name": "Intermountain Medical Center"
+  },
+  {
+    "id": 74,
+    "name": "Franciscan St. Francis Health"
+  }
+]
