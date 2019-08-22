@@ -35,6 +35,8 @@ const upload = multer({ storage: storage }).array('file')
 //
 
 exports.uploadProfile = (req, res) => {
+    console.log(req.headers)
+    console.log(req.headers)
     res.status(200).send(`Profile for ${ req.params.id } - OK!`)
 }
 
