@@ -5,7 +5,7 @@ pgdata
 #api
 node_modules
 duketic.sql
-api/temp/*
+# api/temp/*
 
 # frontend
 
