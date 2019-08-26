@@ -16,7 +16,7 @@ services:
     
   pipeline:
     container_name: pmd-pipeline
-    image: zooh/pmd-pipeline-reload:0.2.1
+    image: zooh/pmd-pipeline-reload:0.2.4
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -33,6 +33,9 @@ services:
       RELOAD_DATABASE: $RELOAD_DATABASE
       SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
       SERVER: 1
+      AUXILIARY_PATH: /auxiliary
+      FILTER_PATH: /filter
+      SCHEDULE_RUN_TIME: 00:00
       REDIS_QUEUE_HOST: redis
       REDIS_QUEUE_PORT: 6379
       REDIS_QUEUE_DB: 0
@@ -44,6 +47,8 @@ services:
       PAUSE: $PAUSE
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
+      - $AUXILIARY_PATH:/auxiliary
+      - $FILTER_PATH:/filter
     depends_on:
       - db
       - redis

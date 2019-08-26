@@ -1,6 +1,54 @@
 version: '3'
 
 services:
+  redis:
+    container_name: pmd-redis
+    build:
+      context: ./redis/
+      dockerfile: Dockerfile
+    restart: always
+    environment: {}
+    volumes:
+      - ./redis/data/:/data
+    expose:
+      - 6379
+    command: ["--appendonly", "yes"]
+    
+  pipeline:
+    container_name: pmd-pipeline
+    image: zooh/pmd-pipeline-reload:0.2.4
+    restart: always
+    environment:
+      POSTGRES_DATABASE_NAME: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_PORT: $POSTGRES_PORT
+      POSTGRES_HOST: db
+      REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
+      POSTGRES_DUMP_PATH: /backup
+      REDCAP_URL_BASE: https://redcap.vanderbilt.edu/api/
+      SERVER: 1
+      AUXILIARY_PATH: /auxiliary
+      FILTER_PATH: /filter
+      SCHEDULE_RUN_TIME: 00:00
+      REDIS_QUEUE_HOST: redis
+      REDIS_QUEUE_PORT: 6379
+      REDIS_QUEUE_DB: 0
+      REDIS_LOCK_HOST: redis
+      REDIS_LOCK_PORT: 6379
+      REDIS_LOCK_DB: 1
+      REDIS_LOCK_EXPIRE: 3600
+      REDIS_LOCK_TIMEOUT: 3600
+    volumes:
+      - $POSTGRES_DUMP_PATH:/backup
+      - $AUXILIARY_PATH:/auxiliary
+      - $FILTER_PATH:/filter
+    depends_on:
+      - db
+      - redis
+    expose:
+      - 5000
+
   db:
     container_name: pmd-db-dev
     restart: always
@@ -52,4 +100,5 @@ services:
       - 3000:3000
     depends_on:
       - api
+      - pipeline
 
