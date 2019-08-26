@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import api from '../Api'
 import { Title } from '../components/Typography'
 import { Grid } from '@material-ui/core'
 import ProposalsNetwork from '../components/Visualizations/ProposalsNetworkContainer'
@@ -19,7 +18,7 @@ export const CollaborationsPage = (props) => {
             <Grid container>
 
               <Grid item xs={ 12 }>
-                <ProposalsNetwork apiUrl={ api.proposals } onSelectProposals={ handleSelectProposals }/>
+                <ProposalsNetwork onSelectProposals={ handleSelectProposals }/>
               </Grid>
 
               <Grid item xs={ 12 }>

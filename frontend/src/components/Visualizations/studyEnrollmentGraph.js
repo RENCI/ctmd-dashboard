@@ -10,9 +10,7 @@ export default function() {
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
-//      study = null,
-//      sites = [],
-      enrollment = null,
+      data = null,
       enrolled = [],
       sites = [],
 
@@ -75,24 +73,24 @@ export default function() {
       dispatcher = d3.dispatch();
 
   // Create a closure containing the above variables
-  function enrollmentChart(selection) {
+  function enrollmentGraph(selection) {
     selection.each(function(d) {
-      // Save data
-//      study = d.study;
-//      sites = d.sites;
-      enrollment = d3.csvParse(d.enrollmentString);
+      const dateFormat = d3.timeParse("%Y-%b");
 
-      // Process data
-      const dateFormat = d3.timeParse("%y-%b");
-      enrollment.forEach(d => d[dateKey] = dateFormat(d[dateKey]));
-      enrollment.forEach(d => d[actualEnrolledKey] = +d[actualEnrolledKey]);
-      enrollment.forEach(d => d[targetEnrolledKey] = +d[targetEnrolledKey]);
-      enrollment.forEach(d => d[actualSitesKey] = +d[actualSitesKey]);
-      enrollment.forEach(d => d[targetSitesKey] = +d[targetSitesKey]);
+      // Save data
+      data = d.map(d => {
+        const e = {};
+        e[dateKey] = dateFormat(d[dateKey]);
+        e[actualEnrolledKey] = +d[actualEnrolledKey];
+        e[targetEnrolledKey] = +d[targetEnrolledKey];
+        e[actualSitesKey] = +d[actualSitesKey];
+        e[targetSitesKey] = +d[targetSitesKey];
+        return e;
+      });
 
       // Select the svg element, if it exists
       svg = d3.select(this).selectAll("svg")
-          .data([d]);
+          .data([data]);
 
       // Otherwise create the skeletal chart
       const svgEnter = svg.enter().append("svg")
@@ -124,7 +122,7 @@ export default function() {
   }
 
   function createTimeSeries(actualKey, targetKey, dateKey) {
-    return enrollment.map(d => {
+    return data.map(d => {
       return {
         actual: d[actualKey],
         target: d[targetKey],
@@ -530,23 +528,23 @@ export default function() {
 
   // Getters/setters
 
-  enrollmentChart.width = function(_) {
+  enrollmentGraph.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return enrollmentChart;
+    return enrollmentGraph;
   };
 
-  enrollmentChart.height = function(_) {
+  enrollmentGraph.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    return enrollmentChart;
+    return enrollmentGraph;
   };
 
   // For registering event callbacks
-  enrollmentChart.on = function() {
+  enrollmentGraph.on = function() {
     let value = dispatcher.on.apply(dispatcher, arguments);
-    return value === dispatcher ? enrollmentChart : value;
+    return value === dispatcher ? enrollmentGraph : value;
   };
 
-  return enrollmentChart;
+  return enrollmentGraph;
 }
