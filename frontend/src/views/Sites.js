@@ -24,14 +24,13 @@ export const SitesPage = (props) => {
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 } component={ Title }>Sites</Grid>
                 <Grid item xs={ 12 } md={ 6 }>
-                    <DropZone uploadHandler={ () => {
-                            console.log('Uploading sites...')
-                            axios.post(api.sitesUpload)
-                                .then(response => {
-                                    console.log(response.data)
-                                })
-                        }
-                     } />
+                    <DropZone
+                        endpoint={ api.addData('sites') }
+                        headers={{
+                            'content-type': 'application/json',
+                            'json': '{}'
+                        }}
+                    />
                 </Grid>
             </Grid>
 
