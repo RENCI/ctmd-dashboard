@@ -53,11 +53,21 @@ class StudyEnrollmentContainer extends Component {
     drawVisualization(newProps, oldProps, state) {
         if (!state.enrollmentData) return;
 
-        const ratio = 3;
+        // Calculate target enrollment
+        const targetEnrolledKey = "Revised Target Enrolled";
+        const targetSitesKey = "Revised Projected Sites";
+        const enrollmentRate = 0.2;
+
+        state.enrollmentData.forEach((d, i, a) => {
+          d[targetEnrolledKey] = i == 0 ? 0 :
+              a[i - 1][targetEnrolledKey] + a[i - 1][targetSitesKey] * enrollmentRate;
+        });
+
+        const aspectRatio = 3;
 
         this.enrollmentGraph
             .width(this.div.clientWidth)
-            .height(this.div.clientWidth / ratio);
+            .height(this.div.clientWidth / aspectRatio);
 
         // Bind data
         d3.select(this.div)
