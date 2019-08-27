@@ -56,11 +56,10 @@ class StudyEnrollmentContainer extends Component {
         // Calculate target enrollment
         const targetEnrolledKey = "Revised Target Enrolled";
         const targetSitesKey = "Revised Projected Sites";
-        const enrollmentRate = 0.2;
 
         state.enrollmentData.forEach((d, i, a) => {
           d[targetEnrolledKey] = i == 0 ? 0 :
-              a[i - 1][targetEnrolledKey] + a[i - 1][targetSitesKey] * enrollmentRate;
+              a[i - 1][targetEnrolledKey] + a[i - 1][targetSitesKey] * newProps.enrollmentRate;
         });
 
         const aspectRatio = 3;
@@ -84,7 +83,8 @@ class StudyEnrollmentContainer extends Component {
 
 StudyEnrollmentContainer.propTypes = {
     study: PropTypes.object.isRequired,
-    sites: PropTypes.array.isRequired
+    sites: PropTypes.array.isRequired,
+    enrollmentRate: PropTypes.number.isRequired
 };
 
 export default StudyEnrollmentContainer

@@ -4,9 +4,10 @@ import api from '../../Api'
 import { useTheme } from '@material-ui/styles'
 import { StoreContext } from '../../contexts/StoreContext'
 import {
-    Grid, Card, CardHeader, CardContent, Button, IconButton,
-    List, ListItem, ListItemIcon, ListItemText
+    Grid, Card, CardHeader, CardContent, Button, IconButton, Typography, Input,
+    List, ListItem, ListItemIcon, ListItemText,
 } from '@material-ui/core'
+import { Slider } from '@material-ui/lab'
 import { Title, Subsubheading, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
@@ -152,8 +153,9 @@ export const StudyReportPage = props => {
     const [studyProfile, setStudyProfile] = useState(null)
     const [allSites, setAllSites] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [enrollmentRate, setEnrollmentRate] = useState(0.2)
     const theme = useTheme()
-    
+
     useEffect(() => {
         const retrieveStudyProfile = async (proposalID) => {
             await axios.get(api.studyProfile(proposalID))
@@ -200,10 +202,27 @@ export const StudyReportPage = props => {
         }
     }, [allSites])
 
+    const handleEnrollmentRateSliderChange = (event, value) => {
+        setEnrollmentRate(value);
+    };
+
+    const handleEnrollmentRateInputChange = event => {
+      setEnrollmentRate(event.target.value === '' ? '' : Number(event.target.value));
+    };
+
+    const handleEnrollmentRateInputBlur = () => {
+      if (enrollmentRate < 0) {
+        setEnrollmentRate(0);
+      }
+      else if (enrollmentRate > 1) {
+        setEnrollmentRate(1);
+      }
+    };
+
     return (
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
-            
+
             {
                 isLoading ? <CircularLoader />
                 : (
@@ -259,26 +278,59 @@ export const StudyReportPage = props => {
                                 <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
                             </CollapsibleCard>
                         </Grid>
-                        
+
                         <Grid item xs={ 12 }>
                             <CollapsibleCard title="Overall Sites Report" subheader="According to the Coordinating Center Metrics">
                                 <SitesReport sites={ studySites } />
                             </CollapsibleCard>
                         </Grid>
-                        
+
                         <Grid item xs={ 12 }>
                             <SitesTable sites={ studySites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
                         </Grid>
-                        
+
                         <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
                             <Card>
                                 <CardHeader title="Enrollment Graphic" />
                                 <CardContent>
-                                    <StudyEnrollment study={ study } sites={ studySites }/>
+                                    <StudyEnrollment
+                                        study={ study }
+                                        sites={ studySites }
+                                        enrollmentRate={ enrollmentRate }
+                                    />
+                                    <Typography align="right">
+                                        Enrollment rate
+                                    </Typography>
+                                    <Grid container spacing={2} alignContent="flex-end" justify="flex-end" alignItems="flex-end">
+                                        <Grid item xs={5}>
+                                            <Slider
+                                                value={ enrollmentRate }
+                                                min={ 0 }
+                                                max={ 1 }
+                                                step={ 0.01 }
+                                                valueLabelDisplay="auto"
+                                                onChange={ handleEnrollmentRateSliderChange }
+                                            />
+                                        </Grid>
+                                        <Grid item>
+                                            <Input
+                                                value={ enrollmentRate }
+                                                margin="dense"
+                                                onChange={handleEnrollmentRateInputChange}
+                                                onBlur={handleEnrollmentRateInputBlur}
+                                                inputProps={{
+                                                    step: 0.01,
+                                                    min: 0,
+                                                    max: 1,
+                                                    type: 'number'
+                                                }}
+                                              />
+                                        </Grid>
+                                    </Grid>
                                 </CardContent>
                             </Card>
                         </Grid>
-                        
+
                         <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
                             <Milestones sites={ studySites } />
                         </Grid>
