@@ -1,5 +1,5 @@
 const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
-const dataApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3000/data/'
+const pipelineApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:5000/data/'
 
 // Proposals
 
@@ -68,14 +68,15 @@ endpoints = {
     ctsasUpload: apiRoot + `ctsas`, // POST to send json file containing CTSAs
 }
 
-// Data - Sync, Backup, Restore
+// Pipeline
 
 endpoints = {
     ...endpoints,
-    dataGetBackups: dataApiRoot + 'backup', // GET to return list of available backups
-    dataPostBackup: dataApiRoot + 'backup', // POST to back up database
-    dataRestore: dataApiRoot + 'restore', // /data/restore/<timestamp> to restore to backup given in
-    dataSync: dataApiRoot + 'sync', // POST to sync with redcap
+    dataGetBackups: pipelineApiRoot + 'data/backup', // GET to return list of available backups
+    dataPostBackup: pipelineApiRoot + 'data/backup', // POST to back up database
+    dataRestore: pipelineApiRoot + 'data/restore', // /data/restore/<timestamp> to restore to backup given in
+    dataSync: pipelineApiRoot + 'data/sync', // POST to sync with redcap
+    addData: tableName => pipelineApiRoot + `table/${ tableName }`,
 }
 
 export default endpoints
