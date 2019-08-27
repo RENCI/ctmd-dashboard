@@ -1,5 +1,5 @@
 const apiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
-const pipelineApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_ROOT : 'http://localhost:5000/data/'
+const pipelineApiRoot = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_API_ROOT : 'http://localhost:5000/'
 
 // Proposals
 
@@ -76,7 +76,7 @@ endpoints = {
     dataPostBackup: pipelineApiRoot + 'data/backup', // POST to back up database
     dataRestore: pipelineApiRoot + 'data/restore', // /data/restore/<timestamp> to restore to backup given in
     dataSync: pipelineApiRoot + 'data/sync', // POST to sync with redcap
-    addData: tableName => pipelineApiRoot + `table/${ tableName }`,
+    uploadSites: pipelineApiRoot + `table/sites`,
 }
 
 export default endpoints

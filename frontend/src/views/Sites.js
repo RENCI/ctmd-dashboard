@@ -25,7 +25,7 @@ export const SitesPage = (props) => {
                 <Grid item xs={ 12 } md={ 6 } component={ Title }>Sites</Grid>
                 <Grid item xs={ 12 } md={ 6 }>
                     <DropZone
-                        endpoint={ api.addData('sites') }
+                        endpoint={ api.uploadSites }
                         headers={{
                             'content-type': 'application/json',
                             'json': '{}'
