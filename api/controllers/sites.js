@@ -86,9 +86,15 @@ exports.addReport = (req, res) => {
 const sitesFilePath = path.join(__dirname, '/../temp/sites.json')
 
 exports.list = (req, res) => {
-    const sitesFile = fs.readFileSync(sitesFilePath)
-    const sitesJson = JSON.parse(sitesFile)
-    res.send(sitesJson)
+    const query = `SELECT * FROM "Sites";`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 exports.siteReport = (req, res) => {

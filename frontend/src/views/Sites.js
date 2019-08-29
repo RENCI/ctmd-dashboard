@@ -28,7 +28,7 @@ export const SitesPage = (props) => {
                 </Grid>
             </Grid>
 
-            { sites ? <LookupTable data={ sites } /> : <CircularLoader /> }
+            { sites ? <LookupTable data={ sites.map(site => ({ id: site.siteId, name: site.siteName })) } /> : <CircularLoader /> }
             
         </div>
     )
