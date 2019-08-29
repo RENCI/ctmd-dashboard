@@ -219,6 +219,17 @@ export const StudyReportPage = props => {
       }
     };
 
+    // Marks for enrollment rate slider
+    const marks = Array(11).fill().map((d, i) => {
+      const v = i * 0.1;
+      const s = v.toFixed(1);
+
+      return {
+        value: +v,
+        label: s
+      };
+    });
+
     return (
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
@@ -301,18 +312,18 @@ export const StudyReportPage = props => {
                                     <Typography align="right">
                                         Enrollment rate
                                     </Typography>
-                                    <Grid container spacing={2} alignContent="flex-end" justify="flex-end" alignItems="flex-end">
+                                    <Grid container spacing={6} justify="flex-end">
                                         <Grid item xs={5}>
                                             <Slider
                                                 value={ enrollmentRate }
                                                 min={ 0 }
                                                 max={ 1 }
                                                 step={ 0.01 }
-                                                valueLabelDisplay="auto"
+                                                marks={marks}
                                                 onChange={ handleEnrollmentRateSliderChange }
                                             />
                                         </Grid>
-                                        <Grid item>
+                                        <Grid item mr={5}>
                                             <Input
                                                 value={ enrollmentRate }
                                                 margin="dense"
@@ -322,7 +333,7 @@ export const StudyReportPage = props => {
                                                     step: 0.01,
                                                     min: 0,
                                                     max: 1,
-                                                    type: 'number'
+                                                    type: "number"
                                                 }}
                                               />
                                         </Grid>

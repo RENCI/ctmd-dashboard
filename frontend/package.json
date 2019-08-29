@@ -7,7 +7,7 @@
   "dependencies": {
     "@material-ui/core": "^4.1.1",
     "@material-ui/icons": "^3.0.2",
-    "@material-ui/lab": "^3.0.0-alpha.30",
+    "@material-ui/lab": "4.0.0-alpha.16",
     "@material-ui/styles": "^4.1.1",
     "@nivo/bar": "^0.58.0",
     "@nivo/calendar": "^0.58.0",
