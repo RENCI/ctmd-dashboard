@@ -40,9 +40,9 @@ export const DropZone = ({ endpoint, headers }) => {
         if (file) {
             console.log('uploading', file.name)
             const formdata = new FormData()
-            formdata.append('file', file)
+            formdata.append('data', file)
             formdata.append('content-type', 'application/json')
-            formdata.append('json', {})
+            formdata.append('json', '{}')
             headers = { 'Access-Control-Allow-Origin': '*' }
             axios({
                 url: endpoint,
