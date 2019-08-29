@@ -187,15 +187,7 @@ export const StudyReportPage = props => {
                     <Card>
                         <CardHeader title="Upload Profile" />
                         <CardContent>
-                            <DropZone uploadHandler={
-                                data => {
-                                    console.log('Uploading profile...', study.proposalID)
-                                    axios.post(api.studyUploadProfile(study.proposalID), data, { })
-                                        .then(response => {
-                                            console.log(response.data)
-                                        })
-                                }
-                            } />
+                            <DropZone endpoint={ api.uploadStudyProfile(study.proposalID) } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -203,15 +195,7 @@ export const StudyReportPage = props => {
                     <Card>
                         <CardHeader title="Upload Sites" />
                         <CardContent>
-                            <DropZone uploadHandler={
-                                data => {
-                                    console.log('Uploading sites...', data)
-                                    axios.post(api.studyUploadSites(study.proposalID), data, { })
-                                        .then(response => {
-                                            console.log(response.data)
-                                        })
-                                }
-                            } />
+                            <DropZone endpoint={ api.uploadStudySites(study.proposalID) } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -219,15 +203,7 @@ export const StudyReportPage = props => {
                     <Card>
                         <CardHeader title="Upload Enrollment Data" />
                         <CardContent>
-                            <DropZone uploadHandler={
-                                data => {
-                                    console.log('Uploading enrollment data...', data)
-                                    axios.post(api.studyUploadEnrollmentData(study.proposalID), data, { })
-                                        .then(response => {
-                                            console.log(response.data)
-                                        })
-                                }
-                            } />
+                            <DropZone endpoint={ api.uploadStudyEnrollmentData(study.proposalID) } />
                         </CardContent>
                     </Card>
                 </Grid>

@@ -41,18 +41,15 @@ export const DropZone = ({ endpoint, headers }) => {
             console.log('uploading', file.name)
             const formdata = new FormData()
             formdata.append('file', file)
-            console.log('headers:', headers)
-            console.log('formdata:', formdata)
+            formdata.append('content-type', 'application/json')
+            formdata.append('json', {})
+            headers = { 'Access-Control-Allow-Origin': '*' }
             axios({
                 url: endpoint,
                 method: 'POST',
                 headers: headers,
                 data: formdata
             })
-            // axios.post(endpoint, headers, formdata)
-            //     .then(response => {
-            //         console.log(response.data)
-            //     })
         } else {
             console.log('No file selected')
         }

@@ -24,14 +24,7 @@ export const CtsasPage = (props) => {
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 } component={ Title }>CTSAs</Grid>
                 <Grid item xs={ 12 } md={ 6 }>
-                    <DropZone uploadHandler={ () => {
-                            console.log('Uploading CTSAs...')
-                            axios.post(api.ctsasUpload)
-                                .then(response => {
-                                    console.log(response.data)
-                                })
-                        }
-                     } />
+                    <DropZone endpoint={ api.uploadCtsas } />
                 </Grid>
             </Grid>
 
