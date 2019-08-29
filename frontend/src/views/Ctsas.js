@@ -28,7 +28,7 @@ export const CtsasPage = (props) => {
                 </Grid>
             </Grid>
 
-            { ctsas ? <LookupTable data={ ctsas } /> : <CircularLoader /> }
+            { ctsas ? <LookupTable data={ ctsas.map(ctsa => ({ id: ctsa.ctsaId, name: ctsa.ctsaName })) } /> : <CircularLoader /> }
             
         </div>
     )

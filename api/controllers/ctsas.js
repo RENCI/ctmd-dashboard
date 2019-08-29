@@ -5,9 +5,15 @@ const path = require('path')
 const ctsasFilePath = path.join(__dirname, '/../temp/ctsas.json')
 
 exports.list = (req, res) => {
-    const ctsasFile = fs.readFileSync(ctsasFilePath)
-    const ctsasJson = JSON.parse(ctsasFile)
-    res.status(200).send(ctsasJson)
+    const query = `SELECT * FROM "CTSAs";`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 exports.upload = (req, res) => {
