@@ -10,4 +10,7 @@ api/temp/*
 # frontend
 
 # pipeline
-redis/*
+redis/
+backup/
+auxiliary/
+filter/
