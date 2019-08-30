@@ -125,6 +125,7 @@ const Milestones = ({ sites }) => {
 
 export const StudyReportPage = props => {
     const [store, ] = useContext(StoreContext)
+    const proposalId = props.match.params.proposalID
     const [study, setStudy] = useState(null)
     const [studySites, setStudySites] = useState(null)
     const [studyProfile, setStudyProfile] = useState(null)
@@ -143,14 +144,14 @@ export const StudyReportPage = props => {
                 .then(response => setStudySites(response.data))
                 .catch(error => console.error(error))
         }
+        retrieveStudySites(proposalId)
+        retrieveStudyProfile(proposalId)
         if (store.proposals) {
             try {
-                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
+                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == proposalId)
                 setStudy(studyFromRoute)
-                retrieveStudySites(studyFromRoute.proposalID)
-                retrieveStudyProfile(studyFromRoute.proposalID)
             } catch (error) {
-                console.log(error)
+                console.log(`Could not load study #${ proposalId }`, error)
             }
         }
     }, [store.proposals])
@@ -158,20 +159,24 @@ export const StudyReportPage = props => {
     useEffect(() => {
         const fetchAllSites = async () => {
             axios.get(api.sites)
-                .then(response => setAllSites(response.data))
+                .then(response => {
+                    setAllSites(response.data)
+                })
                 .catch(error => console.error(error))
         }
         if (study && studySites) {
             fetchAllSites()
         }
-    }, [studySites])
+    }, [study, studySites])
 
     useEffect(() => {
         if (allSites) {
             if (studySites) {
                 studySites.forEach(site => {
-                    const lookupSite = allSites.find(s => s.id === site.siteId)
-                    site.siteName = lookupSite.name
+                    const lookupSite = allSites.find(s => s.siteId === site.siteId)
+                    if (lookupSite) {
+                        site.siteName = lookupSite.siteName
+                    }
                 })
             }
             setIsLoading(false)
@@ -187,23 +192,25 @@ export const StudyReportPage = props => {
                     <Card>
                         <CardHeader title="Upload Profile" />
                         <CardContent>
-                            <DropZone endpoint={ api.uploadStudyProfile(study.proposalID) } />
+                            <DropZone endpoint={ api.uploadStudyProfile } />
                         </CardContent>
                     </Card>
                 </Grid>
+
                 <Grid item xs={ 12 } sm={ 4 }>
                     <Card>
                         <CardHeader title="Upload Sites" />
                         <CardContent>
-                            <DropZone endpoint={ api.uploadStudySites(study.proposalID) } />
+                            <DropZone endpoint={ api.uploadStudySites } />
                         </CardContent>
                     </Card>
                 </Grid>
+
                 <Grid item xs={ 12 } sm={ 4 }>
                     <Card>
                         <CardHeader title="Upload Enrollment Data" />
                         <CardContent>
-                            <DropZone endpoint={ api.uploadStudyEnrollmentData(study.proposalID) } />
+                            <DropZone endpoint={ api.uploadStudyEnrollmentData } />
                         </CardContent>
                     </Card>
                 </Grid>

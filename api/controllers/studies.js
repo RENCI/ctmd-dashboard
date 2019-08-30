@@ -73,17 +73,37 @@ exports.uploadEnrollmentData = (req, res) => {
 // }
 
 exports.getProfile = (req, res) => {
-    const studyProfileFile = __dirname + `/../temp/${ req.params.id }.profile.json`
-    var contents = fs.readFileSync(studyProfileFile)
-    var jsonContent = JSON.parse(contents)
-    res.status(200).send(jsonContent)
+    // const studyProfileFile = __dirname + `/../temp/${ req.params.id }.profile.json`
+    // var contents = fs.readFileSync(studyProfileFile)
+    // var jsonContent = JSON.parse(contents)
+    // res.status(200).send(jsonContent)
+    const proposalId = req.params.id
+    const query = `SELECT * FROM "StudyProfile" WHERE "ProposalID" = ${ proposalId };`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 exports.getSites = (req, res) => {
-    const studyProfileFile = __dirname + `/../temp/${ req.params.id }.sites.json`
-    var contents = fs.readFileSync(studyProfileFile)
-    var jsonContent = JSON.parse(contents)
-    res.status(200).send(jsonContent)
+    // const studyProfileFile = __dirname + `/../temp/${ req.params.id }.sites.json`
+    // var contents = fs.readFileSync(studyProfileFile)
+    // var jsonContent = JSON.parse(contents)
+    // res.status(200).send(jsonContent)
+    const proposalId = req.params.id
+    const query = `SELECT * FROM "StudySites" WHERE "ProposalID" = ${ proposalId };`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }
 
 exports.getEnrollmentData = (req, res) => {
