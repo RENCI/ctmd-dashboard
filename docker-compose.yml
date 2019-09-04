@@ -55,10 +55,6 @@ services:
     build:
       context: ./db/
       dockerfile: Dockerfile
-    volumes:
-      - ./db/pgdata/:/var/lib/postgresql/data/
-      - ./db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
-      - ./db/duketic.sql:/data/duketic.sql
     environment:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
