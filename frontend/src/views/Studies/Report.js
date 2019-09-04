@@ -124,8 +124,8 @@ const Milestones = ({ sites }) => {
 }
 
 export const StudyReportPage = props => {
-    const [store, ] = useContext(StoreContext)
     const proposalId = props.match.params.proposalID
+    const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
     const [studySites, setStudySites] = useState(null)
     const [studyProfile, setStudyProfile] = useState(null)
@@ -137,7 +137,10 @@ export const StudyReportPage = props => {
         const retrieveStudyProfile = async (proposalID) => {
             await axios.get(api.studyProfile(proposalID))
                 .then(response => setStudyProfile(response.data))
-                .catch(error => console.error(error))
+                .catch(error => {
+                    console.log(error.response.data)
+                    console.error(error)
+                })
         }
         const retrieveStudySites = async (proposalID) => {
             await axios.get(api.studySites(proposalID))
@@ -159,9 +162,7 @@ export const StudyReportPage = props => {
     useEffect(() => {
         const fetchAllSites = async () => {
             axios.get(api.sites)
-                .then(response => {
-                    setAllSites(response.data)
-                })
+                .then(response => setAllSites(response.data))
                 .catch(error => console.error(error))
         }
         if (study && studySites) {
@@ -221,9 +222,12 @@ export const StudyReportPage = props => {
                 : (
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
-                            <CollapsibleCard title="Study Profile" subheader={ `${ study.shortTitle } ( #${ study.proposalID } )` }>
-                                <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
-                            </CollapsibleCard>
+                            <Card>
+                                <CardHeader title="Study Profile" subheader={ `${ study.shortTitle } ( #${ study.proposalID } )` } />
+                                <CardContent>
+                                    <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
+                                </CardContent>
+                            </Card>
                         </Grid>
                         
                         <Grid item xs={ 12 }>
@@ -246,7 +250,7 @@ export const StudyReportPage = props => {
                         </Grid>
                         
                         <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
-                            <Milestones sites={ studySites } />
+                            Milestones
                         </Grid>
                     </Grid>
                 )
