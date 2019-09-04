@@ -250,7 +250,12 @@ export const StudyReportPage = props => {
                         </Grid>
                         
                         <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
-                            Milestones
+                            <Card>
+                                <CardHeader title="Milestones" />
+                                <CardContent>
+                                    Lorem ipsum dolor sit amet, consectetur.
+                                </CardContent>
+                            </Card>
                         </Grid>
                     </Grid>
                 )
