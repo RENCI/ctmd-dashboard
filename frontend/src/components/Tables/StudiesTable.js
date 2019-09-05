@@ -1,7 +1,9 @@
 import React, { useContext, useEffect } from 'react'
+import { NavLink } from 'react-router-dom'
 import MaterialTable from 'material-table'
 import { SettingsContext, StoreContext } from '../../contexts'
-import { StudyDetailPanel } from './DetailPanels'
+import { IconButton } from '@material-ui/core'
+import { Assessment as ReportIcon } from '@material-ui/icons'
 
 export const StudiesTable = ({ title, studies, paging }) => {
     const [store, ] = useContext(StoreContext)
@@ -93,9 +95,16 @@ export const StudiesTable = ({ title, studies, paging }) => {
                 pageSize: settings.tables.pageSize,
                 pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
+                actionsColumnIndex: -1,
             }}
-            detailPanel={ rowData => <StudyDetailPanel { ...rowData } />}
-            onRowClick={ (event, rowData, togglePanel) => togglePanel() }
+            actions={[ {} ]}
+            components={{
+                Action: ({ data }) => (
+                    <IconButton aria-label="View Detailed Report" size="large" component={ NavLink } to={ `/studies/${ data.proposalID }` }>
+                        <ReportIcon style={{ fontSize: 24 }} />
+                    </IconButton>
+                ),
+            }}
         />
     )
 }
