@@ -17,7 +17,7 @@ import {
     ProposalsByApprovedServices,
     ProposalsByRequestedServices,
 } from './views/Proposals'
-import { StudiesListPage, StudyReportPage } from './views/Studies'
+import { StudiesListPage, StudyReportPage, StudyUploadsPage } from './views/Studies'
 import { CollaborationsPage } from './views/Collaborations'
 import { CtsasPage } from './views/Ctsas'
 import { SitesPage } from './views/Sites'
@@ -72,6 +72,7 @@ const Dashboard = props => {
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route exact path="/studies" component={ StudiesListPage }/>
                         <Route exact path="/studies/:proposalID" component={ StudyReportPage }/>
+                        <Route exact path="/studies/:proposalID/uploads" component={ StudyUploadsPage }/>
                         <Route path="/ctsas" component={ CtsasPage }/>
                         <Route path="/sites" component={ SitesPage }/>
                         <Route path="/" component={ HomePage }/>

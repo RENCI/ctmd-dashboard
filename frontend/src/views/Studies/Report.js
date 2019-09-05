@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import api from '../../Api'
 import { useTheme } from '@material-ui/styles'
+import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent, Button, IconButton } from '@material-ui/core'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { Title, Subsubheading, Caption } from '../../components/Typography'
+import { Title, Subsubheading, Paragraph, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import { isSiteActive } from '../../utils/sites'
@@ -127,8 +128,9 @@ export const StudyReportPage = props => {
     const proposalId = props.match.params.proposalID
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
-    const [studySites, setStudySites] = useState(null)
     const [studyProfile, setStudyProfile] = useState(null)
+    const [studySites, setStudySites] = useState(null)
+    const [enrollmentData, setEnrollmentData] = useState(null)
     const [allSites, setAllSites] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const theme = useTheme()
@@ -136,7 +138,9 @@ export const StudyReportPage = props => {
     useEffect(() => {
         const retrieveStudyProfile = async (proposalID) => {
             await axios.get(api.studyProfile(proposalID))
-                .then(response => setStudyProfile(response.data))
+                .then(response => {
+                    if (response.data.length > 0) setStudyProfile(response.data)
+                })
                 .catch(error => {
                     console.log(error.response.data)
                     console.error(error)
@@ -175,9 +179,7 @@ export const StudyReportPage = props => {
             if (studySites) {
                 studySites.forEach(site => {
                     const lookupSite = allSites.find(s => s.siteId === site.siteId)
-                    if (lookupSite) {
-                        site.siteName = lookupSite.siteName
-                    }
+                    if (lookupSite) site.siteName = lookupSite.siteName
                 })
             }
             setIsLoading(false)
@@ -186,34 +188,12 @@ export const StudyReportPage = props => {
 
     return (
         <div>
-            <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
-            
-            <Grid container spacing={ 4 }>
-                <Grid item xs={ 12 } sm={ 4 }>
-                    <Card>
-                        <CardHeader title="Upload Profile" />
-                        <CardContent>
-                            <DropZone endpoint={ api.uploadStudyProfile } />
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={ 12 } sm={ 4 }>
-                    <Card>
-                        <CardHeader title="Upload Sites" />
-                        <CardContent>
-                            <DropZone endpoint={ api.uploadStudySites } />
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={ 12 } sm={ 4 }>
-                    <Card>
-                        <CardHeader title="Upload Enrollment Data" />
-                        <CardContent>
-                            <DropZone endpoint={ api.uploadStudyEnrollmentData } />
-                        </CardContent>
-                    </Card>
+            <Grid container>
+                <Grid item xs={ 12 } md={ 6 } component={ Title }>Study Report for { study && (study.shortTitle || '...') }</Grid>
+                <Grid item xs={ 12 } md={ 6 }>
+                    <Button color="secondary" variant="contained"  size="large" style={{ float: 'right' }} component={ NavLink } to={ `${ proposalId }/uploads` }>
+                        Uploads
+                    </Button>
                 </Grid>
             </Grid>
 
@@ -225,38 +205,59 @@ export const StudyReportPage = props => {
                             <Card>
                                 <CardHeader title="Study Profile" subheader={ `${ study.shortTitle } ( #${ study.proposalID } )` } />
                                 <CardContent>
-                                    <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
+                                    {
+                                        studyProfile
+                                            ? <pre>
+                                                { JSON.stringify(studyProfile, null, 2) }
+                                            </pre>
+                                            : <Paragraph>No profile found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                    }
                                 </CardContent>
                             </Card>
                         </Grid>
                         
-                        <Grid item xs={ 12 }>
-                            <CollapsibleCard title="Overall Sites Report" subheader="According to the Coordinating Center Metrics">
-                                <SitesReport sites={ studySites } />
-                            </CollapsibleCard>
-                        </Grid>
+                        {
+                            studySites.length > 0
+                            ? <Fragment>
+                                <Grid item xs={ 12 }>
+                                    <SitesTable sites={ studySites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
+                                </Grid>
+                            </Fragment>
+                            : <Grid item xs={ 12 }>
+                                <Card>
+                                    <CardHeader title={ `Sites for ${ study.shortTitle }` } />
+                                    <CardContent>
+                                        <Paragraph>No sites list found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        }
                         
-                        <Grid item xs={ 12 }>
-                            <SitesTable sites={ studySites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
-                        </Grid>
-                        
-                        <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
-                            <Card>
-                                <CardHeader title="Enrollment Graphic" />
-                                <CardContent>
-                                    <StudyEnrollment study={ study } sites={ studySites }/>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        
-                        <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
-                            <Card>
-                                <CardHeader title="Milestones" />
-                                <CardContent>
-                                    Lorem ipsum dolor sit amet, consectetur.
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                        {
+                            enrollmentData
+                            ? <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
+                                <Card>
+                                    <CardHeader title="Enrollment Graphic" />
+                                    <CardContent>
+                                        <StudyEnrollment study={ study } sites={ studySites }/>
+                                    </CardContent>
+                                </Card>
+                                <Card>
+                                    <CardHeader title="Milestones" />
+                                    <CardContent>
+                                        Lorem ipsum dolor sit amet, consectetur.
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            : <Grid item xs={ 12 }>
+                                <Card>
+                                    <CardHeader title="Enrollment Information" />
+                                    <CardContent>
+                                        <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                    </CardContent>
+                                </Card>
+                            </Grid> 
+                        }
                     </Grid>
                 )
             }
