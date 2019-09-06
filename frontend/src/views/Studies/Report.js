@@ -3,17 +3,9 @@ import axios from 'axios'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-<<<<<<< HEAD
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { Title, Paragraph } from '../../components/Typography'
-=======
-import {
-    Grid, Card, CardHeader, CardContent, Button, IconButton, Typography, Input,
-    List, ListItem, ListItemIcon, ListItemText,
-} from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Typography, Input } from '@material-ui/core'
 import { Slider } from '@material-ui/lab'
-import { Title, Subsubheading, Paragraph, Caption } from '../../components/Typography'
->>>>>>> attempt merge
+import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
