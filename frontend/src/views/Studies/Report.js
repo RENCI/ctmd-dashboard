@@ -127,7 +127,7 @@ export const StudyReportPage = props => {
                                     {
                                         studyEnrollmentData && studyEnrollmentData.length > 0
                                             ? (
-                                                <div>
+                                                <Fragment>
                                                     
                                                     <StudyEnrollment
                                                         study={ study || null }
@@ -163,7 +163,7 @@ export const StudyReportPage = props => {
                                                               />
                                                         </Grid>
                                                     </Grid>
-                                                </div>
+                                                </Fragment>
                                             ) : <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
                                     } 
                                 </CardContent>
