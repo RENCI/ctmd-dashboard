@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import axios from 'axios'
 import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { CloudUpload as UploadIcon } from '@material-ui/icons'
+import { FlashMessageContext } from '../../contexts/FlashMessageContext'
 
 const useStyles = makeStyles(theme => ({
     dropzone: {
@@ -25,10 +26,12 @@ export const DropZone = ({ endpoint, headers }) => {
     const classes = useStyles()
     const fileInputRef = useRef()
     const [file, setFile] = useState([])
+    const addFlashMessage = useContext(FlashMessageContext)
 
     const onFilesAdded = event => {
         try {
             setFile(event.target.files[0])
+            addFlashMessage({ type: 'success', text: 'File selected!'})
             console.log('file selected')
         } catch (error) {
             console.error(error)
@@ -49,6 +52,7 @@ export const DropZone = ({ endpoint, headers }) => {
                 headers: headers,
                 data: formdata
             })
+            addFlashMessage({ type: 'success', text: 'File uploaded!'})
         } else {
             console.log('No file selected')
         }
