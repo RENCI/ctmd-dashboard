@@ -12,7 +12,7 @@ class StudyEnrollmentContainer extends Component {
 
         this.state = {
             windowWidth: 0,
-            enrollmentData: null
+            enrollmentData: this.props.enrollmentData
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -30,13 +30,13 @@ class StudyEnrollmentContainer extends Component {
     componentDidMount() {
         this.updateWindowDimensions();
 
-        axios.get(api.studyEnrollmentData(this.props.study.proposalID))
-            .then(result => {
-                this.setState({
-                    enrollmentData: result.data
-                });
-            })
-            .catch(error => console.log('Error', error));
+        // axios.get(api.studyEnrollmentData(this.props.study.proposalID))
+        //     .then(result => {
+        //         this.setState({
+        //             enrollmentData: result.data
+        //         });
+        //     })
+        //     .catch(error => console.log('Error', error));
 
         window.addEventListener('resize', this.updateWindowDimensions);
     }
@@ -55,8 +55,8 @@ class StudyEnrollmentContainer extends Component {
         if (!state.enrollmentData) return;
 
         // Calculate target enrollment
-        const targetEnrolledKey = "Revised Target Enrolled";
-        const targetSitesKey = "Revised Projected Sites";
+        const targetEnrolledKey = "targetEnrollment";
+        const targetSitesKey = "revisedProjectedSites";
 
         state.enrollmentData.forEach((d, i, a) => {
           d[targetEnrolledKey] = i == 0 ? 0 :
