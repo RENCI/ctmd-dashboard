@@ -173,7 +173,7 @@ export const StudyReportPage = props => {
                                                     </Grid>
                                                 </div>
                                             ) : <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
-                                    }
+                                    } 
                                 </CardContent>
                             </Card>
                         </Grid>
