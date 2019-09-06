@@ -146,43 +146,33 @@ export const StudyReportPage = props => {
                 axios.get(api.studyEnrollmentData(proposalID))
             ])
             .then(axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
-                if (profileResponse.data.length > 0) setStudyProfile(profileResponse.data)
+                setStudyProfile(profileResponse.data)
                 setStudySites(sitesResponse.data)
+                setStudyEnrollmentData(enrollmentResponse.data)
             }))
         }
         fetchStudyData(proposalId)
     }, [])
 
     useEffect(() => {
-        setIsLoading(!study || !studyProfile || !studySites)
-    }, [study, studyProfile, studySites])
+        setIsLoading(!studyProfile || !studySites)
+    }, [studyProfile, studySites])
 
     return (
         <div>
-            <Grid container spacing="4">
-                <Grid item xs={ 12 } md={ 10 } component={ Title }>Study Report for { study && (study.shortTitle || '...') }</Grid>
-                <Grid item xs={ 12 } md={ 1 }>
-                    <Button color="secondary" variant="contained"  size="large" component={ NavLink } to={ `${ proposalId }/uploads` }>
-                        Uploads
-                    </Button>
-                </Grid>
-            </Grid>
+            <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
 
-            <br/>
-
+            { isLoading && <CircularLoader /> }
             {
-                isLoading ? <CircularLoader />
-                : (
+                !isLoading && (
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
                             <Card>
-                                <CardHeader title="Study Profile" subheader={ `${ study.shortTitle } ( #${ study.proposalID } )` } />
+                                <CardHeader title="Study Profile"/>
                                 <CardContent>
                                     {
-                                        studyProfile
-                                            ? <pre>
-                                                { JSON.stringify(studyProfile, null, 2) }
-                                            </pre>
+                                        studyProfile && studyProfile.length > 0
+                                            ? <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
                                             : <Paragraph>No profile found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
                                     }
                                 </CardContent>
@@ -190,47 +180,36 @@ export const StudyReportPage = props => {
                         </Grid>
                         
                         {
-                            studySites.length > 0
-                            ? <Fragment>
+                            studySites && studySites.length > 0 ? (
+                                <Fragment>
+                                    <Grid item xs={ 12 }>
+                                        <SitesTable sites={ studySites } title="Sites" paging={ true } />
+                                    </Grid>
+                                </Fragment>
+                            ) : (
                                 <Grid item xs={ 12 }>
-                                    <SitesTable sites={ studySites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
+                                    <Card>
+                                        <CardHeader title="Sites" />
+                                        <CardContent>
+                                            <Paragraph>No sites list found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                        </CardContent>
+                                    </Card>
                                 </Grid>
-                            </Fragment>
-                            : <Grid item xs={ 12 }>
-                                <Card>
-                                    <CardHeader title={ `Sites for ${ study.shortTitle }` } />
-                                    <CardContent>
-                                        <Paragraph>No sites list found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                            )
                         }
                         
-                        {
-                            studyEnrollmentData
-                            ? <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
-                                <Card>
-                                    <CardHeader title="Enrollment Graphic" />
-                                    <CardContent>
-                                        <StudyEnrollment study={ study } sites={ studySites }/>
-                                    </CardContent>
-                                </Card>
-                                <Card>
-                                    <CardHeader title="Milestones" />
-                                    <CardContent>
-                                        Lorem ipsum dolor sit amet, consectetur.
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            : <Grid item xs={ 12 }>
-                                <Card>
-                                    <CardHeader title="Enrollment Information" />
-                                    <CardContent>
-                                        <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
-                                    </CardContent>
-                                </Card>
-                            </Grid> 
-                        }
+                        <Grid item xs={ 12 }>
+                            <Card>
+                                <CardHeader title="Enrollment Information" />
+                                <CardContent>
+                                    {
+                                        studyEnrollmentData && studyEnrollmentData.length > 0
+                                            ? <StudyEnrollment study={ study } sites={ studySites }/>
+                                            : <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                    }
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     </Grid>
                 )
             }

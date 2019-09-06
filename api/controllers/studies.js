@@ -115,5 +115,14 @@ exports.getSites = (req, res) => {
 }
 
 exports.getEnrollmentData = (req, res) => {
-    res.status(200).send('OK!')
+    const proposalId = req.params.id
+    const query = `SELECT * FROM "EnrollmentInformation" WHERE "ProposalID" = ${ proposalId };`
+    db.any(query)
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(error => {
+            console.log('ERROR:', error)
+            res.status(500).send('There was an error fetching data.')
+        })
 }

@@ -55,6 +55,7 @@ export const DropZone = ({ endpoint, headers }) => {
             addFlashMessage({ type: 'success', text: 'File uploaded!'})
         } else {
             console.log('No file selected')
+            addFlashMessage({ type: 'error', text: 'Error uploading file!'})
         }
     }
 
