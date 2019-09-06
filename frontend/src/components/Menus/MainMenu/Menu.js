@@ -9,6 +9,7 @@ import {
     Assignment as StudiesIcon,
     LocationOn as SitesIcon,
     Share as CollaborationsIcon,
+    CloudUpload as UploadIcon,
 } from '@material-ui/icons'
 import { CTSAIcon } from '../../Icons/Ctsa'
 
@@ -86,6 +87,7 @@ const menuItems = [
     { text: 'Studies', path: '/studies', icon: StudiesIcon, },
     { text: 'Sites', path: '/sites', icon: SitesIcon, },
     { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon, },
+    { text: 'Uploads', path: '/uploads', icon: UploadIcon },
     { }, // an empty object causes a Divider component to render in the menu 
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
     // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },

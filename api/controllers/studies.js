@@ -90,12 +90,20 @@ exports.getProfile = (req, res) => {
 }
 
 exports.getSites = (req, res) => {
-    // const studyProfileFile = __dirname + `/../temp/${ req.params.id }.sites.json`
-    // var contents = fs.readFileSync(studyProfileFile)
-    // var jsonContent = JSON.parse(contents)
-    // res.status(200).send(jsonContent)
     const proposalId = req.params.id
-    const query = `SELECT * FROM "StudySites" WHERE "ProposalID" = ${ proposalId };`
+    const query = `SELECT
+            "StudySites"."ProposalID",
+            "StudySites"."siteId",
+            "StudySites"."ctsaId",
+            "Sites"."siteId",
+            "Sites"."siteName",
+            "CTSAs"."ctsaId",
+            "CTSAs"."ctsaName"
+        FROM "StudySites"
+        LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
+        LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
+        WHERE "ProposalID"=${ proposalId };`
+
     db.any(query)
         .then(data => {
             res.status(200).send(data)

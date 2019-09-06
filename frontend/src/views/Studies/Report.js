@@ -1,10 +1,9 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import api from '../../Api'
-import { useTheme } from '@material-ui/styles'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Button, IconButton } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import { List, ListItem, ListItemText } from '@material-ui/core'
 import { Title, Subsubheading, Paragraph, Caption } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -12,12 +11,7 @@ import { SitesTable } from '../../components/Tables'
 import { isSiteActive } from '../../utils/sites'
 import { SitesActivationPieChart } from '../../components/Charts'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
-import { CollapsibleCard } from '../../components/CollapsibleCard'
-import { SitesReport } from './SitesReport'
 import { formatDate } from '../../utils'
-import { FileDrop } from '../../components/Forms'
-import { DropZone } from '../../components/Forms'
-import { CloudUpload as UploadIcon } from '@material-ui/icons'
 
 Array.prototype.chunk = function(size) {
     var chunks = []
@@ -130,29 +124,10 @@ export const StudyReportPage = props => {
     const [study, setStudy] = useState(null)
     const [studyProfile, setStudyProfile] = useState(null)
     const [studySites, setStudySites] = useState(null)
-    const [enrollmentData, setEnrollmentData] = useState(null)
-    const [allSites, setAllSites] = useState(null)
+    const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
-    const theme = useTheme()
     
     useEffect(() => {
-        const retrieveStudyProfile = async (proposalID) => {
-            await axios.get(api.studyProfile(proposalID))
-                .then(response => {
-                    if (response.data.length > 0) setStudyProfile(response.data)
-                })
-                .catch(error => {
-                    console.log(error.response.data)
-                    console.error(error)
-                })
-        }
-        const retrieveStudySites = async (proposalID) => {
-            await axios.get(api.studySites(proposalID))
-                .then(response => setStudySites(response.data))
-                .catch(error => console.error(error))
-        }
-        retrieveStudySites(proposalId)
-        retrieveStudyProfile(proposalId)
         if (store.proposals) {
             try {
                 const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == proposalId)
@@ -164,38 +139,36 @@ export const StudyReportPage = props => {
     }, [store.proposals])
 
     useEffect(() => {
-        const fetchAllSites = async () => {
-            axios.get(api.sites)
-                .then(response => setAllSites(response.data))
-                .catch(error => console.error(error))
+        const fetchStudyData = async (proposalID) => {
+            axios.all([
+                axios.get(api.studyProfile(proposalID)),
+                axios.get(api.studySites(proposalID)),
+                axios.get(api.studyEnrollmentData(proposalID))
+            ])
+            .then(axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
+                if (profileResponse.data.length > 0) setStudyProfile(profileResponse.data)
+                setStudySites(sitesResponse.data)
+            }))
         }
-        if (study && studySites) {
-            fetchAllSites()
-        }
-    }, [study, studySites])
+        fetchStudyData(proposalId)
+    }, [])
 
     useEffect(() => {
-        if (allSites) {
-            if (studySites) {
-                studySites.forEach(site => {
-                    const lookupSite = allSites.find(s => s.siteId === site.siteId)
-                    if (lookupSite) site.siteName = lookupSite.siteName
-                })
-            }
-            setIsLoading(false)
-        }
-    }, [allSites])
+        setIsLoading(!study || !studyProfile || !studySites)
+    }, [study, studyProfile, studySites])
 
     return (
         <div>
-            <Grid container>
-                <Grid item xs={ 12 } md={ 6 } component={ Title }>Study Report for { study && (study.shortTitle || '...') }</Grid>
-                <Grid item xs={ 12 } md={ 6 }>
-                    <Button color="secondary" variant="contained"  size="large" style={{ float: 'right' }} component={ NavLink } to={ `${ proposalId }/uploads` }>
+            <Grid container spacing="4">
+                <Grid item xs={ 12 } md={ 10 } component={ Title }>Study Report for { study && (study.shortTitle || '...') }</Grid>
+                <Grid item xs={ 12 } md={ 1 }>
+                    <Button color="secondary" variant="contained"  size="large" component={ NavLink } to={ `${ proposalId }/uploads` }>
                         Uploads
                     </Button>
                 </Grid>
             </Grid>
+
+            <br/>
 
             {
                 isLoading ? <CircularLoader />
@@ -234,7 +207,7 @@ export const StudyReportPage = props => {
                         }
                         
                         {
-                            enrollmentData
+                            studyEnrollmentData
                             ? <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
                                 <Card>
                                     <CardHeader title="Enrollment Graphic" />

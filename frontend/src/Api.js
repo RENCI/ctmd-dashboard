@@ -80,7 +80,7 @@ endpoints = {
     uploadCtsas: pipelineApiRoot + `table/CTSAs`,
     uploadStudyProfile: pipelineApiRoot + `table/StudyProfile`,
     uploadStudySites: pipelineApiRoot + `table/StudySites`,
-    uploadStudyEnrollmentData: pipelineApiRoot + `table/StudyEnrollmentData`,
+    uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation`,
 }
 
 export default endpoints

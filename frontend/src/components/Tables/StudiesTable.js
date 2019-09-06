@@ -100,7 +100,9 @@ export const StudiesTable = ({ title, studies, paging }) => {
             actions={[ {} ]}
             components={{
                 Action: ({ data }) => (
-                    <IconButton aria-label="View Detailed Report" size="large" component={ NavLink } to={ `/studies/${ data.proposalID }` }>
+                    <IconButton aria-label="View Detailed Report" size="large" color="secondary"
+                        component={ NavLink } to={ `/studies/${ data.proposalID }` }
+                    >
                         <ReportIcon style={{ fontSize: 24 }} />
                     </IconButton>
                 ),

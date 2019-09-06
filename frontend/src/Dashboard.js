@@ -17,10 +17,11 @@ import {
     ProposalsByApprovedServices,
     ProposalsByRequestedServices,
 } from './views/Proposals'
-import { StudiesListPage, StudyReportPage, StudyUploadsPage } from './views/Studies'
+import { StudiesListPage, StudyReportPage } from './views/Studies'
 import { CollaborationsPage } from './views/Collaborations'
 import { CtsasPage } from './views/Ctsas'
 import { SitesPage } from './views/Sites'
+import { UploadsPage } from './views/Uploads'
 
 const useStyles = makeStyles(theme => ({
     layout: {
@@ -72,9 +73,9 @@ const Dashboard = props => {
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route exact path="/studies" component={ StudiesListPage }/>
                         <Route exact path="/studies/:proposalID" component={ StudyReportPage }/>
-                        <Route exact path="/studies/:proposalID/uploads" component={ StudyUploadsPage }/>
                         <Route path="/ctsas" component={ CtsasPage }/>
                         <Route path="/sites" component={ SitesPage }/>
+                        <Route path="/uploads" component={ UploadsPage }/>
                         <Route path="/" component={ HomePage }/>
                     </Switch>
                 </ScrollToTop>

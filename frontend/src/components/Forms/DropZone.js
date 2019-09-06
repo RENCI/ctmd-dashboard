@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import axios from 'axios'
-import api from '../../Api'
 import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { CloudUpload as UploadIcon } from '@material-ui/icons'
