@@ -3,15 +3,11 @@ import axios from 'axios'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core'
-import { List, ListItem, ListItemText } from '@material-ui/core'
-import { Title, Subsubheading, Paragraph, Caption } from '../../components/Typography'
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
-import { isSiteActive } from '../../utils/sites'
-import { SitesActivationPieChart } from '../../components/Charts'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
-import { formatDate } from '../../utils'
 
 export const StudyReportPage = props => {
     const proposalId = props.match.params.proposalID
