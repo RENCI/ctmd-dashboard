@@ -116,7 +116,13 @@ exports.getSites = (req, res) => {
 
 exports.getEnrollmentData = (req, res) => {
     const proposalId = req.params.id
-    const query = `SELECT * FROM "EnrollmentInformation" WHERE "ProposalID" = ${ proposalId };`
+    const query = `SELECT
+            "ProposalID",
+            "date",
+            "revisedProjectedSites",
+            "actualSites",
+            "actualEnrollment"
+        FROM "EnrollmentInformation" WHERE "ProposalID" = ${ proposalId };`
     db.any(query)
         .then(data => {
             res.status(200).send(data)
