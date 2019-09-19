@@ -30,13 +30,13 @@ class StudyEnrollmentContainer extends Component {
     componentDidMount() {
         this.updateWindowDimensions();
 
-        // axios.get(api.studyEnrollmentData(this.props.study.proposalID))
-        //     .then(result => {
-        //         this.setState({
-        //             enrollmentData: result.data
-        //         });
-        //     })
-        //     .catch(error => console.log('Error', error));
+        axios.get(api.studyEnrollmentData(this.props.study.proposalID))
+            .then(result => {
+                this.setState({
+                    enrollmentData: result.data
+                });
+             })
+             .catch(error => console.log('Error', error));
 
         window.addEventListener('resize', this.updateWindowDimensions);
     }

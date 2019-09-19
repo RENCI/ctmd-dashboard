@@ -17,11 +17,11 @@ export default function() {
       sites = [],
 
       // Keys
-      dateKey = "CE01-120",
-      actualEnrolledKey = "Actual Enrolled",
-      targetEnrolledKey = "Revised Target Enrolled",
-      actualSitesKey = "Actual Sites",
-      targetSitesKey = "Revised Projected Sites",
+      dateKey = "date",
+      actualEnrolledKey = "actualEnrollment",
+      targetEnrolledKey = "targetEnrollment",
+      actualSitesKey = "actualSites",
+      targetSitesKey = "revisedProjectedSites",
 
       // Colors
       enrolledColor = "#8da0cb",
@@ -77,18 +77,27 @@ export default function() {
   // Create a closure containing the above variables
   function enrollmentGraph(selection) {
     selection.each(function(d) {
-      const dateFormat = d3.timeParse("%Y-%b");
+      const dateFormat = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
+
+      const isNumber = s => {
+        return s !== null && !Number.isNaN(Number.parseFloat(s));
+      }
 
       // Save data
       data = d.map(d => {
+        const ae = d[actualEnrolledKey];
+        const te = d[targetEnrolledKey];
+        const as = d[actualSitesKey];
+        const ts = d[targetSitesKey];
+
         const e = {};
         e[dateKey] = dateFormat(d[dateKey]);
-        e[actualEnrolledKey] = +d[actualEnrolledKey];
-        e[targetEnrolledKey] = +d[targetEnrolledKey];
-        e[actualSitesKey] = +d[actualSitesKey];
-        e[targetSitesKey] = +d[targetSitesKey];
+        e[actualEnrolledKey] = isNumber(ae) ? +ae : null;
+        e[targetEnrolledKey] = isNumber(te) ? +te : null;
+        e[actualSitesKey] = isNumber(as) ? +as : null;
+        e[targetSitesKey] = isNumber(ts) ? +ts : null;
         return e;
-      });
+      }).sort((a, b) => a.date - b.date);
 
       // Select the svg element, if it exists
       svg = d3.select(this).selectAll("svg")
@@ -207,7 +216,7 @@ export default function() {
         // Bind data for lines
         const line = d3.select(this).select(".lines").selectAll(".line")
             .data([
-              d.data.map(d => ({ date: d.date, value: d.actual })),
+              d.data.filter(d => d.actual !== null).map(d => ({ date: d.date, value: d.actual })),
               d.data.map(d => ({ date: d.date, value: d.target }))
             ]);
 
@@ -227,7 +236,7 @@ export default function() {
         line.exit().remove();
 
         function drawArea(selection) {
-          const data = selection.data()[0].data;
+          const data = selection.data()[0].data.filter(d => d.actual !== null);
 
           // Create regions
           const regions = [];
@@ -237,7 +246,10 @@ export default function() {
           data.forEach((d, i, a) => {
             const sign = Math.sign(d.actual - d.target);
 
-            if (sign !== 0 && currentSign === 0) {
+            if (i == 0) {
+              // Skip first time step
+            }
+            else if ((sign !== 0 && currentSign === 0) || i == 1) {
               // Start new region
               region = [
                 { x: xScale(a[i - 1].date), y1: yScale(a[i - 1].actual), y2: yScale(a[i - 1].target) },

@@ -100,7 +100,7 @@ export const StudyReportPage = props => {
                                 </CardContent>
                             </Card>
                         </Grid>
-                        
+
                         {
                             studySites && studySites.length > 0 ? (
                                 <Fragment>
@@ -119,7 +119,7 @@ export const StudyReportPage = props => {
                                 </Grid>
                             )
                         }
-                        
+
                         <Grid item xs={ 12 }>
                             <Card>
                                 <CardHeader title="Enrollment Information" />
@@ -142,9 +142,9 @@ export const StudyReportPage = props => {
                                                             <Slider
                                                                 value={ enrollmentRate }
                                                                 min={ 0 }
-                                                                max={ 1 }
+                                                                max={ 2 }
                                                                 step={ 0.01 }
-                                                                marks={marks}
+                                                                marks={ marks }
                                                                 onChange={ handleEnrollmentRateSliderChange }
                                                             />
                                                         </Grid>
@@ -152,12 +152,12 @@ export const StudyReportPage = props => {
                                                             <Input
                                                                 value={ enrollmentRate }
                                                                 margin="dense"
-                                                                onChange={handleEnrollmentRateInputChange}
-                                                                onBlur={handleEnrollmentRateInputBlur}
+                                                                onChange={ handleEnrollmentRateInputChange }
+                                                                onBlur={ handleEnrollmentRateInputBlur }
                                                                 inputProps={{
                                                                     step: 0.01,
                                                                     min: 0,
-                                                                    max: 1,
+                                                                    max: 2,
                                                                     type: "number"
                                                                 }}
                                                               />
@@ -165,7 +165,7 @@ export const StudyReportPage = props => {
                                                     </Grid>
                                                 </Fragment>
                                             ) : <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
-                                    } 
+                                    }
                                 </CardContent>
                             </Card>
                         </Grid>
