@@ -45,6 +45,7 @@ export default function() {
           .offset([-10, 0])
           .html(i => {
             const dateFormat = d3.timeFormat("%B, %Y");
+            const numberFormat = d3.format(".1f");
 
             return "<div style='font-weight: bold; margin-bottom: 10px;'>" + dateFormat(enrolled[i].date) + "</div>" +
                     "<div style='padding-left: 5px; margin-bottom: 10px; border-left: 2px solid " + sitesColor + ";'>" +
@@ -58,16 +59,29 @@ export default function() {
                       "<div style='font-weight: bold;'>Enrolled</div>" +
                       "<div style='padding-left: 10px'>" +
                         valueString(enrolled, "actual") + "<br>" +
-                        valueString(enrolled, "target") +
+                        valueString(enrolled, "target", numberFormat) +
                       "</div>" +
                     "</div>";
 
-              function valueString(type, key) {
-                const v1 = type[i][key],
-                      v2 = type[i + 1][key];
+              function valueString(type, key, format) {
+                let s = (key === "actual" ? "Actual: " : "Target: ");
 
-                return (key === "actual" ? "Actual: " : "Target: ") +
-                        v1 + (v2 !== v1 ? " ⮕ " + type[i + 1][key] : "");
+                let v1 = type[i][key],
+                    v2 = type[i + 1][key];
+
+                if (v1 === null || v2 === null) {
+                  s += "NA";
+                }
+                else {
+                  if (format) {
+                    v1 = format(v1);
+                    v2 = format(v2);
+                  }
+
+                  s += v1 + (v2 !== v1 ? " ⮕ " + v2 : "");
+                }
+
+                return s;
               }
           }),
 
