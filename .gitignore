@@ -8,3 +8,9 @@ duketic.sql
 api/temp/*
 
 # frontend
+
+# pipeline
+redis/
+backup/
+auxiliary/
+filter/

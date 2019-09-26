@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useContext, useEffect } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
-import { Grid, List, Tooltip, ListItemIcon, ListItem, ListItemText, Chip, IconButton, Divider } from '@material-ui/core'
+import React, { Fragment, useState, useEffect } from 'react'
+import { makeStyles } from '@material-ui/styles'
+import { Grid, List, Tooltip, ListItemIcon, ListItem, ListItemText, Divider } from '@material-ui/core'
 import {
     AccountBox as PiIcon,
     CalendarToday as CalendarIcon,
@@ -12,7 +12,6 @@ import {
     LocalLaundryService as ServicesIcon,
     CheckCircle as ApprovedIcon,
 } from '@material-ui/icons'
-import { Subheading, Subsubheading, Paragraph, Caption } from '../../../components/Typography'
 import { DetailPanel } from './DetailPanel'
 
 const useStyles = makeStyles(theme => ({
@@ -47,18 +46,13 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export const ProposalDetailPanel = props => {
-    const [expanded, setExpanded] = useState(false)
     const {
-        proposalID, shortTitle, piName, submitterInstitution, assignToInstitution,
+        shortTitle, piName, submitterInstitution, assignToInstitution,
         therapeuticArea, proposalStatus, fundingAmount, fundingPeriod, fundingStatus, fundingStatusWhenApproved,
         dateSubmitted, meetingDate, fundingStart, plannedGrantSubmissionDate, actualGrantSubmissionDate,
         requestedServices, approvedServices,
     } = props
     const classes = useStyles()
-
-    useEffect(() => {
-        setExpanded(true)
-    }, [])
 
     const todaysDate = (new Date()).toISOString().slice(0,10)
     

@@ -1,33 +1,13 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
-import MaterialTable from 'material-table'
+import React, { useContext, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Grid, IconButton, Tooltip, Divider } from '@material-ui/core'
-import { makeStyles, useTheme } from '@material-ui/styles'
-import {
-    Description as ProposalIcon,
-    DescriptionOutlined as ProposalOpenIcon,
-    Assessment as ReportIcon,
-    AssessmentOutlined as ReportOpenIcon,
-    Info as ProfileIcon,
-} from '@material-ui/icons'
+import MaterialTable from 'material-table'
 import { SettingsContext, StoreContext } from '../../contexts'
-import { Subheading, Subsubheading, Paragraph, Caption } from '../../components/Typography'
-import { CircularLoader } from '../../components/Progress/Progress'
-import { formatDate } from '../../utils'
-import { isSiteActive } from '../../utils/sites'
-import { SitesActivationPieChart } from '../../components/Charts'
-import { StudyDetailPanel } from './DetailPanels'
-
-const useStyles = makeStyles(theme => ({
-    panelIcon: {
-        padding: 0,
-    },    
-}))
+import { IconButton } from '@material-ui/core'
+import { Assessment as ReportIcon } from '@material-ui/icons'
 
 export const StudiesTable = ({ title, studies, paging }) => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
-    const classes = useStyles()
     if (title) title += ` (${ studies.length } Studies)`
     
     const getSitesForStudy = proposalID => {
@@ -115,9 +95,18 @@ export const StudiesTable = ({ title, studies, paging }) => {
                 pageSize: settings.tables.pageSize,
                 pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
+                actionsColumnIndex: -1,
             }}
-            detailPanel={ rowData => <StudyDetailPanel { ...rowData } />}
-            onRowClick={ (event, rowData, togglePanel) => togglePanel() }
+            actions={[ {} ]}
+            components={{
+                Action: ({ data }) => (
+                    <IconButton aria-label="View Detailed Report" size="large" color="secondary"
+                        component={ NavLink } to={ `/studies/${ data.proposalID }` }
+                    >
+                        <ReportIcon style={{ fontSize: 24 }} />
+                    </IconButton>
+                ),
+            }}
         />
     )
 }

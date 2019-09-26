@@ -1,3 +1,5 @@
+// studyEnrollmentGraph.js
+
 import * as d3 from 'd3';
 import d3Tip from 'd3-tip';
 
@@ -10,18 +12,16 @@ export default function() {
       innerHeight = function() { return height - margin.top - margin.bottom; },
 
       // Data
-//      study = null,
-//      sites = [],
-      enrollment = null,
+      data = null,
       enrolled = [],
       sites = [],
 
       // Keys
-      dateKey = "CE01-120",
-      actualEnrolledKey = "Actual Enrolled",
-      targetEnrolledKey = "Revised Target Enrolled",
-      actualSitesKey = "Actual Sites",
-      targetSitesKey = "Revised Projected Sites",
+      dateKey = "date",
+      actualEnrolledKey = "actualEnrollment",
+      targetEnrolledKey = "targetEnrollment",
+      actualSitesKey = "actualSites",
+      targetSitesKey = "revisedProjectedSites",
 
       // Colors
       enrolledColor = "#8da0cb",
@@ -45,6 +45,7 @@ export default function() {
           .offset([-10, 0])
           .html(i => {
             const dateFormat = d3.timeFormat("%B, %Y");
+            const numberFormat = d3.format(".1f");
 
             return "<div style='font-weight: bold; margin-bottom: 10px;'>" + dateFormat(enrolled[i].date) + "</div>" +
                     "<div style='padding-left: 5px; margin-bottom: 10px; border-left: 2px solid " + sitesColor + ";'>" +
@@ -58,16 +59,29 @@ export default function() {
                       "<div style='font-weight: bold;'>Enrolled</div>" +
                       "<div style='padding-left: 10px'>" +
                         valueString(enrolled, "actual") + "<br>" +
-                        valueString(enrolled, "target") +
+                        valueString(enrolled, "target", numberFormat) +
                       "</div>" +
                     "</div>";
 
-              function valueString(type, key) {
-                const v1 = type[i][key],
-                      v2 = type[i + 1][key];
+              function valueString(type, key, format) {
+                let s = (key === "actual" ? "Actual: " : "Target: ");
 
-                return (key === "actual" ? "Actual: " : "Target: ") +
-                        v1 + (v2 !== v1 ? " ⮕ " + type[i + 1][key] : "");
+                let v1 = type[i][key],
+                    v2 = type[i + 1][key];
+
+                if (v1 === null || v2 === null) {
+                  s += "NA";
+                }
+                else {
+                  if (format) {
+                    v1 = format(v1);
+                    v2 = format(v2);
+                  }
+
+                  s += v1 + (v2 !== v1 ? " ⮕ " + v2 : "");
+                }
+
+                return s;
               }
           }),
 
@@ -75,24 +89,33 @@ export default function() {
       dispatcher = d3.dispatch();
 
   // Create a closure containing the above variables
-  function enrollmentChart(selection) {
+  function enrollmentGraph(selection) {
     selection.each(function(d) {
-      // Save data
-//      study = d.study;
-//      sites = d.sites;
-      enrollment = d3.csvParse(d.enrollmentString);
+      const dateFormat = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
 
-      // Process data
-      const dateFormat = d3.timeParse("%y-%b");
-      enrollment.forEach(d => d[dateKey] = dateFormat(d[dateKey]));
-      enrollment.forEach(d => d[actualEnrolledKey] = +d[actualEnrolledKey]);
-      enrollment.forEach(d => d[targetEnrolledKey] = +d[targetEnrolledKey]);
-      enrollment.forEach(d => d[actualSitesKey] = +d[actualSitesKey]);
-      enrollment.forEach(d => d[targetSitesKey] = +d[targetSitesKey]);
+      const isNumber = s => {
+        return s !== null && !Number.isNaN(Number.parseFloat(s));
+      }
+
+      // Save data
+      data = d.map(d => {
+        const ae = d[actualEnrolledKey];
+        const te = d[targetEnrolledKey];
+        const as = d[actualSitesKey];
+        const ts = d[targetSitesKey];
+
+        const e = {};
+        e[dateKey] = dateFormat(d[dateKey]);
+        e[actualEnrolledKey] = isNumber(ae) ? +ae : null;
+        e[targetEnrolledKey] = isNumber(te) ? +te : null;
+        e[actualSitesKey] = isNumber(as) ? +as : null;
+        e[targetSitesKey] = isNumber(ts) ? +ts : null;
+        return e;
+      }).sort((a, b) => a.date - b.date);
 
       // Select the svg element, if it exists
       svg = d3.select(this).selectAll("svg")
-          .data([d]);
+          .data([data]);
 
       // Otherwise create the skeletal chart
       const svgEnter = svg.enter().append("svg")
@@ -124,7 +147,7 @@ export default function() {
   }
 
   function createTimeSeries(actualKey, targetKey, dateKey) {
-    return enrollment.map(d => {
+    return data.map(d => {
       return {
         actual: d[actualKey],
         target: d[targetKey],
@@ -207,7 +230,7 @@ export default function() {
         // Bind data for lines
         const line = d3.select(this).select(".lines").selectAll(".line")
             .data([
-              d.data.map(d => ({ date: d.date, value: d.actual })),
+              d.data.filter(d => d.actual !== null).map(d => ({ date: d.date, value: d.actual })),
               d.data.map(d => ({ date: d.date, value: d.target }))
             ]);
 
@@ -227,7 +250,7 @@ export default function() {
         line.exit().remove();
 
         function drawArea(selection) {
-          const data = selection.data()[0].data;
+          const data = selection.data()[0].data.filter(d => d.actual !== null);
 
           // Create regions
           const regions = [];
@@ -237,7 +260,10 @@ export default function() {
           data.forEach((d, i, a) => {
             const sign = Math.sign(d.actual - d.target);
 
-            if (sign !== 0 && currentSign === 0) {
+            if (i == 0) {
+              // Skip first time step
+            }
+            else if ((sign !== 0 && currentSign === 0) || i == 1) {
               // Start new region
               region = [
                 { x: xScale(a[i - 1].date), y1: yScale(a[i - 1].actual), y2: yScale(a[i - 1].target) },
@@ -316,30 +342,30 @@ export default function() {
           // Based on technique described here: http://paulbourke.net/geometry/pointlineplane/
           function lineSegmentIntersection(p1, p2, p3, p4) {
             // Check that none of the lines are of length 0
-          	if ((p1[0] === p2[0] && p1[1] === p2[1]) || (p3[0] === p4[0] && p3[1] === p4[1])) {
-          		return false;
-          	}
+            if ((p1[0] === p2[0] && p1[1] === p2[1]) || (p3[0] === p4[0] && p3[1] === p4[1])) {
+              return false;
+            }
 
-          	const denominator = ((p4[1] - p3[1]) * (p2[0] - p1[0]) - (p4[0] - p3[0]) * (p2[1] - p1[1]));
+            const denominator = ((p4[1] - p3[1]) * (p2[0] - p1[0]) - (p4[0] - p3[0]) * (p2[1] - p1[1]));
 
             // Lines are parallel
-          	if (denominator === 0) {
-          		return null;
-          	}
+            if (denominator === 0) {
+              return null;
+            }
 
-          	const ua = ((p4[0] - p3[0]) * (p1[1] - p3[1]) - (p4[1] - p3[1]) * (p1[0] - p3[0])) / denominator,
-          	      ub = ((p2[0] - p1[0]) * (p1[1] - p3[1]) - (p2[1] - p1[1]) * (p1[0] - p3[0])) / denominator;
+            const ua = ((p4[0] - p3[0]) * (p1[1] - p3[1]) - (p4[1] - p3[1]) * (p1[0] - p3[0])) / denominator,
+                  ub = ((p2[0] - p1[0]) * (p1[1] - p3[1]) - (p2[1] - p1[1]) * (p1[0] - p3[0])) / denominator;
 
             // Is the intersection along the segments?
-          	if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
-          		return null;
-          	}
+            if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+              return null;
+            }
 
             // Return the x and y coordinates of the intersection
-          	const x = p1[0] + ua * (p2[0] - p1[0]),
-          	      y = p1[1] + ua * (p2[1] - p1[1]);
+            const x = p1[0] + ua * (p2[0] - p1[0]),
+                  y = p1[1] + ua * (p2[1] - p1[1]);
 
-          	return [x, y];
+            return [x, y];
           }
         }
       }
@@ -530,23 +556,23 @@ export default function() {
 
   // Getters/setters
 
-  enrollmentChart.width = function(_) {
+  enrollmentGraph.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return enrollmentChart;
+    return enrollmentGraph;
   };
 
-  enrollmentChart.height = function(_) {
+  enrollmentGraph.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    return enrollmentChart;
+    return enrollmentGraph;
   };
 
   // For registering event callbacks
-  enrollmentChart.on = function() {
+  enrollmentGraph.on = function() {
     let value = dispatcher.on.apply(dispatcher, arguments);
-    return value === dispatcher ? enrollmentChart : value;
+    return value === dispatcher ? enrollmentGraph : value;
   };
 
-  return enrollmentChart;
+  return enrollmentGraph;
 }

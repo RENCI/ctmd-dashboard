@@ -1,176 +1,176 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useTheme } from '@material-ui/styles'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
+import axios from 'axios'
+import api from '../../Api'
+import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
-import { List, ListItem, ListItemText } from '@material-ui/core'
-import { Title, Subsubheading, Caption } from '../../components/Typography'
+import { Grid, Card, CardHeader, CardContent, Typography, Input } from '@material-ui/core'
+import { Slider } from '@material-ui/lab'
+import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
-import { isSiteActive } from '../../utils/sites'
-import { SitesActivationPieChart } from '../../components/Charts'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
-import { CollapsibleCard } from '../../components/CollapsibleCard'
-import { SitesReport } from './SitesReport'
-import { formatDate } from '../../utils'
-
-Array.prototype.chunk = function(size) {
-    var chunks = []
-    for (var i = 0; i < this.length; i+= size) {
-        chunks.push(this.slice(i,i + size))
-    }
-    return chunks
-}
-
-const Milestones = ({ sites }) => {
-    const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0})
-    const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
-    const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
-    const [firstSubjectEnrolled, setFirstSubjectEnrolled] = useState()
-    const [siteActivationPercentages, setSiteActivationPercentages] = useState([null, null, null, null])
-
-    const earliestDate = property => {
-        const reducer = (earliestDate, date) => date < new Date(earliestDate) ? date : earliestDate
-        const earliestDate = sites.map(site => site[property])
-            .filter(date => date !== '')
-            .map(date => new Date(date))
-            .reduce(reducer, new Date())
-        return formatDate(earliestDate)
-    }
-
-    const thresholds = property => {
-        const quartileSize = Math.round(sites.length / 4)
-        const activationDates = sites.map(site => site[property])
-            .filter(date => date !== '')
-            .map(date => new Date(date))
-            .sort((d1, d2) => d1 > d2)
-        const dates = activationDates.chunk(quartileSize).map(chunk => formatDate(chunk[chunk.length - 1]))
-        for (let i = 0; i < 4; i++) {
-            if (!dates[i]) { dates[i] = 'N/A' }
-        }
-        setSiteActivationPercentages(dates)
-    }
-
-    useEffect(() => {
-        setFirstIRBApprovedDate(earliestDate('dateIrbApproval'))
-        setFirstSiteActivationDate(earliestDate('dateSiteActivated'))
-        setFirstSubjectEnrolled(earliestDate('fpfv'))
-        thresholds('dateSiteActivated')
-    }, [sites])
-
-    const activeSitesCount = () => {
-        const reducer = (count, site) => isSiteActive(site) ? count + 1 : count
-        return sites.reduce(reducer, 0)
-    }
-
-    const activeSitesPercentage = () => 100 * (activeSitesCount() / sites.length).toFixed(2)
-
-    useEffect(() => {
-        if (sites) {
-            const reducer = (counts, site) => {
-                const { patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount } = site
-                return ({
-                    consented: counts.consented + parseInt(patientsConsentedCount || 0),
-                    enrolled: counts.enrolled + parseInt(patientsEnrolledCount || 0),
-                    withdrawn: counts.withdrawn + parseInt(patientsWithdrawnCount || 0),
-                    expected: counts.expected + parseInt(patientsExpectedCount || 0),
-                })
-            }
-            setPatientCounts(sites.reduce(reducer, patientCounts))
-        }
-    }, [sites])
-
-    return (
-        <Card>
-            <CardHeader title="Milestones"/>
-            <CardContent>
-                <Subsubheading align="center">Site Activation</Subsubheading>
-                <SitesActivationPieChart percentage={ activeSitesPercentage() } />
-                <Caption align="center">
-                    { activeSitesCount() } of { sites.length } sites
-                </Caption>
-            </CardContent>
-            <CardContent>
-                <List dense>
-                    <ListItem>
-                        <ListItemText primary="First IRB Approved" secondary={ firstIRBApprovedDate }></ListItemText>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="First Site Activated" secondary={ firstSiteActivationDate }></ListItemText>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="First Subject Enrolled" secondary={ firstSubjectEnrolled }></ListItemText>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="25% Enrolled" secondary={ siteActivationPercentages[0] }></ListItemText>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="50% Enrolled" secondary={ siteActivationPercentages[1] }></ListItemText>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="75% Enrolled" secondary={ siteActivationPercentages[2] }></ListItemText>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="100% Enrolled" secondary={ siteActivationPercentages[3] }></ListItemText>
-                    </ListItem>
-                </List>
-            </CardContent>
-        </Card>
-    )
-}
 
 export const StudyReportPage = props => {
+    const proposalId = props.match.params.proposalID
     const [store, ] = useContext(StoreContext)
     const [study, setStudy] = useState(null)
-    const [sites, setSites] = useState(null)
-    const theme = useTheme()
+    const [studyProfile, setStudyProfile] = useState(null)
+    const [studySites, setStudySites] = useState(null)
+    const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [enrollmentRate, setEnrollmentRate] = useState(0.2)
 
     useEffect(() => {
         if (store.proposals) {
             try {
-                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == props.match.params.proposalID)
-                const studySites = store.sites.filter(site => site.proposalID == props.match.params.proposalID)
+                const studyFromRoute = store.proposals.find(proposal => proposal.proposalID == proposalId)
                 setStudy(studyFromRoute)
-                setSites(studySites)
             } catch (error) {
-                console.log(error)
+                console.log(`Could not load study #${ proposalId }`, error)
             }
         }
     }, [store.proposals])
+
+    useEffect(() => {
+        const fetchStudyData = async (proposalID) => {
+            axios.all([
+                axios.get(api.studyProfile(proposalID)),
+                axios.get(api.studySites(proposalID)),
+                axios.get(api.studyEnrollmentData(proposalID))
+            ])
+            .then(axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
+                setStudyProfile(profileResponse.data)
+                setStudySites(sitesResponse.data)
+                setStudyEnrollmentData(enrollmentResponse.data)
+            }))
+        }
+        fetchStudyData(proposalId)
+    }, [])
+
+    useEffect(() => {
+        setIsLoading(!studyProfile || !studySites)
+    }, [studyProfile, studySites])
+
+        const handleEnrollmentRateSliderChange = (event, value) => {
+        setEnrollmentRate(value);
+    };
+
+    const handleEnrollmentRateInputChange = event => {
+      setEnrollmentRate(event.target.value === '' ? '' : Number(event.target.value));
+    };
+
+    const handleEnrollmentRateInputBlur = () => {
+      if (enrollmentRate < 0) {
+        setEnrollmentRate(0);
+      }
+      else if (enrollmentRate > 1) {
+        setEnrollmentRate(1);
+      }
+    };
+
+    // Marks for enrollment rate slider
+    const marks = Array(11).fill().map((d, i) => {
+      const v = i * 0.1;
+      const s = v.toFixed(1);
+
+      return {
+        value: +v,
+        label: s
+      };
+    });
+
 
     return (
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
 
+            { isLoading && <CircularLoader /> }
             {
-                study && sites ? (
+                !isLoading && (
                     <Grid container spacing={ 4 }>
                         <Grid item xs={ 12 }>
                             <Card>
-                                <CardHeader
-                                    title="All-Sites Report"
-                                    subheader="According to the Coordinating Center Metrics"
-                                />
+                                <CardHeader title="Study Profile"/>
                                 <CardContent>
-                                    { sites ? <SitesReport sites={ sites } /> : <CircularLoader /> }
+                                    {
+                                        studyProfile && studyProfile.length > 0
+                                            ? <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
+                                            : <Paragraph>No profile found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                    }
                                 </CardContent>
                             </Card>
                         </Grid>
+
+                        {
+                            studySites && studySites.length > 0 ? (
+                                <Fragment>
+                                    <Grid item xs={ 12 }>
+                                        <SitesTable sites={ studySites } title="Sites" paging={ true } />
+                                    </Grid>
+                                </Fragment>
+                            ) : (
+                                <Grid item xs={ 12 }>
+                                    <Card>
+                                        <CardHeader title="Sites" />
+                                        <CardContent>
+                                            <Paragraph>No sites list found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            )
+                        }
+
                         <Grid item xs={ 12 }>
-                            <SitesTable sites={ sites } title={ `Sites for ${ study.shortTitle }` } paging={ true } />
-                        </Grid>
-                        <Grid item xs={ 12 } sm={ 7 } md={ 8 } lg={ 9 }>
                             <Card>
-                                <CardHeader title="Enrollment Graphic" />
+                                <CardHeader title="Enrollment Information" />
                                 <CardContent>
-                                    <StudyEnrollment study={ study } sites={ sites }/>
+                                    {
+                                        studyEnrollmentData && studyEnrollmentData.length > 0
+                                            ? (
+                                                <Fragment>
+                                                    
+                                                    <StudyEnrollment
+                                                        study={ study || null }
+                                                        sites={ studySites || null}
+                                                        enrollmentRate={ enrollmentRate }
+                                                    />
+                                                    <Typography align="right">
+                                                        Enrollment rate
+                                                    </Typography>
+                                                    <Grid container spacing={6} justify="flex-end">
+                                                        <Grid item xs={5}>
+                                                            <Slider
+                                                                value={ enrollmentRate }
+                                                                min={ 0 }
+                                                                max={ 2 }
+                                                                step={ 0.01 }
+                                                                marks={ marks }
+                                                                onChange={ handleEnrollmentRateSliderChange }
+                                                            />
+                                                        </Grid>
+                                                        <Grid item mr={5}>
+                                                            <Input
+                                                                value={ enrollmentRate }
+                                                                margin="dense"
+                                                                onChange={ handleEnrollmentRateInputChange }
+                                                                onBlur={ handleEnrollmentRateInputBlur }
+                                                                inputProps={{
+                                                                    step: 0.01,
+                                                                    min: 0,
+                                                                    max: 2,
+                                                                    type: "number"
+                                                                }}
+                                                              />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Fragment>
+                                            ) : <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                    }
                                 </CardContent>
                             </Card>
-                        </Grid>
-                        <Grid item xs={ 12 } sm={ 5 } md={ 4 } lg={ 3 }>
-                            <Milestones sites={ sites } />
                         </Grid>
                     </Grid>
-                ) : <CircularLoader />
+                )
             }
         </div>
     )

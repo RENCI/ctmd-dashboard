@@ -1,32 +1,11 @@
 import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/styles'
-import { Redirect } from 'react-router-dom'
 import MaterialTable from 'material-table'
-import { Grid } from '@material-ui/core'
-import {
-    Description as ProposalIcon,
-    DescriptionOutlined as ProposalOpenIcon,
-    Assessment as ReportIcon,
-    AssessmentOutlined as ReportOpenIcon,
-} from '@material-ui/icons'
-import { SettingsContext, StoreContext } from '../../contexts'
-import { formatDate } from '../../utils'
-import { isSiteActive } from '../../utils/sites'
-import { Subheading, Subsubheading, Paragraph, Caption } from '../../components/Typography'
-import { CircularLoader } from '../../components/Progress/Progress'
-import { SitesActivationPieChart } from '../../components/Charts'
-import { UtahIcon } from '../Icons/Utah'
-import { ProposalDetailPanel, StudyDetailPanel } from './DetailPanels'
-
-const useTableStyles = makeStyles(theme => ({
-    panelIcon: {
-        padding: 0,
-    },    
-}))
+import { SettingsContext } from '../../contexts'
+import { ProposalDetailPanel } from './DetailPanels'
 
 export const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
-    const classes = useTableStyles()
     let { title, proposals } = props
     if (title) title += ` (${ proposals.length } Proposals)`
 

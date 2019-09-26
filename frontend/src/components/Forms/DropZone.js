@@ -1,13 +1,12 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
+import axios from 'axios'
 import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { CloudUpload as UploadIcon } from '@material-ui/icons'
+import { FlashMessageContext } from '../../contexts/FlashMessageContext'
 
 const useStyles = makeStyles(theme => ({
     dropzone: {
-        // backgroundColor: theme.palette.grey[200],
-        // borderRadius: theme.shape.borderRadius,
-        // padding: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
     },
@@ -23,33 +22,46 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const DropZone = props => {
+export const DropZone = ({ endpoint, headers }) => {
     const classes = useStyles()
     const fileInputRef = useRef()
-    const [files, setFiles] = useState([])
+    const [file, setFile] = useState([])
+    const addFlashMessage = useContext(FlashMessageContext)
 
     const onFilesAdded = event => {
         try {
-            const files = Array.from(event.target.files)
-            console.log('Files Selected!')
-            setFiles(files)
+            setFile(event.target.files[0])
+            addFlashMessage({ type: 'success', text: 'File selected!'})
+            console.log('file selected')
         } catch (error) {
             console.error(error)
         }
     }
 
     const handleClickUpload = event => {
-        if (files.length > 0) {
-            console.log(`Uploading ${ files.length } files:`)
-            files.forEach(file => console.log(`- ${ file.name }`))
+        if (file) {
+            console.log('uploading', file.name)
+            const formdata = new FormData()
+            formdata.append('data', file)
+            formdata.append('content-type', 'application/json')
+            formdata.append('json', '{}')
+            headers = { 'Access-Control-Allow-Origin': '*' }
+            axios({
+                url: endpoint,
+                method: 'POST',
+                headers: headers,
+                data: formdata
+            })
+            addFlashMessage({ type: 'success', text: 'File uploaded!'})
         } else {
-            console.log('No files selected')
+            console.log('No file selected')
+            addFlashMessage({ type: 'error', text: 'Error uploading file!'})
         }
     }
 
     return (
         <div className={ classes.dropzone }>
-            <input type="file" multiple
+            <input type="file" accept="application/json"
                 ref={ fileInputRef }
                 className={ classes.fileInput }
                 onChange={ onFilesAdded }
@@ -60,5 +72,3 @@ const DropZone = props => {
         </div>
     )
 }
-
-export default DropZone

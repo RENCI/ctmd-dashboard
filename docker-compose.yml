@@ -16,21 +16,23 @@ services:
     
   pipeline:
     container_name: pmd-pipeline
-    image: zooh/pmd-pipeline-reload:0.2.4
+    image: zooh/pmd-pipeline-reload:0.2.13
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_PORT: $POSTGRES_PORT
+      POSTGRES_PORT: $POSTGRES_PORT    
       POSTGRES_HOST: db
       REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
+      REDCAP_URL_BASE: "https://redcap.vanderbilt.edu/api/"
       POSTGRES_DUMP_PATH: /backup
-      REDCAP_URL_BASE: https://redcap.vanderbilt.edu/api/
-      SERVER: 1
       AUXILIARY_PATH: /auxiliary
       FILTER_PATH: /filter
-      SCHEDULE_RUN_TIME: 00:00
+      RELOAD_SCHEDULE: $RELOAD_SCHEDULE
+      RELOAD_DATABASE: $RELOAD_DATABASE
+      SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
+      SERVER: 1
       REDIS_QUEUE_HOST: redis
       REDIS_QUEUE_PORT: 6379
       REDIS_QUEUE_DB: 0
@@ -39,6 +41,7 @@ services:
       REDIS_LOCK_DB: 1
       REDIS_LOCK_EXPIRE: 3600
       REDIS_LOCK_TIMEOUT: 3600
+      PAUSE: $PAUSE
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
@@ -46,8 +49,8 @@ services:
     depends_on:
       - db
       - redis
-    expose:
-      - 5000
+    ports:
+      - 5000:5000
 
   db:
     container_name: pmd-db-dev
@@ -55,10 +58,6 @@ services:
     build:
       context: ./db/
       dockerfile: Dockerfile
-    volumes:
-      - ./db/pgdata/:/var/lib/postgresql/data/
-      - ./db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
-      - ./db/duketic.sql:/data/duketic.sql
     environment:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
@@ -78,10 +77,11 @@ services:
     ports:
       - $API_PORT:$API_PORT
     environment:
+      POSTGRES_PORT: $POSTGRES_HOST
+      POSTGRES_PORT: $POSTGRES_PORT
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_PORT: $POSTGRES_PORT
     depends_on:
       - db
 

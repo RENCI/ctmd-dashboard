@@ -5,7 +5,7 @@ import {
     TextField,
 } from '@material-ui/core'
 
-const ProposalDetailsForm = props => {
+export const ProposalDetailsForm = props => {
     const { proposal } = props
     return (
         <div>
@@ -23,5 +23,3 @@ const ProposalDetailsForm = props => {
         </div>
     )
 }
-
-export default ProposalDetailsForm

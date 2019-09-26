@@ -1,20 +1,6 @@
-import React, { Fragment, useState, useContext, useEffect } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
-import { Grid, Typography, List, Tooltip, ListItemIcon, ListItem, ListItemText, Chip, IconButton, Divider } from '@material-ui/core'
-import { Collapse } from '@material-ui/core'
-import {
-    AccountBox as PiIcon,
-    CalendarToday as CalendarIcon,
-    AccountBalance as InstitutionIcon,
-    LocalOffer as TherapeuticAreaIcon,
-    Assignment as TicIcon,
-    Alarm as ProposalStatusIcon,
-    AttachMoney as BudgetIcon,
-    LocalLaundryService as ServicesIcon,
-    CheckCircle as ApprovedIcon,
-} from '@material-ui/icons'
-import { Subheading, Subsubheading, Paragraph, Caption } from '../../../components/Typography'
-import { Star as MetricsIcon } from '@material-ui/icons'
+import React, { useContext } from 'react'
+import { makeStyles } from '@material-ui/styles'
+import { Grid, List, ListItemIcon, ListItem, ListItemText, Chip } from '@material-ui/core'
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
 
@@ -53,7 +39,6 @@ export const SiteDetailPanel = ({
     queriesCount,
     protocolDeviationsCount,
 }) => {
-    const classes = useStyles()
 
     const dayCount = (startDate, endDate) => {
         if (startDate && endDate) {

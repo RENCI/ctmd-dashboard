@@ -44,10 +44,14 @@ app.use('/organizations', require('./routes/organizations'))
 app.use('/therapeutic-areas', require('./routes/therapeutic-areas'))
 // Study Metrics
 app.use('/study-metrics', require('./routes/study-metrics'))
+// Studies
+app.use('/studies', require('./routes/studies'))
 // Site Metrics
 app.use('/site-metrics', require('./routes/site-metrics'))
 // Sites
 app.use('/sites', require('./routes/sites'))
+// CTSAs
+app.use('/ctsas', require('./routes/ctsas'))
 
 // Endpoint List/Documentation
 app.use('/list', require('./routes/documentation'))
