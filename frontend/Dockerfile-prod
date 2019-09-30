@@ -11,6 +11,7 @@ ENV PATH /src/node_modules/.bin:$PATH
 
 # Environment variable
 ARG REACT_APP_API_ROOT=$REACT_APP_API_ROOT
+ARG REACT_APP_DATA_API_ROOT=$REACT_APP_DATA_API_ROOT
 
 # Install and cache app dependencies
 COPY package*.json /src/
