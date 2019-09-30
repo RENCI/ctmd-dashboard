@@ -1,14 +1,30 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 
+const defaultPageSizeOptions = [15, 25, 50, 100, 200]
+
 export const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
-    let { title, proposals } = props
-    if (title) title += ` (${ proposals.length } Proposals)`
+    const [pageSizeOptions, setPageSizeOptions] = useState(defaultPageSizeOptions)
 
+    let { title, proposals } = props
+    
+    useEffect(() => {
+        if (proposals) {
+            const newPageSizes = defaultPageSizeOptions.filter(size => size <= proposals.length)
+            if ((proposals.length) > newPageSizes[newPageSizes.length - 1]) {
+                setPageSizeOptions(newPageSizes.concat(proposals.length))
+            } else {
+                setPageSizeOptions(newPageSizes)
+            }
+        }
+    }, [proposals])
+
+    if (title) title += ` (${ proposals.length } Proposals)`
+    
     return (
         <MaterialTable
             title={ title || '-' }
@@ -79,7 +95,7 @@ export const ProposalsTable = (props) => {
                 filtering: true,
                 grouping: true,
                 pageSize: settings.tables.pageSize,
-                pageSizeOptions: [15, 25, 50, 100, 200],
+                pageSizeOptions: pageSizeOptions,
                 exportFileName: title,
             }}
             detailPanel={ rowData => <ProposalDetailPanel { ...rowData } />}
