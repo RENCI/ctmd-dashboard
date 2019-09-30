@@ -57,7 +57,7 @@ export const ProposalsByApprovedServices = props => {
                 <BrowseMenu />
             </Title>
 
-            <Grid container>
+            <Grid container spacing="4">
 
                 <Grid item xs={ 12 }>
                     <Card>

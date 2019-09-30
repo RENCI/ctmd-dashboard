@@ -31,7 +31,7 @@ export const ProposalReportPage = props => {
                 </Subheading>
             </div>
             
-            <Grid container spacing={ theme.spacing(2) }>
+            <Grid container spacing="4">
                 <Grid item xs={ 12 }>
                     <Card>
                         <CardHeader
