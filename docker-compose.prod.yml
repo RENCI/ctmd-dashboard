@@ -96,6 +96,7 @@ services:
       args:
         NODE_ENV: production
         REACT_APP_API_ROOT: $REACT_APP_API_ROOT
+        REACT_APP_DATA_API_ROOT: $REACT_APP_DATA_API_ROOT
       context: ./frontend/
       dockerfile: Dockerfile-prod
     volumes:
