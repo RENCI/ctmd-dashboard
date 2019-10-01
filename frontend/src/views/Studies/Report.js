@@ -62,6 +62,7 @@ export const StudyReportPage = props => {
     }, [])
 
     useEffect(() => {
+        console.log(studySites)
         setIsLoading(!study || !studyProfile || !studySites || !studyEnrollmentData)
     }, [study, studyProfile, studySites, studyEnrollmentData])
 

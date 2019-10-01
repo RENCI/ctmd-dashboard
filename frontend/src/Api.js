@@ -72,10 +72,10 @@ endpoints = {
 
 endpoints = {
     ...endpoints,
-    dataGetBackups: pipelineApiRoot + 'data/backup', // GET to return list of available backups
-    dataPostBackup: pipelineApiRoot + 'data/backup', // POST to back up database
-    dataRestore: pipelineApiRoot + 'data/restore', // /data/restore/<timestamp> to restore to backup given in
-    dataSync: pipelineApiRoot + 'data/sync', // POST to sync with redcap
+    dataGetBackups: pipelineApiRoot + 'backup', // GET to return list of available backups
+    dataPostBackup: pipelineApiRoot + 'backup', // POST to back up database
+    dataRestore: timestamp => `${ pipelineApiRoot }restore/${ timestamp }`, // /data/restore/<timestamp> to restore to backup given in
+    dataSync: pipelineApiRoot + 'sync', // POST to sync with redcap
     uploadSites: pipelineApiRoot + `table/Sites`,
     uploadCtsas: pipelineApiRoot + `table/CTSAs`,
     uploadStudyProfile: pipelineApiRoot + `table/StudyProfile`,

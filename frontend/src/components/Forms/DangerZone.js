@@ -27,17 +27,16 @@ const useStyles = makeStyles(theme => ({
 
 export const DangerZone = props => {
     const classes = useStyles()
-    const [backups, setBackups] = useState(['06/04/2019 04:07:30', '05/01/2019 12:52:27', '04/08/2019 13:41:06', '03/13/2019 19:56:58', '01/05/2019 19:08:05'])
-
-    const fetchBackups = async () => {
-        await axios.get(api.dataGetBackups)
-            .then(response => {
-                console.log(response.data)
-            })
-            .catch(error => console.error(error))
-    }
+    const [backups, setBackups] = useState([])
 
     useEffect(() => {
+        const fetchBackups = async () => {
+            await axios.get(api.dataGetBackups)
+                .then(response => {
+                    setBackups(response.data)
+                })
+                .catch(error => console.error(error))
+        }
         fetchBackups()
     }, [])
     
@@ -45,7 +44,7 @@ export const DangerZone = props => {
         console.log('Initializing data backup...')
         axios.get(api.dataPostBackup)
             .then(response => {
-                console.log(response.data)
+                console.log('Database backup scheduled', response.data)
             })
             .catch(error => console.error(error))
         return
@@ -53,7 +52,7 @@ export const DangerZone = props => {
 
     const handleRestore = timestamp => event => {
         console.log(`Restore data from ${ timestamp }...`)
-        axios.get(api.dataRestore)
+        axios.get(api.dataRestore(timestamp))
             .then(response => {
                 console.log(response.data)
             })
@@ -72,7 +71,7 @@ export const DangerZone = props => {
     }
 
     return (
-        <Grid container spacing={ 40 } alignItems="center">
+        <Grid container spacing={ 4 } alignItems="center">
             <Grid item xs={ 9 }>
                 <strong>Backup</strong>
                 <Paragraph>
