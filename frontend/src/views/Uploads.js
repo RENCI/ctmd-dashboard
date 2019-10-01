@@ -35,8 +35,12 @@ export const UploadsPage = props => {
                         </CardContent>
                     </Card>
                 </Grid>
+
+            </Grid>
+
+            <br/><br/><br/>
                 
-                <br/>
+            <Grid container spacing="4">
 
                 <Grid item xs={ 12 }>
                     <Subheading>Per-Study Uploads</Subheading>
