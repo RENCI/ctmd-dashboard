@@ -95,7 +95,7 @@ export const StudyReportPage = props => {
                                     {
                                         studyProfile && studyProfile.length > 0
                                             ? <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
-                                            : <Paragraph>No profile found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                            : <Paragraph>No profile found! <NavLink to="/uploads">Upload it</NavLink>!</Paragraph>
                                     }
                                 </CardContent>
                             </Card>
@@ -113,7 +113,7 @@ export const StudyReportPage = props => {
                                     <Card>
                                         <CardHeader title="Sites" />
                                         <CardContent>
-                                            <Paragraph>No sites list found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                            <Paragraph>No sites list found! <NavLink to="/uploads">Upload it</NavLink>!</Paragraph>
                                         </CardContent>
                                     </Card>
                                 </Grid>
@@ -164,7 +164,7 @@ export const StudyReportPage = props => {
                                                         </Grid>
                                                     </Grid>
                                                 </Fragment>
-                                            ) : <Paragraph>No enrollment information found! <NavLink to={ `${ proposalId }/uploads` }>Upload it</NavLink>!</Paragraph>
+                                            ) : <Paragraph>No enrollment information found! <NavLink to="/uploads">Upload it</NavLink>!</Paragraph>
                                     }
                                 </CardContent>
                             </Card>
