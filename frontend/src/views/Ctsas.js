@@ -21,12 +21,7 @@ export const CtsasPage = (props) => {
 
     return (
         <div>
-            <Grid container>
-                <Grid item xs={ 12 } md={ 6 } component={ Title }>CTSAs</Grid>
-                <Grid item xs={ 12 } md={ 6 }>
-                    <DropZone endpoint={ api.uploadCtsas } />
-                </Grid>
-            </Grid>
+            <Title>CTSAs</Title>
 
             { ctsas ? <LookupTable data={ ctsas.map(ctsa => ({ id: ctsa.ctsaId, name: ctsa.ctsaName })) } /> : <CircularLoader /> }
             

@@ -21,12 +21,7 @@ export const SitesPage = (props) => {
 
     return (
         <div>
-            <Grid container>
-                <Grid item xs={ 12 } md={ 6 } component={ Title }>Sites</Grid>
-                <Grid item xs={ 12 } md={ 6 }>
-                    <DropZone endpoint={ api.uploadSites } />
-                </Grid>
-            </Grid>
+            <Title>Sites</Title>
 
             { sites ? <LookupTable data={ sites.map(site => ({ id: site.siteId, name: site.siteName })) } /> : <CircularLoader /> }
             
