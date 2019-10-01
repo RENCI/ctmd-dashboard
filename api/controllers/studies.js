@@ -34,21 +34,21 @@ const upload = multer({ storage: storage }).array('file')
 
 //
 
-exports.uploadProfile = (req, res) => {
-    res.status(200).send(`Profile for ${ req.params.id } - OK!`)
-}
+// exports.uploadProfile = (req, res) => {
+//     res.status(200).send(`Profile for ${ req.params.id } - OK!`)
+// }
 
-//
+// //
 
-exports.uploadSites = (req, res) => {
-    res.status(200).send(`Sites for ${ req.params.id } - OK!`)
-}
+// exports.uploadSites = (req, res) => {
+//     res.status(200).send(`Sites for ${ req.params.id } - OK!`)
+// }
 
-//
+// //
 
-exports.uploadEnrollmentData = (req, res) => {
-    res.status(200).send(`Enrollment Data for ${ req.params.id } - OK!`)
-}
+// exports.uploadEnrollmentData = (req, res) => {
+//     res.status(200).send(`Enrollment Data for ${ req.params.id } - OK!`)
+// }
 
 //
 
@@ -73,10 +73,6 @@ exports.uploadEnrollmentData = (req, res) => {
 // }
 
 exports.getProfile = (req, res) => {
-    // const studyProfileFile = __dirname + `/../temp/${ req.params.id }.profile.json`
-    // var contents = fs.readFileSync(studyProfileFile)
-    // var jsonContent = JSON.parse(contents)
-    // res.status(200).send(jsonContent)
     const proposalId = req.params.id
     const query = `SELECT * FROM "StudyProfile" WHERE "ProposalID" = ${ proposalId };`
     db.any(query)
@@ -103,7 +99,7 @@ exports.getSites = (req, res) => {
         LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
         LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
         WHERE "ProposalID"=${ proposalId };`
-
+    console.log(query)
     db.any(query)
         .then(data => {
             res.status(200).send(data)
