@@ -10,6 +10,20 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 
+const StudyProfile = ({ profile }) => {
+    return (
+        <article>
+            {
+                Object.keys(profile).map(key => (
+                    <Fragment>
+                        <strong>{ key }</strong>: { profile[key] }<br />
+                    </Fragment>
+                ))
+            }
+        </article>
+    )
+}
+
 export const StudyReportPage = props => {
     const proposalId = props.match.params.proposalID
     const [store, ] = useContext(StoreContext)
@@ -33,7 +47,7 @@ export const StudyReportPage = props => {
 
     useEffect(() => {
         const fetchStudyData = async (proposalID) => {
-            axios.all([
+            await axios.all([
                 axios.get(api.studyProfile(proposalID)),
                 axios.get(api.studySites(proposalID)),
                 axios.get(api.studyEnrollmentData(proposalID))
@@ -48,35 +62,35 @@ export const StudyReportPage = props => {
     }, [])
 
     useEffect(() => {
-        setIsLoading(!studyProfile || !studySites)
-    }, [studyProfile, studySites])
+        setIsLoading(!study || !studyProfile || !studySites || !studyEnrollmentData)
+    }, [study, studyProfile, studySites, studyEnrollmentData])
 
-        const handleEnrollmentRateSliderChange = (event, value) => {
+    const handleEnrollmentRateSliderChange = (event, value) => {
         setEnrollmentRate(value);
     };
 
     const handleEnrollmentRateInputChange = event => {
-      setEnrollmentRate(event.target.value === '' ? '' : Number(event.target.value));
+        setEnrollmentRate(event.target.value === '' ? '' : Number(event.target.value));
     };
 
     const handleEnrollmentRateInputBlur = () => {
-      if (enrollmentRate < 0) {
-        setEnrollmentRate(0);
-      }
-      else if (enrollmentRate > 1) {
-        setEnrollmentRate(1);
-      }
+        if (enrollmentRate < 0) {
+            setEnrollmentRate(0);
+        }
+        else if (enrollmentRate > 1) {
+            setEnrollmentRate(1);
+        }
     };
 
     // Marks for enrollment rate slider
     const marks = Array(11).fill().map((d, i) => {
-      const v = i * 0.1;
-      const s = v.toFixed(1);
+        const v = i * 0.1;
+        const s = v.toFixed(1);
 
-      return {
-        value: +v,
-        label: s
-      };
+        return {
+            value: +v,
+            label: s
+        };
     });
 
 
@@ -94,7 +108,7 @@ export const StudyReportPage = props => {
                                 <CardContent>
                                     {
                                         studyProfile && studyProfile.length > 0
-                                            ? <pre>{ JSON.stringify(studyProfile, null, 2) }</pre>
+                                            ? <StudyProfile profile={ studyProfile[0] } />
                                             : <Paragraph>No profile found! <NavLink to="/uploads">Upload it</NavLink>!</Paragraph>
                                     }
                                 </CardContent>
