@@ -100,9 +100,9 @@ export const Menu = ({ expanded, clickHandler }) => {
         <nav className={ classes.nav }>
             <MenuList clsasname={ classes.menuList }>
                 {
-                    menuItems.map(item => (
+                    menuItems.map((item, i) => (
                         item.text && item.path && item.icon ? (
-                            <Tooltip key={ item.path } title={ expanded ? '' : item.text } placement="right">
+                            <Tooltip key={ `${ i }-item` } title={ expanded ? '' : item.text } placement="right">
                                 <MenuItem
                                     component={ NavLink } exact to={ item.path }
                                     className={ classes.menuItem } activeClassName={ classes.active }
@@ -116,7 +116,7 @@ export const Menu = ({ expanded, clickHandler }) => {
                                     />
                                 </MenuItem>
                             </Tooltip>
-                        ) : <Divider style={{ margin: '1rem 0' }} />
+                        ) : <Divider key={ `${ i }-divider` } style={{ margin: '1rem 0' }} />
                     ))
                 }
             </MenuList>
