@@ -99,7 +99,6 @@ exports.getSites = (req, res) => {
         LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
         LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
         WHERE "ProposalID"=${ proposalId };`
-    console.log(query)
     db.any(query)
         .then(data => {
             res.status(200).send(data)
