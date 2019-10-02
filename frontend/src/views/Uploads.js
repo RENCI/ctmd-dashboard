@@ -12,7 +12,7 @@ export const UploadsPage = props => {
         <div>
             <Title>Uploads</Title>
 
-            <Grid container spacing="4">
+            <Grid container spacing={ 4 }>
 
                 <Grid item xs={ 12 }>
                     <Subheading>Global Uploads</Subheading>
@@ -40,7 +40,7 @@ export const UploadsPage = props => {
 
             <br/><br/><br/>
                 
-            <Grid container spacing="4">
+            <Grid container spacing={ 4 }>
 
                 <Grid item xs={ 12 }>
                     <Subheading>Per-Study Uploads</Subheading>
