@@ -75,7 +75,7 @@ export const ProposalsByRequestedServices = props => {
                             }
                             {
                                 proposalsByRequestedServices && chartType === 'bar'
-                                && <ProposalsBarChart proposals={ proposalsByRequestedServices } clickHandler={ selectProposals } height={ 700 } sorting={ chartSorting } />
+                                && <ProposalsBarChart proposals={ proposalsByRequestedServices } clickHandler={ selectProposals } height={ 400 } sorting={ chartSorting } />
                             }
                             { !proposalsByRequestedServices && <CircularLoader /> }
                         </CardContent>
