@@ -170,6 +170,9 @@ exports.list = (req, res) => {
                             const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
                             if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
                         })
+                        proposals.forEach(proposal => {
+                            proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
+                        })
                         return t.any(approvedServicesQuery)
                             .then(data => {
                                 data.forEach(prop_serv => {

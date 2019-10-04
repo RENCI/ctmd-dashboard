@@ -86,6 +86,11 @@ export const ProposalsTable = (props) => {
                     title: 'Funding Period', field: 'fundingPeriod',
                     hidden: !settings.tables.visibleColumns.fundingPeriod,
                 },
+                {
+                    title: 'Approved for Comprehensive Consultation', field: 'approvedForComprehensiveConsultation',
+                    hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
+                    render: rowData => rowData.approvedForComprehensiveConsultation ? 'Yes' : 'No',
+                },
             ] }
             data={ proposals }
             options={{

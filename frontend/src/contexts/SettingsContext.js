@@ -19,6 +19,7 @@ export const defaultSettings = {
             fundingStart: false,
             totalBudget: false,
             fundingPeriod: false,
+            approvedForComprehensiveConsultation: false,
         },
         pageSize: 50,
     },
