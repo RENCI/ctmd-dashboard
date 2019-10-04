@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
+import { Check as CheckIcon } from '@material-ui/icons'
 
 const defaultPageSizeOptions = [15, 25, 50, 100, 200]
 
@@ -89,7 +90,8 @@ export const ProposalsTable = (props) => {
                 {
                     title: 'Approved for Comprehensive Consultation', field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
-                    render: rowData => rowData.approvedForComprehensiveConsultation ? 'Yes' : 'No',
+                    render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
+                    filtering: false,
                 },
             ] }
             data={ proposals }
