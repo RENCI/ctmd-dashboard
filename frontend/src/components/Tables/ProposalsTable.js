@@ -76,6 +76,10 @@ export const ProposalsTable = (props) => {
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
+                    title: 'Funding Status', field: 'fundingStatus',
+                    hidden: !settings.tables.visibleColumns.fundingStatus,
+                },
+                {
                     title: 'Grant Award Date', field: 'fundingStart',
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
@@ -91,7 +95,7 @@ export const ProposalsTable = (props) => {
                     title: 'Approved for Comprehensive Consultation', field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
                     render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
-                    filtering: false,
+                    filtering: false
                 },
             ] }
             data={ proposals }

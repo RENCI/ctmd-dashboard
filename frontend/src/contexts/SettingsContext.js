@@ -16,6 +16,7 @@ export const defaultSettings = {
             meetingDate: false,
             plannedGrantSubmissionDate: false,
             actualGrantSubmissionDate: false,
+            fundingStatus: false,
             fundingStart: false,
             totalBudget: false,
             fundingPeriod: false,
