@@ -95,6 +95,7 @@ exports.getSites = (req, res) => {
             "Sites"."siteName",
             "CTSAs"."ctsaId",
             "CTSAs"."ctsaName",
+            "StudySites"."principalInvestigator",
             "StudySites"."dateRegPacketSent",
             "StudySites"."dateContractSent",
             "StudySites"."dateIrbSubmission",
