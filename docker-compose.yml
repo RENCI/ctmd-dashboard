@@ -2,7 +2,7 @@ version: '3'
 
 services:
   redis:
-    container_name: pmd-redis-dev
+    container_name: pmd-redis
     build:
       context: ./redis/
       dockerfile: Dockerfile
@@ -15,7 +15,7 @@ services:
     command: ["--appendonly", "yes"]
     
   pipeline:
-    container_name: pmd-pipeline-dev
+    container_name: pmd-pipeline
     image: zooh/pmd-pipeline-reload:0.2.13
     restart: always
     environment:

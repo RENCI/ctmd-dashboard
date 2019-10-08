@@ -22,24 +22,10 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export const SiteDetailPanel = ({
-    siteName, 
-    dateRegPacketSent,
-    dateContractSent,
-    dateIrbSubmission,
-    dateIrbApproval,
-    dateContractExecution,
-    lpfv,
-    dateSiteActivated,
-    fpfv,
-    patientsConsentedCount,
-    patientsEnrolledCount,
-    patientsWithdrawnCount,
-    patientsExpectedCount,
-    queriesCount,
-    protocolDeviationsCount,
-}) => {
-
+export const SiteDetailPanel = props => {
+    const {
+        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval, dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount
+    } = props
     const dayCount = (startDate, endDate) => {
         if (startDate && endDate) {
             const num = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))

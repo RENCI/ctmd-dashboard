@@ -8,7 +8,7 @@ import { Subheading, Paragraph } from '../../components/Typography'
 import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel } from './DetailPanels'
 
-export const SitesTable = (props) => {
+export const SitesTable = props => {
     let { title, sites } = props
     const [store, ] = useContext(StoreContext)
     if (title) title += ` (${ sites.length } Sites)`
@@ -37,15 +37,15 @@ export const SitesTable = (props) => {
                     { title: 'Site ID', field: 'siteId', hidden: false, },
                     { title: 'CTSA ID', field: 'ctsaId', hidden: true, },
                     { title: 'Site Name', field: 'siteName', hidden: false, },
-                    { title: 'CTSA Name', field: 'siteName', hidden: false, },
+                    { title: 'CTSA Name', field: 'ctsaName', hidden: false, },
                     { title: 'PI', field: 'principalInvestigator', hidden: false, },
                     { title: 'Reg Packet Sent', field: 'dateRegPacketSent', hidden: true, },
                     { title: 'Contract Sent', field: 'dateContractSent', hidden: true, },
                     { title: 'IRB Submission', field: 'dateIrbSubmission', hidden: true, },
                     { title: 'IRB Approval', field: 'dateIrbApproval', hidden: true, },
                     { title: 'Contract Execution', field: 'dateContractExecution', hidden: true, },
-                    { title: 'LPFV', field: 'lpfv', hidden: true, },
                     { title: 'Site Activation', field: 'dateSiteActivated', hidden: true, },
+                    { title: 'LPFV', field: 'lpfv', hidden: true, },
                     { title: 'FPFV', field: 'fpfv', hidden: true, },
                     { title: 'Patients Consented', field: 'patientsConsentedCount', hidden: true, },
                     { title: 'Patients Enrolled', field: 'patientsEnrolledCount', hidden: true, },
@@ -65,7 +65,6 @@ export const SitesTable = (props) => {
                 pageSize: 5,
                 pageSizeOptions: [5, 10, 25],
                 exportFileName: title,
-                detailPanelType: 'multiple',
             }}
             detailPanel={rowData => <SiteDetailPanel { ...rowData } />}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}

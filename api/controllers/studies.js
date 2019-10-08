@@ -94,7 +94,21 @@ exports.getSites = (req, res) => {
             "Sites"."siteId",
             "Sites"."siteName",
             "CTSAs"."ctsaId",
-            "CTSAs"."ctsaName"
+            "CTSAs"."ctsaName",
+            "StudySites"."dateRegPacketSent",
+            "StudySites"."dateContractSent",
+            "StudySites"."dateIrbSubmission",
+            "StudySites"."dateIrbApproval",
+            "StudySites"."dateContractExecution",
+            "StudySites"."lpfv",
+            "StudySites"."dateSiteActivated",
+            "StudySites"."fpfv",
+            "StudySites"."patientsConsentedCount",
+            "StudySites"."patientsEnrolledCount",
+            "StudySites"."patientsWithdrawnCount",
+            "StudySites"."patientsExpectedCount",
+            "StudySites"."queriesCount",
+            "StudySites"."protocolDeviationsCount"
         FROM "StudySites"
         LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
         LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
