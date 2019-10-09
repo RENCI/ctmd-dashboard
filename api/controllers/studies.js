@@ -2,82 +2,86 @@ const db = require('../config/database')
 const stringToInteger = require('./utils').stringToInteger
 const fs = require('fs')
 const csv = require('csv-parser')
-const multer = require('multer')
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'temp')
-    },
-    filename: (req, file, cb) => {
-        cb(null, req.params.id + '.json')
-    }
-})
-const upload = multer({ storage: storage }).array('file')
+const profileKeyDisplayNames = {
+    ProposalID: 'Proposal ID',
+    network: 'Network',
+    tic: 'TIC',
+    ric: 'RIC',
+    type: 'Type',
+    design: 'Design',
+    linkedStudies: 'Has Linked Studies',
+    isRandomized: 'Study is Randomized',
+    randomizationUnit: 'Randomization Unit',
+    randomizationFeature: 'Randomization Feature',
+    ascertainment: 'Ascertainment',
+    observations: 'Observations',
+    isPilot: 'Pilot Study',
+    phase: 'Phase',
+    isRegistry: 'Is Registry',
+    ehrDataTransfer: 'EHR Data Transfer',
+    ehrDatatransferOption: 'EHR Data Transfer Option',
+    isConsentRequired: 'Study Requires Consent',
+    isEfic: 'Is EFIC',
+    irbType: 'ORB Type',
+    regulatoryClassification: 'Regulatory Classification',
+    clinicalTrialsGovId: 'ClinicalTrials.gov ID',
+    isDsmbDmcRequired: 'DSMB/DMC Required',
+    initialParticipatingSiteCount: 'Number of Initial Participating Sites',
+    enrollmentGoal: 'Enrollment Goal',
+    initialProjectedEnrollmentDuration: 'Initial Projects Enrollment Duration',
+    leadPIs: 'Lead PIs',
+    awardeeSiteAcronym: 'Awardee Site Acronym',
+    primaryFundingType: 'Primary Funding Type',
+    isFundedPrimarilyByInfrastructure: 'Funded Primarily by Infrastructure',
+    isPreviouslyFunded: 'Was Previously Funded',
+    fundingAwardDate: 'Date Funding was Awarded',
+    fundingSource: 'Source of Funding',
+}
 
-//
-
-// exports.upload = (req, res) => {
-//     const proposalID = req.params.id
-//     if (proposalID) {
-//         upload(req, res, error => {
-//             if (error instanceof multer.MulterError) {
-//                 return res.status(500).json(error)
-//             } else if (error) {
-//                 return res.status(500).json(error)
-//             }
-//             return res.status(200).send(req.file)
-//         })
-//     } else {
-//         return 'Invalid proposal ID'
-//     }
-// }
-
-//
-
-// exports.uploadProfile = (req, res) => {
-//     res.status(200).send(`Profile for ${ req.params.id } - OK!`)
-// }
-
-// //
-
-// exports.uploadSites = (req, res) => {
-//     res.status(200).send(`Sites for ${ req.params.id } - OK!`)
-// }
-
-// //
-
-// exports.uploadEnrollmentData = (req, res) => {
-//     res.status(200).send(`Enrollment Data for ${ req.params.id } - OK!`)
-// }
-
-//
-
-// exports.get = (req, res) => {
-//     const id = req.query.proposalID
-//     console.log(`Retrieving study-metrics for proposal ${ id }`)
-//     query = 'SELECT * from "UtahRecommendation" where "ProposalID"=$1'
-//     db.oneOrNone(query, id)
-//         .then(data => {
-//             if (data) {
-//                 console.log(`Metrics found for proposal ${ id }`)
-//                 res.status(200).send(data)
-//             } else {
-//                 console.log(`No metrics found for proposal ${ id }`)
-//                 res.status(200).send()
-//             }
-//         })
-//         .catch(error => {
-//             console.log('Error', error)
-//             res.status(500).send('Error', error)
-//         })
-// }
+const displayNames = {
+    ProposalID: 'Proposal ID',
+    siteId: 'Site ID',
+    siteName: 'Site Name',
+    ctsaId: 'CTSA ID',
+    ctsaName: 'CTSA Name',
+    network: 'Network',
+    tic: 'TIC',
+    ric: 'RIC',
+    type: 'Type',
+    design: 'Design',
+    principalInvestigator: 'PI',
+    dateRegPacketSent: 'Date Final Protocol Sent to Site',
+    dateContractSent: 'Date of Contract Execution',
+    dateIrbSubmission: 'Date of IRB Submission',
+    dateIrbApproval: 'Date of IRB Approval',
+    dateContractExecution: 'Date of Contract Execution',
+    dateSiteActivated: 'Date of Site Activation',
+    fpfv: 'Date of First Participant (FPFV)',
+    lpfv: 'Date of Last Participant (LPFV)',
+    patientsConsentedCount: 'Number of Consented Patients',
+    patientsEnrolledCount: 'Number of Randomized Patients',
+    patientsExpectedCount: 'Number of Expected Randomized Patients',
+    patientsWithdrawnCount: 'Number of Withdrawn Patients',
+    queriesCount: 'Number of Queries',
+    protocolDeviationsCount: 'Number of Major Protocol Deviations',
+}
 
 exports.getProfile = (req, res) => {
     const proposalId = req.params.id
     const query = `SELECT * FROM "StudyProfile" WHERE "ProposalID" = ${ proposalId };`
     db.any(query)
         .then(data => {
-            res.status(200).send(data)
+            const profile = data[0]
+            console.log(profile)
+            Object.keys(profile).forEach(key => {
+                profile[key] = {
+                    value: profile[key],
+                    displayName: profileKeyDisplayNames[key],
+                }
+            })
+            console.log(profile)
+            res.status(200).send(profile)
         })
         .catch(error => {
             console.log('ERROR:', error)

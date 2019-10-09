@@ -1,4 +1,5 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
+import { makeStyles, useTheme } from '@material-ui/styles'
 import axios from 'axios'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
@@ -10,14 +11,48 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 
+const useStyles = makeStyles(theme => ({
+    pairStyle: {
+        fontSize: '125%',
+        display: 'flex',
+        marginBottom: '0.5rem'
+    },
+    keyStyle: {
+        color: theme.palette.grey[600],
+        marginRight: '0.5rem',
+    },
+    valueStyle: {
+        color: theme.palette.primary.main,
+        flex: 1,
+        borderBottom: `1px solid ${ theme.palette.grey[200] }`,
+    },
+}))
+
+const Key = ({ children }) => {
+    const { keyStyle } = useStyles()
+    return (
+        <span className={ keyStyle }>{ children }:</span>
+    )
+}
+
+const Value = ({ children }) => {
+    const { valueStyle } = useStyles()
+    return (
+        <span className={ valueStyle }>{ children }</span>
+    )
+}
+
 const StudyProfile = ({ profile }) => {
+    const { pairStyle } = useStyles()
+    console.log(profile)
     return (
         <article>
             {
                 Object.keys(profile).map(key => (
-                    <Fragment>
-                        <strong>{ key }</strong>: { profile[key] }<br />
-                    </Fragment>
+                    <div className={ pairStyle }>
+                        <Key>{ profile[key].displayName }</Key>
+                        <Value>{ profile[key].value }</Value>
+                    </div>
                 ))
             }
         </article>
@@ -93,7 +128,6 @@ export const StudyReportPage = props => {
         };
     });
 
-
     return (
         <div>
             <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
@@ -107,8 +141,8 @@ export const StudyReportPage = props => {
                                 <CardHeader title="Study Profile"/>
                                 <CardContent>
                                     {
-                                        studyProfile && studyProfile.length > 0
-                                            ? <StudyProfile profile={ studyProfile[0] } />
+                                        studyProfile
+                                            ? <StudyProfile profile={ studyProfile } />
                                             : <Paragraph>No profile found! <NavLink to="/uploads">Upload it</NavLink>!</Paragraph>
                                     }
                                 </CardContent>
