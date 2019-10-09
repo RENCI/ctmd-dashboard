@@ -1,26 +1,8 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/styles'
-import { Grid, List, ListItemIcon, ListItem, ListItemText, Chip } from '@material-ui/core'
+import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
-
-const useStyles = makeStyles(theme => ({
-    panel: {
-        padding: `${ theme.spacing(2) }px ${ theme.spacing(4) }px`,
-        backgroundColor: theme.palette.extended.hatteras,
-    },
-    header: {
-        marginBottom: theme.spacing(2),
-        alignItems: 'center',
-    },
-    title: {
-        padding: `${ theme.spacing(2) }px 0`,
-        color: theme.palette.secondary.main,
-        fontWeight: 'bold',
-        letterSpacing: '1px',
-        display: 'block',
-    },
-}))
 
 export const SiteDetailPanel = props => {
     const {

@@ -38,7 +38,7 @@ export const FileDrop = () => {
     }, [])
 
     const {
-        acceptedFiles, rejectedFiles,
+        acceptedFiles, //rejectedFiles,
         getRootProps, getInputProps,
         isDragActive, isDragAccept, isDragReject,
     } = useDropzone({
@@ -47,12 +47,12 @@ export const FileDrop = () => {
         accept: 'application/json',
     })
 
-    const style = useMemo(() => ({
-        ...baseStyle,
-        ...(isDragActive ? activeStyle : { }),
-        ...(isDragAccept ? acceptStyle : { }),
-        ...(isDragReject ? rejectStyle : { }),
-    }), [isDragActive, isDragReject])
+    // const style = useMemo(() => ({
+    //     ...baseStyle,
+    //     ...(isDragActive ? activeStyle : { }),
+    //     ...(isDragAccept ? acceptStyle : { }),
+    //     ...(isDragReject ? rejectStyle : { }),
+    // }), [isDragActive, isDragReject])
 
     const acceptedFilesDisplay = acceptedFiles.map(file => (
         <div>

@@ -1,9 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import React from 'react'
 import api from '../Api'
-import { useTheme } from '@material-ui/styles'
-import { StoreContext } from '../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Button,} from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { Title, Subheading } from '../components/Typography'
 import { DropZone } from '../components/Forms'
 

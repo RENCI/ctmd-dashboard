@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/styles'
 import MaterialTable from 'material-table'
 import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'

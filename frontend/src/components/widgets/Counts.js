@@ -44,7 +44,6 @@ const useStyles = makeStyles(theme => ({
 
 export const Counts = props => {
     const [store, ] = useContext(StoreContext)
-    const [thisYear, setThisYear] = useState()
     const [FYStartDate, setFYStartDate] = useState()
     const [FYEndDate, setFYEndDate] = useState()
     const classes = useStyles()

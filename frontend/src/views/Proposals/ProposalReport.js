@@ -1,5 +1,4 @@
 import React from 'react'
-import { useTheme } from '@material-ui/styles'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { useProposal } from '../../hooks'
 import { Title, Subheading, Paragraph } from '../../components/Typography'
@@ -18,7 +17,6 @@ const Detail = props => {
 
 export const ProposalReportPage = props => {
     const proposal = useProposal(props.match.params.id)
-    const theme = useTheme()
     
     return proposal ? (
         <div>

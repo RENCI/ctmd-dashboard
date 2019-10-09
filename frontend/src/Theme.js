@@ -96,19 +96,27 @@ theme = {
         },
         MuiCard:{
             root: {
-                padding: theme.spacing(1),
+                padding: 0,
                 backgroundColor: theme.palette.common.white,
                 borderRadius: theme.shape.borderRadius,
             }
         },
         MuiCardHeader: {
+            root: {
+                backgroundColor: theme.palette.grey[300],
+            },
             title: {
                 fontFamily: 'Nanum Gothic',
-                color: theme.palette.primary.light,
+                color: theme.palette.primary.main,
             },
             subheader: {
                 fontFamily: 'Nanum Gothic',
                 color: theme.palette.secondary.main,
+            },
+        },
+        MuiCardContent: {
+            root: {
+                padding: theme.spacing(8),
             },
         },
         MuiDialogTitle: {

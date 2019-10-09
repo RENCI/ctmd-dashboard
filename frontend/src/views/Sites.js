@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import api from '../Api'
 import { Title } from '../components/Typography'
-import { Grid, Paper, Card, CardContent } from '@material-ui/core'
 import { CircularLoader } from '../components/Progress/Progress'
 import { LookupTable } from '../components/Tables/LookupTable'
-import { DropZone } from '../components/Forms'
 
 export const SitesPage = (props) => {
     const [sites, setSites] = useState(null)

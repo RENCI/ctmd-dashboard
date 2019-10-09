@@ -73,14 +73,12 @@ exports.getProfile = (req, res) => {
     db.any(query)
         .then(data => {
             const profile = data[0]
-            console.log(profile)
             Object.keys(profile).forEach(key => {
                 profile[key] = {
                     value: profile[key],
                     displayName: profileKeyDisplayNames[key],
                 }
             })
-            console.log(profile)
             res.status(200).send(profile)
         })
         .catch(error => {

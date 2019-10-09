@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import MaterialTable from 'material-table'
 
 export const LookupTable = ({ title, data }) => {

@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-    FormControl, FormGroup, FormHelperText, FormControlLabel, FormLabel,
-    InputLabel, OutlinedInput,
-    TextField,
-} from '@material-ui/core'
+import { FormControl, TextField } from '@material-ui/core'
 
 export const ProposalDetailsForm = props => {
     const { proposal } = props

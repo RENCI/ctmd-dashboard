@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import { Grid, CardHeader } from '@material-ui/core'
+import { Grid, CardHeader, Typography } from '@material-ui/core'
 import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
@@ -113,7 +113,8 @@ export const DayStats = props => {
         >
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 }>
-                    <CardHeader subheader="Average Number of Days" />
+                    <Typography variant="h4">Average Number of Days</Typography>
+                    <br/>
                     <div style={{ height: '200px' }}>
                         <ResponsiveBar
                             data={[
@@ -124,7 +125,7 @@ export const DayStats = props => {
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 32, left: 186 }}
+                            margin={{ top: 0, right: 32, bottom: 32, left: 216 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }
@@ -153,7 +154,8 @@ export const DayStats = props => {
                     </div>
                 </Grid>
                 <Grid item xs={ 12 } md={ 6 }>
-                    <CardHeader subheader="Median Number of Days" />
+                    <Typography variant="h4">Median Number of Days</Typography>
+                    <br/>
                     <div style={{ height: '200px' }}>
                         <ResponsiveBar
                             data={[
@@ -164,7 +166,7 @@ export const DayStats = props => {
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 32, left: 186 }}
+                            margin={{ top: 0, right: 32, bottom: 32, left: 216 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }

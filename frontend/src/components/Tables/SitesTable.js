@@ -1,10 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { makeStyles } from '@material-ui/styles'
+import React, { useContext, useEffect } from 'react'
 import MaterialTable from 'material-table'
-import { Collapse } from '@material-ui/core'
-import { Grid, Typography, Divider } from '@material-ui/core'
-import { List, ListItem, ListItemText, ListItemIcon, ListItemAvatar, Avatar } from '@material-ui/core'
-import { Subheading, Paragraph } from '../../components/Typography'
 import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel } from './DetailPanels'
 

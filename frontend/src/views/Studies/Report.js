@@ -1,5 +1,5 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
+import { Milestones } from './Milestones'
 
 const useStyles = makeStyles(theme => ({
     pairStyle: {
@@ -41,6 +42,8 @@ const Value = ({ children }) => {
         <span className={ valueStyle }>{ children }</span>
     )
 }
+
+// Profile
 
 const StudyProfile = ({ profile }) => {
     const { pairStyle } = useStyles()
@@ -136,8 +139,8 @@ export const StudyReportPage = props => {
             {
                 !isLoading && (
                     <Grid container spacing={ 4 }>
-                        <Grid item xs={ 12 }>
-                            <Card>
+                        <Grid item xs={ 12 } sm={ 6 } md={ 7 } lg={ 8 }>
+                            <Card style={{ height: '100%' }}>
                                 <CardHeader title="Study Profile"/>
                                 <CardContent>
                                     {
@@ -149,26 +152,26 @@ export const StudyReportPage = props => {
                             </Card>
                         </Grid>
 
-                        {
-                            studySites && studySites.length > 0 ? (
-                                <Fragment>
-                                    <Grid item xs={ 12 }>
-                                        <SitesTable sites={ studySites } title="Sites" paging={ true } />
-                                    </Grid>
-                                </Fragment>
-                            ) : (
-                                <Grid item xs={ 12 }>
+                        <Grid item xs={ 11 } sm={ 5 } md={ 4 } lg={ 3 }>
+                            <Milestones sites={ studySites } />
+                        </Grid>
+
+                        <Grid item xs={ 11 }>
+                            {
+                                studySites && studySites.length > 0 ? (
+                                    <SitesTable sites={ studySites } title="Sites" paging={ true } />
+                                ) : (
                                     <Card>
                                         <CardHeader title="Sites" />
                                         <CardContent>
                                             <Paragraph>No sites list found! <NavLink to="/uploads">Upload it</NavLink>!</Paragraph>
                                         </CardContent>
                                     </Card>
-                                </Grid>
-                            )
-                        }
+                                )
+                            }
+                        </Grid>
 
-                        <Grid item xs={ 12 }>
+                        <Grid item xs={ 11 }>
                             <Card>
                                 <CardHeader title="Enrollment Information" />
                                 <CardContent>

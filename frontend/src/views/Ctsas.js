@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import api from '../Api'
 import { Title } from '../components/Typography'
-import { Grid } from '@material-ui/core'
 import { CircularLoader } from '../components/Progress/Progress'
 import { LookupTable } from '../components/Tables/LookupTable'
-import { DropZone } from '../components/Forms'
 
 export const CtsasPage = (props) => {
     const [ctsas, setCtsas] = useState(null)
