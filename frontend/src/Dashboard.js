@@ -23,6 +23,7 @@ import { CtsasPage } from './views/Ctsas'
 import { SitesPage } from './views/Sites'
 import { UploadsPage } from './views/Uploads'
 import { Paragraph } from './components/Typography'
+import { Grid } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
     layout: {
@@ -87,9 +88,13 @@ const Dashboard = props => {
                 </ScrollToTop>
             </main>
             <footer className={ classes.footer }>
-                <Paragraph align="right">
-                    This application was developed by the Translational Science Team at <a href="https://www.renci.org/" target="_blank" rel="noopener noreferrer">RENCI</a>.
-                </Paragraph>
+                <Grid container>
+                    <Grid item xs={ 11 }>
+                        <Paragraph align="right">
+                            This application was developed by the Translational Science Team at <a href="https://www.renci.org/" target="_blank" rel="noopener noreferrer">RENCI</a>.
+                        </Paragraph>
+                    </Grid>
+                </Grid>
             </footer>
         </div>
     )
