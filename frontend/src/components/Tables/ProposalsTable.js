@@ -6,6 +6,17 @@ import { Check as CheckIcon } from '@material-ui/icons'
 
 const defaultPageSizeOptions = [15, 25, 50, 100, 200]
 
+const resources = [
+    'EHR-Based Cohort Assessment',
+    'Community Engagement Studio',
+    'Recruitment & Retention Planning',
+    'Recruitment Feasibility Assessment',
+    'Recruitment Materials',
+    'Single IRB',
+    'Standard Agreements',
+    'Other',
+]
+
 export const ProposalsTable = (props) => {
     const [settings] = useContext(SettingsContext)
     const [pageSizeOptions, setPageSizeOptions] = useState(defaultPageSizeOptions)
@@ -14,13 +25,22 @@ export const ProposalsTable = (props) => {
     
     useEffect(() => {
         if (proposals) {
+            // Add length of proposals array as a page size option
             const newPageSizes = defaultPageSizeOptions.filter(size => size <= proposals.length)
             if ((proposals.length) > newPageSizes[newPageSizes.length - 1]) {
                 setPageSizeOptions(newPageSizes.concat(proposals.length))
             } else {
                 setPageSizeOptions(newPageSizes)
             }
+
+            // Add property for each resource to each proposal, identify as requested, approved, or neither
+            proposals.forEach(proposal => {
+                resources.forEach(resource => {
+                    proposal[resource] = proposal.approvedServices.includes(resource) ? 'Approved' : (proposal.requestedServices.includes(resource) ? 'Requested' : '')
+                })
+            })
         }
+
     }, [proposals])
 
     if (title) title += ` (${ proposals.length } Proposals)`
@@ -94,9 +114,16 @@ export const ProposalsTable = (props) => {
                     title: 'Approved for Comprehensive Consultation', field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
                     render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
-                    filtering: false
+                    // filtering: false,
                 },
-            ] }
+            ].concat(resources.map(
+                resource => ({
+                        title: resource,
+                        field: resource,
+                        hidden: !settings.tables.visibleColumns.resources,
+                    })
+                ))
+            }
             data={ proposals }
             options={{
                 paging: props.paging,

@@ -77,6 +77,7 @@ export const SettingsPage = props => {
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.totalBudget } onChange={ handleChangeVisibleColumns } value="totalBudget" /> } label="Funding Amount" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.fundingPeriod } onChange={ handleChangeVisibleColumns } value="fundingPeriod" /> } label="Funding Period" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.approvedForComprehensiveConsultation } onChange={ handleChangeVisibleColumns } value="approvedForComprehensiveConsultation" /> } label="Approved for Comprehensive Consultation" />
+                                <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.resources } onChange={ handleChangeVisibleColumns } value="resources" /> } label="Resources Requests & Approvals" />
                             </FormGroup>
                         </FormControl>
 
