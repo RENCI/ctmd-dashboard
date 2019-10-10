@@ -49,8 +49,14 @@ export const ProposalsByTic = props => {
     return (
         <div>
             <Title>
-                Proposals by TIC/RIC
-                <BrowseMenu />
+                <Grid container>
+                    <Grid item style={{ flex: 1 }}>
+                        Proposals by TIC/RIC
+                    </Grid>
+                    <Grid item>
+                        <BrowseMenu />
+                    </Grid>
+                </Grid>
             </Title>
 
             <Grid container spacing="4">

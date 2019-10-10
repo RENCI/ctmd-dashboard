@@ -1,17 +1,17 @@
 module.exports = {
     stringToInteger: s => {
-	let i = parseInt(s)
-	if (isNaN(i)) {
+    	let i = parseInt(s)
+    	if (isNaN(i)) {
             return 0
-	} else {
+        } else {
             return i
-	}
+        }
     },
-    stringToDate : s => {
-	if (s != null) {
+    stringToDate: s => {
+    	if (s != null) {
             return new Date(s)
-	} else {
+    	} else {
             return null
-	}
+    	}
     }
 }

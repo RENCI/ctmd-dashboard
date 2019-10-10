@@ -27,7 +27,7 @@ export const ProposalsTable = (props) => {
     
     return (
         <MaterialTable
-            title={ title || '-' }
+            title={ title || null }
             components={{ }}
             columns={ [
                 {

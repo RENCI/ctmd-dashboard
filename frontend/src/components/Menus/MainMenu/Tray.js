@@ -21,9 +21,10 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         alignItems: 'center',
         minWidth: '2rem',
-        maxWidth: '4.5rem',
+        maxWidth: '4.6rem',
         transition: 'min-width 250ms',
         padding: 0,
+        backgroundColor: theme.palette.extended.shaleBlue,
     },
     open: {
         minWidth: '200px',
@@ -40,17 +41,17 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(4),
         '&:hover $settingsIcon': {
             transform: 'scale(1.1) rotate(120deg)',
-            color: theme.palette.grey[800],
+            color: theme.palette.common.white,
         },
     },
     activeSettingsButton: {
-        color: theme.palette.secondary.main,
+        backgroundColor: theme.palette.extended.prussianBlue,
         '& $settingsIcon': {
             transform: 'scale(1.1) rotate(120deg)',
-            color: theme.palette.secondary.main,
+            color: theme.palette.common.white,
         },
         '&:hover $settingsIcon': {
-            color: theme.palette.secondary.main,
+            color: theme.palette.common.white,
         }
     },
     settingsIcon: {

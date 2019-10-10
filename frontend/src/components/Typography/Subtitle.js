@@ -8,12 +8,12 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export const Title = props => {
+export const Subtitle = props => {
     const { children } = props
     const classes = useStyles()
     
     return (
-        <Typography variant="h1" classes={{ root: classes.title }} { ...props }>
+        <Typography variant="h2" classes={{ root: classes.title }} { ...props }>
             { children }
         </Typography>
     )

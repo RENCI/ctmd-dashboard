@@ -14,7 +14,7 @@ export const StoreProvider = ({ children }) => {
         axios.get(api.tics),
         axios.get(api.statuses),
         axios.get(api.therapeuticAreas),
-        axios.get(api.services),
+        axios.get(api.resources),
         // axios.get(api.sites),
     ]
 

@@ -8,10 +8,10 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { ProposalsTable } from '../../components/Tables'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
-export const ProposalsByApprovedServices = props => {
+export const ProposalsByResourcesRequested = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
-    const [proposalsByApprovedServices, setProposalsByApprovedServices] = useState()
+    const [proposalsByRequestedServices, setProposalsByRequestedServices] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
     const [chartType, setChartType] = useState('pie')
@@ -23,7 +23,7 @@ export const ProposalsByApprovedServices = props => {
         if (store.proposals && store.services) {
             let services = store.services.map(service => ({ name: service, proposals: [] }))
             store.proposals.forEach(proposal => {
-                proposal.approvedServices.forEach(service => {
+                proposal.requestedServices.forEach(service => {
                     const index = services.findIndex(({ name }) => service === name)
                     if (index >= 0) {
                         services[index].proposals.push(proposal)
@@ -31,21 +31,21 @@ export const ProposalsByApprovedServices = props => {
                 })
             })
             if (hideEmptyGroups) services = services.filter(service => service.proposals.length > 0)
-            setProposalsByApprovedServices(services)
+            setProposalsByRequestedServices(services)
         }
     }, [store, hideEmptyGroups])
 
     const selectProposals = ({ id }) => {
-        const index = proposalsByApprovedServices.findIndex(service => service.name === id)
-        setTableTitle('Approved Services: ' + id)
-        setDisplayedProposals(proposalsByApprovedServices[index].proposals)
+        const index = proposalsByRequestedServices.findIndex(service => service.name === id)
+        setTableTitle('Requested Services: ' + id)
+        setDisplayedProposals(proposalsByRequestedServices[index].proposals)
         scrollToTable()
     }
 
     const handleSelectGraphType = (event, type) => setChartType(type)
     const handleSelectGraphSorting = (event, sorting) => setChartSorting(sorting)
     const handleToggleHideEmptyGroups = event => setHideEmptyGroups(event.target.checked)
-    
+
     const scrollToTable = () => {
         setTimeout(() => tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 500)
     }
@@ -53,8 +53,14 @@ export const ProposalsByApprovedServices = props => {
     return (
         <div>
             <Title>
-                Proposals by Approved Services
-                <BrowseMenu />
+                <Grid container>
+                    <Grid item style={{ flex: 1 }}>
+                        Proposals by Resources Requested
+                    </Grid>
+                    <Grid item>
+                        <BrowseMenu />
+                    </Grid>
+                </Grid>
             </Title>
 
             <Grid container spacing="4">
@@ -70,14 +76,14 @@ export const ProposalsByApprovedServices = props => {
                         } />
                         <CardContent>
                             {
-                                proposalsByApprovedServices && chartType === 'pie'
-                                && <ProposalsPieChart proposals={ proposalsByApprovedServices } clickHandler={ selectProposals } height={ 600 } sorting={ chartSorting } />
+                                proposalsByRequestedServices && chartType === 'pie'
+                                && <ProposalsPieChart proposals={ proposalsByRequestedServices } clickHandler={ selectProposals } height={ 600 } sorting={ chartSorting } />
                             }
                             {
-                                proposalsByApprovedServices && chartType === 'bar'
-                                && <ProposalsBarChart proposals={ proposalsByApprovedServices } clickHandler={ selectProposals } height={ 400 } sorting={ chartSorting } />
+                                proposalsByRequestedServices && chartType === 'bar'
+                                && <ProposalsBarChart proposals={ proposalsByRequestedServices } clickHandler={ selectProposals } height={ 400 } sorting={ chartSorting } />
                             }
-                            { !proposalsByApprovedServices && <CircularLoader /> }
+                            { !proposalsByRequestedServices && <CircularLoader /> }
                         </CardContent>
                     </Card>
                 </Grid>

@@ -50,8 +50,14 @@ export const ProposalsByTherapeuticArea = props => {
     return (
         <div>
             <Title>
-                Proposals by Therapeutic Area
-                <BrowseMenu />
+                <Grid container>
+                    <Grid item style={{ flex: 1 }}>
+                        Proposals by Therapeutic Area
+                    </Grid>
+                    <Grid item>
+                        <BrowseMenu />
+                    </Grid>
+                </Grid>
             </Title>
 
             <Grid container spacing="4">

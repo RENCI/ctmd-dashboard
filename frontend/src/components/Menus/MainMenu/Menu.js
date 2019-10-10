@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
-        padding: theme.spacing(1),
+        padding: theme.spacing(2),
         width: '100%',
     },
     menuList: {
@@ -33,14 +33,15 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        margin: 0,
+        margin: '0 0 0.1rem 0',
         borderRadius: theme.shape.borderRadius,
         transition: 'background-color 250ms',
         letterSpacing: '1px',
         '&:hover': {
-            backgroundColor: theme.palette.grey[200],
+            backgroundColor: theme.palette.extended.prussianBlue,
             '& $listItemIcon': {
-                transform: 'scale(1.1)',
+                transformOrigin: '50% 50%',
+                transform: 'scale(1.2)',
             }
         },
     },
@@ -54,11 +55,12 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         maxWidth: '2rem',
+        color: theme.palette.grey[300],
     },
     listItemText: {
         padding: 0,
         margin: 0,
-        color: theme.palette.grey[600],
+        color: theme.palette.grey[300],
         transition: 'max-width 250ms, opacity 250ms',
     },
     expandedItemText: {
@@ -70,12 +72,13 @@ const useStyles = makeStyles(theme => ({
         opacity: 0,
     },
     active: {
+        backgroundColor: theme.palette.extended.prussianBlue,
         '& > $listItemIcon': {
-            color: theme.palette.secondary.main,
+            color: theme.palette.common.white,
             transform: 'scale(1.1)',
         },
         '& > $listItemText': {
-            color: theme.palette.secondary.main,
+            color: theme.palette.common.white,
         },
     },
 }))

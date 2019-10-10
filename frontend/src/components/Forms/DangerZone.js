@@ -33,7 +33,7 @@ export const DangerZone = props => {
         const fetchBackups = async () => {
             await axios.get(api.dataGetBackups)
                 .then(response => {
-                    setBackups(response.data)
+                    setBackups(response.data.splice(0, 5))
                 })
                 .catch(error => console.error(error))
         }
@@ -94,12 +94,13 @@ export const DangerZone = props => {
                 <strong>Restore</strong>
                 <Paragraph>
                     Restore the state of the database to a previous backup.
+                    Note that only the five most recent backups are displayed.
                 </Paragraph>
             </Grid>
             <Grid item xs={ 12 }>
                 {
                     backups.map((timestamp, i) => (
-                        <Grid container key={ timestamp }>
+                        <Grid container key={ timestamp } spacing={ 4 }>
                             <Grid item xs={ 12 } sm={ 9 }>
                                 <Paragraph>{ i + 1 }. { timestamp }</Paragraph>
                             </Grid>

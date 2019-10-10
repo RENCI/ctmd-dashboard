@@ -15,17 +15,6 @@ let endpoints = {
     // network: apiRoot + 'proposals/network',
 }
 
-// Counts
-
-endpoints = {
-    ...endpoints,
-    countByInstitution: apiRoot + 'proposals/submitted-for-services/count/by-institution',
-    countByTic: apiRoot + 'proposals/submitted-for-services/count/by-tic',
-    countByTherapeuticArea: apiRoot + 'proposals/submitted-for-services/count/by-therapeutic-area',
-    countByYear: apiRoot + 'proposals/submitted-for-services/count/by-year',
-    countByMonth: apiRoot + 'proposals/submitted-for-services/count/by-month',
-}
-
 // Resubmissions
 
 endpoints = {
@@ -45,7 +34,7 @@ endpoints = {
     organizations: apiRoot + 'organizations',
     tics: apiRoot + 'tics',
     therapeuticAreas: apiRoot + 'therapeutic-areas',
-    services: apiRoot + 'services',
+    resources: apiRoot + 'resources',
     sites: apiRoot + 'sites',
     ctsas: apiRoot + 'ctsas',
     studyMetrics: apiRoot + 'study-metrics',

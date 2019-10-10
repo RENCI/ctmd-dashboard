@@ -50,8 +50,14 @@ export const ProposalsByStatus = props => {
     return (
         <div>
             <Title>
-                Proposals by Status
-                <BrowseMenu />
+                <Grid container>
+                    <Grid item style={{ flex: 1 }}>
+                        Proposals by Status
+                    </Grid>
+                    <Grid item>
+                        <BrowseMenu />
+                    </Grid>
+                </Grid>
             </Title>
 
             <Grid container spacing="4">

@@ -1,8 +1,4 @@
 const db = require('../config/database')
-const fs = require('fs')
-const path = require('path')
-
-const ctsasFilePath = path.join(__dirname, '/../temp/ctsas.json')
 
 exports.list = (req, res) => {
     const query = `SELECT * FROM "CTSAs";`
@@ -16,6 +12,3 @@ exports.list = (req, res) => {
         })
 }
 
-exports.upload = (req, res) => {
-    res.status(200).send('Upload CTSAs, OK!')
-}

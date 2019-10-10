@@ -13,7 +13,7 @@ import {
     LocalLaundryService as ServicesIcon,
 } from '@material-ui/icons'
 
-export const BrowseMenu = (props) => {
+export const BrowseMenu = ({ display }) => {
     const [anchorEl, setAnchorEl] = useState(null)
     const theme  = useTheme()
 
@@ -28,13 +28,13 @@ export const BrowseMenu = (props) => {
 
     return (
         <Fragment>
-            <Button variant="contained"
+            <Button variant="contained" size="large"
                 aria-owns={ anchorEl ? 'browse-menu' : undefined }
                 aria-haspopup="true"
                 onClick={ handleClick }
-                style={{ marginLeft: theme.spacing(2), backgroundColor: theme.palette.common.white }}
+                style={{ backgroundColor: theme.palette.common.white }}
             >
-                Browse By<SubmenuIcon />
+                Browse by... &nbsp;&nbsp; <SubmenuIcon />
             </Button>
             <Menu id="browse-menu"
                 anchorEl={ anchorEl }
@@ -65,11 +65,11 @@ export const BrowseMenu = (props) => {
                     <ListItemText primary="Therapeutic Area"/>
                 </MenuItem>
                 <Divider />
-                <MenuItem component={ NavLink } to="/proposals/requested-services">
+                <MenuItem component={ NavLink } to="/proposals/resources-requested">
                     <ListItemIcon><ServicesIcon /></ListItemIcon>
                     <ListItemText primary="Resources Requested"/>
                 </MenuItem>
-                <MenuItem component={ NavLink } to="/proposals/approved-services">
+                <MenuItem component={ NavLink } to="/proposals/resources-approved">
                     <ListItemIcon><ServicesIcon /></ListItemIcon>
                     <ListItemText primary="Resources Approved"/>
                 </MenuItem>

@@ -39,7 +39,7 @@ const profileKeyDisplayNames = {
     fundingSource: 'Source of Funding',
 }
 
-const displayNames = {
+const siteMetricsKeyDisplayNames = {
     ProposalID: 'Proposal ID',
     siteId: 'Site ID',
     siteName: 'Site Name',

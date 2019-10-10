@@ -24,7 +24,7 @@ export const SitesTable = props => {
 
     return (
         <MaterialTable
-            title={ title || '' }
+            title={ title || null }
             components={{ }}
             columns={
                 [

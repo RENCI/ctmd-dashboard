@@ -57,7 +57,7 @@ export const Counts = props => {
     }, [store.proposals])
 
     return (
-        <Widget title="Submissions at a Glance">
+        <Widget title="Proposal Submissions at a Glance">
             <Grid container spacing={ theme.spacing(4) }>
                 <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
                     <span className={ classes.value }>

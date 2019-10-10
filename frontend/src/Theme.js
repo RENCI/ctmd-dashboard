@@ -51,7 +51,7 @@ let theme = createMuiTheme({
         }
     },
     typography: {
-        fontSize: 12,
+        fontSize: 11,
     }
 })
 
@@ -103,7 +103,7 @@ theme = {
         },
         MuiCardHeader: {
             root: {
-                backgroundColor: theme.palette.grey[300],
+                backgroundColor: theme.palette.extended.hatteras,
             },
             title: {
                 fontFamily: 'Nanum Gothic',

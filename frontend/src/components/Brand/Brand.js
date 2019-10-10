@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles(theme => ({
     brand: {
-        color: theme.palette.primary.light,
+        color: theme.palette.common.white,
         fontFamily: 'EB Garamond',
         fontSize: '200%',
         backgroundColor: 'transparent',
@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-end',
-        opacity: 0.33,
+        opacity: 0.5,
         writingMode: 'vertical-rl',
         transform: 'rotate(180deg)',
         pointerEvents: 'none',

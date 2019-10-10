@@ -7,6 +7,7 @@ const useStyles = makeStyles(theme => ({
     panel: {
         padding: `${ theme.spacing(2) }px ${ theme.spacing(4) }px`,
         backgroundColor: theme.palette.extended.hatteras,
+        borderLeft: `10px solid ${ theme.palette.primary.main }`,
     },
     header: {
         marginBottom: theme.spacing(2),

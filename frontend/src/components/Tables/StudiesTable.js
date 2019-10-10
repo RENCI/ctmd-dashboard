@@ -25,7 +25,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
     
     return (
         <MaterialTable
-            title={ title || '-' }
+            title={ title || null }
             components={{ }}
             columns={ [
                 {

@@ -14,8 +14,8 @@ import {
     ProposalsByStatus,
     ProposalsByTherapeuticArea,
     ProposalsByDate,
-    ProposalsByApprovedServices,
-    ProposalsByRequestedServices,
+    ProposalsByResourcesApproved,
+    ProposalsByResourcesRequested,
 } from './views/Proposals'
 import { StudiesListPage, StudyReportPage } from './views/Studies'
 import { CollaborationsPage } from './views/Collaborations'
@@ -26,7 +26,7 @@ import { UploadsPage } from './views/Uploads'
 const useStyles = makeStyles(theme => ({
     layout: {
         display: 'flex',
-        backgroundColor: `${ theme.palette.grey[100] }`,
+        backgroundColor: `${ theme.palette.extended.whisperGray }`,
     },
     menuToggleButton: {
         transform: 'translateX(0)',
@@ -68,8 +68,8 @@ const Dashboard = props => {
                         <Route path="/proposals/status" component={ ProposalsByStatus }/>
                         <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
                         <Route path="/proposals/date" component={ ProposalsByDate }/>
-                        <Route path="/proposals/requested-services" component={ ProposalsByRequestedServices }/>
-                        <Route path="/proposals/approved-services" component={ ProposalsByApprovedServices }/>
+                        <Route path="/proposals/resources-requested" component={ ProposalsByResourcesRequested }/>
+                        <Route path="/proposals/resources-approved" component={ ProposalsByResourcesApproved }/>
                         <Route path="/collaborations" component={ CollaborationsPage }/>
                         <Route exact path="/studies" component={ StudiesListPage }/>
                         <Route exact path="/studies/:proposalID" component={ StudyReportPage }/>
