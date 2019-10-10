@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(theme => ({
     title: {
         marginBottom: theme.spacing(6),
+        color: theme.palette.extended.shaleBlue,
     },
 }))
 
