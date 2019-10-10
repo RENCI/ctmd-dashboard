@@ -22,10 +22,12 @@ import { CollaborationsPage } from './views/Collaborations'
 import { CtsasPage } from './views/Ctsas'
 import { SitesPage } from './views/Sites'
 import { UploadsPage } from './views/Uploads'
+import { Paragraph } from './components/Typography'
 
 const useStyles = makeStyles(theme => ({
     layout: {
         display: 'flex',
+        flexDirection: 'column',
         backgroundColor: `${ theme.palette.extended.whisperGray }`,
     },
     menuToggleButton: {
@@ -48,6 +50,10 @@ const useStyles = makeStyles(theme => ({
         marginLeft: '5rem',
         transition: 'padding-top 250ms',
     },
+    footer: {
+        padding: `${ theme.spacing(8) }px ${ theme.spacing(4) }px`,
+        marginLeft: '5rem',
+    }
 }))
 
 const Dashboard = props => {
@@ -80,6 +86,11 @@ const Dashboard = props => {
                     </Switch>
                 </ScrollToTop>
             </main>
+            <footer className={ classes.footer }>
+                <Paragraph align="right">
+                    This application was developed by the Translational Science Team at <a href="https://www.renci.org/" target="_blank" rel="noopener noreferrer">RENCI</a>.
+                </Paragraph>
+            </footer>
         </div>
     )
 }
