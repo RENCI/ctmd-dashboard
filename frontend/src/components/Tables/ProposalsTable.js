@@ -63,7 +63,7 @@ export const ProposalsTable = (props) => {
                     hidden: !settings.tables.visibleColumns.piName,
                 },
                 {
-                    title: 'Status', field: 'proposalStatus',
+                    title: 'Application Status', field: 'proposalStatus',
                     hidden: !settings.tables.visibleColumns.proposalStatus,
                 },
                 {
