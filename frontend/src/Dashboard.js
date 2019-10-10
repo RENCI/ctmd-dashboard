@@ -22,8 +22,7 @@ import { CollaborationsPage } from './views/Collaborations'
 import { CtsasPage } from './views/Ctsas'
 import { SitesPage } from './views/Sites'
 import { UploadsPage } from './views/Uploads'
-import { Paragraph } from './components/Typography'
-import { Grid } from '@material-ui/core'
+import { Footer } from './components/Footer'
 
 const useStyles = makeStyles(theme => ({
     layout: {
@@ -51,10 +50,6 @@ const useStyles = makeStyles(theme => ({
         marginLeft: '5rem',
         transition: 'padding-top 250ms',
     },
-    footer: {
-        padding: `${ theme.spacing(8) }px ${ theme.spacing(4) }px`,
-        marginLeft: '5rem',
-    }
 }))
 
 const Dashboard = props => {
@@ -87,15 +82,7 @@ const Dashboard = props => {
                     </Switch>
                 </ScrollToTop>
             </main>
-            <footer className={ classes.footer }>
-                <Grid container>
-                    <Grid item xs={ 11 }>
-                        <Paragraph align="right">
-                            This application was developed by the Translational Science Team at <a href="https://www.renci.org/" target="_blank" rel="noopener noreferrer">RENCI</a>.
-                        </Paragraph>
-                    </Grid>
-                </Grid>
-            </footer>
+            <Footer />
         </div>
     )
 }
