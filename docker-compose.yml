@@ -100,4 +100,3 @@ services:
     depends_on:
       - api
       - pipeline
-
