@@ -11,7 +11,6 @@ const useStyles = makeStyles(theme => ({
 
 export const Footer = props => {
     const classes = useStyles()
-    const [branch, setBranch] = useState('...')
 
     return (
         <footer className={ classes.root }>
