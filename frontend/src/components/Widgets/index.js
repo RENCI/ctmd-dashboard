@@ -1,7 +1,6 @@
 export * from './Counts'
 export * from './DayStats'
 export * from './ProposalsByMonth'
-export * from './ProposalsByStatus'
 export * from './ProposalsByTic'
 export * from './ProposalsCalendar'
 export * from './Widget'

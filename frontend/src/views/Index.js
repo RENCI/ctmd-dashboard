@@ -3,7 +3,7 @@ import { Grid } from '@material-ui/core'
 import { Title } from '../components/Typography'
 import {
     ProposalsByTicBarChart, ProposalsByMonthBarChart, ProposalsCalendar, DayStats, Counts
-} from '../components/widgets'
+} from '../components/Widgets'
 
 export const HomePage = (props) => {
 

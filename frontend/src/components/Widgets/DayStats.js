@@ -106,7 +106,11 @@ export const DayStats = props => {
                     >{ tic || 'All TICs' }<MoreIcon/></Button>
                     <Menu id="tic-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
                         <MenuItem onClick={ handleSelect } value="">All</MenuItem>
-                        { store.tics && store.tics.map(({ name }) => <MenuItem key={ name } onClick={ handleSelect } value={ name }>{ name }</MenuItem>) }
+                        {
+                            store.tics && store.tics.map(
+                                ({ name }) => <MenuItem key={ name } onClick={ handleSelect } value={ name }>{ name }</MenuItem>
+                            )
+                        }
                     </Menu>
                 </Fragment>
             }
@@ -114,8 +118,8 @@ export const DayStats = props => {
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 }>
                     <Typography variant="h4">Average Number of Days</Typography>
-                    <br/>
-                    <div style={{ height: '200px' }}>
+                    <br/><br/>
+                    <div style={{ height: '180px' }}>
                         <ResponsiveBar
                             data={[
                                 { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward[0],    count: averageDays.grantSubmissionToGrantAward[1]},
@@ -125,7 +129,7 @@ export const DayStats = props => {
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 32, left: 216 }}
+                            margin={{ top: 0, right: 32, bottom: 0, left: 216 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }
@@ -156,7 +160,7 @@ export const DayStats = props => {
                 <Grid item xs={ 12 } md={ 6 }>
                     <Typography variant="h4">Median Number of Days</Typography>
                     <br/>
-                    <div style={{ height: '200px' }}>
+                    <div style={{ height: '180px' }}>
                         <ResponsiveBar
                             data={[
                                 { timespan: 'Grant Submission to Grant Award',    days: medianDays.grantSubmissionToGrantAward[0],    count: medianDays.grantSubmissionToGrantAward[1]},
@@ -166,7 +170,7 @@ export const DayStats = props => {
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 32, left: 216 }}
+                            margin={{ top: 0, right: 32, bottom: 0, left: 216 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }

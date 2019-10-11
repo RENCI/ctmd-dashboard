@@ -123,7 +123,7 @@ export const ProposalsByTicBarChart = props => {
     
     return (
         <Widget
-            title="Proposals by Status"
+            title="Proposals by Application Status"
             subtitle="Grouped by TIC/RIC"
         >
             <CardContent style={{ height: '450px' }}>
