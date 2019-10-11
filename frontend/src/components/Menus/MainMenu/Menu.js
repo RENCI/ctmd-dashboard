@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/styles'
 import { NavLink } from 'react-router-dom'
 import { MenuList, MenuItem, ListItemIcon, ListItemText, Tooltip, Divider } from '@material-ui/core'
 import {
-    Dashboard as DashboardIcon,
+    Home as HomeIcon,
     Description as ProposalsIcon,
     Assignment as StudiesIcon,
     LocationOn as SitesIcon,
@@ -85,7 +85,7 @@ const useStyles = makeStyles(theme => ({
 
 const menuItems = [
     { }, // an empty object causes a Divider component to render in the menu 
-    { text: 'Home', path: '/', icon: DashboardIcon, },
+    { text: 'Home', path: '/', icon: HomeIcon, },
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon, },
     { text: 'Studies', path: '/studies', icon: StudiesIcon, },
     { text: 'Sites', path: '/sites', icon: SitesIcon, },
