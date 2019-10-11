@@ -19,7 +19,7 @@
     "d3-tip": "^0.9.1",
     "formik": "^1.5.1",
     "history": "^4.7.2",
-    "material-table": "^1.39.1",
+    "material-table": "^1.52.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.7",
