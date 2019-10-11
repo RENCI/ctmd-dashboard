@@ -118,7 +118,7 @@ export const ProposalsTable = (props) => {
                 },
             ].concat(resources.map(
                 resource => ({
-                        title: resource,
+                        title: `Resource: ${ resource }`,
                         field: resource,
                         hidden: !settings.tables.visibleColumns.resources,
                     })
