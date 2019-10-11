@@ -71,7 +71,7 @@ export const DangerZone = props => {
     }
 
     return (
-        <Grid container spacing={ 4 } alignItems="center">
+        <Grid container spacing={ 8 } alignItems="center">
             <Grid item xs={ 9 }>
                 <strong>Backup</strong>
                 <Paragraph>
@@ -100,7 +100,7 @@ export const DangerZone = props => {
             <Grid item xs={ 12 }>
                 {
                     backups.map((timestamp, i) => (
-                        <Grid container key={ timestamp } spacing={ 4 }>
+                        <Grid container key={ timestamp } spacing={ 8 }>
                             <Grid item xs={ 12 } sm={ 9 }>
                                 <Paragraph>{ i + 1 }. { timestamp }</Paragraph>
                             </Grid>

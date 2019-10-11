@@ -113,6 +113,12 @@ theme = {
                 fontFamily: 'Nanum Gothic',
                 color: theme.palette.secondary.main,
             },
+            action: {
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                height: '4rem',
+            },
         },
         MuiCardContent: {
             root: {

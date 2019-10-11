@@ -9,9 +9,9 @@ export const HomePage = (props) => {
 
     return (
         <div>
-            <Title>Dashboard Home</Title>
+            <Title>Clinical Trial Management Dashboard</Title>
 
-            <Grid container spacing={ 4 } alignItems="stretch">
+            <Grid container spacing={ 8 } alignItems="stretch">
                 <Grid item xs={ 12 } sm={ 11 }>
                     <Counts/>
                 </Grid>

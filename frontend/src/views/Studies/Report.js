@@ -138,7 +138,7 @@ export const StudyReportPage = props => {
             { isLoading && <CircularLoader /> }
             {
                 !isLoading && (
-                    <Grid container spacing={ 4 }>
+                    <Grid container spacing={ 8 }>
                         <Grid item xs={ 12 } sm={ 6 } md={ 7 } lg={ 8 }>
                             <Card style={{ height: '100%' }}>
                                 <CardHeader title="Study Profile"/>

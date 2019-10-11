@@ -24,14 +24,16 @@ const useStyles = makeStyles(theme => ({
         maxWidth: '4.6rem',
         transition: 'min-width 250ms',
         padding: 0,
-        backgroundColor: theme.palette.extended.shaleBlue,
+        backgroundImage: `linear-gradient(${ theme.palette.extended.shaleBlue }, ${ theme.palette.extended.magnolia })`,
+        boxShadow: '0 0 8px 2px rgba(0, 0, 0, 0.2)',
     },
     open: {
         minWidth: '200px',
     },
     toggler: {
         marginTop: '0.5rem',
-        transition: 'transform 500ms',
+        transition: 'transform 500ms 250ms, background-color 250ms',
+        color: theme.palette.grey[300],
     },
     rotated: {
         transform: 'rotate(-180deg)',
@@ -45,7 +47,7 @@ const useStyles = makeStyles(theme => ({
         },
     },
     activeSettingsButton: {
-        backgroundColor: theme.palette.extended.prussianBlue,
+        backgroundColor: theme.palette.extended.eno,
         '& $settingsIcon': {
             transform: 'scale(1.1) rotate(120deg)',
             color: theme.palette.common.white,

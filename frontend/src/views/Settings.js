@@ -30,7 +30,7 @@ export const SettingsPage = props => {
         <Fragment>
             <Title>Settings</Title>
             
-            <Grid container spacing={ 4 }>
+            <Grid container spacing={ 8 }>
                 <Grid item xs={ 12 }>
                     <CollapsibleCard
                         title="Chart Settings"
