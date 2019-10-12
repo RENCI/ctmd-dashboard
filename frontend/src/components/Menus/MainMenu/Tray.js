@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
         zIndex: 99,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         minWidth: '2rem',
         maxWidth: '4.6rem',

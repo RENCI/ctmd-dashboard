@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
         // ...theme.mixins.debug,
         padding: 0,
         display: 'flex',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center',
         margin: '0 0 0.1rem 0',
         borderRadius: theme.shape.borderRadius,
