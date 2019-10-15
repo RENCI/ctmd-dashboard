@@ -24,7 +24,7 @@ export const ProposalsByMonthBarChart = props => {
 
     useEffect(() => {
         let timeline = []
-        if (store.proposals) {
+        if (store.proposals && store.proposals.length > 0) {
             const earliestDate = store.proposals.map(proposal => proposal.dateSubmitted).sort()[0]
             let [earliestYear, earliestMonth] = earliestDate.split('-')
             earliestYear = parseInt(earliestYear)
