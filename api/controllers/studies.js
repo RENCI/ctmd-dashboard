@@ -2,70 +2,7 @@ const db = require('../config/database')
 const stringToInteger = require('./utils').stringToInteger
 const fs = require('fs')
 const csv = require('csv-parser')
-
-const profileKeyDisplayNames = {
-    ProposalID: 'Proposal ID',
-    network: 'Network',
-    tic: 'TIC',
-    ric: 'RIC',
-    type: 'Type',
-    design: 'Design',
-    linkedStudies: 'Has Linked Studies',
-    isRandomized: 'Study is Randomized',
-    randomizationUnit: 'Randomization Unit',
-    randomizationFeature: 'Randomization Feature',
-    ascertainment: 'Ascertainment',
-    observations: 'Observations',
-    isPilot: 'Pilot Study',
-    phase: 'Phase',
-    isRegistry: 'Is Registry',
-    ehrDataTransfer: 'EHR Data Transfer',
-    ehrDatatransferOption: 'EHR Data Transfer Option',
-    isConsentRequired: 'Study Requires Consent',
-    isEfic: 'Is EFIC',
-    irbType: 'ORB Type',
-    regulatoryClassification: 'Regulatory Classification',
-    clinicalTrialsGovId: 'ClinicalTrials.gov ID',
-    isDsmbDmcRequired: 'DSMB/DMC Required',
-    initialParticipatingSiteCount: 'Number of Initial Participating Sites',
-    enrollmentGoal: 'Enrollment Goal',
-    initialProjectedEnrollmentDuration: 'Initial Projects Enrollment Duration',
-    leadPIs: 'Lead PIs',
-    awardeeSiteAcronym: 'Awardee Site Acronym',
-    primaryFundingType: 'Primary Funding Type',
-    isFundedPrimarilyByInfrastructure: 'Funded Primarily by Infrastructure',
-    isPreviouslyFunded: 'Was Previously Funded',
-    fundingAwardDate: 'Date Funding was Awarded',
-    fundingSource: 'Source of Funding',
-}
-
-const siteMetricsKeyDisplayNames = {
-    ProposalID: 'Proposal ID',
-    siteId: 'Site ID',
-    siteName: 'Site Name',
-    ctsaId: 'CTSA ID',
-    ctsaName: 'CTSA Name',
-    network: 'Network',
-    tic: 'TIC',
-    ric: 'RIC',
-    type: 'Type',
-    design: 'Design',
-    principalInvestigator: 'PI',
-    dateRegPacketSent: 'Date Final Protocol Sent to Site',
-    dateContractSent: 'Date of Contract Execution',
-    dateIrbSubmission: 'Date of IRB Submission',
-    dateIrbApproval: 'Date of IRB Approval',
-    dateContractExecution: 'Date of Contract Execution',
-    dateSiteActivated: 'Date of Site Activation',
-    fpfv: 'Date of First Participant (FPFV)',
-    lpfv: 'Date of Last Participant (LPFV)',
-    patientsConsentedCount: 'Number of Consented Patients',
-    patientsEnrolledCount: 'Number of Randomized Patients',
-    patientsExpectedCount: 'Number of Expected Randomized Patients',
-    patientsWithdrawnCount: 'Number of Withdrawn Patients',
-    queriesCount: 'Number of Queries',
-    protocolDeviationsCount: 'Number of Major Protocol Deviations',
-}
+const lookupFieldName = require('../config/dictionary')
 
 exports.getProfile = (req, res) => {
     const proposalId = req.params.id
@@ -76,7 +13,7 @@ exports.getProfile = (req, res) => {
             Object.keys(profile).forEach(key => {
                 profile[key] = {
                     value: profile[key],
-                    displayName: profileKeyDisplayNames[key],
+                    displayName: lookupFieldName(key),
                 }
             })
             res.status(200).send(profile)
