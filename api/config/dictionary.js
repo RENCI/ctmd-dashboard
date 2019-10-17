@@ -34,4 +34,15 @@ const dictionary = {
     isPreviouslyFunded: 'Was Previously Funded',
 }
 
-module.exports = dictionary
+const lookupFieldName = fieldName => {
+    if (fieldName.trim() === '') {
+        return ''
+    }
+    if (dictionary.hasOwnProperty(fieldName)) {
+        return dictionary[fieldName]
+    } else {
+        return fieldName
+    }
+}
+
+module.exports = lookupFieldName
