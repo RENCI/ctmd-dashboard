@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
+import { FlashMessageContext } from '../../contexts/FlashMessageContext'
 import { makeStyles } from '@material-ui/styles'
 import { Grid, Button, Divider } from '@material-ui/core'
 import { Paragraph } from '../Typography'
@@ -28,6 +29,7 @@ const useStyles = makeStyles(theme => ({
 export const DangerZone = props => {
     const classes = useStyles()
     const [backups, setBackups] = useState([])
+    const addFlashMessage = useContext(FlashMessageContext)
 
     useEffect(() => {
         const fetchBackups = async () => {
@@ -44,6 +46,7 @@ export const DangerZone = props => {
         console.log('Initializing data backup...')
         axios.get(api.dataPostBackup)
             .then(response => {
+                addFlashMessage({ type: 'success', text: 'Scheduling data backup!'})
                 console.log('Database backup scheduled', response.data)
             })
             .catch(error => console.error(error))
@@ -54,6 +57,7 @@ export const DangerZone = props => {
         console.log(`Restore data from ${ timestamp }...`)
         axios.get(api.dataRestore(timestamp))
             .then(response => {
+                addFlashMessage({ type: 'success', text: 'Scheduling data restore!'})
                 console.log(response.data)
             })
             .catch(error => console.error(error))
@@ -64,6 +68,7 @@ export const DangerZone = props => {
         console.log('Initializing data synchronization...')
         axios.post(api.dataSync)
             .then(response => {
+                addFlashMessage({ type: 'success', text: 'Scheduling data synchronization!'})
                 console.log(response.data)
             })
             .catch(error => console.error(error))
