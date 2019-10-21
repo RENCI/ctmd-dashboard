@@ -104,22 +104,25 @@ export const DangerZone = props => {
             </Grid>
             <Grid item xs={ 12 }>
                 {
-                    backups.map((timestamp, i) => (
-                        <Grid container key={ timestamp } spacing={ 8 }>
-                            <Grid item xs={ 12 } sm={ 9 }>
-                                <Paragraph>{ i + 1 }. { timestamp }</Paragraph>
+                    backups.length > 0 ? (
+                        backups.map((timestamp, i) => (
+                            <Grid container key={ timestamp } spacing={ 8 }>
+                                <Grid item xs={ 12 } sm={ 9 }>
+                                    <Paragraph>{ i + 1 }. { timestamp }</Paragraph>
+                                </Grid>
+                                <Grid item xs={ 12 } sm={ 3 }>
+                                    <Button
+                                        size="large" fullWidth variant="outlined"
+                                        classes={{ outlined: classes.danger }}
+                                        onClick={ handleRestore(timestamp) }
+                                    >
+                                        Restore
+                                    </Button>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={ 12 } sm={ 3 }>
-                                <Button
-                                    size="large" fullWidth variant="outlined"
-                                    classes={{ outlined: classes.danger }}
-                                    onClick={ handleRestore(timestamp) }
-                                >
-                                    Restore
-                                </Button>
-                            </Grid>
-                        </Grid>
-                        )
+                        ))
+                    ) : (
+                        <Paragraph>There are no backups to restore.</Paragraph>
                     )
                 }
             </Grid>
