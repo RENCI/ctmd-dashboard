@@ -18,6 +18,7 @@ exports.getOne = (req, res) => {
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
             CAST("ProposalFunding"."fundingStart" AS VARCHAR),
             CAST("PATMeeting"."meetingDate" AS VARCHAR),
+            CAST("ProtocolTimelines_estimated"."estimatedStartDateOfFunding" AS VARCHAR) AS "estimatedFundingStartDate",
             CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR)
         FROM "Proposal" 
         INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
@@ -57,8 +58,9 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             name6.description AS "fundingStatusWhenApproved",
             "ProposalFunding"."amountAward" AS "fundingAmount",
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
-            CAST("ProposalFunding"."fundingStart" AS VARCHAR),
+            CAST("ProposalFunding"."fundingStart" AS VARCHAR) AS "actualFundingStartDate",
             CAST("PATMeeting"."meetingDate" AS VARCHAR),
+            CAST("ProtocolTimelines_estimated"."estimatedStartDateOfFunding" AS VARCHAR) AS "estimatedFundingStartDate",
             CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR),
             CAST("ProtocolTimelines_estimated"."actualGrantSubmissionDate" AS VARCHAR)
         FROM "Proposal"

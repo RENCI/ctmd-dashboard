@@ -111,6 +111,14 @@ export const ProposalsTable = (props) => {
                     hidden: !settings.tables.visibleColumns.fundingPeriod,
                 },
                 {
+                    title: 'Estimated Funding Start Date', field: 'estimatedFundingStartDate',
+                    hidden: !settings.tables.visibleColumns.estimatedFundingStartDate,
+                },
+                {
+                    title: 'Actual Funding Start Date', field: 'actualFundingStartDate',
+                    hidden: !settings.tables.visibleColumns.actualFundingStartDate,
+                },
+                {
                     title: 'Approved for Comprehensive Consultation', field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
                     render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
