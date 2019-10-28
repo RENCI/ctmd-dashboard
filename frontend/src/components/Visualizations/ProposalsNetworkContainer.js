@@ -38,7 +38,8 @@ function createNodeData(data) {
           orgs = d3.map(),
           tics = d3.map(),
           areas = d3.map(),
-          statuses = d3.map();
+          statuses = d3.map(),
+          services = d3.map();
 
     data.forEach(d => {
         const proposal = addNode(d, proposals, d.proposalID, "proposal");
@@ -48,6 +49,11 @@ function createNodeData(data) {
         addNode(d, tics, d.assignToInstitution, "tic", proposal);
         addNode(d, areas, d.therapeuticArea, "area", proposal);
         addNode(d, statuses, d.proposalStatus, "status", proposal);
+        if (d.requestedServces) {
+          d.requestedServces.forEach(e => {
+            addNode(d, services, e, "service", proposal);
+          });
+        }
     });
 
     let nodes = pis.values()
@@ -55,7 +61,8 @@ function createNodeData(data) {
         .concat(orgs.values())
         .concat(tics.values())
         .concat(areas.values())
-        .concat(statuses.values());
+        .concat(statuses.values())
+        .concat(services.values());
 
     let nodeTypes = nodes.reduce((p, c) => {
         const type = p[c.type];
@@ -103,6 +110,7 @@ function createNodeData(data) {
               case "tic":
               case "area":
               case "status":
+              case "service":
                   node.name = id;
                   node.proposals = [proposal];
                   proposal.nodes.push(node);

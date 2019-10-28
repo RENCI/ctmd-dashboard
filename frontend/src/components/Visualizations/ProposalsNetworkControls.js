@@ -21,8 +21,20 @@ const defaultValue = "All";
 
 function getItems(proposals, key) {
     const values = proposals.reduce((p, c) => {
-        let value = c[key];
-        if (value && p.indexOf(value) === -1) p.push(value);
+        const value = c[key];
+
+        if (!value) {
+          return p;
+        }
+        else if (Array.isArray(value)) {
+          value.forEach(d => {
+            if (p.indexOf(d) === -1) p.push(d);
+          });
+        }
+        else {
+          if (p.indexOf(value) == -1) p.push(value);
+        }
+
         return p;
     }, []).sort();
 
@@ -38,6 +50,7 @@ function ProposalsNetworkControls(props) {
     const [tic, setTic] = useState(defaultValue);
     const [status, setStatus] = useState(defaultValue);
     const [area, setArea] = useState(defaultValue);
+    const [service, setService] = useState(defaultValue);
 
     // There must be a better way than setting these all separately
     const [piLabelWidth, setPILabelWidth] = useState(0);
@@ -46,6 +59,7 @@ function ProposalsNetworkControls(props) {
     const [ticLabelWidth, setTicLabelWidth] = useState(0);
     const [statusLabelWidth, setStatusLabelWidth] = useState(0);
     const [areaLabelWidth, setAreaLabelWidth] = useState(0);
+    const [serviceLabelWidth, setServiceLabelWidth] = useState(0);
 
     const piLabelRef = useRef(null);
     const proposalLabelRef = useRef(null);
@@ -53,6 +67,7 @@ function ProposalsNetworkControls(props) {
     const ticLabelRef = useRef(null);
     const statusLabelRef = useRef(null);
     const areaLabelRef = useRef(null);
+    const serviceLabelRef = useRef(null);
 
     const { classes, proposals, onChange } = props;
 
@@ -63,6 +78,7 @@ function ProposalsNetworkControls(props) {
         setTicLabelWidth(ReactDOM.findDOMNode(ticLabelRef.current).offsetWidth);
         setStatusLabelWidth(ReactDOM.findDOMNode(statusLabelRef.current).offsetWidth);
         setAreaLabelWidth(ReactDOM.findDOMNode(areaLabelRef.current).offsetWidth);
+        setServiceLabelWidth(ReactDOM.findDOMNode(serviceLabelRef.current).offsetWidth);
     }, [piLabelRef]);
 
     function handleSelect(type, event) {
@@ -75,6 +91,7 @@ function ProposalsNetworkControls(props) {
            case "tic": setTic(value); break;
            case "status": setStatus(value); break;
            case "area": setArea(value); break;
+           case "service": setService(value); break;
            default: console.log("Invalid type: " + type);
         }
 
@@ -87,6 +104,7 @@ function ProposalsNetworkControls(props) {
     const ticItems = useMemo(() => getItems(proposals, 'assignToInstitution'), [proposals]);
     const areaItems = useMemo(() => getItems(proposals, 'therapeuticArea'), [proposals]);
     const statusItems = useMemo(() => getItems(proposals, 'proposalStatus'), [proposals]);
+    const serviceItems = useMemo(() => getItems(proposals, 'requestedServices'), [proposals]);
 
     function dropDown(type, value, label, helperText, items, ref, labelWidth) {
         return (
@@ -123,6 +141,7 @@ function ProposalsNetworkControls(props) {
             { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
             { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
             { dropDown("area", area, "Therapeutic Area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
+            { dropDown("service", service, "Resources requested", "resources requested", serviceItems, serviceLabelRef, serviceLabelWidth) }
             { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
             { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
         </Grid>
