@@ -4,7 +4,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  var margin = { top: 90, left: 10, bottom: 5, right: 150 },
+  var margin = { top: 100, left: 10, bottom: 5, right: 150 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -59,8 +59,7 @@ export default function() {
                          "Budget: " + d.budget + "<br>" +
                          "Date submitted: " + d.dateSubmitted + "<br>" +
                          "Meeting date: " + d.meetingDate + "<br>" +
-                         "Duration: " + d.duration + "<br>" +
-                         "Status: " + d.status;
+                         "Duration: " + d.duration;
 
                 case "org":
                   return "Organization: " + d.name + "<br><br>" +
@@ -82,6 +81,12 @@ export default function() {
 
                 case "status":
                   return "Status: " + d.name + "<br><br>" +
+                         "Proposals: " + d.proposals.length +
+                         (selectedNodes.length > 0 ?
+                         "<br>Selected proposals: " + selectionOverlap(d) : "");
+
+                case "resource":
+                  return "Resource requested: " + d.name + "<br><br>" +
                          "Proposals: " + d.proposals.length +
                          (selectedNodes.length > 0 ?
                          "<br>Selected proposals: " + selectionOverlap(d) : "");
@@ -151,17 +156,29 @@ export default function() {
     const activeTypes = nodeTypes.filter(d => typeActive[d]);
     const nodes = allNodes.filter(d => activeTypes.indexOf(d.type) !== -1);
 
+    // XXX: Setting fixedValue lets us size the nodes by the number of proposals,
+    //      but that can mess up the link positions for situations such as
+    //      requested resources, as proposals may have multiple requested resources.
+/*
+    nodes.forEach(d => {
+      d.fixedValue = d.proposals.length;
+    });
+*/
     // Now link
     const proposals = allNodes.filter(d => d.type === "proposal");
     let links = [];
 
     proposals.forEach(proposal => {
       const nodes = activeTypes.map(type => {
-        return type === "proposal" ? proposal : proposal.nodes.filter(d => d.type === type)[0];
+        return type === "proposal" ? [proposal] : proposal.nodes.filter(d => d.type === type);
       });
 
       d3.pairs(nodes).forEach(d => {
-        addLink(d[0], d[1], proposal);
+        d[0].forEach(n1 => {
+          d[1].forEach(n2 => {
+            addLink(n1, n2, proposal);
+          });
+        });
       });
     });
 
