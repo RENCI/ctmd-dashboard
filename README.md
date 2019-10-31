@@ -272,15 +272,23 @@ The `pmd-pipeline` container manages taking snapshots of the postgres database i
 
 ###### HTTP Authentication
 
-The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. It holds usernames and hashed passwords, as the sample file--`./frontend/.htpasswd.sample` illustrates. To generate the hashed password, use a tool like `htpasswd` from `apache2-utils` or `httpd-tools`. To use `htpasswd`, you can execute `htpasswd -c ./frontend/.htpasswd [username]`, where `[username]` is replaced with the desired login username. Then you'll be prompted to enter a password twice.
+The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. It holds usernames and hashed passwords, as the sample file--`./frontend/.htpasswd.sample` illustrates. To generate the hashed password, use `htpasswd` from `apache2-utils` or `httpd-tools`.
+
+To add a user and password, use `htpasswd` by executing `htpasswd  ./frontend/.htpasswd [username]`, where `[username]` is replaced with the desired login username. Then you'll be prompted to enter a password twice.
 
 The entire interaction shows output like the following.
 
 ```bash
-$ sudo htpasswd -c ./frontend/.htpasswd myusername
+$ sudo htpasswd ./frontend/.htpasswd myusername
 New password: 
 Re-type new password: 
 Adding password for user myusername
+```
+
+This will append a new `[username]:[hashed password]`` user to the `.htpsaswd` file. To completely replace the `.htpasswd` file, use the `-c` flag:
+
+```bash
+sudo htpasswd -c ./frontend/.htpasswd myusername
 ```
 
 If this is not done, Nginx will throw a `500 Internal Server Error` at your browser when you try to access the site.
