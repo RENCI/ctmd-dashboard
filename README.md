@@ -285,13 +285,13 @@ Re-type new password:
 Adding password for user myusername
 ```
 
-This will append a new `[username]:[hashed password]`` user to the `.htpsaswd` file. To completely replace the `.htpasswd` file, use the `-c` flag:
+This will append a new line with `[username]:[hashed-password]` in the `.htpasswd` file. To completely replace the `.htpasswd` file, with the specified user's credentials, use the `-c` flag:
 
 ```bash
 sudo htpasswd -c ./frontend/.htpasswd myusername
 ```
 
-If this is not done, Nginx will throw a `500 Internal Server Error` at your browser when you try to access the site.
+If usernames are not set up, Nginx will throw a `500 Internal Server Error` at your browser when you try to access the site.
 
 ##### OK, Let's Go
 
