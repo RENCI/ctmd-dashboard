@@ -15,7 +15,7 @@ export const Footer = props => {
     return (
         <footer className={ classes.root }>
             <Paragraph>
-                This application is developed by the Translational Science Team at <a href="https://www.renci.org/" target="_blank" rel="noopener noreferrer">RENCI</a>.
+                This application is developed by the <a href="http://txscience.renci.org/" target="_blank" rel="noopener noreferrer">Translational Science Team at RENCI</a>.
             </Paragraph>
         </footer>
     )
