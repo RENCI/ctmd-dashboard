@@ -298,7 +298,7 @@ If usernames are not set up, Nginx will throw a `500 Internal Server Error` at y
 Build and start all three services using the production Docker Compose file, `docker-compose.prod.yml`, which is specified by the `-f` flag. In production, we commonly need to rebuild the images when we start the services and ru them in detached mode.
 
 ```bash
-$ docker-compose -f docker-compose.prod.yml up --build -d
+$ docker-compose -f docker-compose.prod.yml up --build -d -v
 ```
 
 This serves the frontend to port `80` on the host, and is thus reachable simply at `http://you-domain-name.com` (or http://localhost if running in production locally). The API is publicly accessible via `http://localhost/api`.
