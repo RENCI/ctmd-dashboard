@@ -43,17 +43,25 @@ export const DropZone = ({ endpoint, headers }) => {
             console.log('uploading', file.name)
             const formdata = new FormData()
             formdata.append('data', file)
-            formdata.append('content-type', 'application/json')
+            formdata.append('content-type', 'text/csv')
             formdata.append('json', '{}')
-            headers = { 'Access-Control-Allow-Origin': '*' }
+            headers = {
+                'Access-Control-Allow-Origin': '*',
+                // 'content-type': 'multipart/form-data'
+            }
             axios({
                 url: endpoint,
                 method: 'POST',
                 headers: headers,
                 data: formdata
+            }).then(response => {
+                console.log(response)
+                if (response.status === 200) {
+                    addFlashMessage({ type: 'success', text: 'File uploaded!'})
+                } else {
+                    addFlashMessage({ type: 'error', text: 'Error uploading file!'})
+                }
             })
-            addFlashMessage({ type: 'success', text: 'File uploaded!'})
-            window.location.reload(false)
         } else {
             console.log('No file selected')
             addFlashMessage({ type: 'error', text: 'Error uploading file!'})
@@ -62,7 +70,7 @@ export const DropZone = ({ endpoint, headers }) => {
 
     return (
         <div className={ classes.dropzone }>
-            <input type="file" accept="application/json"
+            <input type="file" accept="text/csv"
                 ref={ fileInputRef }
                 className={ classes.fileInput }
                 onChange={ onFilesAdded }
