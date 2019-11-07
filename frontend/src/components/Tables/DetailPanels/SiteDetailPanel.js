@@ -1,5 +1,4 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/styles'
 import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 

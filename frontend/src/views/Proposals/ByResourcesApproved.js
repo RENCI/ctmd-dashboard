@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Title, Subtitle } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { BrowseMenu, ChartOptions } from '../../components/Menus'
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
 import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'

@@ -47,7 +47,6 @@ export const Counts = props => {
     const [FYStartDate, setFYStartDate] = useState()
     const [FYEndDate, setFYEndDate] = useState()
     const classes = useStyles()
-    const theme = useTheme()
     const today = new Date()
     const todayYYYYMM = `${ today.getFullYear() }-${ ('0' + (today.getMonth() + 1)).slice(-2) }`
     
