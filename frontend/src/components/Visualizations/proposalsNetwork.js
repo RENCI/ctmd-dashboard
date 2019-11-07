@@ -53,13 +53,12 @@ export default function() {
                        (selectedNodes.length > 0 ?
                        "<br>Selected proposals: " + selectionOverlap(d) : "");
 
-             case "proposal":
-               return "Proposal: " + d.name + "<br><br>" +
-                      "Budget: " + d.budget + "<br>" +
-                      "Date submitted: " + d.dateSubmitted + "<br>" +
-                      "Meeting date: " + d.meetingDate + "<br>" +
-                      "Duration: " + d.duration + "<br>" +
-                      "Status: " + d.status;
+              case "proposal":
+                return "Proposal: " + d.name + "<br><br>" +
+                       "Budget: " + d.budget + "<br>" +
+                       "Date submitted: " + d.dateSubmitted + "<br>" +
+                       "Meeting date: " + d.meetingDate + "<br>" +
+                       "Duration: " + d.duration + "<br>";
 
               case "org":
                 return "Organization: " + d.name + "<br><br>" +
@@ -81,6 +80,12 @@ export default function() {
 
               case "status":
                 return "Status: " + d.name + "<br><br>" +
+                       "Proposals: " + d.proposals.length +
+                       (selectedNodes.length > 0 ?
+                       "<br>Selected proposals: " + selectionOverlap(d) : "");
+
+              case "resource":
+                return "Resource requested: " + d.name + "<br><br>" +
                        "Proposals: " + d.proposals.length +
                        (selectedNodes.length > 0 ?
                        "<br>Selected proposals: " + selectionOverlap(d) : "");
@@ -155,9 +160,9 @@ export default function() {
     let links = [];
 
     proposals.forEach(proposal => {
-      const nodes = activeTypes.filter(d => d !== "proposal").map(type => {
-        return proposal.nodes.filter(d => d.type === type)[0];
-      });
+      const nodes = activeTypes.filter(d => d !== "proposal").reduce((p, c) => {
+        return p.concat(proposal.nodes.filter(d => d.type === c));
+      }, []);
 
       if (activeTypes.indexOf("proposal") !== -1) {
         nodes.forEach(d => {

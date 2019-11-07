@@ -38,9 +38,14 @@ function createNodeData(data) {
           orgs = d3.map(),
           tics = d3.map(),
           areas = d3.map(),
-          statuses = d3.map();
+          statuses = d3.map(),
+          resources = d3.map();
 
     data.forEach(d => {
+        if (d.requestedServices.length === 0) {
+          d.requestedServices = ["None"];
+        }
+
         const proposal = addNode(d, proposals, d.proposalID, "proposal");
 
         addNode(d, pis, d.piName, "pi", proposal);
@@ -48,6 +53,9 @@ function createNodeData(data) {
         addNode(d, tics, d.assignToInstitution, "tic", proposal);
         addNode(d, areas, d.therapeuticArea, "area", proposal);
         addNode(d, statuses, d.proposalStatus, "status", proposal);
+        d.requestedServices.forEach(e => {
+          addNode(d, resources, e, "resource", proposal);
+        });
     });
 
     let nodes = pis.values()
@@ -55,7 +63,8 @@ function createNodeData(data) {
         .concat(orgs.values())
         .concat(tics.values())
         .concat(areas.values())
-        .concat(statuses.values());
+        .concat(statuses.values())
+        .concat(resources.values());
 
     let nodeTypes = nodes.reduce((p, c) => {
         const type = p[c.type];
@@ -92,7 +101,6 @@ function createNodeData(data) {
                   node.dateSubmitted = d.dateSubmitted ? d.dateSubmitted : "NA";
                   node.meetingDate = d.meetingDate ? d.meetingDate : "NA";
                   node.duration = d.fundingPeriod ? d.fundingPeriod : "NA";
-                  node.status = d.proposalStatus ? d.proposalStatus : "NA";
                   node.protocolStatus = d.protocol_status ? +d.protocol_status : "NA";
                   node.proposals = [node];
                   node.nodes = [];
@@ -103,6 +111,7 @@ function createNodeData(data) {
               case "tic":
               case "area":
               case "status":
+              case "resource":
                   node.name = id;
                   node.proposals = [proposal];
                   proposal.nodes.push(node);
