@@ -46,21 +46,35 @@ export const DangerZone = props => {
         console.log('Initializing data backup...')
         axios.get(api.dataPostBackup)
             .then(response => {
-                addFlashMessage({ type: 'success', text: 'Scheduling data backup!'})
-                console.log('Database backup scheduled', response.data)
+                if (response.status === 200) {
+                    addFlashMessage({ type: 'success', text: 'Scheduling data backup!'})
+                    console.log('Database backup scheduled.', response.data)
+                } else {
+                    throw new Error("Database backup error");
+                }
             })
-            .catch(error => console.error(error))
+            .catch(error => {
+                addFlashMessage({ type: 'error', text: 'There was an error scheduling data backup!'})
+                console.error('Database backup failed.', error)
+            })
         return
     }
 
     const handleRestore = timestamp => event => {
-        console.log(`Restore data from ${ timestamp }...`)
+        console.log(`Initializing data restoration from ${ timestamp }...`)
         axios.get(api.dataRestore(timestamp))
             .then(response => {
-                addFlashMessage({ type: 'success', text: 'Scheduling data restore!'})
-                console.log(response.data)
+                if (response.status === 200) {
+                    addFlashMessage({ type: 'success', text: 'Scheduling data restore!'})
+                    console.log('Database restoration scheduled.', response.data)
+                } else {
+                    throw new Error("Database restoration error");
+                }
             })
-            .catch(error => console.error(error))
+            .catch(error => {
+                addFlashMessage({ type: 'error', text: 'There was an error scheduling data restoration!'})
+                console.error('Database restoration failed.', error)
+            })
         return
     }
 
@@ -68,10 +82,17 @@ export const DangerZone = props => {
         console.log('Initializing data synchronization...')
         axios.post(api.dataSync)
             .then(response => {
-                addFlashMessage({ type: 'success', text: 'Scheduling data synchronization!'})
-                console.log(response.data)
+                if (response.status === 200) {
+                    addFlashMessage({ type: 'success', text: 'Scheduling data synchronization!'})
+                    console.log('Database synchronization scheduled.', response.data)
+                } else {
+                    throw new Error("Database synchronization error");
+                }
             })
-            .catch(error => console.error(error))
+            .catch(error => {
+                addFlashMessage({ type: 'error', text: 'There was an error scheduling data synchronization!'})
+                console.error('Database synchronization failed.', error)
+            })
         return
     }
 
