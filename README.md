@@ -1,4 +1,4 @@
-# Trial Innovation Center Dashboard
+# Clinical Trial Management Dashboard
 
 - [Server Setup](#server-setup)
   + [Install Docker](#install-docker)
