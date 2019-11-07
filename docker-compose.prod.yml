@@ -16,7 +16,7 @@ services:
     
   pipeline:
     container_name: pmd-pipeline
-    image: zooh/pmd-pipeline-reload:0.2.16
+    image: zooh/pmd-pipeline-reload@sha256:be57ff5af20a6ec184c867c1a3c5b19ac3f55ef810ec3d656d14f99bcd0eae1a
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
