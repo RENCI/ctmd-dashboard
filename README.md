@@ -148,9 +148,9 @@ docker-compose version 1.23.2, build 1110ad01
 
 ## Workflow
 
-Although unusual in this type of application, we attempt to follow a version of a semantic versioning workflow and release pattern.
+Although unusual in this type of application, we attempt to follow a [semantic versioning](https://semver.org/) workflow and release pattern.
 
-### Branches
+### Branching
 
 - The `master` branch is the development branch.
 - Feature branches are named `feature/some-cool-feature`.
@@ -161,7 +161,7 @@ Although unusual in this type of application, we attempt to follow a version of 
 
 ### Merging
 
-We won't commit to master. Please make pull requests for any feature, patch, or bugfix branch, tagging existing related issues where appropriate. When in doubt about creating a feature, patch, or bugfix branch, create an issue to discuss possible paths with the team.
+We won't commit directly to the master branch. Crate a separate branch for any feature, patch, or bugfix, and submit a pull request, while tagging existing related issues where appropriate. When in doubt about creating a feature, patch, or bugfix branch, create an issue to discuss possible paths with the team.
 
 ## Application Setup
 
@@ -170,20 +170,50 @@ We won't commit to master. Please make pull requests for any feature, patch, or 
 Clone this repo or fork and clone your own.
 
 ```bash
-$ git clone https://github.com/renci/dashboard.git
+$ git clone https://github.com/renci/ctmd-dashboard.git
 ```
+
+For local development, create a branch off of master as detailed above.
+
+For deloying to a production server, first detemine the branch to deploy. for example, consider the case in which you wish to deploy version `1.19`. Presuming this branch is a tracked remote branch, you would begin by checking out branch `1.19` with the following command.
+
+```bash
+git checkout 1.19
+```
+
+This automatically creates a local copy of that remote branch. Proceed by setting up the required environment variables below and continue with deployment instruction farther down.
 
 ### Set up Environment Variables
 
-Environemt variables should live in the file called `./.env`. Important information lives in this file to build the docker images so that the containers can communicate. The set of variables consists of database credentials, variables describing how to access the API, RedCap database credentials, and the location to store Postgres data dumps. A brief desription of each environment variable follows.
+Environment variables live in the file `./.env` in the project root. This file contains critical information to ensure communication between services running within Docker containers. The set of variables consists of database credentials, information about accessing the dashboard's API, REDCap database credentials, and data backup location. A brief desription of each environment variable follows.
 
-- `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`: These are all credentials to connect to the database container.
-- `REACT_APP_API_ROOT`: Environment variables used in React begin with `REACT_APP_`. This variable is referenced in the `ApiContext`, which resides at `'./frontend/src/contexts/ApiContext.js`, providing access to the API's endpoints across the entire frontend of the application. This is only used in production.
+- `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`: These provide credentials to connect to the database container.
+- `REACT_APP_API_ROOT`: Environment variables used in React begin with `REACT_APP_`. This variable is referenced in the front-ends source for defining the API endpoints. _This variable is only used in production._
 - `API_PORT`: This is the port the `pmd-api` container should serve the API.
-- `REDCAP_APPLICATION_TOKEN`: This token grants access to the RedCap database. \* This is only used in production.
-- `POSTGRES_DUMP_PATH`: This is the location on the host where Postgres backups (via `pg_dump`) will be stored. \* This is only used in production.
+- `REDCAP_APPLICATION_TOKEN`: This token grants access to the RedCap database. _This variable is only used in production._
+- `POSTGRES_DUMP_PATH`: This is the location on the host where Postgres backups (via `pg_dump`) will be stored. _This variable is only used in production._
+- `PAUSE`: TBA
+- `RELOAD_SCHEDULE`: TBA
+- `RELOAD_DATABASE`: TBA
+- `SCHEDULE_RUN_TIME`: This variable sets the time on the host machine to schedule the database backup process.
+- `AUXILIARY_PATH`: TBA
+- `FILTER_PATH`: This variable defines the location of a CSV file indicating which proposals to filter from the dashboard interface. This file is a one-column CSV and must have the following structure.
 
-The `.env.sample` file can be used as a guide (and it can be copied to get things working out of the box for local development).
+```
+ProposalId
+171
+186
+```
+
+Proposal IDs listed will be shown in the dashboard. If the file is not present, nothing will be filtered, and the dashboard will show all proposals. If the file is present but contains no proposal IDs, _i.e._, contains only the column title, like
+
+```
+ProposalId
+```
+
+then nothing will be shown in the dashboard.
+
+When in doubt, use the `.env.sample` file as a guide (and it can be copied as-is to get things working out of the box for local development).
 
 ### Start 
 
@@ -191,68 +221,110 @@ In development, there are three services that we need to run. They are named `fr
 
 #### Development
 
-Start all three development services:
+Start all services required for development:
 
 ```bash
 $ docker-compose up
 ```
 
-The above command starts and attaches to the three containers and results in output like the following.
+The above command starts and attaches the necessary containers, which results in output like the following, consisting of interleaved logs from all running containers.
 
 ```bash
+$ docker-compose up
 Starting pmd-db-dev ... 
+Starting pmd-db-dev
+Starting pmd-redis ... 
 Starting pmd-db-dev ... done
 Starting pmd-api-dev ... 
-Starting pmd-api-dev ... done
+Starting pmd-redis ... done
+Starting pmd-pipeline ... 
+Starting pmd-pipeline ... done
 Starting pmd-frontend-dev ... 
 Starting pmd-frontend-dev ... done
-Attaching to pmd-db-dev, pmd-api-dev, pmd-frontend-dev
-pmd-db-dev        | 2019-01-14 15:31:03.025 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-pmd-db-dev        | 2019-01-14 15:31:03.025 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-pmd-db-dev        | 2019-01-14 15:31:03.033 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-pmd-db-dev        | 2019-01-14 15:31:03.066 UTC [24] LOG:  database system was shut down at 2019-01-14 14:51:46 UTC
-pmd-api-dev       | 
-pmd-db-dev        | 2019-01-14 15:31:03.077 UTC [1] LOG:  database system is ready to accept connections
-pmd-api-dev       | > api@1.0.0 start /usr/src/app
-pmd-api-dev       | > nodemon app
-pmd-api-dev       | 
-pmd-api-dev       | [nodemon] 1.18.9
-pmd-api-dev       | [nodemon] to restart at any time, enter `rs`
-pmd-api-dev       | [nodemon] watching: *.*
-pmd-api-dev       | [nodemon] starting `node app.js`
-pmd-api-dev       | 
-pmd-api-dev       | Shhh... I'm listening on port 3030.
-pmd-api-dev       | 
-pmd-frontend-dev  | 
-pmd-frontend-dev  | > duke-tic@0.1.0 start /usr/src/app
-pmd-frontend-dev  | > react-scripts start
-pmd-frontend-dev  | 
-pmd-frontend-dev  | Starting the development server...
-pmd-frontend-dev  | 
+Attaching to pmd-db-dev, pmd-redis, pmd-api-dev, pmd-pipeline, pmd-frontend-dev
+pmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+pmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+pmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+pmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Redis version=5.0.5, bits=64, commit=00000000, modified=0, pid=1, just started
+pmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Configuration loaded
+pmd-db-dev  | 2019-11-07 06:04:58.874 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+pmd-api-dev | 
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 * Running mode=standalone, port=6379.
+pmd-api-dev | > api@1.0.0 start /usr/src/app
+pmd-api-dev | > nodemon app
+pmd-api-dev | 
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+pmd-pipeline | INFO:reload:waiting for database to start host=db port=5432
+pmd-db-dev  | 2019-11-07 06:04:58.892 UTC [24] LOG:  database system was shut down at 2019-11-07 05:06:08 UTC
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # Server initialized
+pmd-pipeline | INFO:reload:database started host=db port=5432
+pmd-api-dev | [nodemon] 1.19.1
+pmd-db-dev  | 2019-11-07 06:04:58.901 UTC [1] LOG:  database system is ready to accept connections
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+pmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+pmd-api-dev | [nodemon] to restart at any time, enter `rs`
+pmd-db-dev  | 2019-11-07 06:05:02.453 UTC [31] LOG:  incomplete startup packet
+pmd-pipeline | INFO:rq.worker:Worker rq:worker:927ddbe78c7b457ea66ded5ea3c57234: started, version 1.1.0
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.978 * DB loaded from append only file: 0.061 seconds
+pmd-api-dev | [nodemon] watching: *.*
+pmd-pipeline | INFO:reload:redis started host=redis port=6379
+pmd-redis   | 1:M 07 Nov 2019 06:04:59.978 * Ready to accept connections
+pmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] ERROR:  relation "StudyPI" already exists
+pmd-api-dev | [nodemon] starting `node app.js`
+pmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
+pmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] STATEMENT:  create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
+pmd-api-dev | 
+pmd-db-dev  |   
+pmd-pipeline | INFO:rq.worker:*** Listening on default...
+pmd-api-dev | Shhh... I'm listening on port 3030.
+pmd-api-dev | 
+pmd-pipeline | INFO:reload:redis started host=redis port=6379
+pmd-pipeline | INFO:reload:create_tables=True
+pmd-pipeline | INFO:rq.worker:Cleaning registries for queue: default
+pmd-pipeline | INFO:reload:insert_data=False
+pmd-pipeline | INFO:reload:one_off=False
+pmd-pipeline | INFO:reload:realod=True
+pmd-pipeline | INFO:reload:create tables start
+pmd-pipeline |  * Serving Flask app "server" (lazy loading)
+pmd-pipeline |  * Environment: production
+pmd-pipeline |    WARNING: This is a development server. Do not use it in a production deployment.
+pmd-pipeline |    Use a production WSGI server instead.
+pmd-pipeline |  * Debug mode: off
+pmd-pipeline | INFO:werkzeug: * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+pmd-pipeline | INFO:reload:executing create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
+pmd-pipeline | 
+pmd-pipeline | ERROR:reload:pipeline encountered an error when creating tablesrelation "StudyPI" already exists
+pmd-pipeline | 
+pmd-frontend-dev | 
+pmd-frontend-dev | > duke-tic@0.1.0 start /usr/src/app
+pmd-frontend-dev | > react-scripts start
+pmd-frontend-dev | 
+pmd-frontend-dev | Starting the development server...
   .
   .
   .
 ```
 
-Once everything is started up, point your browser to `http://localhost:3000` to access the dashboard. The API is served to `http://localhost:3030` in case you need to play with it directly the browser or in Postman, say. Check the console for any errors that may prevent access to the application's frontend or API.
+Errors should be easy to spot at this point. Once everything is started up, point your browser to `http://localhost:3000` to access the dashboard. The API is served to `http://localhost:3030` in case you need to play with it directly the browser or in Postman, say. Check the console for any errors that may prevent access to the application's frontend or API.
 
 ##### Hot Reloading
 
-Note that the development `frontend` and `api` services start with React's development server and nodemon, respectively, allowing hot reloading, which causes your browser to refresh the page upon saving changes to any files used by the frontend. 
+Note that the development `frontend-dev` and `api-dev` services start with React's development server and nodemon, respectively, allowing hot reloading. 
 
 ##### Installing New Modules
 
-If a new npm module is installed, for example, someone on the project executes `npm install some-tool` to install, the next time `docker-compose up` is run, you will need to supply the `--build` flag so that `some-tool` is installed on the image before the container spins up.
+If a new NPM module is installed, the front-end image will need to be rebuilt. If, for example, someone on the project executes `npm install some-tool`, the next time `docker-compose up` is run, you will need to supply the `--build` flag so that `some-tool` is installed on the image before the container spins up.
 
-Alternatively, you may find that this needs to be done retrospectively, after a container is already running. Perhaps you've received an error in the browser such as `Module not found: Can't resolve '@name-space/module' in '/usr/src/app/src/components/someComponent'`, in which case you can log into the running `pmd-frontend-dev` container and `npm install` it there in (the default location) `/usr/src/app`. Simply executing `docker exec -it pmd-frontend-dev npm install` is a quick, easy way to handle this.
+Alternatively, this can also be done by installing the dependencies within a container. If you received an error in the browser such as `Module not found: Can't resolve '@name-space/module' in '/usr/src/app/src/components/someComponent'`, in which case you can log into the running `pmd-frontend-dev` container and `npm install` it there in (the default location) `/usr/src/app`. Simply executing `docker exec -it pmd-frontend-dev npm install` is a quick, easy way to handle this.
 
 ##### Frontend Development
 
-- See the specific documentation for details on [frontend](frontend/README.md) and [API](api/README.md) development for this application.
+- See the specific documentation for details on [frontend](frontend/README.md) and [API](api/README.md) development for this application's front-end.
 
 #### Production
 
-Running this in production is quite similar to the development environment, but a few things need to be in place first. We need to set up the aforementioned environment variables and set up authentication.
+Running this in production is quite similar to running the development environment. A few things need to be in place first. Namely, we need to set up the aforementioned environment variables and set up authentication.
 
 ##### Prerequisites
 
@@ -262,7 +334,7 @@ The first thing the application needs set is the URL at which the frontend can a
 
 If this is not done, you will see progress/loading spinners when you view the dashboard in your browser. This is because the frontend will be reaching out for data from the wrong location and thus never receive it.
 
-###### RedCap Token
+###### REDCap Token
 
 The `pmd-pipeline` container must communicate with the RedCap database, thus the `REDCAP_APPLICATION_TOKEN` token must be set to access its API.
 
@@ -292,6 +364,30 @@ sudo htpasswd -c ./frontend/.htpasswd myusername
 ```
 
 If usernames are not set up, Nginx will throw a `500 Internal Server Error` at your browser when you try to access the site.
+
+###### PAUSE
+
+TBA
+
+###### RELOAD_SCHEDULE
+
+TBA
+
+###### RELOAD_DATABASE
+
+TBA
+
+###### SCHEDULE_RUN_TIME
+
+TBA
+
+###### AUXILIARY_PATH
+
+TBA
+
+###### FILTER_PATH
+
+TBA
 
 ##### OK, Let's Go
 
@@ -331,21 +427,33 @@ If development on only one of the services has occurred, say the front-end f the
 $ docker-compose -f docker-compose.prod.yml up --build -d frontend
 ```
 
+Becuase the pipeline container keep track of the database, running docker-compose with the `-v` flag hould be used to help clean up unused volumes on the host machine.
+
 #### Tinkering in a Running Container
 
-To tinker and test various things, one often needs to log into an individual container with `docker exec`. (This was mentioned earlier when describing the installation of new npm modules.) To, say, run some database queries inside the database container, we can attach to it with the following command.
+To tinker and test various things, one often needs to log into an individual container with `docker exec`. (This was mentioned earlier when describing the installation of new NPM modules.) To, say, run some database queries inside the database container, we can attach to it with the following command.
 
 ```bash
 docker exec -it pmd-db bash
 ```
 
-This will plop you inside the container, and you may proceed normally -- switch to the `postgres` user with something like `sudo -u postgres -i`, access the database `psql duketic`, and execute queries to your heart's content, `select * from "Proposal" where false;` is a fun one.
+This will plop you inside the container, and you may proceed normally.
 
 ## Tear it Down
 
 If you started without the detach flag, `-d`, you can stop the containers running with `CTRL+C`, and Docker will clean up after itself. If you ran things in detatched mode (_with_ the `-d` flag), then bring everything down with `$ docker-compose down` from withing the project's root directory.
 
 \* Note: the postgres storage (at `/db/pgdata`) is persisted on the host and is created with root privileges. If the `db` image needs to be rebuilt (with a new `.sql` file perhaps), Docker will squawk at you with a permission error. Remove this directory (with `$ sudo rm -r /db/pgdata`). Then the next time it builds, your new `.sql` file will be used repopulate the database with your updated data.
+
+## Deploying Updates
+
+There is no need t tear down the containers if you're building and deploying updates. Simply run the same `up` command,
+
+```bash
+$ docker-compose -f docker-compose.prod.yml up --build -d
+```
+
+and the running containers will be replaced after the new ones are built.
 
 ## References
 
