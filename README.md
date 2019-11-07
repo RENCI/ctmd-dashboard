@@ -460,21 +460,22 @@ and the running containers will be replaced after the new ones are built.
 Links to some tools used in this project are below.
 
 - Docker
-  + Docker: [https://docs.docker.com](https://docs.docker.com)
-  + Docker Compose: [https://docs.docker.com/compose/](https://docs.docker.com/compose/)
-  + Docker Multi-Stage Builds [https://docs.docker.com/develop/develop-images/multistage-build/](https://docs.docker.com/develop/develop-images/multistage-build/)
+  + Docker: https://docs.docker.com
+  + Docker Compose: https://docs.docker.com/compose/
+  + Docker Multi-Stage Builds https://docs.docker.com/develop/develop-images/multistage-build/
 - React
-  + React JS: [https://reactjs.org/](https://reactjs.org/)
-  + Material UI: [https://material-ui.com/](https://material-ui.com/)
-  + Nivo: [https://nivo.rocks/](https://nivo.rocks/)
-- D3: [https://d3js.org/](https://d3js.org/)
-- Nodemon [https://nodemon.io/](https://nodemon.io/)
-- Express [https://expressjs.com/](https://expressjs.com/)
-- Nginx: [https://nginx.org/en/docs/](https://nginx.org/en/docs/)
-- HTTP Authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)
-- htpasswd: [https://httpd.apache.org/docs/2.4/programs/htpasswd.html](https://httpd.apache.org/docs/2.4/programs/htpasswd.html)
+  + React JS: https://reactjs.org/
+  + Material UI: https://material-ui.com/
+  + Nivo: https://nivo.rocks
+- D3: https://d3js.org
+- Nodemon: https://nodemon.io
+- Express: https://expressjs.com/
+- Nginx: https://nginx.org/en/docs/
+- HTTP Authentication: https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
+- htpasswd: https://httpd.apache.org/docs/2.4/programs/htpasswd.html
 
 ## Dependencies
-External container on dockerhub: `zooh/pmd-pipeline-reload:0.2.16` (from `./docker-compose.prod.yml`)
-The pmd-pipeline-reload:0.2.16 container is built from: `https://github.com/RENCI/tic-map-pipeline-script`
+
+External image on Docker Hub: `zooh/pmd-pipeline-reload:0.2.16` (used by `./docker-compose.prod.yml`).
+The pmd-pipeline-reload:0.2.16 image is built from https://github.com/RENCI/tic-map-pipeline-script.
 
