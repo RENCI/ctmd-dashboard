@@ -473,3 +473,8 @@ Links to some tools used in this project are below.
 - Nginx: [https://nginx.org/en/docs/](https://nginx.org/en/docs/)
 - HTTP Authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)
 - htpasswd: [https://httpd.apache.org/docs/2.4/programs/htpasswd.html](https://httpd.apache.org/docs/2.4/programs/htpasswd.html)
+
+## Dependencies
+External container on dockerhub: `zooh/pmd-pipeline-reload:0.2.16` (from `./docker-compose.prod.yml`)
+The pmd-pipeline-reload:0.2.16 container is built from: `https://github.com/RENCI/tic-map-pipeline-script`
+
