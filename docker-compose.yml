@@ -2,7 +2,7 @@ version: '3'
 
 services:
   redis:
-    container_name: pmd-redis
+    container_name: ctmd-redis
     build:
       context: ./redis/
       dockerfile: Dockerfile
@@ -15,8 +15,8 @@ services:
     command: ["--appendonly", "yes"]
     
   pipeline:
-    container_name: pmd-pipeline
-    image: zooh/pmd-pipeline-reload:0.2.16
+    container_name: ctmd-pipeline
+    image: zooh/ctmd-pipeline-reload@sha256:ec6f96210e649b060bead1d5ae1eafb1d68d6abd7ce711dd7364b4854af61447
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -53,7 +53,7 @@ services:
       - 5000:5000
 
   db:
-    container_name: pmd-db-dev
+    container_name: ctmd-db-dev
     restart: always
     build:
       context: ./db/
@@ -67,7 +67,7 @@ services:
       - ${POSTGRES_PORT}
 
   api:
-    container_name: pmd-api-dev
+    container_name: ctmd-api-dev
     build:
       context: ./api/
       dockerfile: Dockerfile
@@ -86,7 +86,7 @@ services:
       - db
 
   frontend:
-    container_name: pmd-frontend-dev
+    container_name: ctmd-frontend-dev
     build:
       context: ./frontend/
       dockerfile: Dockerfile
