@@ -31,7 +31,7 @@ export const DropZone = ({ endpoint, headers }) => {
     const onFilesAdded = event => {
         try {
             setFile(event.target.files[0])
-            addFlashMessage({ type: 'success', text: 'File selected!'})
+            addFlashMessage({ type: 'success', text: 'File selected!' })
             console.log('file selected')
         } catch (error) {
             console.error(error)
