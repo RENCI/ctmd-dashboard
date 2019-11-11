@@ -19,7 +19,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Sites" />
                         <CardContent>
-                            <DropZone endpoint={ `${ api.uploadSites }/column/siteId` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadSites }/column/siteId` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -28,7 +28,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload CTSAs" />
                         <CardContent>
-                            <DropZone endpoint={ `${ api.uploadCtsas }/column/ctsaId` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadCtsas }/column/ctsaId` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -47,7 +47,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Study Profile" />
                         <CardContent>
-                            <DropZone endpoint={ `${ api.uploadStudyProfile }/column/ProposalID` } />
+                            <DropZone method="POST" endpoint={ `${ api.uploadStudyProfile }/column/ProposalID` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -56,7 +56,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Study Sites" />
                         <CardContent>
-                            <DropZone endpoint={ `${ api.uploadStudySites }/column/ProposalID` } />
+                            <DropZone method="POST" endpoint={ `${ api.uploadStudySites }` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -65,7 +65,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Study Enrollment Data" />
                         <CardContent>
-                            <DropZone endpoint={ `${ api.uploadStudyEnrollmentData }/column/ProposalID` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadStudyEnrollmentData }` } />
                         </CardContent>
                     </Card>
                 </Grid>

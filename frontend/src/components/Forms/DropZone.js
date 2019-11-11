@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const DropZone = ({ endpoint, headers }) => {
+export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
     const classes = useStyles()
     const fileInputRef = useRef()
     const [file, setFile] = useState([])
@@ -46,12 +46,13 @@ export const DropZone = ({ endpoint, headers }) => {
             formdata.append('content-type', 'text/csv')
             formdata.append('json', '{}')
             headers = {
+                ...headers,
                 'Access-Control-Allow-Origin': '*',
                 // 'content-type': 'multipart/form-data'
             }
             axios({
                 url: endpoint,
-                method: 'POST',
+                method: method,
                 headers: headers,
                 data: formdata
             }).then(response => {
