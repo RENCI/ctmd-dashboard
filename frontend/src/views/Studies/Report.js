@@ -5,6 +5,7 @@ import api from '../../Api'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent, Typography, Input } from '@material-ui/core'
+import { DropZone } from '../../components/Forms/DropZone'
 import { Slider } from '@material-ui/lab'
 import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -133,7 +134,14 @@ export const StudyReportPage = props => {
 
     return (
         <div>
-            <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
+            <Grid container>
+                <Grid item xs={ 11 } md={ 8 }>
+                    <Title>Study Report for { study && (study.shortTitle || '...') }</Title>
+                </Grid>
+                <Grid item xs={ 11 } md={ 3 }>
+                    <DropZone endpoint={ `${ api.uploadStudyProfile }/column/ProposalID` } />
+                </Grid>
+            </Grid>
 
             { isLoading && <CircularLoader /> }
             {
