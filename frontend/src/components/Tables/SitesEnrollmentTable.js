@@ -56,7 +56,7 @@ export const SitesEnrollmentTable = props => {
                 { title: 'ID', field: 'id', },
                 { title: 'Name', field: 'name', },
                 { title: 'Study', field: 'studyName' },
-                { title: 'Enrollment Graphic', render: bar },
+                { title: 'Enrollment', render: bar },
                 { title: 'Enrolled', field: 'enrolled', type: 'numeric'},
                 { title: 'Expected', field: 'expected', type: 'numeric' },
                 { title: 'Percent Enrolled (%)', field: 'percentEnrolled', type: 'numeric' }
