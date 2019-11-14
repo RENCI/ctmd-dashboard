@@ -32,7 +32,7 @@ function getItems(proposals, key) {
           });
         }
         else {
-          if (p.indexOf(value) == -1) p.push(value);
+          if (p.indexOf(value) === -1) p.push(value);
         }
 
         return p;
