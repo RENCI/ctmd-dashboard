@@ -19,7 +19,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Sites" />
                         <CardContent>
-                            <DropZone method="PUT" endpoint={ `${ api.uploadSites }/column/siteId` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadSites }` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -28,7 +28,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload CTSAs" />
                         <CardContent>
-                            <DropZone method="PUT" endpoint={ `${ api.uploadCtsas }/column/ctsaId` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadCtsas }` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -47,7 +47,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Study Profile" />
                         <CardContent>
-                            <DropZone method="POST" endpoint={ `${ api.uploadStudyProfile }/column/ProposalID` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadStudyProfile }` } />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -56,7 +56,7 @@ export const UploadsPage = props => {
                     <Card>
                         <CardHeader title="Upload Study Sites" />
                         <CardContent>
-                            <DropZone method="POST" endpoint={ `${ api.uploadStudySites }` } />
+                            <DropZone method="PUT" endpoint={ `${ api.uploadStudySites }` } />
                         </CardContent>
                     </Card>
                 </Grid>
