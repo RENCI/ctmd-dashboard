@@ -59,7 +59,7 @@ class StudyEnrollmentContainer extends Component {
         const targetSitesKey = "revisedProjectedSites";
 
         state.enrollmentData.forEach((d, i, a) => {
-          d[targetEnrolledKey] = i == 0 ? 0 :
+          d[targetEnrolledKey] = i === 0 ? 0 :
               a[i - 1][targetEnrolledKey] + a[i - 1][targetSitesKey] * newProps.enrollmentRate;
         });
 
