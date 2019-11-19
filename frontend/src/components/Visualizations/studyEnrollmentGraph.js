@@ -260,10 +260,10 @@ export default function() {
           data.forEach((d, i, a) => {
             const sign = Math.sign(d.actual - d.target);
 
-            if (i == 0) {
+            if (i === 0) {
               // Skip first time step
             }
-            else if ((sign !== 0 && currentSign === 0) || i == 1) {
+            else if ((sign !== 0 && currentSign === 0) || i === 1) {
               // Start new region
               region = [
                 { x: xScale(a[i - 1].date), y1: yScale(a[i - 1].actual), y2: yScale(a[i - 1].target) },
