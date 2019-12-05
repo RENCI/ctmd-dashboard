@@ -179,7 +179,7 @@ export const StudyReportPage = props => {
                                         studyEnrollmentData && studyEnrollmentData.length > 0
                                             ? (
                                                 <Fragment>
-                                                    
+
                                                     <StudyEnrollment
                                                         study={ study || null }
                                                         sites={ studySites || null}
