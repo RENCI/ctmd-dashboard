@@ -84,6 +84,7 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     depends_on:
       - db
+    restart: always
 
   frontend:
     container_name: ctmd-frontend-dev
@@ -100,3 +101,4 @@ services:
     depends_on:
       - api
       - pipeline
+    restart: always
