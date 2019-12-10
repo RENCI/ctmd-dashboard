@@ -2,9 +2,10 @@ import React from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 
 export const EnrollmentBar = props => {
-    const enrolled = +props.data[props.enrolledKey]
-    const expected = +props.data[props.expectedKey]
+    const enrolled = props.data[props.enrolledKey]
+    const expected = props.data[props.expectedKey]
     const percentEnrolled = expected === 0 ? 0 : Math.round(enrolled / expected * 100)
+    const width = props.maxValue === 0 ? 0 : (expected / props.maxValue) * props.width
 
     const barTooltip = () => {
         return (
@@ -18,7 +19,7 @@ export const EnrollmentBar = props => {
     return (
         <div style={{
                 height: props.height,
-                width: props.maxValue === 0 ? 0 : (expected / props.maxValue) * props.width,
+                width: width,
                 border: '2px solid ' + props.color,
                 background: props.background
             }}
