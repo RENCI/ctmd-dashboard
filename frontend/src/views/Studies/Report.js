@@ -47,7 +47,6 @@ const Value = ({ children }) => {
 
 const StudyProfile = ({ profile }) => {
     const { pairStyle } = useStyles()
-    console.log(profile)
     return (
         <article>
             {
