@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: theme.spacing(2),
         margin: '0 0 0.1rem 0',
         borderRadius: theme.shape.borderRadius,
         transition: 'background-color 250ms',
