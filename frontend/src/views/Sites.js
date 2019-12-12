@@ -6,9 +6,6 @@ import { CircularLoader } from '../components/Progress/Progress'
 import { SitesEnrollmentTable } from '../components/Tables/SitesEnrollmentTable'
 import { StoreContext } from '../contexts/StoreContext'
 
-// XXX: Copying this from study list
-const studiesIds = [171, 186]
-
 export const SitesPage = (props) => {
     const [store, ] = useContext(StoreContext)
     const [studyNames, setStudyNames] = useState(null);
@@ -31,7 +28,7 @@ export const SitesPage = (props) => {
     // Get study sites
     useEffect(() => {
         if (store.proposals) {
-            const studies = store.proposals.filter(({ proposalID }) => studiesIds.includes(proposalID))
+            const studies = store.proposals.filter(proposal => proposal.profile && true)
 
             const names = {}
             studies.forEach(study => {
