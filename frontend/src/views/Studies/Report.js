@@ -90,6 +90,15 @@ export const StudyReportPage = props => {
             ])
             .then(axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
                 setStudyProfile(profileResponse.data)
+                sitesResponse.data.forEach(site => {
+                  // Convert enrollment data to numbers
+                  site.patientsConsentedCount = +site.patientsConsentedCount;
+                  site.patientsEnrolledCount = +site.patientsEnrolledCount;
+                  site.patientsWithdrawnCount = +site.patientsWithdrawnCount;
+                  site.patientsExpectedCount = +site.patientsExpectedCount;
+                  site.queriesCount = +site.queriesCount;
+                  site.protocolDeviationsCount = +site.protocolDeviationsCount;
+                })
                 setStudySites(sitesResponse.data)
                 setStudyEnrollmentData(enrollmentResponse.data)
             }))
@@ -100,6 +109,9 @@ export const StudyReportPage = props => {
     useEffect(() => {
         setIsLoading(!study || !studyProfile || !studySites || !studyEnrollmentData)
     }, [study, studyProfile, studySites, studyEnrollmentData])
+
+    // Slider
+    const maxEnrollmentRate = 2;
 
     const handleEnrollmentRateSliderChange = (event, value) => {
         setEnrollmentRate(value);
@@ -113,13 +125,14 @@ export const StudyReportPage = props => {
         if (enrollmentRate < 0) {
             setEnrollmentRate(0);
         }
-        else if (enrollmentRate > 1) {
-            setEnrollmentRate(1);
+        else if (enrollmentRate > maxEnrollmentRate) {
+            setEnrollmentRate(maxEnrollmentRate);
         }
     };
 
     // Marks for enrollment rate slider
-    const marks = Array(11).fill().map((d, i) => {
+    const markStep = 0.1;
+    const marks = Array(maxEnrollmentRate / markStep + 1).fill().map((d, i) => {
         const v = i * 0.1;
         const s = v.toFixed(1);
 
@@ -177,7 +190,7 @@ export const StudyReportPage = props => {
                                         studyEnrollmentData && studyEnrollmentData.length > 0
                                             ? (
                                                 <Fragment>
-                                                    
+
                                                     <StudyEnrollment
                                                         study={ study || null }
                                                         sites={ studySites || null}
@@ -191,7 +204,7 @@ export const StudyReportPage = props => {
                                                             <Slider
                                                                 value={ enrollmentRate }
                                                                 min={ 0 }
-                                                                max={ 2 }
+                                                                max={ maxEnrollmentRate }
                                                                 step={ 0.01 }
                                                                 marks={ marks }
                                                                 onChange={ handleEnrollmentRateSliderChange }

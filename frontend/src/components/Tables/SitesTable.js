@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import MaterialTable from 'material-table'
 import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel } from './DetailPanels'
+import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 
 export const SitesTable = props => {
     let { title, sites } = props
@@ -15,12 +16,36 @@ export const SitesTable = props => {
                 if (protocols.hasOwnProperty(site.proposalId)) {
                     site.protocol = protocols[site.proposalId]
                 } else {
-                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalId == site.proposalId)
+                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalId === site.proposalId)
                     site.protocol = shortTitle
                 }
             })
         }
     }, [sites, store.proposals])
+
+    const barHeight = 18
+    const barWidth = 200
+
+    const barColor = "#8da0cb"
+    const barBackground = "#f3f5fa"
+
+    const maxExpected = sites.reduce((p, c) => {
+        return !c.patientsExpectedCount ? p : Math.max(p, +c.patientsExpectedCount);
+    }, 0)
+
+    const bar = row => {
+        return (
+            <EnrollmentBar
+                data={ row }
+                enrolledKey='patientsEnrolledCount'
+                expectedKey='patientsExpectedCount'
+                maxValue={ maxExpected }
+                height={ barHeight }
+                width={ barWidth }
+                color={ barColor }
+                background={ barBackground } />
+        )
+    }
 
     return (
         <MaterialTable
@@ -42,6 +67,7 @@ export const SitesTable = props => {
                     { title: 'Site Activation', field: 'dateSiteActivated', hidden: true, },
                     { title: 'LPFV', field: 'lpfv', hidden: true, },
                     { title: 'FPFV', field: 'fpfv', hidden: true, },
+                    { title: 'Enrollment', render: bar, hidden: false, },
                     { title: 'Patients Consented', field: 'patientsConsentedCount', hidden: true, },
                     { title: 'Patients Enrolled', field: 'patientsEnrolledCount', hidden: true, },
                     { title: 'Patients Withdrawn', field: 'patientsWithdrawnCount', hidden: true, },
