@@ -1,6 +1,6 @@
 import React from 'react'
 import MaterialTable from 'material-table'
-import { ResponsiveBar } from '@nivo/bar'
+import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 
 export const SitesEnrollmentTable = props => {
     const title = 'SitesEnrollment'
@@ -12,42 +12,23 @@ export const SitesEnrollmentTable = props => {
     const barColor = "#8da0cb"
     const barBackground = "#f3f5fa"
 
-    const maxValue = props.data.reduce((p, c) => {
-      return !c.expected ? p : Math.max(p, c.expected);
+    const maxExpected = props.data.reduce((p, c) => {
+        return !c.expected ? p : Math.max(p, c.expected);
     }, 0)
 
-    const barTooltip = row => {
-        return (
-            <div style={{ width: 100 }}>
-                <p>{row.data.enrolled + ' of ' + row.data.expected + ' enrolled: '}</p>
-                <p>{row.data.percentEnrolled + '%'}</p>
-            </div>
-        )
-    }
-
     const bar = row => {
-        return !('enrolled' in row) ? null :
-            <div style={{
-                    height: barHeight,
-                    width: (row.expected / maxValue) * barWidth,
-                    border: '2px solid ' + barColor,
-                    background: barBackground
-                }}
-            >
-                <ResponsiveBar
-                    data={ [row] }
-                    minValue={ 0 }
-                    maxValue={ row.expected }
-                    keys={ ['enrolled'] }
-                    colors={ [barColor] }
-                    colorBy='id'
-                    layout='horizontal'
-                    animate={ false }
-                    padding={ 0 }
-                    enableGridY={ false }
-                    tooltip={ barTooltip }
-                />
-            </div>
+        return (
+            !('enrolled' in row) ? null :
+            <EnrollmentBar
+                data={ row }
+                enrolledKey='enrolled'
+                expectedKey='expected'
+                maxValue={ maxExpected }
+                height={ barHeight }
+                width={ barWidth }
+                color={ barColor }
+                background={ barBackground } />
+        )
     }
 
     return (

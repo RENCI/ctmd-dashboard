@@ -90,6 +90,15 @@ export const StudyReportPage = props => {
             ])
             .then(axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
                 setStudyProfile(profileResponse.data)
+                sitesResponse.data.forEach(site => {
+                  // Convert enrollment data to numbers
+                  site.patientsConsentedCount = +site.patientsConsentedCount;
+                  site.patientsEnrolledCount = +site.patientsEnrolledCount;
+                  site.patientsWithdrawnCount = +site.patientsWithdrawnCount;
+                  site.patientsExpectedCount = +site.patientsExpectedCount;
+                  site.queriesCount = +site.queriesCount;
+                  site.protocolDeviationsCount = +site.protocolDeviationsCount;
+                })
                 setStudySites(sitesResponse.data)
                 setStudyEnrollmentData(enrollmentResponse.data)
             }))
@@ -177,7 +186,7 @@ export const StudyReportPage = props => {
                                         studyEnrollmentData && studyEnrollmentData.length > 0
                                             ? (
                                                 <Fragment>
-                                                    
+
                                                     <StudyEnrollment
                                                         study={ study || null }
                                                         sites={ studySites || null}
