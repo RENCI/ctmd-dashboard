@@ -16,7 +16,7 @@ services:
     
   pipeline:
     container_name: ctmd-pipeline
-    image: zooh/ctmd-pipeline-reload@sha256:b3e77a8db671abb45dcd1a67fa4e5e6f79f306bec7c14a7fc55d5eabca133af9
+    image: zooh/ctmd-pipeline-reload:0.2.20
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -84,6 +84,7 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     depends_on:
       - db
+    restart: always
 
   frontend:
     container_name: ctmd-frontend-dev
@@ -100,3 +101,4 @@ services:
     depends_on:
       - api
       - pipeline
+    restart: always
