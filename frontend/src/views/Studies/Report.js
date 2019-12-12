@@ -4,8 +4,7 @@ import axios from 'axios'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Typography, Input } from '@material-ui/core'
-import { Slider } from '@material-ui/lab'
+import { Grid, Card, CardHeader, CardContent, Typography, Input, Slider } from '@material-ui/core'
 import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
@@ -47,7 +46,6 @@ const Value = ({ children }) => {
 
 const StudyProfile = ({ profile }) => {
     const { pairStyle } = useStyles()
-    console.log(profile)
     return (
         <article>
             {

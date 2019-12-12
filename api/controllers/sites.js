@@ -1,7 +1,7 @@
 const db = require('../config/database')
 
 exports.list = (req, res) => {
-    const query = `SELECT * FROM "Sites";`
+    const query = `SELECT * FROM "StudySites";`
     db.any(query)
         .then(data => {
             res.status(200).send(data)
