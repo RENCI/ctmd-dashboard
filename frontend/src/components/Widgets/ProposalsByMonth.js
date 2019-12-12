@@ -25,33 +25,35 @@ export const ProposalsByMonthBarChart = props => {
     useEffect(() => {
         let timeline = []
         if (store.proposals && store.proposals.length > 0) {
-            const earliestDate = store.proposals.map(proposal => proposal.dateSubmitted).sort()[0]
-            let [earliestYear, earliestMonth] = earliestDate.split('-')
-            earliestYear = parseInt(earliestYear)
-            earliestMonth = parseInt(earliestMonth)
-            let elapsedMonths = 12 * (thisYear - earliestYear)
-            elapsedMonths += thisMonth - earliestMonth
-            let year = earliestYear
-            for (let i = 0; i < elapsedMonths; i++) {
-                const month = (earliestMonth + i) % 12 + 1
-                if (month === 1 && i !== 0) year += 1
-                let date = `${ year }-`
-                date += month < 10 ? `0${ month }` : month
-                timeline.push({
-                    date,
-                    label: function(date) {
-                        const [year, month] = date.split('-')
-                        return `${ months[parseInt(month) - 1] } ${ year }`
-                    }(date),
-                    count: 0 })
-            }
-            store.proposals.forEach(({ dateSubmitted }) => {
-                if (dateSubmitted) {
-                    const shortDate = dateSubmitted.slice(0, 7)
-                    const index = timeline.findIndex(time => time.date === shortDate)
-                    if (index >= 0) timeline[index].count += 1
+            const earliestDate = store.proposals.filter(proposal => proposal.dateSubmitted !== null).map(proposal => proposal.dateSubmitted).sort()[0]
+            if (earliestDate) {
+                let [earliestYear, earliestMonth] = earliestDate.split('-')
+                earliestYear = parseInt(earliestYear)
+                earliestMonth = parseInt(earliestMonth)
+                let elapsedMonths = 12 * (thisYear - earliestYear)
+                elapsedMonths += thisMonth - earliestMonth
+                let year = earliestYear
+                for (let i = 0; i < elapsedMonths; i++) {
+                    const month = (earliestMonth + i) % 12 + 1
+                    if (month === 1 && i !== 0) year += 1
+                    let date = `${ year }-`
+                    date += month < 10 ? `0${ month }` : month
+                    timeline.push({
+                        date,
+                        label: function(date) {
+                            const [year, month] = date.split('-')
+                            return `${ months[parseInt(month) - 1] } ${ year }`
+                        }(date),
+                        count: 0 })
                 }
-            })
+                store.proposals.forEach(({ dateSubmitted }) => {
+                    if (dateSubmitted) {
+                        const shortDate = dateSubmitted.slice(0, 7)
+                        const index = timeline.findIndex(time => time.date === shortDate)
+                        if (index >= 0) timeline[index].count += 1
+                    }
+                })
+            }
         }
         setProposalGroups(timeline)
     }, [store])

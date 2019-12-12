@@ -461,9 +461,10 @@ External image on Docker Hub: `zooh/pmd-pipeline-reload:0.2.16` (used by `./dock
 The pmd-pipeline-reload:0.2.16 image is built from https://github.com/RENCI/tic-map-pipeline-script.
 
 ## Trouble-shooting
-*  `docker-compose up ... -V ` returns usage
-Check that you have the latest version of docker-compose; if you're running with a service account, use `sudo - <user>` to pick up that account's environment instead of your own, potentially custom environment.
-* `ERROR: Service 'frontend' failed to build: devicemapper: Error running  deviceCreate (CreateSnapDeviceRaw) dm_task_run failed`
+- `docker-compose up ... -V ` returns usage
+  + Check that you have the latest version of docker-compose; if you're running with a service account, use `sudo - <unprivileged-user>` to pick up that account's environment instead of your own, potentially custom environment.
+  + Make sure the service account has the right path to the correct version of docker-compose. For example, you may need to add ```PATH=/usr/local/bin:$PATH``` to ```/home/<unprivileged-user>/.bashrc```
+- `ERROR: Service 'frontend' failed to build: devicemapper: Error running  deviceCreate (CreateSnapDeviceRaw) dm_task_run failed`
 Try running with `-V` to remove the volume. Containers run with the same volume, and this error indicates there may be a collision
 
 ## References

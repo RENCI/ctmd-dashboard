@@ -6,16 +6,14 @@ import { Grid } from '@material-ui/core'
 import api from '../../Api'
 import { DropZone } from '../../components/Forms/DropZone'
 
-const studiesIds = [171, 186]
-
 export const StudiesListPage = props => {
     const [store, ] = useContext(StoreContext)
     const [studies, setStudies] = useState([])
 
     useEffect(() => {
         if (store.proposals) {
-            const onlyStudies = store.proposals.filter(({ proposalID }) => studiesIds.includes(proposalID))
-            setStudies(onlyStudies)
+            const proposalsWithProfiles = store.proposals.filter(proposal => proposal.profile && true)
+            setStudies(proposalsWithProfiles)
         }
     }, [store.proposals])
 

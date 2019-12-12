@@ -159,25 +159,33 @@ exports.list = (req, res) => {
             .then(data => {
                 const proposals = data.map(prop => ({
                     ...prop,
+                    profile: null,
                     requestedServices: [],
                     approvedServices: [],
                 }))
-                return t.any(requestedServicesQuery)
+                return t.any(`SELECT * FROM "StudyProfile";`)
                     .then(data => {
-                        data.forEach(prop_serv => {
-                            const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
-                            if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
+                        data.forEach(profile => {
+                            const propIndex = proposals.findIndex(prop => prop.proposalID === +profile.ProposalID)
+                            if (propIndex >= 0) proposals[propIndex].profile = profile
                         })
-                        proposals.forEach(proposal => {
-                            proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
-                        })
-                        return t.any(approvedServicesQuery)
+                        return t.any(requestedServicesQuery)
                             .then(data => {
                                 data.forEach(prop_serv => {
                                     const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
-                                    if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
+                                    if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
                                 })
-                                return proposals
+                                proposals.forEach(proposal => {
+                                    proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
+                                })
+                                return t.any(approvedServicesQuery)
+                                    .then(data => {
+                                        data.forEach(prop_serv => {
+                                            const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+                                            if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
+                                        })
+                                        return proposals
+                                    })
                             })
                     })
             })
