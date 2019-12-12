@@ -124,6 +124,14 @@ export const ProposalsTable = (props) => {
                     render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
                     // filtering: false,
                 },
+                {
+                    title: 'Study Population', field: 'studyPopulation',
+                    hidden: !settings.tables.visibleColumns.studyPopulation,
+                },
+                {
+                    title: 'Phase', field: 'phase',
+                    hidden: !settings.tables.visibleColumns.phase,
+                },
             ].concat(resources.map(
                 resource => ({
                         title: `Resource: ${ resource }`,
