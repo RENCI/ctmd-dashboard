@@ -87,7 +87,7 @@ theme = {
             h5: { fontFamily: 'Roboto', },
             subtitle1: { fontFamily: 'Roboto', },
             body1: { fontFamily: 'Roboto', lineHeight: '1.75rem', },
-            body2: { fontFamily: 'Nanum Gothic', lineHeight: '1.5rem', }, // paragraph gets this by default
+            body2: { fontFamily: 'Roboto', lineHeight: '1.5rem', }, // paragraph gets this by default
         },
         MuiGrid: {
             item: {
@@ -106,11 +106,11 @@ theme = {
                 backgroundColor: theme.palette.extended.hatteras,
             },
             title: {
-                fontFamily: 'Nanum Gothic',
+                fontFamily: 'IBM Plex Sans',
                 color: theme.palette.primary.main,
             },
             subheader: {
-                fontFamily: 'Nanum Gothic',
+                fontFamily: 'IBM Plex Sans',
                 color: theme.palette.secondary.main,
             },
             action: {
