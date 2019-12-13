@@ -4,7 +4,7 @@ import {
     Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
     Select, OutlinedInput, MenuItem,
 } from '@material-ui/core'
-import { DangerZone } from '../components/Forms'
+import { DangerZone, TaskManager } from '../components/Forms'
 import { SettingsContext } from '../contexts/SettingsContext'
 import { CollapsibleCard } from '../components/CollapsibleCard'
 
@@ -114,6 +114,15 @@ export const SettingsPage = props => {
                         subheader="Functions in this section are not functioning currently"
                     >
                         <DangerZone />
+                    </CollapsibleCard>
+                </Grid>
+
+                <Grid item xs={ 12 }>
+                    <CollapsibleCard
+                        title="Task Manager"
+                        subheader="View tasks and their statuses"
+                    >
+                        <TaskManager />
                     </CollapsibleCard>
                 </Grid>
             </Grid>

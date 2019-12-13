@@ -65,6 +65,8 @@ endpoints = {
     dataPostBackup: pipelineApiRoot + 'backup', // POST to back up database
     dataRestore: timestamp => `${ pipelineApiRoot }restore/${ timestamp }`, // /data/restore/<timestamp> to restore to backup given in
     dataSync: pipelineApiRoot + 'sync', // POST to sync with redcap
+    dataGetTasks: pipelineApiRoot + 'task',
+    dataGetTask: jobId => pipelineApiRoot + `task/${ jobId }`,
     uploadSites: pipelineApiRoot + `table/Sites`,
     uploadCtsas: pipelineApiRoot + `table/CTSAs`,
     uploadStudyProfile: pipelineApiRoot + `table/StudyProfile`,
