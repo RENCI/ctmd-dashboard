@@ -111,7 +111,7 @@ export const SettingsPage = props => {
                 <Grid item xs={ 12 }>
                     <CollapsibleCard
                         title="Danger Zone"
-                        subheader="Functions in this section are not functioning currently"
+                        subheader="Backup, restore, and synchronize data"
                     >
                         <DangerZone />
                     </CollapsibleCard>
