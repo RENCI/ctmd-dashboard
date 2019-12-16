@@ -23,6 +23,8 @@ export const defaultSettings = {
             fundingPeriod: false,
             approvedForComprehensiveConsultation: false,
             resources: false,
+            studyPopulation: false,
+            phase: false,
         },
         pageSize: 50,
     },
