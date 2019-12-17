@@ -401,341 +401,341 @@ exports.proposalsNetwork = (req, res) => {
         })
 }
 
-// Submitted for Services
-/////////////////////////
+// // Submitted for Services
+// /////////////////////////
 
-// /proposals/count/submitted-for-services/
-exports.countSubmittedForServices = (req, res) => {
-    db.task(t => {
-        return t.any(proposalsQuery)
-            .then(data => {
-                const proposals = data.map(prop => ({
-                    ...prop,
-                    requestedServices: [],
-                    approvedServices: [],
-                }))
-                return t.any(requestedServicesQuery)
-                    .then(data => {
-                        data.forEach(prop_serv => {
-                            const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
-                            if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
-                        })
-                        return t.any(approvedServicesQuery)
-                            .then(data => {
-                                data.forEach(prop_serv => {
-                                    const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
-                                    if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
-                                })
-                                return proposals
-                            })
-                    })
-            })
-    })
-        .then(proposals => res.status(200).send(proposals))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count/submitted-for-services/
+// exports.countSubmittedForServices = (req, res) => {
+//     db.task(t => {
+//         return t.any(proposalsQuery)
+//             .then(data => {
+//                 const proposals = data.map(prop => ({
+//                     ...prop,
+//                     requestedServices: [],
+//                     approvedServices: [],
+//                 }))
+//                 return t.any(requestedServicesQuery)
+//                     .then(data => {
+//                         data.forEach(prop_serv => {
+//                             const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+//                             if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
+//                         })
+//                         return t.any(approvedServicesQuery)
+//                             .then(data => {
+//                                 data.forEach(prop_serv => {
+//                                     const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
+//                                     if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
+//                                 })
+//                                 return proposals
+//                             })
+//                     })
+//             })
+//     })
+//         .then(proposals => res.status(200).send(proposals))
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count/submitted-for-services/by-institution
-exports.countSubmittedForServicesByInstitution = (req, res) => {
-    const query = `SELECT name2.description AS org_name, CAST(COUNT(*) AS INT)
-        FROM proposal
-        INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name AS varchar)
-            AND name2."column"='org_name'
-        WHERE proposal.redcap_repeat_instrument is null
-            AND proposal.redcap_repeat_instance is null
-            AND proposal.conso_or_services='2'
-        GROUP BY name2.description;`
-    db.any(query)
-        .then(data => res.status(200).send(data))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count/submitted-for-services/by-institution
+// exports.countSubmittedForServicesByInstitution = (req, res) => {
+//     const query = `SELECT name2.description AS org_name, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name AS varchar)
+//             AND name2."column"='org_name'
+//         WHERE proposal.redcap_repeat_instrument is null
+//             AND proposal.redcap_repeat_instance is null
+//             AND proposal.conso_or_services='2'
+//         GROUP BY name2.description;`
+//     db.any(query)
+//         .then(data => res.status(200).send(data))
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count/submitted-for-services/by-tic
-exports.countSubmittedForServicesByTic = (req, res) => {
-    const query = `SELECT name2.description AS tic_name, CAST(COUNT(*) AS INT)
-        FROM proposal
-        INNER JOIN name AS name2 ON name2.index=cast(proposal.assignToInstitution AS varchar)
-            AND name2."column"='assignToInstitution'
-        WHERE proposal.redcap_repeat_instrument is null
-            AND proposal.redcap_repeat_instance is null
-            AND proposal.conso_or_services='2'
-        GROUP BY name2.description;`
-    db.any(query)
-        .then(data => res.status(200).send(data))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count/submitted-for-services/by-tic
+// exports.countSubmittedForServicesByTic = (req, res) => {
+//     const query = `SELECT name2.description AS tic_name, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         INNER JOIN name AS name2 ON name2.index=cast(proposal.assignToInstitution AS varchar)
+//             AND name2."column"='assignToInstitution'
+//         WHERE proposal.redcap_repeat_instrument is null
+//             AND proposal.redcap_repeat_instance is null
+//             AND proposal.conso_or_services='2'
+//         GROUP BY name2.description;`
+//     db.any(query)
+//         .then(data => res.status(200).send(data))
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count/submitted-for-services/by-therapeutic-area
-exports.countSubmittedForServicesByTherapeuticArea = (req, res) => {
-    const query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
-        FROM proposal
-        INNER JOIN study ON proposal.proposal_id=study.proposal_id
-        INNER JOIN name AS name2 ON name2.index=cast(study.theraputic_area AS varchar)
-            AND name2."column"='theraputic_area'
-        WHERE proposal.redcap_repeat_instrument is null
-            AND proposal.redcap_repeat_instance is null
-            AND proposal.conso_or_services='2'
-        GROUP BY name2.description;`
-    db.any(query)
-        .then(data => res.status(200).send(data))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count/submitted-for-services/by-therapeutic-area
+// exports.countSubmittedForServicesByTherapeuticArea = (req, res) => {
+//     const query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         INNER JOIN study ON proposal.proposal_id=study.proposal_id
+//         INNER JOIN name AS name2 ON name2.index=cast(study.theraputic_area AS varchar)
+//             AND name2."column"='theraputic_area'
+//         WHERE proposal.redcap_repeat_instrument is null
+//             AND proposal.redcap_repeat_instance is null
+//             AND proposal.conso_or_services='2'
+//         GROUP BY name2.description;`
+//     db.any(query)
+//         .then(data => res.status(200).send(data))
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count/submitted-for-services/by-year
-exports.countSubmittedForServicesByYear = (req, res) => {
-    const query = `SELECT extract(year from prop_submit) AS year, CAST(COUNT(*) AS INT)
-        FROM proposal
-        WHERE proposal.redcap_repeat_instrument IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND proposal.conso_or_services='2'
-        GROUP BY year
-        ORDER BY year;`
-    db.any(query)
-        .then(data => res.status(200).send(data))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count/submitted-for-services/by-year
+// exports.countSubmittedForServicesByYear = (req, res) => {
+//     const query = `SELECT extract(year from prop_submit) AS year, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         WHERE proposal.redcap_repeat_instrument IS NULL
+//             AND proposal.redcap_repeat_instance IS NULL
+//             AND proposal.conso_or_services='2'
+//         GROUP BY year
+//         ORDER BY year;`
+//     db.any(query)
+//         .then(data => res.status(200).send(data))
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count/submitted-for-services/by-month
-exports.countSubmittedForServicesByMonth = (req, res) => {
-    const query = `SELECT extract(month from prop_submit) AS month, CAST(COUNT(*) AS INT)
-        FROM proposal
-        WHERE proposal.redcap_repeat_instrument IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND proposal.conso_or_services='2'
-        GROUP BY month
-        ORDER BY month;`
-    db.any(query)
-        .then(data => res.status(200).send(data))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count/submitted-for-services/by-month
+// exports.countSubmittedForServicesByMonth = (req, res) => {
+//     const query = `SELECT extract(month from prop_submit) AS month, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         WHERE proposal.redcap_repeat_instrument IS NULL
+//             AND proposal.redcap_repeat_instance IS NULL
+//             AND proposal.conso_or_services='2'
+//         GROUP BY month
+//         ORDER BY month;`
+//     db.any(query)
+//         .then(data => res.status(200).send(data))
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// Resubmissions
-////////////////
+// // Resubmissions
+// ////////////////
 
-// /proposals/resubmissions
-exports.resubmissions = (req, res) => {
-    // filter by status 21
-    db.any(proposalsQuery)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/resubmissions
+// exports.resubmissions = (req, res) => {
+//     // filter by status 21
+//     db.any(proposalsQuery)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count
-exports.countResubmissions = (req, res) => {
-    const query = `SELECT CAST(COUNT(*) AS INT)
-        FROM proposal
-        WHERE proposal.protocol_status='21';`
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count
+// exports.countResubmissions = (req, res) => {
+//     const query = `SELECT CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         WHERE proposal.protocol_status='21';`
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count
-exports.countResubmissionsByInstitution = (req, res) => {
-    const query = `SELECT name2.description as org_name, CAST(COUNT(*) AS INT)
-        FROM proposal
-        INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name as varchar)
-            AND name2."column"='org_name'
-        WHERE proposal.redcap_repeat_instrument IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND proposal.protocol_status='21'
-        GROUP BY name2.description;`
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count
+// exports.countResubmissionsByInstitution = (req, res) => {
+//     const query = `SELECT name2.description as org_name, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         INNER JOIN name AS name2 ON name2.index=cast(proposal.org_name as varchar)
+//             AND name2."column"='org_name'
+//         WHERE proposal.redcap_repeat_instrument IS NULL
+//             AND proposal.redcap_repeat_instance IS NULL
+//             AND proposal.protocol_status='21'
+//         GROUP BY name2.description;`
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count
-exports.countResubmissionsByTic = (req, res) => {
-    const query = `SELECT name2.description as tic_ric_assign, CAST(COUNT(*) AS INT)
-        FROM proposal
-        INNER JOIN name AS name2 ON name2.index=cast(proposal.assignToInstitution as varchar)
-            AND name2."column"='assignToInstitution'
-        WHERE proposal.redcap_repeat_instrument IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND proposal.protocol_status='21'
-        GROUP BY name2.description;`
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count
+// exports.countResubmissionsByTic = (req, res) => {
+//     const query = `SELECT name2.description as tic_ric_assign, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         INNER JOIN name AS name2 ON name2.index=cast(proposal.assignToInstitution as varchar)
+//             AND name2."column"='assignToInstitution'
+//         WHERE proposal.redcap_repeat_instrument IS NULL
+//             AND proposal.redcap_repeat_instance IS NULL
+//             AND proposal.protocol_status='21'
+//         GROUP BY name2.description;`
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count
-exports.countResubmissionsByTherapeuticArea = (req, res) => {
-    const query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
-        FROM proposal
-        INNER JOIN study ON proposal.proposal_id=study.proposal_id
-        INNER JOIN name AS name2 ON name2.index=cast(study.theraputic_area as varchar)
-            AND name2."column"='theraputic_area'
-        WHERE proposal.redcap_repeat_instrument IS NULL
-            AND proposal.redcap_repeat_instance IS NULL
-            AND proposal.protocol_status='21'
-        GROUP BY name2.description;`
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count
+// exports.countResubmissionsByTherapeuticArea = (req, res) => {
+//     const query = `SELECT name2.description AS therapeutic_area, CAST(COUNT(*) AS INT)
+//         FROM proposal
+//         INNER JOIN study ON proposal.proposal_id=study.proposal_id
+//         INNER JOIN name AS name2 ON name2.index=cast(study.theraputic_area as varchar)
+//             AND name2."column"='theraputic_area'
+//         WHERE proposal.redcap_repeat_instrument IS NULL
+//             AND proposal.redcap_repeat_instance IS NULL
+//             AND proposal.protocol_status='21'
+//         GROUP BY name2.description;`
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-//
-////////////
+// //
+// ////////////
 
-// /proposals/approved-for-services/count
-exports.countApprovedForServices = (req, res) => {
-    const query = ``
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/approved-for-services/count
+// exports.countApprovedForServices = (req, res) => {
+//     const query = ``
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/approved-for-services/count/by-institution
-exports.countApprovedForServicesByInstitution = (req, res) => {
-    const query = ``
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/approved-for-services/count/by-institution
+// exports.countApprovedForServicesByInstitution = (req, res) => {
+//     const query = ``
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/approved-for-services/count/by-tic
-exports.countApprovedForServicesByTic = (req, res) => {
-    const query = ``
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/approved-for-services/count/by-tic
+// exports.countApprovedForServicesByTic = (req, res) => {
+//     const query = ``
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/approved-for-services/count/by-therapeutic-area
-exports.countApprovedForServicesByTherapeuticArea = (req, res) => {
-    const query = ``
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/approved-for-services/count/by-therapeutic-area
+// exports.countApprovedForServicesByTherapeuticArea = (req, res) => {
+//     const query = ``
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/approved-for-services/count/by-year
-exports.countApprovedForServicesByYear = (req, res) => {
-    const query = ``
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/approved-for-services/count/by-year
+// exports.countApprovedForServicesByYear = (req, res) => {
+//     const query = ``
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/approved-for-services/count/by-month
-exports.countApprovedForServicesByMonth = (req, res) => {
-    const query = ``
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/approved-for-services/count/by-month
+// exports.countApprovedForServicesByMonth = (req, res) => {
+//     const query = ``
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count-days/submission-to-approval
-exports.daysBetweenSubmissionAndApproval = (req, res) => {
-    // calculate days between meeting_date_2 and prop_submit, filter by protocol_status NOT IN ('3', '40')
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count-days/submission-to-approval
+// exports.daysBetweenSubmissionAndApproval = (req, res) => {
+//     // calculate days between meeting_date_2 and prop_submit, filter by protocol_status NOT IN ('3', '40')
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
 
-// /proposals/count-days/approval-to-grant-submission
-exports.daysBetweenApprovalAndGrantSubmission = (req, res) => {
-    // calculate days between grant_sub_complete and meeting_date_2, filter by protocol_status IN ('7', '25')
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count-days/approval-to-grant-submission
+// exports.daysBetweenApprovalAndGrantSubmission = (req, res) => {
+//     // calculate days between grant_sub_complete and meeting_date_2, filter by protocol_status IN ('7', '25')
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
 
-// /proposals/count-days/tin-submission-to-grant-submission
-exports.daysBetweenTinSubmissionAndGrantSubmission = (req, res) => {
-    // calculate days between grant_sub_complete and prop_submit, filter by protocol_status IN ('7', '25')
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
-}
+// // /proposals/count-days/tin-submission-to-grant-submission
+// exports.daysBetweenTinSubmissionAndGrantSubmission = (req, res) => {
+//     // calculate days between grant_sub_complete and prop_submit, filter by protocol_status IN ('7', '25')
+//     db.any(query)
+//         .then(data => {
+//             res.status(200).send(data)
+//         })
+//         .catch(error => {
+//             console.log('ERROR:', error)
+//             res.status(500).send('There was an error fetching data.')
+//         })
+// }
