@@ -190,93 +190,94 @@ export const ResourceMetrics = props => {
             subtitle="Proposal Counts for Requested and Approved Resources"
             info="Click on any bar to populate the table with data for the corresponding proposals."
         >
-            <>
-                  <Typography variant="h4">Requested Resources</Typography>
-                  <br/><br/>
-                  <div style={{ height: chartHeight + requestedMargin.top + requestedMargin.bottom }}>
-                      {
-                          requestedMetrics ? (
-                              <ResponsiveBar
-                                  data={ requestedMetrics }
-                                  indexBy={ 'Resource' }
-                                  keys={ ['Total', 'Pending', 'Funded', 'Not Funded'] }
-                                  groupMode={ 'grouped' }
-                                  maxValue={ maxValue }
-                                  padding={ 0.25 }
-                                  innerPadding={ borderWidth / 2 }
-                                  margin={ requestedMargin }
-                                  colors={ theme.palette.chartColors }
-                                  colorBy='id'
-                                  borderWidth={ borderWidth }
-                                  borderColor={ d => isSelected(d) ? "black" : "none" }
-                                  label={ d => d.value < 1 ? '' : d.value }
-                                  enableGridY={ false }
-                                  enableGridX={ false }
-                                  axisTop={{
-                                      tickSize: 5,
-                                      tickPadding: 5,
-                                      tickRotation: 15,
-                                      legend: ''
-                                  } }
-                                  axisRight={ null }
-                                  axisLeft={ null }
-                                  axisBottom={{
-                                      renderTick: tick => (
-                                          <line
-                                              key={ tick.key }
-                                              stroke='#e6e6e6'
-                                              strokeWidth={ 1 }
-                                              x1={ tick.x}
-                                              x2={ tick.x }
-                                              y1={ -chartHeight }
-                                              y2={ requestedMargin.bottom }
-                                          />
-                                      )
-                                  }}
-                                  legends={ chartLegends }
-                                  onClick={ handleClick }
-                                  tooltip={ tooltip("Requested by") }
-                              />
-                          ) : <CircularLoader />
-                      }
-                  </div>
-                  <div style={{ marginTop: -68 }}>
-                      <Typography variant="h4">Approved Resources</Typography>
-                      <br/><br/>
-                      <div style={{ height: chartHeight * maxApproved / maxRequested + approvedMargin.top + approvedMargin.bottom }}>
-                          {
-                              requestedMetrics ? (
-                                  <ResponsiveBar
-                                      data={ approvedMetrics }
-                                      indexBy={ 'Resource' }
-                                      keys={ ['Total', 'Pending', 'Funded', 'Not Funded'] }
-                                      groupMode={ 'grouped' }
-                                      padding={ 0.25 }
-                                      innerPadding={ borderWidth / 2 }
-                                      margin={ approvedMargin }
-                                      colors={ theme.palette.chartColors }
-                                      colorBy='id'
-                                      borderWidth={ borderWidth }
-                                      borderColor={ d => isSelected(d) ? "black" : "none" }
-                                      label={ d => d.value < 1 ? '' : d.value }
-                                      enableGridY={ false }
-                                      enableGridX={ false }
-                                      axisTop={ null }
-                                      axisRight={ null }
-                                      axisLeft={ null }
-                                      axisBottom={ null }
-                                      tooltip={ tooltip("Approved for") }
-                                      onClick={ handleClick }
-                                  />
-                              ) : <CircularLoader />
-                          }
-                      </div>
-                  </div>
-                  <ProposalsTable
-                      title={ tableTitle() }
-                      proposals={ selectedProposals }
-                  />
-              </>
+            <Typography variant="h4">Requested Resources</Typography>
+            <br/><br/>
+            <div style={{ height: chartHeight + requestedMargin.top + requestedMargin.bottom }}>
+                {
+                    requestedMetrics ? (
+                        <ResponsiveBar
+                            data={ requestedMetrics }
+                            indexBy={ 'Resource' }
+                            keys={ ['Total', 'Pending', 'Funded', 'Not Funded'] }
+                            groupMode={ 'grouped' }
+                            maxValue={ maxValue }
+                            padding={ 0.25 }
+                            innerPadding={ borderWidth / 2 }
+                            margin={ requestedMargin }
+                            colors={ theme.palette.chartColors }
+                            colorBy='id'
+                            borderWidth={ borderWidth }
+                            borderColor={ d => isSelected(d) ? "black" : "none" }
+                            label={ d => d.value < 1 ? '' : d.value }
+                            enableGridY={ false }
+                            enableGridX={ false }
+                            axisTop={{
+                                tickSize: 5,
+                                tickPadding: 5,
+                                tickRotation: 15,
+                                legend: ''
+                            } }
+                            axisRight={ null }
+                            axisLeft={ null }
+                            axisBottom={{
+                                renderTick: tick => (
+                                    <line
+                                        key={ tick.key }
+                                        stroke='#e6e6e6'
+                                        strokeWidth={ 1 }
+                                        x1={ tick.x}
+                                        x2={ tick.x }
+                                        y1={ -chartHeight }
+                                        y2={ requestedMargin.bottom }
+                                    />
+                                )
+                            }}
+                            legends={ chartLegends }
+                            onClick={ handleClick }
+                            tooltip={ tooltip("Requested by") }
+                        />
+                    ) : <CircularLoader />
+                }
+            </div>
+            <div style={{ marginTop: -68 }}>
+                <Typography variant="h4">Approved Resources</Typography>
+                <br/><br/>
+                <div style={{ height: chartHeight * maxApproved / maxRequested + approvedMargin.top + approvedMargin.bottom }}>
+                    {
+                        requestedMetrics ? (
+                            <ResponsiveBar
+                                data={ approvedMetrics }
+                                indexBy={ 'Resource' }
+                                keys={ ['Total', 'Pending', 'Funded', 'Not Funded'] }
+                                groupMode={ 'grouped' }
+                                padding={ 0.25 }
+                                innerPadding={ borderWidth / 2 }
+                                margin={ approvedMargin }
+                                colors={ theme.palette.chartColors }
+                                colorBy='id'
+                                borderWidth={ borderWidth }
+                                borderColor={ d => isSelected(d) ? "black" : "none" }
+                                label={ d => d.value < 1 ? '' : d.value }
+                                enableGridY={ false }
+                                enableGridX={ false }
+                                axisTop={ null }
+                                axisRight={ null }
+                                axisLeft={ null }
+                                axisBottom={ null }
+                                tooltip={ tooltip("Approved for") }
+                                onClick={ handleClick }
+                            />
+                        ) : <CircularLoader />
+                    }
+                </div>
+            </div>
+            <ProposalsTable
+                  components={{
+                    Container: props => <div>{ props.children }</div>,
+                }}
+                title={ tableTitle() }
+                proposals={ selectedProposals }
+            />
         </Widget>
     )
 }

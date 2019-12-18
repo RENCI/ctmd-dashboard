@@ -17,12 +17,10 @@ const resources = [
     'Other',
 ]
 
-export const ProposalsTable = (props) => {
+export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     const [settings] = useContext(SettingsContext)
     const [pageSizeOptions, setPageSizeOptions] = useState(defaultPageSizeOptions)
 
-    let { title, proposals } = props
-    
     useEffect(() => {
         if (proposals) {
             // Add length of proposals array as a page size option
@@ -48,7 +46,7 @@ export const ProposalsTable = (props) => {
     return (
         <MaterialTable
             title={ title || null }
-            components={{ }}
+            components={ components }
             columns={ [
                 {
                     title: 'ID', field: 'proposalID',
