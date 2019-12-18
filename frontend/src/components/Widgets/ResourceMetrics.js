@@ -187,6 +187,8 @@ export const ResourceMetrics = props => {
     return (
         <Widget
             title="Resource Metrics"
+            subtitle="Proposal Counts for Requested and Approved Resources"
+            info="Click on any bar to populate the table with data for the corresponding proposals."
         >
             <>
                   <Typography variant="h4">Requested Resources</Typography>
