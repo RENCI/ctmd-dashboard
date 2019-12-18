@@ -45,11 +45,11 @@ const useStyles = makeStyles(theme => ({
 
 const Task = ({ id }) => {
     const classes = useStyles()
-    const [name, setName] = useState('')
-    const [dateStarted, setDateStarted] = useState('')
-    const [dateEnqueued, setDateEnqueued] = useState('')
-    const [dateEnded, setDateEnded] = useState('')
-    const [dateCreated, setDateCreated] = useState('')
+    const [name, setName] = useState()
+    const [dateStarted, setDateStarted] = useState()
+    const [dateEnqueued, setDateEnqueued] = useState()
+    const [dateEnded, setDateEnded] = useState()
+    const [dateCreated, setDateCreated] = useState()
     
     useEffect(() => {
         const fetchTaskDetails = async () => {
@@ -97,16 +97,13 @@ const Task = ({ id }) => {
 }
 
 const TaskList = ({ tasks }) => {
-    const classes = useStyles()
     return tasks && tasks.job_ids && tasks.job_ids.length > 0
         ? tasks.job_ids.map(id => <Task id={ id } />)
         : <Paragraph>None</Paragraph>
 }
 
 export const TaskManager = props => {
-    const classes = useStyles()
     const addFlashMessage = useContext(FlashMessageContext)
-    const [tasks, setTasks] = useState([])
     const [queuedTasks, setQueuedTasks] = useState([])
     const [startedTasks, setStartedTasks] = useState([])
     const [finishedTasks, setFinishedTasks] = useState([])
@@ -117,7 +114,6 @@ export const TaskManager = props => {
         const fetchTasks = async () => {
             await axios.get(api.dataGetTasks)
                 .then(response => {
-                    setTasks(response.data)
                     setQueuedTasks(response.data.queued)
                     setStartedTasks(response.data.started)
                     setFinishedTasks(response.data.finished)
