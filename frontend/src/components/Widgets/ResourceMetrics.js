@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import { Typography } from '@material-ui/core'
+import { Typography, Divider } from '@material-ui/core'
 import { ChartTooltip } from '../Tooltip'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
@@ -271,6 +271,9 @@ export const ResourceMetrics = props => {
                     }
                 </div>
             </div>
+
+            <Divider />
+            
             <ProposalsTable
                   components={{
                     Container: props => <div>{ props.children }</div>,
