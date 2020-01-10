@@ -126,7 +126,7 @@ export const SettingsPage = props => {
                         title="Task Manager"
                         subheader="View tasks and their statuses"
                         actions={
-                            <IconButton onClick={ handleRefreshTaskManager }><RefreshIcon /></IconButton>
+                            <IconButton color="secondary" aria-label="Refresh Tasks" onClick={ handleRefreshTaskManager }><RefreshIcon /></IconButton>
                         }
                     >
                         <TaskManager key={ taskManagerKey }/>
