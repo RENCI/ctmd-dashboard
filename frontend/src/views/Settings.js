@@ -1,15 +1,17 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment, useContext, useState } from 'react'
 import { Title } from '../components/Typography'
 import {
     Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
-    Select, OutlinedInput, MenuItem,
+    Select, OutlinedInput, MenuItem, IconButton
 } from '@material-ui/core'
 import { DangerZone, TaskManager } from '../components/Forms'
 import { SettingsContext } from '../contexts/SettingsContext'
 import { CollapsibleCard } from '../components/CollapsibleCard'
+import { Refresh as RefreshIcon } from '@material-ui/icons'
 
 export const SettingsPage = props => {
     const [settings, setSettings] = useContext(SettingsContext)
+    const [taskManagerKey, setTaskManagerKey] = useState(0)
 
     const handleChangeVisibleColumns = event => {
         const visibleColumns = { ...settings.tables.visibleColumns, [event.target.value]: event.target.checked }
@@ -25,6 +27,8 @@ export const SettingsPage = props => {
         const chartSettings = { ...settings.charts, [event.target.value]: event.target.checked }
         setSettings({ ...settings, charts: chartSettings })
     }
+
+    const handleRefreshTaskManager = () => setTaskManagerKey(taskManagerKey === 0 ? 1 : 0)
 
     return (
         <Fragment>
@@ -121,8 +125,11 @@ export const SettingsPage = props => {
                     <CollapsibleCard
                         title="Task Manager"
                         subheader="View tasks and their statuses"
+                        actions={
+                            <IconButton onClick={ handleRefreshTaskManager }><RefreshIcon /></IconButton>
+                        }
                     >
-                        <TaskManager />
+                        <TaskManager key={ taskManagerKey }/>
                     </CollapsibleCard>
                 </Grid>
             </Grid>
