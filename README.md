@@ -175,7 +175,7 @@ $ git clone https://github.com/renci/ctmd-dashboard.git
 
 For local development, create a branch off of master as detailed above.
 
-For deloying to a production server, first detemine the branch to deploy. for example, consider the case in which you wish to deploy version `1.19`. Presuming this branch is a tracked remote branch, you would begin by checking out branch `1.19` with the following command.
+For deloying to a production server, first determine the branch to deploy. for example, consider the case in which you wish to deploy version `1.19`. Presuming this branch is a tracked remote branch, you would begin by checking out branch `1.19` with the following command.
 
 ```bash
 git checkout 1.19
