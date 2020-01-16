@@ -21,7 +21,8 @@ export const ProposalsCalendar = props => {
     const [store, ] = useContext(StoreContext)
     const [calendarData, setCalendarData] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null)
-    const [year, setYear] = useState((new Date()).getFullYear())
+    const thisYear = (new Date()).getFullYear()
+    const [year, setYear] = useState(thisYear)
     const [count, setCount] = useState(0)
     const theme = useTheme()
 
@@ -72,10 +73,11 @@ export const ProposalsCalendar = props => {
                         onClick={ handleClick }
                     >{ year }<MoreIcon/></Button>
                     <Menu id="year-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
-                        <MenuItem onClick={ handleSelect } value="2016">2016</MenuItem>
-                        <MenuItem onClick={ handleSelect } value="2017">2017</MenuItem>
-                        <MenuItem onClick={ handleSelect } value="2018">2018</MenuItem>
-                        <MenuItem onClick={ handleSelect } value="2019">2019</MenuItem>
+                        {
+                            [...Array(thisYear - 2016 + 1).keys()].map(i => (
+                                <MenuItem key={ i + 2016 } onClick={ handleSelect } value={ i + 2016 }>{ i + 2016 }</MenuItem>
+                            ))
+                        }
                     </Menu>
                 </Fragment>
             }
