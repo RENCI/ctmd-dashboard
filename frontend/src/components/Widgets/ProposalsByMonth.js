@@ -1,8 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import { Button } from '@material-ui/core'
-import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon } from '@material-ui/icons'
+import { ResponsiveLine } from '@nivo/line'
+import { Button, Tooltip } from '@material-ui/core'
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
+import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon, BarChart as BarGraphIcon, ShowChart as LineGraphIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
@@ -12,14 +14,20 @@ let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 const thisMonth = (new Date()).getMonth() + 1
 const thisYear = (new Date()).getFullYear()
 
-// const yyyymmToLabel => date => {}
+const BAR = 'bar'
+const LINE = 'line'
+const commonChartAttributes = {
 
-export const ProposalsByMonthBarChart = props => {
+}
+
+export const ProposalsByMonthChart = props => {
     const [store, ] = useContext(StoreContext)
-    const [proposalGroups, setProposalGroups] = useState([])
+    const [proposalGroupsBar, setProposalGroupsBar] = useState([])
+    const [proposalGroupsLine, setProposalGroupsLine] = useState([])
     const [currentPosition, setCurrentPosition] = useState(-1)
     const [startLabel, setStartLabel] = useState('...')
     const [endLabel, setEndLabel] = useState('...')
+    const [graphType, setGraphType] = useState(LINE)
     const theme = useTheme()
 
     useEffect(() => {
@@ -55,26 +63,29 @@ export const ProposalsByMonthBarChart = props => {
                 })
             }
         }
-        setProposalGroups(timeline)
+        const lineData = timeline.map(({ label, count }) => ({ x:label, y: count }))
+        setProposalGroupsBar(timeline)
+        setProposalGroupsLine(lineData)
     }, [store])
 
     useEffect(() => {
-        setCurrentPosition(proposalGroups.length - 12)
-        console.log(proposalGroups[currentPosition])
-    }, [proposalGroups])
+        setCurrentPosition(proposalGroupsBar.length - 12)
+    }, [proposalGroupsBar])
 
     useEffect(() => {
-        if (proposalGroups && currentPosition >= 0) {
-            setStartLabel(proposalGroups[currentPosition].label)
-            setEndLabel(proposalGroups[currentPosition + 11].label)
+        if (proposalGroupsBar && currentPosition >= 0) {
+            setStartLabel(proposalGroupsBar[currentPosition].label)
+            setEndLabel(proposalGroupsBar[currentPosition + 11].label)
         }
     }, [currentPosition])
 
     const handlePositionChange = delta => event => {
-        if (currentPosition + delta >= 0 && currentPosition + delta <= proposalGroups.length) {
+        if (currentPosition + delta >= 0 && currentPosition + delta <= proposalGroupsBar.length) {
             setCurrentPosition(currentPosition + delta)
         }
     }
+
+    const handleToggleGraphType = (event, newType) => setGraphType(newType)
 
     return (
         <Widget
@@ -85,26 +96,34 @@ export const ProposalsByMonthBarChart = props => {
                     <Button disabled={ currentPosition === 0 } onClick={ handlePositionChange(-1) }>
                         <LeftIcon />
                     </Button>
-                    <Button disabled={ currentPosition === proposalGroups.length - 12} onClick={ handlePositionChange(1) }>
+                    <Button disabled={ currentPosition === proposalGroupsBar.length - 12} onClick={ handlePositionChange(1) }>
                         <RightIcon />
                     </Button>
+                    <ToggleButtonGroup value={ graphType } exclusive onChange={ handleToggleGraphType } style={{ margin: '0 1rem' }}>
+                        <ToggleButton value={ BAR } selected={ graphType === BAR } disabled={ graphType === BAR }>
+                            <Tooltip title="Bar Graph"><BarGraphIcon /></Tooltip>
+                        </ToggleButton>
+                        <ToggleButton value={ LINE } selected={ graphType === LINE } disabled={ graphType === LINE }>
+                            <Tooltip title="Line Graph"><LineGraphIcon /></Tooltip>
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                 </div>
             }
         >
             <div style={{ height: '236px' }}>
                 {
-                    (proposalGroups) ? (
+                    proposalGroupsBar && graphType === BAR && (
                         <ResponsiveBar
-                            data={ proposalGroups.slice(currentPosition, currentPosition + 12) }
+                            data={ proposalGroupsBar.slice(currentPosition, currentPosition + 12) }
                             keys={ ['count'] }
                             indexBy="label"
                             layout="vertical"
-                            margin={{ top: 0, left: 0, right: 0, bottom: 140 }}
+                            margin={{ top: 0, left: 0, right: 0, bottom: 120 }}
                             height={ 236 }
                             colors={ theme.palette.chartColors }
                             colorBy='date'
                             // colorBy='index'
-                            // maxValue={ Math.max(...proposalGroups.map(({ count }) => count)) }
+                            // maxValue={ Math.max(...proposalGroupsBar.map(({ count }) => count)) }
                             borderColor='inherit:darker(1.6)'
                             axisBottom={{
                                 tickSize: 5,
@@ -131,8 +150,43 @@ export const ProposalsByMonthBarChart = props => {
                                 </ChartTooltip>
                             )}
                         />
-                    ) : <CircularLoader />
+                    )
                 }
+                {
+                    proposalGroupsLine && graphType === LINE && (
+                        <ResponsiveLine
+                            data={ [{ data: proposalGroupsLine.slice(currentPosition, currentPosition + 12) }] }
+                            curve="linear"
+                            isInteractive={ true }
+                            margin={{ top: 0, left: 20, right: 20, bottom: 120 }}
+                            xScale={{ type: 'point' }}
+                            yScale={{ type: 'linear', min: 0, max: 10, stacked: false, reverse: false }}
+                            axisTop={ null }
+                            axisRight={ null }
+                            axisBottom={{
+                                orient: 'bottom',
+                                tickSize: 5,
+                                tickPadding: 5,
+                                tickRotation: -90,
+                                legend: '',
+                                legendPosition: 'middle',
+                                legendOffset: 0,
+                            }}
+                            axisLeft={ null }
+                            height={ 236 }
+                            colors={ theme.palette.chartColors }
+                            pointSize={ 10 }
+                            pointLabel="y"
+                            pointBorderWidth={ 2 }
+                            pointBorderColor="black"
+                            pointColor={{ from: 'color', modifiers: [] }}
+                            pointLabelOffset={ -12 }
+                            useMech={ true }
+                            legends={ [] }
+                        />
+                    )
+                }
+                { !proposalGroupsBar && <CircularLoader /> }
             </div>
         </Widget>
     )

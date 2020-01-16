@@ -153,6 +153,13 @@ theme = {
                 // marginTop: `${ theme.spacing(1) }px`,
             }
         },
+        MuiToggleButton: {
+            selected: {
+                '& svg': {
+                    fill: theme.palette.secondary.main,
+                },
+            },
+        },
     }
 }
 
