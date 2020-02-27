@@ -48,3 +48,6 @@ app.use('/studies', require('./routes/studies'))
 app.use('/sites', require('./routes/sites'))
 // CTSAs
 app.use('/ctsas', require('./routes/ctsas'))
+
+// Graphics
+app.use('/graphics', require('./routes/graphics'))
