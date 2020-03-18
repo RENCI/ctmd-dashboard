@@ -36,9 +36,6 @@ exports.vertical = (req, res) => {
         { name: 'VUMC RIC', value: 52 },
     ]
 
-    const data = d3.range(1000).map(d3.randomUniform(10))
-    // const data = random.randomArray(10, 1, 50)
-
     const margin = { top: 60, right: 30, bottom: 30, left: 30 }
     const width = 400 - margin.left - margin.right
     const height = 400 - margin.top - margin.bottom
