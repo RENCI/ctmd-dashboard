@@ -3,16 +3,6 @@ const d3 = require('d3')
 
 //
 
-const d3Random = require('d3-random')
-
-const randomUniform = (a,b) => d3Random.randomUniform(a, b)()
-
-const randomArray = (count, a, b) => {
-    return [...Array(count).keys()].map(i => Math.floor(randomUniform(a, b)))
-}
-
-//
-
 const styles = `
     .bars {
 
@@ -37,8 +27,8 @@ const d3n = new D3Node(options)
 
 var formatCount = d3.format(',.0f')
 
-// /api/v1/image
-exports.proofOfConcept = (req, res) => {
+// /api/v1/graphics
+exports.vertical = (req, res) => {
     const ticData = [
         { name: 'Duke/VUMC TIC', value: 59 },
         { name: 'Utah TIC', value: 52 },
@@ -97,6 +87,77 @@ exports.proofOfConcept = (req, res) => {
 
     // add the y Axis
     svg.append('g')
+        .call(d3.axisLeft(y))
+
+    res.status(200).type('application/xml').send(d3n.svgString())
+}
+
+// /api/v1/graphics/bar/horizontal
+exports.horizontal = (req, res) => {
+    var options = {
+        styles: styles,
+        d3Module: d3,
+    }
+
+    const d3n = new D3Node(options)
+
+    var formatCount = d3.format(',.0f')
+
+    const ticData = [
+        { name: 'Duke/VUMC TIC', value: 59 },
+        { name: 'Utah TIC', value: 52 },
+        { name: 'JHU/Tufts TIC', value: 56 },
+        { name: 'VUMC RIC', value: 52 },
+    ]
+
+    const margin = { top: 60, right: 40, bottom: 30, left: 100 }
+    const width = 400 - margin.left - margin.right
+    const height = 400 - margin.top - margin.bottom
+    const svgWidth = width + margin.left + margin.right
+    const svgHeight = height + margin.top + margin.bottom
+    const barX = width / 4
+    const barY = height / 4
+
+    var x = d3.scaleLinear().domain([0, d3.max(ticData, d => d.value)]).range([0, width])
+    var y = d3.scaleOrdinal(ticData.map(d => d.name), [0, 1, 2, 3].map(i => i * barY))
+
+    const svg = d3n.createSVG(svgWidth, svgHeight)
+        .attr('style', 'border: 1px solid #ccc')
+        .append('g')
+        .attr('transform', `translate(${ margin.left }, ${ margin.top })`)
+
+    // bars
+    const bars = svg.append('g').attr('class', 'bars')
+
+    const bar = bars.selectAll('.bar')
+        .data(ticData)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => 0)
+        .attr('y', d => y(d.name))
+        .attr('height', barY)
+        .attr('width', d => x(d.value))
+        .attr('data-tic', d => d.name)
+    
+    const barLabels = bars.selectAll('.label')
+        .data(ticData)
+        .enter().append('text')
+        .attr('class', 'label')
+        .attr('x', d => x(d.value))
+        .attr('y', d => y(d.name))
+        .attr("transform", `translate(20, ${ barY / 2 })`)
+        .style("text-anchor", "middle")
+        // .attr("font-size", "12")
+        .text(d => d.value)
+
+    // add the x Axis
+    svg.append('g')
+        .attr("transform", `translate(0, ${ height })`)
+        .call(d3.axisBottom(x))
+
+    // add the y Axis
+    svg.append('g')
+        .attr("transform", `translate(0, 50)`)
         .call(d3.axisLeft(y))
 
     res.status(200).type('application/xml').send(d3n.svgString())
