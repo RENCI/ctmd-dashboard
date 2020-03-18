@@ -1,16 +1,14 @@
 const D3Node = require('d3-node')
 const d3 = require('d3')
+let d3n
 
 //
 
-const styles = `
-    .bars {
-
-    }
+const styles = (fill) => `
     .bar {
         stroke: black;
         stroke-width: 1;
-        fill: steelblue;
+        fill: ${ fill };
         transition: filter 250ms;
     }
     .bar:hover {
@@ -18,17 +16,16 @@ const styles = `
     }
 `
 
-var options = {
-    styles: styles,
-    d3Module: d3,
-}
-
-const d3n = new D3Node(options)
-
 var formatCount = d3.format(',.0f')
 
 // /api/v1/graphics
 exports.vertical = (req, res) => {
+    const fillColor = req.query.fill || 'steelblue'
+    d3n = new D3Node({
+        styles: styles(fillColor),
+        d3Module: d3,
+    })
+
     const ticData = [
         { name: 'Duke/VUMC TIC', value: 59 },
         { name: 'Utah TIC', value: 52 },
@@ -52,7 +49,7 @@ exports.vertical = (req, res) => {
         .attr('transform', `translate(${ margin.left }, ${ margin.top })`)
 
     // Scale the range of the data in the domains
-    x.domain(data.map(d => d.name))
+    x.domain(ticData.map(d => d.name))
     y.domain([0, d3.max(ticData, d => d.value)])
     
     // bars
@@ -91,12 +88,16 @@ exports.vertical = (req, res) => {
 
 // /api/v1/graphics/bar/horizontal
 exports.horizontal = (req, res) => {
+    const fillColor = req.query.fill || 'steelblue'
+    d3n = new D3Node({
+        styles: styles(fillColor),
+        d3Module: d3,
+    })
+
     var options = {
         styles: styles,
         d3Module: d3,
     }
-
-    const d3n = new D3Node(options)
 
     var formatCount = d3.format(',.0f')
 
