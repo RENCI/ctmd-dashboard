@@ -75,7 +75,7 @@ endpoints = {
     dataGetTask: jobId => pipelineApiRoot + `task/${ jobId }`,
     uploadSites: pipelineApiRoot + `table/Sites`,
     uploadCtsas: pipelineApiRoot + `table/CTSAs`,
-    uploadStudyProfile: pipelineApiRoot + `table/StudyProfile`,
+    uploadStudyProfile: pipelineApiRoot + `table/StudyProfile?skip_rows=1`,
     uploadStudySites: pipelineApiRoot + `table/StudySites`,
     uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation`,
 }
