@@ -16,7 +16,7 @@ services:
     
   pipeline:
     container_name: ctmd-pipeline
-    image: zooh/ctmd-pipeline-reload@sha256:55b88b6a53e0c1f42311b07c2d3d3810d40cf79abcdccdbfa5a43eb7f416eda4
+    image: zooh/ctmd-pipeline-reload@sha256:caf0903652f5d63466baa48298c398c41cad77b94cfed18edef28f01627b241d
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
