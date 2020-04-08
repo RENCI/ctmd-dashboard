@@ -5,6 +5,9 @@ import { Title } from '../components/Typography'
 import { CircularLoader } from '../components/Progress/Progress'
 import { SitesEnrollmentTable } from '../components/Tables/SitesEnrollmentTable'
 import { StoreContext } from '../contexts/StoreContext'
+import { Grid } from '@material-ui/core'
+import { DropZone } from '../components/Forms/DropZone'
+import { DownloadButton } from '../components/Forms'
 
 export const SitesPage = (props) => {
     const [store, ] = useContext(StoreContext)
@@ -78,7 +81,17 @@ export const SitesPage = (props) => {
 
     return (
         <div>
-            <Title>Sites</Title>
+            <Grid container>
+                <Grid item xs={ 11 } md={ 6 }>
+                    <Title>Sites</Title>
+                </Grid>
+                <Grid item xs={ 11 } md={ 5 }>
+                    <DropZone endpoint={ `${ api.uploadSites }` } />
+                </Grid>
+                <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
+                    <DownloadButton path={ api.download('sites')} tooltip="Download Sites CSV Template" />
+                </Grid>
+            </Grid>
 
             { tableData ? <SitesEnrollmentTable data={ tableData } /> : <CircularLoader /> }
 

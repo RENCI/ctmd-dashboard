@@ -75,9 +75,16 @@ endpoints = {
     dataGetTask: jobId => pipelineApiRoot + `task/${ jobId }`,
     uploadSites: pipelineApiRoot + `table/Sites`,
     uploadCtsas: pipelineApiRoot + `table/CTSAs`,
-    uploadStudyProfile: pipelineApiRoot + `table/StudyProfile?skip_rows=1`,
+    uploadStudyProfile: pipelineApiRoot + `table/StudyProfile`,
     uploadStudySites: pipelineApiRoot + `table/StudySites`,
     uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation`,
+}
+
+// Template Downloads
+
+endpoints = {
+    ...endpoints,
+    download: tableName => apiRoot + `template/${ tableName }`, // GET to download template
 }
 
 export default endpoints

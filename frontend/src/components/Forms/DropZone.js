@@ -12,7 +12,9 @@ const useStyles = makeStyles(theme => ({
     },
     fileInput: {
         flex: 1,
-        backgroundColor: theme.palette.grey[200],
+        backgroundColor: theme.palette.grey[300],
+        borderTopRightRadius: '4px',
+        borderBottomRightRadius: '4px',
     },
     uploadButton: {
         margin: theme.spacing(2),
@@ -45,6 +47,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
             formdata.append('data', file)
             formdata.append('content-type', 'text/csv')
             formdata.append('json', '{}')
+            formdata.append('has_comments', 'true')
             headers = {
                 ...headers,
                 'Access-Control-Allow-Origin': '*',
