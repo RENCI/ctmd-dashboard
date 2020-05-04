@@ -12,6 +12,7 @@ import {
     CloudUpload as UploadIcon,
 } from '@material-ui/icons'
 import { CTSAIcon } from '../../Icons/Ctsa'
+import { TINLogoIcon } from '../../Icons/TinLogo'
 
 const useStyles = makeStyles(theme => ({
     nav: {
@@ -91,10 +92,11 @@ const menuItems = [
     { text: 'Studies', path: '/studies', icon: StudiesIcon, },
     { text: 'Sites', path: '/sites', icon: SitesIcon, },
     { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon, },
-    { text: 'Uploads', path: '/uploads', icon: UploadIcon },
+    { text: 'Uploads', path: '/uploads', icon: UploadIcon },                
     { }, // an empty object causes a Divider component to render in the menu 
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon, },
-    // { text: 'Site Reports', path: '/site-reports', icon: SiteReportIcon, },
+    { }, // an empty object causes a Divider component to render in the menu 
+    { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon, },
 ]
 
 export const Menu = ({ expanded, clickHandler }) => {
@@ -107,18 +109,35 @@ export const Menu = ({ expanded, clickHandler }) => {
                     menuItems.map((item, i) => (
                         item.text && item.path && item.icon ? (
                             <Tooltip key={ `${ i }-item` } title={ expanded ? '' : item.text } placement="right">
-                                <MenuItem
-                                    component={ NavLink } exact to={ item.path }
-                                    className={ classes.menuItem } activeClassName={ classes.active }
-                                    onClick={ clickHandler }
-                                >
-                                    <ListItemIcon classes={{ root: classes.listItemIcon }}>
-                                        <item.icon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={ item.text }
-                                        classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
-                                    />
-                                </MenuItem>
+                                {
+                                    item.path.match(/^http/)
+                                    ? (
+                                        <MenuItem
+                                            component={ 'a' } href={ item.path } target="_blank" rel="noopener noreferrer"
+                                            className={ classes.menuItem } onClick={ clickHandler }
+                                        >
+                                            <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                                                <item.icon />
+                                            </ListItemIcon>
+                                            <ListItemText primary={ item.text }
+                                                classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
+                                            />
+                                        </MenuItem>
+                                    ) : (
+                                        <MenuItem
+                                            component={ NavLink } exact to={ item.path }
+                                            className={ classes.menuItem } activeClassName={ classes.active }
+                                            onClick={ clickHandler }
+                                        >
+                                            <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                                                <item.icon />
+                                            </ListItemIcon>
+                                            <ListItemText primary={ item.text }
+                                                classes={{ root: classnames(classes.listItemText, expanded ? classes.expandedItemText : classes.collapsedItemText) }}
+                                            />
+                                        </MenuItem>
+                                    )
+                                }
                             </Tooltip>
                         ) : <Divider key={ `${ i }-divider` } style={{ margin: '1rem 0' }} />
                     ))
