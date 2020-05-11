@@ -5,7 +5,7 @@ import { ChartTooltip } from '../Tooltip'
 import { CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
-import { useWindowWidth } from '../../hooks'
+import { useWindowSize } from '../../hooks'
 import { Widget } from './Widget'
 
 const statusMap = [
@@ -86,7 +86,7 @@ Array.prototype.countBy = function(prop) {
 export const ProposalsByTicBarChart = props => {
     const [store, ] = useContext(StoreContext)
     const [proposalGroups, setProposalGroups] = useState()
-    const windowWidth = useWindowWidth()
+    const { width } = useWindowSize()
     const theme = useTheme()
 
     useEffect(() => {
@@ -107,7 +107,7 @@ export const ProposalsByTicBarChart = props => {
         anchor: 'top-right',
         direction: 'column',
         justify: false,
-        translateX: windowWidth < 1000 ? 0 : 336,
+        translateX: width < 1000 ? 0 : 336,
         translateY: -32,
         itemsSpacing: 1,
         itemWidth: 20,
@@ -143,7 +143,7 @@ export const ProposalsByTicBarChart = props => {
                                 )
                             }
                             indexBy="name"
-                            margin={{ top: 32, right: windowWidth < 1000 ? 0 : 336, bottom: 24, left: 0 }}
+                            margin={{ top: 32, right: width < 1000 ? 0 : 336, bottom: 24, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"
@@ -175,7 +175,7 @@ export const ProposalsByTicBarChart = props => {
                             animate={ true }
                             motionStiffness={ 90 }
                             motionDamping={ 15 }
-                            legends={ windowWidth < 1000 ? [] : chartLegends }
+                            legends={ width < 1000 ? [] : chartLegends }
                             tooltip={ ({ id, value, color, indexValue }) => (
                                 <ChartTooltip color={ color }>
                                     <div><strong>{ indexValue }</strong></div>

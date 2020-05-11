@@ -1,2 +1,2 @@
 export * from './useProposal'
-export * from './useWindowWidth'
+export * from './useWindowSize'

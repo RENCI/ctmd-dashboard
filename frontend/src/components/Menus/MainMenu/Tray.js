@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowRight as ExpandIcon, Settings as SettingsIcon } from '@material-ui/icons'
 import { Menu } from './Menu'
 import { Brand } from '../../Brand'
+import { useWindowSize } from '../../../hooks'
 
 const useStyles = makeStyles(theme => ({
     tray: {
@@ -65,6 +66,7 @@ const useStyles = makeStyles(theme => ({
 
 export const MenuTray = ({ children }) => {
     const [open, setOpen] = useState()
+    const { height } = useWindowSize()
     const classes = useStyles()
     
     const handleToggleOpen = () => setOpen(!open)
@@ -81,7 +83,7 @@ export const MenuTray = ({ children }) => {
 
                 <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
 
-                <Brand />
+                { height > 800 && <Brand /> }
                 
                 <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
                     
