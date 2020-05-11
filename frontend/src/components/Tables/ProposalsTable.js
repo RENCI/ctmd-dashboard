@@ -93,6 +93,10 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
+                    title: 'Funding Source', field: 'fundingSource',
+                    hidden: !settings.tables.visibleColumns.fundingSource,
+                },
+                {
                     title: 'Funding Status', field: 'fundingStatus',
                     hidden: !settings.tables.visibleColumns.fundingStatus,
                 },

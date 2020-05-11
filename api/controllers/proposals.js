@@ -16,6 +16,7 @@ exports.getOne = (req, res) => {
             name6.description AS "fundingStatusWhenApproved",
             name7.description AS "studyPopulation",
             name8.description AS "phase",
+            name9.description AS "fundingSource",
             "ProposalFunding"."amountAward" AS "fundingAmount",
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
             CAST("ProposalFunding"."fundingStart" AS VARCHAR),
@@ -37,6 +38,7 @@ exports.getOne = (req, res) => {
         LEFT JOIN name name6 ON name6.index = "ProposalFunding"."newFundingStatus" AND name6."column" = 'newFundingStatus'
         LEFT JOIN name name7 ON name7.index = "Proposal"."StudyPopulation" AND name7."column" = 'StudyPopulation'
         LEFT JOIN name name8 ON name8.index = "Proposal"."PhaseOfStudy" AND name8."column" = 'PhaseOfStudy'
+        LEFT JOIN name name9 ON name9.index = "ProposalFunding"."instituteCenter" AND name9."column" = 'instituteCenter'
         WHERE "Proposal"."ProposalID"=${ req.params.id }`
     db.any(query)
         .then(data => {
@@ -62,6 +64,7 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             name6.description AS "fundingStatusWhenApproved",
             name7.description AS "studyPopulation",
             name8.description AS "phase",
+            name9.description AS "fundingSource",
             "ProposalFunding"."amountAward" AS "fundingAmount",
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
             CAST("ProposalFunding"."fundingStart" AS VARCHAR) AS "actualFundingStartDate",
@@ -84,6 +87,7 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
         LEFT JOIN name name6 ON name6.index = "ProposalFunding"."newFundingStatus" AND name6."column" = 'newFundingStatus'
         LEFT JOIN name name7 ON name7.index = "Proposal"."StudyPopulation" AND name7."column" = 'StudyPopulation'
         LEFT JOIN name name8 ON name8.index = "Proposal"."PhaseOfStudy" AND name8."column" = 'PhaseOfStudy'
+        LEFT JOIN name name9 ON name9.index = "ProposalFunding"."instituteCenter" AND name9."column" = 'instituteCenter'
         ORDER BY "proposalID";`
 
 const query2 = `SELECT "Proposal"."ProposalID" as "proposalID",                  
