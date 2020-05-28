@@ -189,7 +189,7 @@ Environment variables live in the file `./.env` in the project root. This file c
 
 - `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`: These provide credentials to connect to the database container.
 - `REACT_APP_API_ROOT`: Environment variables used in React begin with `REACT_APP_`. This variable is referenced in the front-ends source for defining the API endpoints. _This variable is only used in production._
-- `API_PORT`: This is the port the `pmd-api` container should serve the API.
+- `API_PORT`: This is the port the `ctmd-api` container should serve the API.
 - `REDCAP_APPLICATION_TOKEN`: This token grants access to the RedCap database. _This variable is only used in production._
 - `POSTGRES_DUMP_PATH`: This is the location on the host where Postgres backups (via `pg_dump`) will be stored. _This variable is only used in production._
 - `PAUSE`: TBA
@@ -217,7 +217,7 @@ When in doubt, use the `.env.sample` file as a guide (and it can be copied as-is
 
 ### Start 
 
-In development, there are three services that we need to run. They are named `frontend`, `api`, and `db`, and the associated containers are prepended with `pmd-`, and the development containers are appended with `-dev`. For example, the API is served in development from the container named `pmd-api-dev`. One additional container called `pipeline` runs in production, which handles choreographing the persistence of data from the production host to the containerized application.
+In development, there are three services that we need to run. They are named `frontend`, `api`, and `db`, and the associated containers are prepended with `ctmd-`, and the development containers are appended with `-dev`. For example, the API is served in development from the container named `ctmd-api-dev`. One additional container called `pipeline` runs in production, which handles choreographing the persistence of data from the production host to the containerized application.
 
 #### Development
 
@@ -231,76 +231,76 @@ The above command starts and attaches the necessary containers, which results in
 
 ```bash
 $ docker-compose up
-Starting pmd-db-dev ... 
-Starting pmd-db-dev
-Starting pmd-redis ... 
-Starting pmd-db-dev ... done
-Starting pmd-api-dev ... 
-Starting pmd-redis ... done
-Starting pmd-pipeline ... 
-Starting pmd-pipeline ... done
-Starting pmd-frontend-dev ... 
-Starting pmd-frontend-dev ... done
-Attaching to pmd-db-dev, pmd-redis, pmd-api-dev, pmd-pipeline, pmd-frontend-dev
-pmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-pmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-pmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
-pmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Redis version=5.0.5, bits=64, commit=00000000, modified=0, pid=1, just started
-pmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Configuration loaded
-pmd-db-dev  | 2019-11-07 06:04:58.874 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-pmd-api-dev | 
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 * Running mode=standalone, port=6379.
-pmd-api-dev | > api@1.0.0 start /usr/src/app
-pmd-api-dev | > nodemon app
-pmd-api-dev | 
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
-pmd-pipeline | INFO:reload:waiting for database to start host=db port=5432
-pmd-db-dev  | 2019-11-07 06:04:58.892 UTC [24] LOG:  database system was shut down at 2019-11-07 05:06:08 UTC
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # Server initialized
-pmd-pipeline | INFO:reload:database started host=db port=5432
-pmd-api-dev | [nodemon] 1.19.1
-pmd-db-dev  | 2019-11-07 06:04:58.901 UTC [1] LOG:  database system is ready to accept connections
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
-pmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
-pmd-api-dev | [nodemon] to restart at any time, enter `rs`
-pmd-db-dev  | 2019-11-07 06:05:02.453 UTC [31] LOG:  incomplete startup packet
-pmd-pipeline | INFO:rq.worker:Worker rq:worker:927ddbe78c7b457ea66ded5ea3c57234: started, version 1.1.0
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.978 * DB loaded from append only file: 0.061 seconds
-pmd-api-dev | [nodemon] watching: *.*
-pmd-pipeline | INFO:reload:redis started host=redis port=6379
-pmd-redis   | 1:M 07 Nov 2019 06:04:59.978 * Ready to accept connections
-pmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] ERROR:  relation "StudyPI" already exists
-pmd-api-dev | [nodemon] starting `node app.js`
-pmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
-pmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] STATEMENT:  create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
-pmd-api-dev | 
-pmd-db-dev  |   
-pmd-pipeline | INFO:rq.worker:*** Listening on default...
-pmd-api-dev | Shhh... I'm listening on port 3030.
-pmd-api-dev | 
-pmd-pipeline | INFO:reload:redis started host=redis port=6379
-pmd-pipeline | INFO:reload:create_tables=True
-pmd-pipeline | INFO:rq.worker:Cleaning registries for queue: default
-pmd-pipeline | INFO:reload:insert_data=False
-pmd-pipeline | INFO:reload:one_off=False
-pmd-pipeline | INFO:reload:realod=True
-pmd-pipeline | INFO:reload:create tables start
-pmd-pipeline |  * Serving Flask app "server" (lazy loading)
-pmd-pipeline |  * Environment: production
-pmd-pipeline |    WARNING: This is a development server. Do not use it in a production deployment.
-pmd-pipeline |    Use a production WSGI server instead.
-pmd-pipeline |  * Debug mode: off
-pmd-pipeline | INFO:werkzeug: * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
-pmd-pipeline | INFO:reload:executing create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
-pmd-pipeline | 
-pmd-pipeline | ERROR:reload:pipeline encountered an error when creating tablesrelation "StudyPI" already exists
-pmd-pipeline | 
-pmd-frontend-dev | 
-pmd-frontend-dev | > duke-tic@0.1.0 start /usr/src/app
-pmd-frontend-dev | > react-scripts start
-pmd-frontend-dev | 
-pmd-frontend-dev | Starting the development server...
+Starting ctmd-db-dev ... 
+Starting ctmd-db-dev
+Starting ctmd-redis ... 
+Starting ctmd-db-dev ... done
+Starting ctmd-api-dev ... 
+Starting ctmd-redis ... done
+Starting ctmd-pipeline ... 
+Starting ctmd-pipeline ... done
+Starting ctmd-frontend-dev ... 
+Starting ctmd-frontend-dev ... done
+Attaching to ctmd-db-dev, ctmd-redis, ctmd-api-dev, ctmd-pipeline, ctmd-frontend-dev
+ctmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+ctmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+ctmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+ctmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Redis version=5.0.5, bits=64, commit=00000000, modified=0, pid=1, just started
+ctmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Configuration loaded
+ctmd-db-dev  | 2019-11-07 06:04:58.874 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+ctmd-api-dev | 
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 * Running mode=standalone, port=6379.
+ctmd-api-dev | > api@1.0.0 start /usr/src/app
+ctmd-api-dev | > nodemon app
+ctmd-api-dev | 
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+ctmd-pipeline | INFO:reload:waiting for database to start host=db port=5432
+ctmd-db-dev  | 2019-11-07 06:04:58.892 UTC [24] LOG:  database system was shut down at 2019-11-07 05:06:08 UTC
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # Server initialized
+ctmd-pipeline | INFO:reload:database started host=db port=5432
+ctmd-api-dev | [nodemon] 1.19.1
+ctmd-db-dev  | 2019-11-07 06:04:58.901 UTC [1] LOG:  database system is ready to accept connections
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+ctmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+ctmd-api-dev | [nodemon] to restart at any time, enter `rs`
+ctmd-db-dev  | 2019-11-07 06:05:02.453 UTC [31] LOG:  incomplete startup packet
+ctmd-pipeline | INFO:rq.worker:Worker rq:worker:927ddbe78c7b457ea66ded5ea3c57234: started, version 1.1.0
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.978 * DB loaded from append only file: 0.061 seconds
+ctmd-api-dev | [nodemon] watching: *.*
+ctmd-pipeline | INFO:reload:redis started host=redis port=6379
+ctmd-redis   | 1:M 07 Nov 2019 06:04:59.978 * Ready to accept connections
+ctmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] ERROR:  relation "StudyPI" already exists
+ctmd-api-dev | [nodemon] starting `node app.js`
+ctmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
+ctmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] STATEMENT:  create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
+ctmd-api-dev | 
+ctmd-db-dev  |   
+ctmd-pipeline | INFO:rq.worker:*** Listening on default...
+ctmd-api-dev | Shhh... I'm listening on port 3030.
+ctmd-api-dev | 
+ctmd-pipeline | INFO:reload:redis started host=redis port=6379
+ctmd-pipeline | INFO:reload:create_tables=True
+ctmd-pipeline | INFO:rq.worker:Cleaning registries for queue: default
+ctmd-pipeline | INFO:reload:insert_data=False
+ctmd-pipeline | INFO:reload:one_off=False
+ctmd-pipeline | INFO:reload:realod=True
+ctmd-pipeline | INFO:reload:create tables start
+ctmd-pipeline |  * Serving Flask app "server" (lazy loading)
+ctmd-pipeline |  * Environment: production
+ctmd-pipeline |    WARNING: This is a development server. Do not use it in a production deployment.
+ctmd-pipeline |    Use a production WSGI server instead.
+ctmd-pipeline |  * Debug mode: off
+ctmd-pipeline | INFO:werkzeug: * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+ctmd-pipeline | INFO:reload:executing create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
+ctmd-pipeline | 
+ctmd-pipeline | ERROR:reload:pipeline encountered an error when creating tablesrelation "StudyPI" already exists
+ctmd-pipeline | 
+ctmd-frontend-dev | 
+ctmd-frontend-dev | > duke-tic@0.1.0 start /usr/src/app
+ctmd-frontend-dev | > react-scripts start
+ctmd-frontend-dev | 
+ctmd-frontend-dev | Starting the development server...
   .
   .
   .
@@ -316,7 +316,7 @@ Note that the development `frontend-dev` and `api-dev` services start with React
 
 If a new NPM module is installed, the front-end image will need to be rebuilt. If, for example, someone on the project executes `npm install some-tool`, the next time `docker-compose up` is run, you will need to supply the `--build` flag so that `some-tool` is installed on the image before the container spins up.
 
-Alternatively, this can also be done by installing the dependencies within a container. If you received an error in the browser such as `Module not found: Can't resolve '@name-space/module' in '/usr/src/app/src/components/someComponent'`, in which case you can log into the running `pmd-frontend-dev` container and `npm install` it there in (the default location) `/usr/src/app`. Simply executing `docker exec -it pmd-frontend-dev npm install` is a quick, easy way to handle this.
+Alternatively, this can also be done by installing the dependencies within a container. If you received an error in the browser such as `Module not found: Can't resolve '@name-space/module' in '/usr/src/app/src/components/someComponent'`, in which case you can log into the running `ctmd-frontend-dev` container and `npm install` it there in (the default location) `/usr/src/app`. Simply executing `docker exec -it ctmd-frontend-dev npm install` is a quick, easy way to handle this.
 
 ##### Frontend Development
 
@@ -336,11 +336,11 @@ If this is not done, you will see progress/loading spinners when you view the da
 
 ###### REDCap Token
 
-The `pmd-pipeline` container must communicate with the RedCap database, thus the `REDCAP_APPLICATION_TOKEN` token must be set to access its API.
+The `ctmd-pipeline` container must communicate with the RedCap database, thus the `REDCAP_APPLICATION_TOKEN` token must be set to access its API.
 
 ###### Postgres Dump Location
 
-The `pmd-pipeline` container manages taking snapshots of the postgres database in the `pmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`. The backup of data dictionary is also stored at this path.
+The `ctmd-pipeline` container manages taking snapshots of the postgres database in the `ctmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`. The backup of data dictionary is also stored at this path.
 
 ###### HTTP Authentication
 
@@ -434,7 +434,7 @@ Becuase the pipeline container keep track of the database, running docker-compos
 To tinker and test various things, one often needs to log into an individual container with `docker exec`. (This was mentioned earlier when describing the installation of new NPM modules.) To, say, run some database queries inside the database container, we can attach to it with the following command.
 
 ```bash
-docker exec -it pmd-db bash
+docker exec -it ctmd-db bash
 ```
 
 This will plop you inside the container, and you may proceed normally.
@@ -457,8 +457,8 @@ and the running containers will be replaced after the new ones are built.
 
 ## Dependencies
 
-External image on Docker Hub: `zooh/pmd-pipeline-reload:0.2.16` (used by `./docker-compose.prod.yml`).
-The pmd-pipeline-reload:0.2.16 image is built from https://github.com/RENCI/tic-map-pipeline-script.
+External image on Docker Hub: `zooh/ctmd-pipeline-reload:0.2.16` (used by `./docker-compose.prod.yml`).
+The ctmd-pipeline-reload:0.2.16 image is built from https://github.com/RENCI/tic-map-pipeline-script.
 
 ## Trouble-shooting
 - `docker-compose up ... -V ` returns usage
