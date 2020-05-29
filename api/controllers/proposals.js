@@ -164,8 +164,8 @@ const requestedServicesQuery =
         INNER JOIN name ON name.id="Proposal_NewServiceSelection"."serviceSelection" AND name."column"='serviceSelection'
         ORDER BY name.description;`
 
-// /proposals
-exports.list = (req, res) => {
+// function to get proposals and build object for store
+exports.getProposals = new Promise((resolve, reject) => {
     db.task(t => {
         return t.any(proposalsQuery)
             .then(data => {
@@ -196,13 +196,17 @@ exports.list = (req, res) => {
                                             const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
                                             if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
                                         })
-                                        return proposals
+                                        resolve(proposals)
                                     })
                             })
                     })
             })
     })
-        .then(proposals => res.status(200).send(proposals))
+})
+
+// /proposals
+exports.list = (req, res) => {
+    getProposals.then(proposals => res.status(200).send(proposals))
         .catch(error => {
             console.log('ERROR:', error)
             res.status(500).send('There was an error fetching data.')
