@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:13.14.0
 
 RUN apt-get update && apt-get install nano tree -y
 
