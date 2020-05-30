@@ -165,7 +165,7 @@ const requestedServicesQuery =
         ORDER BY name.description;`
 
 // function to get proposals and build object for store
-exports.getProposals = new Promise((resolve, reject) => {
+const getProposals = new Promise((resolve, reject) => {
     db.task(t => {
         return t.any(proposalsQuery)
             .then(data => {
@@ -203,10 +203,12 @@ exports.getProposals = new Promise((resolve, reject) => {
             })
     })
 })
+exports.getProposals = getProposals
 
 // /proposals
 exports.list = (req, res) => {
-    getProposals.then(proposals => res.status(200).send(proposals))
+    getProposals
+        .then(proposals => res.status(200).send(proposals))
         .catch(error => {
             console.log('ERROR:', error)
             res.status(500).send('There was an error fetching data.')
