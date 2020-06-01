@@ -4,6 +4,8 @@ const fs = require('fs')
 const csv = require('csv-parser')
 const lookupFieldName = require('../config/dictionary')
 
+// /api/studies/:id
+
 exports.getProfile = (req, res) => {
     const proposalId = req.params.id
     const query = `SELECT * FROM "StudyProfile" WHERE "ProposalID" = ${ proposalId };`
@@ -23,6 +25,8 @@ exports.getProfile = (req, res) => {
             res.status(500).send('There was an error fetching data.')
         })
 }
+
+// /api/studies/:id/sites
 
 exports.getSites = (req, res) => {
     const proposalId = req.params.id
@@ -62,6 +66,8 @@ exports.getSites = (req, res) => {
             res.status(500).send('There was an error fetching data.')
         })
 }
+
+// /api/studies/:id/enrollment-data
 
 exports.getEnrollmentData = (req, res) => {
     const proposalId = req.params.id
