@@ -9,66 +9,100 @@ const { getProposals } = require('./proposals')
 // /api/graphics/proposals-by-tic
 
 exports.proposalsByTic = (req, res) => {
-    getProposals.then(proposals => {
-        d3n = new D3Node({
-            d3Module: d3,
-        })
-        // Filter proposals
-        proposals = proposals.filter(d => d.assignToInstitution);
+    const statusGroup = status => {
+        switch (status) {
+            case "Approved for Initial Consultation":
+            case "Ready for Initial Consultation":
+            case "Initial Consult in Progress":
+            case "Initial Consult on Hold":
+            case "Initial Consult Complete: Recommend for Comprehensive Consultation":
+            case "Initial Consult Complete: Recommended for Resources":
+            case "Initial Consult Complete: No Further Support Needed":
+                return "Active Initial Consultations"
+    
+            case "Recommend for Comprehensive Consultation":
+            case "Comprehensive Complete - Grant Submitted":
+            case "Comprehensive Consult in Progress":
+            case "Comprehensive Consult on Hold":
+            case "Comprehensive Consult Complete: No Further Support Needed":
+            case "Comprehensive Consult Complete: Grant Submitted (Awaiting Outcome)":
+            case "Comprehensive Consult Complete: Funding Awarded TIC/RIC Support Ongoing":
+            case "Comprehensive Consult Complete":
+            case "Comprehensive Consult Complete: Not Funded (No Further Network Support)":
+            case "Comprehensive Consult Complete: Not Funded (Resubmission pending)":
+                return "Active Comprehensive Consults"
+        
+            case "Ready for Implementation":
+            case "Implementation Ongoing: Planning Phase":
+            case "Implementation Ongoing: Execution Phase":
+            case "Implementation Ongoing: Close Out Phase":
+            case "Implementation Complete":
+            case "Implementation on Hold":
+            case "Implementation: Planning Grant":
+            case "Pilot Ongoing: Planning Phase":
+            case "Pilot Ongoing: Execution Phase":
+            case "Pilot Ongoing: Close Out Phase":
+            case "Pilot Complete":
+            case "Pilot on Hold":
+            case "Demo Ongoing":
+            case "Demo Complete":
+            case "Demo on Hold":
+                return "In Full Implementation"
+        
+            case "Approved for Resource(s)":
+            case "Approved for Resource(s) Pending Receipt of Funding":
+            case "Did Not Receive Funding No Further Network Support":
+            case "Resources Ongoing":
+            case "Resources Complete":
+            case "Resources Pending Award":
+            case "Resource(s) Complete":
+            case "No Longer Providing Resources - Declined by PI":
+                return "Discrete Resources"
+        
+            default:
+                return "Other"
+      }
+    }
+    
+    const colorScale = d3.scaleOrdinal()
+        .domain([
+            "Active Initial Consultations",  
+            "Discrete Resources", 
+            "Active Comprehensive Consults", 
+            "In Full Implementation",
+            "Other"])
+        .range([
+            "#40a5ad",
+            "#b7c6cc",
+            "#4e6889",
+            "#f0f2f4",
+            "#e1f1f2"
+        ])
 
-        // Group by tic and then status
+        getProposals.then(proposals => {
+            d3n = new D3Node({
+                d3Module: d3,
+            })
+            // Filter proposals
+            proposals = proposals.filter(d => d.assignToInstitution)
+
+        // Decorate with status groups
+        proposals.forEach(proposal => {
+          proposal.proposalStatusGroup = statusGroup(proposal.proposalStatus);
+        });
+
+        // Group by tic and then status group
         const tics = d3.nest()
             .key(d => d.assignToInstitution)
-            .key(d => d.proposalStatus)
+            .key(d => d.proposalStatusGroup)
             .entries(proposals);
-
-        // Threshold statuses
-        const threshold = 6;
-        const statuses = [];
-
-        tics.forEach(d => {
-          d.values.forEach(d => {
-            if (d.values.length >= threshold) {
-              if (!statuses.includes(d.key)) {
-                statuses.push(d.key);
-              }
-            }
-          });
-        });
-
-        statuses.sort((a, b) => d3.ascending(a, b));
-
-        tics.forEach(d => {
-          const filteredValues = d.values.reduce((values, value) => {
-            if (statuses.includes(value.key)) {
-              values.push(value);
-            }
-            else {
-              values.find(d => d.key === "Other").values.push(value.value);
-            }
-
-            return values;
-          },[{ key: "Other", values: [] }]);
-
-          d.values = filteredValues;
-        });
-
-        tics.forEach(d => {
-          d.values.sort((a, b) => {
-            return a.key === "Other" ? 1 : b.key === "Other" ? -1 : d3.ascending(a.key, b.key);
-          });
-        });
-
-        // Color scale
-        const colorScale = d3.scaleOrdinal()
-            .domain(statuses)
-            .range(d3.schemeTableau10);
 
         const width = 800;
         const height = 400;
-        const margin = { top: 150, right: 10, bottom: 20, left: 110 };
+        const margin = { top: 10, right: 10, bottom: 20, left: 110 };
+        const legendHeight = 120;
         const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
+        const innerHeight = height - legendHeight - margin.top - margin.bottom;
 
         const xScale = d3.scaleLinear()
             .domain([0, d3.max(tics, d => d3.sum(d.values, d => d.values.length))])
@@ -84,6 +118,10 @@ exports.proposalsByTic = (req, res) => {
         tics.forEach(d => {
           let x = 0;
 
+          d.values.sort((a, b) => {
+            return d3.ascending(colorScale.domain().indexOf(a.key), colorScale.domain().indexOf(b.key));
+          });
+
           d.values.forEach(d => {
             d.x = x;
             x += xScale(d.values.length);
@@ -93,7 +131,7 @@ exports.proposalsByTic = (req, res) => {
         const svg = d3n.createSVG(width, height)
 
         const g = svg.append('g')
-            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+            .attr('transform', 'translate(' + margin.left + ',' + (margin.top + legendHeight) + ')');
 
         // Set up groups
         g.append('g').attr('class', 'labels');
@@ -120,10 +158,11 @@ exports.proposalsByTic = (req, res) => {
             .attr('height', yScale.bandwidth())
             .attr('rx', radius)
             .attr('ry', radius)
-            .style('fill', d => d.key === "Other" ? "#999" : colorScale(d.key))
-            .on("mouseover", d => console.log(d));
+            .style('fill', d => colorScale(d.key))
+           // .style('stroke', d => d.key === "Other" ? '#eee' : null);
+            //.on("mouseover", d => console.log(d));
 
-        // Draw backgrounds
+        // Draw backgrounds    
         svg.select('.backgrounds').selectAll('rect')
             .data(tics)
           .enter().append('rect')      
@@ -133,7 +172,8 @@ exports.proposalsByTic = (req, res) => {
             .attr('height', yScale.bandwidth())
             .attr('rx', radius)
             .attr('ry', radius)
-            .style('fill', "#eee");
+            .style('fill', 'none')
+            .style('stroke', '#eee');
 
         // Draw labels
         svg.select('.labels').selectAll('text')
@@ -153,16 +193,16 @@ exports.proposalsByTic = (req, res) => {
             .call(d3.axisBottom(xScale));
 
         // Draw the legend
-        const items = statuses.concat('Other');
+        const items = colorScale.domain();
 
         const legendYScale = d3.scaleBand()
             .domain(items)
-            .range([0, margin.top])
+            .range([0, legendHeight])
             .paddingInner(0.4)
             .paddingOuter(0);
 
         const item = svg.select('.legend')
-            .attr('transform', 'translate(' + (width - margin.right - legendYScale.bandwidth()) + ')')
+            .attr('transform', 'translate(' + (width - margin.right - legendYScale.bandwidth()) + ',' + margin.top + ')')
           .selectAll(".item")
             .data(items)
           .enter().append('g')
@@ -173,7 +213,7 @@ exports.proposalsByTic = (req, res) => {
             .attr('height', legendYScale.bandwidth())
             .attr('rx', radius)
             .attr('ry', radius)
-            .style('fill', d => d === 'Other' ? '#999' : colorScale(d));
+            .style('fill', d => colorScale(d));
 
         item.append('text')
             .attr('y', legendYScale.bandwidth() / 2)
