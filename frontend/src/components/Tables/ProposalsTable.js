@@ -97,6 +97,10 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.fundingSource,
                 },
                 {
+                    title: 'New Funding Source', field: 'newFundingSource',
+                    hidden: !settings.tables.visibleColumns.newFundingSource,
+                },
+                {
                     title: 'Funding Status', field: 'fundingStatus',
                     hidden: !settings.tables.visibleColumns.fundingStatus,
                 },
@@ -134,6 +138,50 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     title: 'Phase', field: 'phase',
                     hidden: !settings.tables.visibleColumns.phase,
                 },
+                {
+                    title: 'Funding Insitute 1', field: 'fundingInstitute',
+                    hidden: !settings.tables.visibleColumns.fundingInstitute,
+                },
+                {
+                    title: 'Funding Insitute 2', field: 'fundingInstitute2',
+                    hidden: !settings.tables.visibleColumns.fundingInstitute2,
+                },
+                {
+                    title: 'Funding Insitute 3', field: 'fundingInstitute3',
+                    hidden: !settings.tables.visibleColumns.fundingInstitute3,
+                },
+                {
+                    title: 'Funding Source Confirmation', field: 'fundingSourceConfirmation',
+                    hidden: !settings.tables.visibleColumns.fundingSourceConfirmation,
+                },
+                {
+                    title: 'Notable Risk', field: 'notableRisk',
+                    hidden: !settings.tables.visibleColumns.notableRisk,
+                },
+                {
+                    title: 'Number of CTSA Program Hub Sites', field: 'numberCTSAprogHubSites',
+                    hidden: !settings.tables.visibleColumns.numberCTSAprogHubSites,
+                },
+                {
+                    title: 'Number of Sites', field: 'numberSites',
+                    hidden: !settings.tables.visibleColumns.numberSites,
+                },
+
+                {
+                    title: 'Actual Protocol Final Date', field: 'actualProtocolFinalDate',
+                    hidden: !settings.tables.visibleColumns.actualProtocolFinalDate,
+                },
+                {
+                    title: 'Actual Grant Award Date', field: 'actualGrantAwardDate',
+                    hidden: !settings.tables.visibleColumns.actualGrantAwardDate,
+                },
+                {
+                    title: 'Approval Release Diff', field: 'approvalReleaseDiff',
+                    hidden: !settings.tables.visibleColumns.approvalReleaseDiff,
+                },
+
+
+
             ].concat(resources.map(
                 resource => ({
                         title: `Resource: ${ resource }`,

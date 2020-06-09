@@ -73,6 +73,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./api:/usr/src/app
+      - /usr/src/app/node_modules/
     ports:
       - $API_PORT:$API_PORT
     environment:

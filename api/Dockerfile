@@ -12,9 +12,9 @@ ENV PATH /usr/local/node_modules/.bin:$PATH
 
 ENV NODE_ENV development
 
-RUN npm install -g nodemon
+# RUN npm install nodemon
 COPY ./package*.json ./
-RUN npm install -g
+RUN npm install
 
 COPY ./ ./
 
