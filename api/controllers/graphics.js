@@ -18,7 +18,7 @@ exports.proposalsByTic = (req, res) => {
             case "Initial Consult Complete: Recommend for Comprehensive Consultation":
             case "Initial Consult Complete: Recommended for Resources":
             case "Initial Consult Complete: No Further Support Needed":
-                return "Active Initial Consultations"
+                return "Initial Consultations"
     
             case "Recommend for Comprehensive Consultation":
             case "Comprehensive Complete - Grant Submitted":
@@ -30,7 +30,7 @@ exports.proposalsByTic = (req, res) => {
             case "Comprehensive Consult Complete":
             case "Comprehensive Consult Complete: Not Funded (No Further Network Support)":
             case "Comprehensive Consult Complete: Not Funded (Resubmission pending)":
-                return "Active Comprehensive Consults"
+                return "Comprehensive Consults"
         
             case "Ready for Implementation":
             case "Implementation Ongoing: Planning Phase":
@@ -66,9 +66,9 @@ exports.proposalsByTic = (req, res) => {
     
     const colorScale = d3.scaleOrdinal()
         .domain([
-            "Active Initial Consultations",  
+            "Initial Consultations",  
             "Discrete Resources", 
-            "Active Comprehensive Consults", 
+            "Comprehensive Consults", 
             "In Full Implementation",
             "Other"])
         .range([
