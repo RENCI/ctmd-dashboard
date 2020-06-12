@@ -107,3 +107,11 @@ services:
       - api
       - pipeline
     restart: always
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${IPAM_CONFIG_SUBNET}

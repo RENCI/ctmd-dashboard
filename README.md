@@ -198,6 +198,7 @@ Environment variables live in the file `./.env` in the project root. This file c
 - `SCHEDULE_RUN_TIME`: This variable sets the time on the host machine to schedule the database backup process.
 - `AUXILIARY_PATH`: TBA
 - `FILTER_PATH`: This variable defines the location of a CSV file indicating which proposals to filter from the dashboard interface. This file is a one-column CSV and must have the following structure.
+- `IPAM_CONFIG_SUBNET`: This defines the subnet and gateway configurations for the network on which the containers will run.
 
 ```
 ProposalId
