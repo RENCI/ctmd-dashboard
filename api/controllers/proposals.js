@@ -18,13 +18,24 @@ exports.getOne = (req, res) => {
             name8.description AS "phase",
             name9.description AS "fundingSource",
             name10.description AS "fundingInstitute",
+            name11.description AS "fundingInstitute2",
+            name12.description AS "fundingInstitute3",
+            name13.description AS "newFundingSource",
+            name14.description AS "fundingSourceConfirmation",
             "ProposalFunding"."amountAward" AS "fundingAmount",
             CAST("ProposalFunding"."fundingPeriod" AS VARCHAR),
-            CAST("ProposalFunding"."fundingStart" AS VARCHAR),
+            CAST("ProposalFunding"."fundingStart" AS VARCHAR) AS "actualFundingStartDate",
             CAST("PATMeeting"."meetingDate" AS VARCHAR),
             CAST("ProtocolTimelines_estimated"."estimatedStartDateOfFunding" AS VARCHAR) AS "estimatedFundingStartDate",
-            CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR)
-        FROM "Proposal" 
+            CAST("ProtocolTimelines_estimated"."plannedGrantSubmissionDate" AS VARCHAR) AS "plannedGrantSubmissionDate",
+            CAST("ProtocolTimelines_estimated"."actualGrantSubmissionDate" AS VARCHAR) AS "actualGrantSubmissionDate",
+            CAST("ProtocolTimelines_estimated"."actualProtocolFinalDate" AS VARCHAR) AS "actualProtocolFinalDate",
+            CAST("ProtocolTimelines_estimated"."actualGrantAwardDate" AS VARCHAR) AS "actualGrantAwardDate",
+            CAST("ProtocolTimelines_estimated"."approvalReleaseDiff" AS VARCHAR) AS "approvalReleaseDiff",
+            "ProposalDetails"."notableRisk",
+            "ProposalDetails"."numberCTSAprogHubSites",
+            "ProposalDetails"."numberSites"
+        FROM "Proposal"
         INNER JOIN "Submitter" ON "Proposal"."ProposalID" = "Submitter"."ProposalID"
         INNER JOIN "ProposalDetails" ON "Proposal"."ProposalID" = "ProposalDetails"."ProposalID"
         LEFT JOIN "AssignProposal" ON "Proposal"."ProposalID" = "AssignProposal"."ProposalID"
@@ -41,6 +52,10 @@ exports.getOne = (req, res) => {
         LEFT JOIN name name8 ON name8.index = "Proposal"."PhaseOfStudy" AND name8."column" = 'PhaseOfStudy'
         LEFT JOIN name name9 ON name9.index = "ProposalFunding"."fundingSource" AND name9."column" = 'fundingSource'
         LEFT JOIN name name10 ON name10.index = "ProposalFunding"."instituteCenter" AND name10."column" = 'instituteCenter'
+        LEFT JOIN name name11 ON name11.index = "ProposalFunding"."instituteCenter2" AND name11."column" = 'instituteCenter2'
+        LEFT JOIN name name12 ON name12.index = "ProposalFunding"."instituteCenter3" AND name12."column" = 'instituteCenter3'
+        LEFT JOIN name name13 ON name13.index = "ProposalFunding"."newFundingSource" AND name13."column" = 'newFundingSource'
+        LEFT JOIN name name14 ON name14.index = "ProposalFunding"."fundingSourceConfirmation" AND name14."column" = 'fundingSourceConfirmation'
         WHERE "Proposal"."ProposalID"=${ req.params.id }`
     db.any(query)
         .then(data => {
