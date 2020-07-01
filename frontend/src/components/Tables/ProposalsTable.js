@@ -157,6 +157,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 {
                     title: 'Notable Risk', field: 'notableRisk',
                     hidden: !settings.tables.visibleColumns.notableRisk,
+                    render: rowData => rowData.notableRisk ? 'true' : 'false',
                 },
                 {
                     title: 'Number of CTSA Program Hub Sites', field: 'numberCTSAprogHubSites',
