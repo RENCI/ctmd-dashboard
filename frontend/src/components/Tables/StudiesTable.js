@@ -49,7 +49,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
                     hidden: !settings.tables.visibleColumns.therapeuticArea,
                 },
                 {
-                    title: 'Submitting Insitution', field: 'submitterInstitution',
+                    title: 'Submitting Institution', field: 'submitterInstitution',
                     hidden: !settings.tables.visibleColumns.submitterInstitution,
                 },
                 {

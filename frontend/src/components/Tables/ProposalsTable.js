@@ -69,7 +69,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.therapeuticArea,
                 },
                 {
-                    title: 'Submitting Insitution', field: 'submitterInstitution',
+                    title: 'Submitting Institution', field: 'submitterInstitution',
                     hidden: !settings.tables.visibleColumns.submitterInstitution,
                 },
                 {
