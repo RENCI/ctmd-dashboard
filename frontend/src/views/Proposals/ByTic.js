@@ -21,7 +21,7 @@ export const ProposalsByTic = props => {
     
     useEffect(() => {
         if (store.proposals && store.tics) {
-            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] }))
+            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: null, proposals: [] })
             store.proposals.forEach(proposal => {
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
                 if (index >= 0) tics[index].proposals.push(proposal)

@@ -5,7 +5,8 @@ import { useTheme } from '@material-ui/styles'
 
 export const ProposalsPieChart = props => {
     const { proposals, clickHandler, height, sorting } = props
-    const proposalCounts = proposals.map(group => ({ id: group.name, value: group.proposals.length }))
+    const proposalCounts = proposals.map(group => ({ id: group.name|| 'None', value: group.proposals.length }))
+
     const theme = useTheme()
     
     if (sorting === 'alpha') proposalCounts.sort((a, b) => a.id > b.id ? -1 : 1)
