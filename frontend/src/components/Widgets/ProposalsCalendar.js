@@ -74,7 +74,7 @@ export const ProposalsCalendar = props => {
                     >{ year }<MoreIcon/></Button>
                     <Menu id="year-menu" anchorEl={ anchorEl } open={ Boolean(anchorEl) } onClose={ handleClose }>
                         {
-                            [...Array(thisYear - 2016 + 1).keys()].map(i => (
+                            [...Array(thisYear - 2016 + 1).keys()].reverse().map(i => (
                                 <MenuItem key={ i + 2016 } onClick={ handleSelect } value={ i + 2016 }>{ i + 2016 }</MenuItem>
                             ))
                         }
