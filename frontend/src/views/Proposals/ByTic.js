@@ -21,10 +21,15 @@ export const ProposalsByTic = props => {
     
     useEffect(() => {
         if (store.proposals && store.tics) {
-            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: null, proposals: [] })
+            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: 'Unassigned', proposals: [] })
+            const unassignedTicsIndex = tics.findIndex(({ name }) => name === 'Unassigned')
             store.proposals.forEach(proposal => {
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
-                if (index >= 0) tics[index].proposals.push(proposal)
+                if (index >= 0) {
+                    tics[index].proposals.push(proposal)
+                } else {
+                    tics[unassignedTicsIndex].proposals.push(proposal)
+                }
             })
             setProposalsByTic(tics)
         }

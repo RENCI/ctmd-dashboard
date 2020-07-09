@@ -105,7 +105,7 @@ export const ProposalsByTicBarChart = props => {
                     tics[index].proposals.push(proposal)
                 }
             })
-            setProposalGroups(tics.map(tic => ({ name: tic.name || 'None', ...tic.proposals.countBy('proposalStatus') })))
+            setProposalGroups(tics.map(tic => ({ name: tic.name || 'Unassigned', ...tic.proposals.countBy('proposalStatus') })))
         }
     }, [store])
     
