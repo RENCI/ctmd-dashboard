@@ -31,7 +31,8 @@ const statusMap = [
     {
         displayName: 'Comprehensive Consultation Ongoing',
         statuses: [
-            'Approved for Comprehensive Consultation',
+            'Approved for Comprehensive Consultation',,
+            'Comprehensive Consult in Progress'
         ],
     },
     {
@@ -91,13 +92,15 @@ export const ProposalsByTicBarChart = props => {
 
     useEffect(() => {
         if (store.proposals && store.tics) {
-            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] }))
+            const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: null, proposals: [] })
             store.proposals.forEach(proposal => {
                 proposal.proposalStatus = getDisplayName(proposal.proposalStatus)
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
-                if (index >= 0) tics[index].proposals.push(proposal)
+                if (index >= 0) {
+                    tics[index].proposals.push(proposal)
+                }
             })
-            setProposalGroups(tics.map(tic => ({ name: tic.name, ...tic.proposals.countBy('proposalStatus') })))
+            setProposalGroups(tics.map(tic => ({ name: tic.name || 'Other', ...tic.proposals.countBy('proposalStatus') })))
         }
     }, [store])
     
@@ -107,14 +110,14 @@ export const ProposalsByTicBarChart = props => {
         anchor: 'top-right',
         direction: 'column',
         justify: false,
-        translateX: width < 1000 ? 0 : 336,
+        translateX: width < 1000 ? 0 : 450,
         translateY: -32,
         itemsSpacing: 1,
         itemWidth: 20,
-        itemHeight: 20,
+        itemHeight: 15,
         itemDirection: 'right-to-left',
         itemOpacity: 0.75,
-        symbolSize: 20,
+        symbolSize: 15,
         effects: [{
             on: 'hover',
             style: { itemOpacity: 1.0 }
@@ -126,7 +129,7 @@ export const ProposalsByTicBarChart = props => {
             title="Proposals by Application Status"
             subtitle="Grouped by TIC/RIC"
         >
-            <CardContent style={{ height: '450px' }}>
+            <CardContent style={{ height: '550px' }}>
                 {
                     (proposalGroups && store.statuses) ? (
                         <ResponsiveBar
@@ -143,11 +146,11 @@ export const ProposalsByTicBarChart = props => {
                                 )
                             }
                             indexBy="name"
-                            margin={{ top: 32, right: width < 1000 ? 0 : 336, bottom: 24, left: 0 }}
+                            margin={{ top: 32, right: width < 1000 ? 0 : 450, bottom: 24, left: 0 }}
                             padding={ 0.05 }
                             groupMode="stacked"
                             layout="vertical"
-                            height={ 400 }
+                            height={ 500 }
                             colors={ theme.palette.chartColors }
                             colorBy="id"
                             borderColor="inherit:darker(1.6)"
