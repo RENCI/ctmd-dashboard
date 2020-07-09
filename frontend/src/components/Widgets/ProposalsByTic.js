@@ -31,7 +31,7 @@ const statusMap = [
     {
         displayName: 'Comprehensive Consultation Ongoing',
         statuses: [
-            'Approved for Comprehensive Consultation',,
+            'Approved for Comprehensive Consultation',
             'Comprehensive Consult in Progress'
         ],
     },
@@ -65,6 +65,11 @@ const statusMap = [
         statuses: [
             'Withdrawn by PI',
             'Withdrawn by PI post-award',
+        ]
+    },
+    {
+        displayName: 'Other',
+        statuses: [
         ]
     },
 ]
