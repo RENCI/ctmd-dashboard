@@ -3,6 +3,7 @@ import MaterialTable from 'material-table'
 import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
+import { Tooltip, TableCell } from '@material-ui/core'
 
 const defaultPageSizeOptions = [15, 25, 50, 100, 200]
 
@@ -16,6 +17,13 @@ const resources = [
     'Standard Agreements',
     'Other',
 ]
+
+const headerWithTooltip = (title, tooltip) => (
+    <Tooltip title={tooltip} placement='top'>
+        <TableCell className="MTableHeader-header-350">{title}</TableCell>
+    </Tooltip>
+)
+
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     const [settings] = useContext(SettingsContext)
@@ -46,138 +54,170 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     return (
         <MaterialTable
             title={ title || null }
-            components={ components }
+            components={{ ...components }}
             columns={ [
                 {
-                    title: 'ID', field: 'proposalID',
+                    title: headerWithTooltip('ID', 'Proposal ID'),
+                    field: 'proposalID',
                     hidden: !settings.tables.visibleColumns.proposalID,
                 },
                 {
-                    title: 'Proposal Name', field: 'shortTitle',
+                    title: headerWithTooltip('Proposal Name', 'Proposal Name'),
+                    field: 'shortTitle',
                     hidden: !settings.tables.visibleColumns.shortTitle,
                 },
                 {
-                    title: 'PI', field: 'piName',
+                    title: headerWithTooltip('PI', 'Principal Investigator'),
+                    field: 'piName',
                     hidden: !settings.tables.visibleColumns.piName,
                 },
                 {
-                    title: 'Resource Application Status', field: 'proposalStatus',
+                    title: headerWithTooltip('Resource Application Status', 'Resource Application Status'),
+                    field: 'proposalStatus',
                     hidden: !settings.tables.visibleColumns.proposalStatus,
                 },
                 {
-                    title: 'Therapeutic Area', field: 'therapeuticArea',
+                    title: headerWithTooltip('Therapeutic Area', 'Therapeutic Area'),
+                    field: 'therapeuticArea',
                     hidden: !settings.tables.visibleColumns.therapeuticArea,
                 },
                 {
-                    title: 'Submitting Institution', field: 'submitterInstitution',
+                    title: headerWithTooltip('Submitting Institution', 'Submitting Institution'),
+                    field: 'submitterInstitution',
                     hidden: !settings.tables.visibleColumns.submitterInstitution,
                 },
                 {
-                    title: 'Assigned TIC/RIC', field: 'assignToInstitution',
+                    title: headerWithTooltip('Assigned TIC/RIC', 'Assigned TIC/RIC'),
+                    field: 'assignToInstitution',
                     hidden: !settings.tables.visibleColumns.assignToInstitution,
                 },
                 {
-                    title: 'Submission Date', field: 'dateSubmitted',
+                    title: headerWithTooltip('Submission Date', 'Submission Date'),
+                    field: 'dateSubmitted',
                     hidden: !settings.tables.visibleColumns.dateSubmitted, 
                 },
                 {
-                    title: 'PAT Review Date', field: 'meetingDate',
+                    title: headerWithTooltip('PAT Review Date', 'PAT Review Date'),
+                    field: 'meetingDate',
                     hidden: !settings.tables.visibleColumns.meetingDate,
                 },
                 {
-                    title: 'Planned Grant Submission Date', field: 'plannedGrantSubmissionDate',
+                    title: headerWithTooltip('Planned Grant Submission Date', 'Planned Grant Submission Date'),
+                    field: 'plannedGrantSubmissionDate',
                     hidden: !settings.tables.visibleColumns.plannedGrantSubmissionDate,
                 },
                 {
-                    title: 'Actual Grant Submission Date', field: 'actualGrantSubmissionDate',
+                    title: headerWithTooltip('Actual Grant Submission Date', 'Actual Grant Submission Date'),
+                    field: 'actualGrantSubmissionDate',
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
-                    title: 'Funding Source', field: 'fundingSource',
+                    title: headerWithTooltip('Funding Source', 'Funding Source'),
+                    field: 'fundingSource',
                     hidden: !settings.tables.visibleColumns.fundingSource,
                 },
                 {
-                    title: 'New Funding Source', field: 'newFundingSource',
+                    title: headerWithTooltip('New Funding Source', 'New Funding Source'),
+                    field: 'newFundingSource',
                     hidden: !settings.tables.visibleColumns.newFundingSource,
                 },
                 {
-                    title: 'Funding Status', field: 'fundingStatus',
+                    title: headerWithTooltip('Funding Status', 'Funding Status'),
+                    field: 'fundingStatus',
                     hidden: !settings.tables.visibleColumns.fundingStatus,
                 },
                 {
-                    title: 'Grant Award Date', field: 'fundingStart',
+                    title: headerWithTooltip('Grant Award Date', 'Grant Award Date'),
+                    field: 'fundingStart',
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
                 {
-                    title: 'Funding Amount', field: 'fundingAmount',
+                    title: headerWithTooltip('Funding Amount', 'Funding Amount'),
+                    field: 'fundingAmount',
                     hidden: !settings.tables.visibleColumns.fundingAmount,
                 },
                 {
-                    title: 'Funding Period', field: 'fundingPeriod',
+                    title: headerWithTooltip('Funding Period', 'Funding Period'),
+                    field: 'fundingPeriod',
                     hidden: !settings.tables.visibleColumns.fundingPeriod,
                 },
                 {
-                    title: 'Estimated Funding Start Date', field: 'estimatedFundingStartDate',
+                    title: headerWithTooltip('Estimated Funding Start Date', 'Estimated Funding Start Date'),
+                    field: 'estimatedFundingStartDate',
                     hidden: !settings.tables.visibleColumns.estimatedFundingStartDate,
                 },
                 {
-                    title: 'Actual Funding Start Date', field: 'actualFundingStartDate',
+                    title: headerWithTooltip('Actual Funding Start Date', 'Actual Funding Start Date'),
+                    field: 'actualFundingStartDate',
                     hidden: !settings.tables.visibleColumns.actualFundingStartDate,
                 },
                 {
-                    title: 'Approved for Comprehensive Consultation', field: 'approvedForComprehensiveConsultation',
+                    title: headerWithTooltip('Approved for Comprehensive Consultation', 'Approved for Comprehensive Consultation'),
+                    field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
                     render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
                     // filtering: false,
                 },
                 {
-                    title: 'Study Population', field: 'studyPopulation',
+                    title: headerWithTooltip('Study Population', 'Study Population'),
+                    field: 'studyPopulation',
                     hidden: !settings.tables.visibleColumns.studyPopulation,
                 },
                 {
-                    title: 'Phase', field: 'phase',
+                    title: headerWithTooltip('Phase', 'Phase'),
+                    field: 'phase',
                     hidden: !settings.tables.visibleColumns.phase,
                 },
                 {
-                    title: 'Funding Insitute 1', field: 'fundingInstitute',
+                    title: headerWithTooltip('Funding Insitute 1', 'Funding Insitute 1'),
+                    field: 'fundingInstitute',
                     hidden: !settings.tables.visibleColumns.fundingInstitute,
                 },
                 {
-                    title: 'Funding Insitute 2', field: 'fundingInstitute2',
+                    title: headerWithTooltip('Funding Insitute 2', 'Funding Insitute 2'),
+                    field: 'fundingInstitute2',
                     hidden: !settings.tables.visibleColumns.fundingInstitute2,
                 },
                 {
-                    title: 'Funding Insitute 3', field: 'fundingInstitute3',
+                    title: headerWithTooltip('Funding Insitute 3', 'Funding Insitute 3'),
+                    field: 'fundingInstitute3',
                     hidden: !settings.tables.visibleColumns.fundingInstitute3,
                 },
                 {
-                    title: 'Funding Source Confirmation', field: 'fundingSourceConfirmation',
+                    title: headerWithTooltip('Funding Source Confirmation', 'Funding Source Confirmation'),
+                    field: 'fundingSourceConfirmation',
                     hidden: !settings.tables.visibleColumns.fundingSourceConfirmation,
                 },
                 {
-                    title: 'Notable Risk', field: 'notableRisk',
+                    title: headerWithTooltip('Notable Risk', 'Notable Risk'),
+                    field: 'notableRisk',
                     hidden: !settings.tables.visibleColumns.notableRisk,
                     render: rowData => rowData.notableRisk ? 'true' : 'false',
                 },
                 {
-                    title: 'Number of CTSA Program Hub Sites', field: 'numberCTSAprogHubSites',
+                    title: headerWithTooltip('Number of CTSA Program Hub Sites', 'Number of CTSA Program Hub Sites'),
+                    field: 'numberCTSAprogHubSites',
                     hidden: !settings.tables.visibleColumns.numberCTSAprogHubSites,
                 },
                 {
-                    title: 'Number of Sites', field: 'numberSites',
+                    title: headerWithTooltip('Number of Sites', 'Number of Sites'),
+                    field: 'numberSites',
                     hidden: !settings.tables.visibleColumns.numberSites,
                 },
 
                 {
-                    title: 'Actual Protocol Final Date', field: 'actualProtocolFinalDate',
+                    title: headerWithTooltip('Actual Protocol Final Date', 'Actual Protocol Final Date'),
+                    field: 'actualProtocolFinalDate',
                     hidden: !settings.tables.visibleColumns.actualProtocolFinalDate,
                 },
                 {
-                    title: 'Actual Grant Award Date', field: 'actualGrantAwardDate',
+                    title: headerWithTooltip('Actual Grant Award Date', 'Actual Grant Award Date'),
+                    field: 'actualGrantAwardDate',
                     hidden: !settings.tables.visibleColumns.actualGrantAwardDate,
                 },
                 {
-                    title: 'Approval Release Diff', field: 'approvalReleaseDiff',
+                    title: headerWithTooltip('Approval Release Diff', 'Approval Release Diff'),
+                    field: 'approvalReleaseDiff',
                     hidden: !settings.tables.visibleColumns.approvalReleaseDiff,
                 },
 
