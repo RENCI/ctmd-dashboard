@@ -14,6 +14,7 @@ ARG REACT_APP_API_ROOT=$REACT_APP_API_ROOT
 ARG REACT_APP_DATA_API_ROOT=$REACT_APP_DATA_API_ROOT
 
 # Install and cache app dependencies
+RUN apk add git
 COPY package*.json /src/
 RUN npm install
 # Copy in source files
