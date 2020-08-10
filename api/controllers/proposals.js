@@ -199,7 +199,7 @@ const requestedServicesQuery =
 
 // function to get proposals and build object for store
 const getProposals = new Promise((resolve, reject) => {
-    db.task(t => {
+    return db.task(t => {
         return t.any(proposalsQuery)
             .then(data => {
                 const proposals = data.map(prop => ({
@@ -235,6 +235,9 @@ const getProposals = new Promise((resolve, reject) => {
                     })
             })
     })
+    .then(data => { return data })
+    .catch(error => { return error })
+
 })
 exports.getProposals = getProposals
 
