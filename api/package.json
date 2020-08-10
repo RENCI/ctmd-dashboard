@@ -13,14 +13,14 @@
   "dependencies": {
     "axios": "^0.19.2",
     "cors": "^2.8.5",
-    "csv-parser": "^2.3.0",
-    "d3": "^5.15.0",
-    "d3-node": "^2.2.1",
-    "express": "^4.16.4",
+    "csv-parser": "^2.3.3",
+    "d3": "^5.16.0",
+    "d3-node": "^2.2.2",
+    "express": "^4.17.1",
     "multer": "^1.4.2",
     "pg-promise": "^8.5.3"
   },
   "devDependencies": {
-    "nodemon": "^1.18.8"
+    "nodemon": "^2.0.4"
   }
 }
