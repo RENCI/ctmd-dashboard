@@ -16,7 +16,7 @@ services:
     
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: zooh/ctmd-pipeline-reload@sha256:a4686b1dc2baa9b2ce7dc946dae0b6d4053af029d68448f80eabaf1afb1012c8
+    image: zooh/ctmd-pipeline-reload@sha256:67d4570f58b022c2d2010f8d39601b24104f1100ca4cb8ccac693751b8d52424
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -29,6 +29,7 @@ services:
       POSTGRES_DUMP_PATH: /backup
       AUXILIARY_PATH: /auxiliary
       FILTER_PATH: /filter
+      BLOCK_PATH: /block
       RELOAD_SCHEDULE: $RELOAD_SCHEDULE
       RELOAD_DATABASE: $RELOAD_DATABASE
       SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
@@ -39,8 +40,11 @@ services:
       REDIS_LOCK_HOST: redis
       REDIS_LOCK_PORT: 6379
       REDIS_LOCK_DB: 1
-      REDIS_LOCK_EXPIRE: 3600
-      REDIS_LOCK_TIMEOUT: 3600
+      REDIS_LOCK_EXPIRE: 7200
+      REDIS_LOCK_TIMEOUT: 7200
+      TASK_TIME: 7200
+      SPARK_EXECUTOR_MEMORY: 8g
+      SPARK_DRIVER_MEMORY: 8g
       PAUSE: $PAUSE
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
