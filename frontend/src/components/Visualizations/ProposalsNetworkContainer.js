@@ -215,7 +215,7 @@ const ProposalsNetworkContainer = props => {
 
     return (
         proposals.length > 0 ?
-            <Fragment>
+            <>
                 <Controls
                     proposals={ proposals }
                     onChange={ handleControlChange } />
@@ -225,7 +225,7 @@ const ProposalsNetworkContainer = props => {
                     selectedNodes={ selectedNodes }
                     onSelectNodes={ handleSelectNodes }
                     onDeselectNodes={ handleDeselectNodes } />
-            </Fragment>
+            </>
         : <CircularLoader />
     );
 }

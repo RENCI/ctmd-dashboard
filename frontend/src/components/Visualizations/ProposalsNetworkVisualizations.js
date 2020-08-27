@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import { Paragraph } from '../Typography'
 import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
 
@@ -95,10 +96,15 @@ class ProposalsNetworkVisualizations extends Component {
         const sankeyStyle = { width: '600px', flex: '1 0 auto', height: height, overflowY: 'auto' };
 
         return (
-            <div style={outerStyle} ref={div => this.div = div}>
-                <div style={networkStyle} ref={div => this.networkDiv = div}></div>
-                <div style={sankeyStyle} id='sankey' ref={div => this.sankeyDiv = div}></div>
-            </div>
+            <>
+            <Paragraph>
+                Select node types in the legend to show or hide those nodes in the network visualization (left) and Sankey Diagram (right).
+            </Paragraph>
+                <div style={outerStyle} ref={div => this.div = div}>
+                    <div style={networkStyle} ref={div => this.networkDiv = div}></div>
+                    <div style={sankeyStyle} id='sankey' ref={div => this.sankeyDiv = div}></div>
+                </div>
+            </>
         );
     }
 }

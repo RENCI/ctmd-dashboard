@@ -145,10 +145,10 @@ export default function() {
   }
 
   function linkNodes() {
-    if (d3.values(typeActive).length !== nodeTypes.length){
+    if (d3.values(typeActive).length !== nodeTypes.length) {
       typeActive = {};
-      nodeTypes.forEach(d => {
-        typeActive[d] = true;
+      nodeTypes.forEach((d, i) => {
+        typeActive[d] = i < 2;
       });
     }
 
@@ -492,7 +492,7 @@ export default function() {
 
       nodeEnter.append("circle")
           .attr("r", r)
-          .style("fill", d => nodeColorScale(d))
+          .style("fill", d => typeActive[d] ? nodeColorScale(d) : "none")
           .style("stroke", d => nodeColorScale(d))
           .style("stroke-width", 2);
 

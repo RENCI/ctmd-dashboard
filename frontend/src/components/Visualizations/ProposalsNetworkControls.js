@@ -8,6 +8,7 @@ import {
     InputLabel, OutlinedInput,
     Select, MenuItem
 } from '@material-ui/core';
+import { Paragraph } from '../Typography'
 
 const styles = (theme) => ({
     formControl: {
@@ -136,15 +137,20 @@ function ProposalsNetworkControls(props) {
     }
 
     return (
-        <Grid container wrap={'wrap'}>
-            { dropDown("tic", tic, "TIC", "TIC", ticItems, ticLabelRef, ticLabelWidth) }
-            { dropDown("resource", resource, "Resources requested", "resources requested", resourceItems, resourceLabelRef, resourceLabelWidth) }
-            { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
-            { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
-            { dropDown("area", area, "Therapeutic Area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
-            { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
-            { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
-        </Grid>
+        <>
+            <Paragraph>
+                Choose dropdown options to highlight nodes and connections based on those values. 
+            </Paragraph>
+            <Grid container wrap={'wrap'}>
+                { dropDown("tic", tic, "TIC", "TIC", ticItems, ticLabelRef, ticLabelWidth) }
+                { dropDown("resource", resource, "Resources requested", "resources requested", resourceItems, resourceLabelRef, resourceLabelWidth) }
+                { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
+                { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
+                { dropDown("area", area, "Therapeutic Area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
+                { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
+                { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
+            </Grid>
+        </>
     );
 }
 
