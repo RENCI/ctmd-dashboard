@@ -37,6 +37,7 @@ export const defaultSettings = {
             actualProtocolFinalDate: false,
             actualGrantAwardDate: false,
             approvalReleaseDiff: false,
+            covidStudy: false,
         },
         pageSize: 50,
     },

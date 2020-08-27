@@ -6,6 +6,7 @@ exports.getOne = (req, res) => {
             "Proposal"."ShortTitle" as "shortTitle",
             "Proposal"."FullTitle" as "longTitle",
             "Proposal"."ShortDescription" AS "shortDescription",
+            "Proposal"."covidStudy",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
             name.description AS "proposalStatus",
@@ -71,6 +72,7 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             "Proposal"."ShortTitle" as "shortTitle",
             "Proposal"."FullTitle" as "longTitle",
             "Proposal"."ShortDescription" AS "shortDescription",
+            "Proposal"."covidStudy",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
             name.description AS "proposalStatus",
@@ -222,6 +224,8 @@ const getProposals = new Promise((resolve, reject) => {
                                 })
                                 proposals.forEach(proposal => {
                                     proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
+                                    proposal.notableRisk = proposal.notableRisk === true
+                                    proposal.covidStudy = proposal.covidStudy === true
                                 })
                                 return t.any(approvedServicesQuery)
                                     .then(data => {

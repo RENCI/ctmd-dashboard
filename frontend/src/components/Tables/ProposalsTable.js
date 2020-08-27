@@ -155,7 +155,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     title: headerWithTooltip('Approved for Comprehensive Consultation', 'Approved for Comprehensive Consultation'),
                     field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
-                    render: rowData => rowData.approvedForComprehensiveConsultation ? <CheckIcon /> : '',
+                    render: rowData => rowData.approvedForComprehensiveConsultation ? 'true' : 'false',
                     // filtering: false,
                 },
                 {
@@ -220,9 +220,12 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     field: 'approvalReleaseDiff',
                     hidden: !settings.tables.visibleColumns.approvalReleaseDiff,
                 },
-
-
-
+                {
+                    title: headerWithTooltip('COVID Study', 'COVID Study'),
+                    field: 'covidStudy',
+                    hidden: !settings.tables.visibleColumns.covidStudy,
+                    render: rowData => rowData.covidStudy ? 'true' : 'false',
+                },
             ].concat(resources.map(
                 resource => ({
                         title: `Resource: ${ resource }`,
