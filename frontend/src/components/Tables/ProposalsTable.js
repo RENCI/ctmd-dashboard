@@ -5,8 +5,6 @@ import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
 
-const defaultPageSizeOptions = [15, 25, 50, 100, 200]
-
 const resources = [
     'EHR-Based Cohort Assessment',
     'Community Engagement Studio',
@@ -27,18 +25,9 @@ const headerWithTooltip = (title, tooltip) => (
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     const [settings] = useContext(SettingsContext)
-    const [pageSizeOptions, setPageSizeOptions] = useState(defaultPageSizeOptions)
 
     useEffect(() => {
         if (proposals) {
-            // Add length of proposals array as a page size option
-            const newPageSizes = defaultPageSizeOptions.filter(size => size <= proposals.length)
-            if ((proposals.length) > newPageSizes[newPageSizes.length - 1]) {
-                setPageSizeOptions(newPageSizes.concat(proposals.length))
-            } else {
-                setPageSizeOptions(newPageSizes)
-            }
-
             // Add property for each resource to each proposal, identify as requested, approved, or neither
             proposals.forEach(proposal => {
                 resources.forEach(resource => {
@@ -236,13 +225,11 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
             }
             data={ proposals }
             options={{
-                paging: props.paging,
+                paging: false,
                 columnsButton: true,
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                pageSize: settings.tables.pageSize,
-                pageSizeOptions: pageSizeOptions,
                 exportFileName: title,
             }}
             detailPanel={ rowData => <ProposalDetailPanel { ...rowData } />}
