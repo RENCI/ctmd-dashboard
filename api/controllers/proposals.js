@@ -224,8 +224,8 @@ const getProposals = new Promise((resolve, reject) => {
                                 })
                                 proposals.forEach(proposal => {
                                     proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
-                                    proposal.notableRisk = proposal.notableRisk === true
-                                    proposal.covidStudy = proposal.covidStudy === true
+                                    proposal.notableRisk = proposal.notableRisk === true ? 'YES' : ''
+                                    proposal.covidStudy = proposal.covidStudy === true ? 'YES' : ''
                                 })
                                 return t.any(approvedServicesQuery)
                                     .then(data => {
