@@ -4,7 +4,6 @@ import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
-import CustomTableGroupRow from './custom-table-group-row'
 
 const resources = [
     'EHR-Based Cohort Assessment',
