@@ -4,6 +4,7 @@ import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
+import CustomTableGroupRow from './custom-group-row'
 
 const resources = [
     'EHR-Based Cohort Assessment',
@@ -231,6 +232,9 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 filtering: true,
                 grouping: true,
                 exportFileName: title,
+            }}
+            components={{
+                GroupRow: rowData => CustomTableGroupRow(rowData)
             }}
             detailPanel={ rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={ (event, rowData, togglePanel) => togglePanel() }
