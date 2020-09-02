@@ -144,7 +144,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     title: headerWithTooltip('Approved for Comprehensive Consultation', 'Approved for Comprehensive Consultation'),
                     field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
-                    render: rowData => rowData.approvedForComprehensiveConsultation ? 'true' : 'false',
+                    render: rowData => rowData.approvedForComprehensiveConsultation ? 'YES' : '',
                     // filtering: false,
                 },
                 {
@@ -181,7 +181,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     title: headerWithTooltip('Notable Risk', 'Notable Risk'),
                     field: 'notableRisk',
                     hidden: !settings.tables.visibleColumns.notableRisk,
-                    render: rowData => rowData.notableRisk ? 'true' : 'false',
+                    render: rowData => rowData.notableRisk ? 'YES' : '',
                 },
                 {
                     title: headerWithTooltip('Number of CTSA Program Hub Sites', 'Number of CTSA Program Hub Sites'),
@@ -213,7 +213,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     title: headerWithTooltip('COVID Study', 'COVID Study'),
                     field: 'covidStudy',
                     hidden: !settings.tables.visibleColumns.covidStudy,
-                    render: rowData => rowData.covidStudy ? 'true' : 'false',
+                    render: rowData => rowData.covidStudy ? 'YES' : '',
                 },
             ].concat(resources.map(
                 resource => ({
