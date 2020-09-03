@@ -188,9 +188,18 @@ const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",
 const approvedServicesQuery =
     `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
         FROM "Proposal"
-        INNER JOIN "Proposal_ServicesApproved" ON "Proposal"."ProposalID" = "Proposal_ServicesApproved"."ProposalID"
-        INNER JOIN name ON name.id="Proposal_ServicesApproved"."servicesApproved" AND name."column"='servicesApproved'
-        ORDER BY name.description;`
+        INNER JOIN "Proposal_ServicesPatOutcome" ON "Proposal"."ProposalID" = "Proposal_ServicesPatOutcome"."ProposalID"
+        INNER JOIN name ON name.id="Proposal_ServicesPatOutcome"."servicesPatOutcome" AND name."column"='servicesPatOutcome'
+     UNION
+     SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
+        FROM "Proposal"
+        INNER JOIN "Proposal_ServicesPostOutcome" ON "Proposal"."ProposalID" = "Proposal_ServicesPostOutcome"."ProposalID"
+        INNER JOIN name ON name.id="Proposal_ServicesPostOutcome"."servicesPostOutcome" AND name."column"='servicesPostOutcome'
+     EXCEPT
+     SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
+        FROM "Proposal"
+        INNER JOIN "Proposal_RemovedServices" ON "Proposal"."ProposalID" = "Proposal_RemovedServices"."ProposalID"
+        INNER JOIN name ON name.id="Proposal_RemovedServices"."removedServices" AND name."column"='removedServices';`
 
 const requestedServicesQuery =
     `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
