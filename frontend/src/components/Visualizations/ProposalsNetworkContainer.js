@@ -170,33 +170,66 @@ const ProposalsNetworkContainer = props => {
 
     function updateSelectedNodes(selectedNodes, action) {
         let newNodes = [];
+        let proposals = [];
 
         switch (action.type) {
             case 'select':
                 newNodes = !action.nodes ? [] :
                     action.nodes.reduce((p, c) => {
-                        return p.indexOf(c) === -1 ? p.concat(c) : p;
+                        return p.includes(c) ? p : p.concat(c);
                     }, selectedNodes);
+
+                proposals = getProposals(newNodes);
+
                 break;
 
             case 'deselect':
-                newNodes = selectedNodes.filter(d => action.nodes.indexOf(d) === -1);
+                newNodes = selectedNodes.filter(d => !action.nodes.includes(d));
+
+                proposals = getProposals(newNodes);
+
                 break;
 
-            case 'control':
+            case 'control': {
+                const valueArray = Array.isArray(action.value);
+
                 const nonTypeNodes = selectedNodes.filter(d => d.type !== action.name);
-                const node = nodeData.nodes.reduce((p, c) => {
-                  return c.type === action.name && c.name === action.value ? c : p;
-                }, null);
 
-                newNodes = node ? nonTypeNodes.concat(node) : nonTypeNodes;
+                let nodes = valueArray ? 
+                    nodeData.nodes.filter(d => {
+                        return d.type === action.name && action.value.includes(d.name);
+                    }) :
+                    nodeData.nodes.find(d => {
+                        return d.type === action.name && action.value === d.name;
+                    });
+
+                nodes = !nodes ? [] : nodes;
+
+                const tempNodes = nonTypeNodes.concat(nodes);
+                const tempProposals = getProposals(tempNodes);
+
+                if (tempProposals.length > 0) {
+                    newNodes = tempNodes;
+                    proposals = tempProposals;
+                }
+                else {
+                    if (valueArray) {
+                        newNodes = selectedNodes;
+                    }
+                    else {
+                        newNodes = [].concat(nodes);
+                    }
+
+                    proposals = getProposals(newNodes);
+                }
 
                 break;
+            }
 
             default:
         }
 
-        props.onSelectProposals(getProposals(newNodes));
+        props.onSelectProposals(proposals);
 
         return newNodes;
     }
@@ -218,6 +251,7 @@ const ProposalsNetworkContainer = props => {
             <>
                 <Controls
                     proposals={ proposals }
+                    selectedNodes={ selectedNodes }
                     onChange={ handleControlChange } />
                 <Visualizations
                     nodeData={ nodeData }

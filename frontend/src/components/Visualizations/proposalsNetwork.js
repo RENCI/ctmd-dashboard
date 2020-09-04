@@ -36,7 +36,7 @@ export default function() {
 
       // Tooltip
       tip = d3Tip()
-          //.attr("class", "d3-tip")
+          .attr("class", "d3-tip-mod")
           .style("line-height", 1)
           .style("font-weight", "bold")
           .style("font-size", "small")
@@ -44,7 +44,6 @@ export default function() {
           .style("background", "rgba(0, 0, 0, 0.8)")
           .style("color", "#fff")
           .style("border-radius", "2px")
-          .style("pointer-events", "none")
           .html(function(d) {
             switch (d.type) {
               case "pi":
@@ -399,8 +398,8 @@ export default function() {
       const maxLink = d3.max(network.links, d => d.value);
 
       const widthScale = d3.scaleLinear()
-          .domain([1, maxLink])
-          .range([1, radiusRange[0]]);
+          .domain([0.5, radiusScale.domain()[1]])
+          .range([0.5, radiusScale.range()[1] / 2]);
 
       // Bind data for links
       var link = svg.select(".network").selectAll(".link")
@@ -457,20 +456,24 @@ export default function() {
     }
 
     function drawLegend() {
-      var r = 5;
+      const r = 5;
 
-      var yScale = d3.scaleBand()
+      const yScale = d3.scaleBand()
           .domain(nodeTypes)
-          .range([r + 1, (r * 2.5) * (nodeTypes.length + 1)]);
+          .range([r + 1, (r * 3) * (nodeTypes.length + 1)]);
+
+      const labelScale = d3.scaleOrdinal()
+        .domain(["tic", "resource", "status", "org", "area", "pi", "proposal"])
+        .range(["TIC/RIC", "Resources requested", "Status", "CTSA/Organization", "Therapeutic area", "PI", "Proposal"]);
 
       // Bind node type data
-      var node = svg.select(".legend")
+      const node = svg.select(".legend")
           .attr("transform", "translate(" + (r + 1) + ",0)")
       .selectAll(".legendNode")
           .data(nodeTypes);
 
       // Enter
-      var nodeEnter = node.enter().append("g")
+      const nodeEnter = node.enter().append("g")
           .attr("class", "legendNode")
           .attr("transform", d => "translate(0," + yScale(d) + ")")
           .style("pointer-events", "all")
@@ -493,6 +496,8 @@ export default function() {
                 .style("fill", typeActive[d] ? "#666" : "#ccc");
           })
           .on("click", function(d) {
+            d3.event.stopPropagation();
+            
             // Keep at least 2 active
             if (typeActive[d] && d3.values(typeActive).filter(d => d).length <= 2) return;
 
@@ -512,10 +517,10 @@ export default function() {
           .style("stroke-width", 2);
 
       nodeEnter.append("text")
-          .text(d => d)
-          .attr("x", r * 1.5)
+          .text(d => labelScale(d))
+          .attr("x", r * 2)
           .attr("dy", ".35em")
-          .style("fill", "#666")
+          .style("fill", d => typeActive[d] ? "#666" : "#ccc")
           .style("font-size", "small");
 
       // Node exit

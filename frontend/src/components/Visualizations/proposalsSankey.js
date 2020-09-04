@@ -4,7 +4,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  var margin = { top: 100, left: 10, bottom: 5, right: 150 },
+  var margin = { top: 120, left: 10, bottom: 5, right: 150 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -23,12 +23,15 @@ export default function() {
       nodeColorScale = d3.scaleOrdinal(),
       linkOpacityScale = d3.scaleLinear(),
 
+      // Parameters
+      iterations = 6,
+
       // Start with empty selections
       svg = d3.select(),
 
       // Tooltip
       tip = d3Tip()
-          //.attr("class", "d3-tip")
+          .attr("class", "d3-tip-mod")
           .style("line-height", 1)
           .style("font-weight", "bold")
           .style("font-size", "small")
@@ -36,7 +39,6 @@ export default function() {
           .style("background", "rgba(0, 0, 0, 0.8)")
           .style("color", "#fff")
           .style("border-radius", "2px")
-          .style("pointer-events", "none")
           .html(function(d) {
             if (d.source) {
               // Link
@@ -116,7 +118,7 @@ export default function() {
           .data([allNodes]);
 
       // Otherwise create the skeletal chart
-      var svgEnter = svg.enter().append("svg")
+      const svgEnter = svg.enter().append("svg")
           .attr("class", "proposalsSankey")
           .on("click", function() {
             dispatcher.call("selectNodes", this, null);
@@ -124,16 +126,16 @@ export default function() {
 
       svgEnter.append("g").attr("class", "legend");
 
-      var g = svgEnter.append("g")
+      const g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      var groups = ["links", "nodes", "labels"];
+      const groups = ["links", "nodes", "labels"];
 
       g.selectAll("g")
           .data(groups)
         .enter().append("g")
-          .attr("class", function(d) { return d; });
+          .attr("class", d => d);
 
       svg = svgEnter.merge(svg);
 
@@ -225,7 +227,7 @@ export default function() {
     const sankey = d3Sankey.sankey()
         .size([innerWidth(), innerHeight()])
         .nodePadding(2)
-        .iterations(1000);
+        .iterations(iterations);
 
     const {nodes, links} = sankey(network);
 
@@ -353,7 +355,7 @@ export default function() {
             tip.show(d, this);
             dispatcher.call("highlightNodes", this, [d.source, d.target]);
           })
-          .on("mouseout", function(d) {
+          .on("mouseout", function() {
             tip.hide();
             dispatcher.call("highlightNodes", this, null);
           })
@@ -442,20 +444,24 @@ export default function() {
     }
 
     function drawLegend() {
-      var r = 5;
+      const r = 5;
 
-      var yScale = d3.scaleBand()
+      const yScale = d3.scaleBand()
           .domain(nodeTypes)
-          .range([r + 1, (r * 2.5) * (nodeTypes.length + 1)]);
+          .range([r + 1, (r * 3) * (nodeTypes.length + 1)]);
+
+      const labelScale = d3.scaleOrdinal()
+          .domain(["tic", "resource", "status", "org", "area", "pi", "proposal"])
+          .range(["TIC/RIC", "Resources requested", "Status", "CTSA/Organization", "Therapeutic area", "PI", "Proposal"]);
 
       // Bind node type data
-      var node = svg.select(".legend")
+      const node = svg.select(".legend")
           .attr("transform", "translate(" + (r + 1) + ",0)")
       .selectAll(".legendNode")
           .data(nodeTypes);
 
       // Enter
-      var nodeEnter = node.enter().append("g")
+      const nodeEnter = node.enter().append("g")
           .attr("class", "legendNode")
           .attr("transform", d => "translate(0," + yScale(d) + ")")
           .style("pointer-events", "all")
@@ -478,6 +484,8 @@ export default function() {
                 .style("fill", typeActive[d] ? "#666" : "#ccc");
           })
           .on("click", function(d) {
+            d3.event.stopPropagation();
+
             // Keep at least 2 active
             if (typeActive[d] && d3.values(typeActive).filter(d => d).length <= 2) return;
 
@@ -497,10 +505,10 @@ export default function() {
           .style("stroke-width", 2);
 
       nodeEnter.append("text")
-          .text(d => d)
-          .attr("x", r * 1.5)
+          .text(d => labelScale(d))
+          .attr("x", r * 2)
           .attr("dy", ".35em")
-          .style("fill", "#666")
+          .style("fill", d => typeActive[d] ? "#666" : "#ccc")
           .style("font-size", "small");
 
       // Node exit
@@ -675,6 +683,12 @@ export default function() {
   proposalsSankey.colors = function(_) {
     if (!arguments.length) return colors;
     colors = _;
+    return proposalsSankey;
+  };
+
+  proposalsSankey.iterations = function(_) {
+    if (!arguments.length) return iterations;
+    iterations = _;
     return proposalsSankey;
   };
 

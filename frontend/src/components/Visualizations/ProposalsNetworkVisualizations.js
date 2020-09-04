@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import { Paragraph } from '../Typography'
+import { FormLabel } from '@material-ui/core';
 import proposalsNetwork from './proposalsNetwork';
 import proposalsSankey from './proposalsSankey';
 
@@ -58,7 +58,7 @@ class ProposalsNetworkVisualizations extends Component {
     drawVisualization(newProps, oldProps, state) {
         const n = newProps.nodeData.nodes.filter(d => d.type === 'proposal').length;
 
-        const minSankeyNodeHeight = 10;
+        const minSankeyNodeHeight = 15;
         const sankeyHeight = n * minSankeyNodeHeight;
         const networkWidth = this.networkDiv.clientWidth;
         const networkHeight = networkWidth;
@@ -91,18 +91,21 @@ class ProposalsNetworkVisualizations extends Component {
     render() {
         const height = this.networkDiv ? this.networkDiv.clientWidth : '600px';
 
-        const outerStyle = { display: 'flex', flexWrap: 'wrap'};
+        const labelStyle = { marginTop: '15px', marginBottom: '10px' };
+        const outerStyle = { display: 'flex', flexWrap: 'wrap' };
         const networkStyle = { width: '600px', flex: '1 0 auto' };
         const sankeyStyle = { width: '600px', flex: '1 0 auto', height: height, overflowY: 'auto' };
 
         return (
             <>
-            <Paragraph>
-                Select node types in the legend to show or hide those nodes in the network visualization (left) and Sankey Diagram (right).
-            </Paragraph>
-                <div style={outerStyle} ref={div => this.div = div}>
-                    <div style={networkStyle} ref={div => this.networkDiv = div}></div>
-                    <div style={sankeyStyle} id='sankey' ref={div => this.sankeyDiv = div}></div>
+                <div style={ labelStyle }>
+                    <FormLabel >
+                        Select legend items to show or hide proposal categories in the network visualization (left) and Sankey diagram (right) | Mouseover visual elements to highlight, and click to select or deselect, based on the corresponding proposals
+                    </FormLabel>
+                </div>
+                <div style={ outerStyle } ref={ div => this.div = div }>
+                    <div style={ networkStyle } ref={ div => this.networkDiv = div }></div>
+                    <div style={ sankeyStyle } id='sankey' ref={ div => this.sankeyDiv = div }></div>
                 </div>
             </>
         );

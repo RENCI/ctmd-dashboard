@@ -4,11 +4,10 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
     Grid,
-    FormControl, FormHelperText,
+    FormControl, FormHelperText, FormLabel,
     InputLabel, OutlinedInput,
-    Select, MenuItem
+    Select, MenuItem, Checkbox, ListItemText
 } from '@material-ui/core';
-import { Paragraph } from '../Typography'
 
 const styles = (theme) => ({
     formControl: {
@@ -17,8 +16,6 @@ const styles = (theme) => ({
     formControlLabel: {},
     select: {}
 });
-
-const defaultValue = "All";
 
 function getItems(proposals, key) {
     const values = proposals.reduce((p, c) => {
@@ -39,20 +36,11 @@ function getItems(proposals, key) {
         return p;
     }, []).sort();
 
-    return [defaultValue].concat(values).map((value, i) =>
-        <MenuItem key={ i } value={ value }>{ value }</MenuItem>
-    );
+    return key === "requestedServices" ? values :
+        values.map((value, i) => <MenuItem key={ i } value={ value }>{ value }</MenuItem>);
 }
 
-function ProposalsNetworkControls(props) {
-    const [pi, setPI] = useState(defaultValue);
-    const [proposal, setProposal] = useState(defaultValue);
-    const [org, setOrg] = useState(defaultValue);
-    const [tic, setTic] = useState(defaultValue);
-    const [status, setStatus] = useState(defaultValue);
-    const [area, setArea] = useState(defaultValue);
-    const [resource, setResource] = useState(defaultValue);
-
+function ProposalsNetworkControls({ classes, proposals, selectedNodes, onChange }) {
     // There must be a better way than setting these all separately
     const [piLabelWidth, setPILabelWidth] = useState(0);
     const [proposalLabelWidth, setProposalLabelWidth] = useState(0);
@@ -70,8 +58,6 @@ function ProposalsNetworkControls(props) {
     const areaLabelRef = useRef(null);
     const resourceLabelRef = useRef(null);
 
-    const { classes, proposals, onChange } = props;
-
     useEffect(() => {
         setPILabelWidth(ReactDOM.findDOMNode(piLabelRef.current).offsetWidth);
         setProposalLabelWidth(ReactDOM.findDOMNode(proposalLabelRef.current).offsetWidth);
@@ -82,23 +68,7 @@ function ProposalsNetworkControls(props) {
         setResourceLabelWidth(ReactDOM.findDOMNode(resourceLabelRef.current).offsetWidth);
     }, [piLabelRef]);
 
-    function handleSelect(type, event) {
-        const value = event.target.value;
-
-        switch (type) {
-           case "pi": setPI(value); break;
-           case "proposal": setProposal(value); break;
-           case "org": setOrg(value); break;
-           case "tic": setTic(value); break;
-           case "status": setStatus(value); break;
-           case "area": setArea(value); break;
-           case "resource": setResource(value); break;
-           default: console.log("Invalid type: " + type);
-        }
-
-        onChange(type, event);
-    };
-
+    // XXX: Store MenuItems for single selection dropdowns
     const piItems = useMemo(() => getItems(proposals, 'piName'), [proposals]);
     const proposalItems = useMemo(() => getItems(proposals, 'shortTitle'), [proposals]);
     const orgItems = useMemo(() => getItems(proposals, 'submitterInstitution'), [proposals]);
@@ -107,7 +77,13 @@ function ProposalsNetworkControls(props) {
     const statusItems = useMemo(() => getItems(proposals, 'proposalStatus'), [proposals]);
     const resourceItems = useMemo(() => getItems(proposals, 'requestedServices'), [proposals]);
 
-    function dropDown(type, value, label, helperText, items, ref, labelWidth) {
+    function dropDown(type, label, helperText, items, ref, labelWidth) {
+        const multi = type === "resource";
+
+        let values = selectedNodes.filter(node => node.type === type).map(node => node.name);
+        
+        values = multi ? values : values.length > 0 ? values[0] : "";
+
         return (
             <Grid item xs>
                 <FormControl variant="outlined" fullWidth className={ classes.formControl }>
@@ -116,8 +92,9 @@ function ProposalsNetworkControls(props) {
                     </InputLabel>
                     <Select
                         className={ classes.select }
-                        value={ value }
-                        onChange={ e => handleSelect(type, e) }
+                        value={ values }
+                        multiple={ multi }
+                        onChange={ e => onChange(type, e) }
                         input={
                             <OutlinedInput
                                 labelWidth={ labelWidth }
@@ -125,8 +102,17 @@ function ProposalsNetworkControls(props) {
                                 id={ type }
                             />
                         }
+                        renderValue={ multi ? selected => selected.join(', ') : null }
                     >
-                        { items }
+                        { multi ? 
+                            items.map((item, i) => (
+                                <MenuItem key={ i } value={ item }>
+                                    <Checkbox checked={ values.includes(item) } />
+                                    <ListItemText primary={ item } />
+                                </MenuItem>
+                            ))
+                            : items                        
+                        }
                     </Select>
                     <FormHelperText>
                         { "Specify " + helperText + " to highlight." }
@@ -136,19 +122,23 @@ function ProposalsNetworkControls(props) {
         );
     }
 
+    const labelStyle = { marginBottom: '10px' };
+
     return (
         <>
-            <Paragraph>
-                Choose dropdown options to highlight nodes and connections based on those values. 
-            </Paragraph>
+            <div style={ labelStyle }>
+                <FormLabel >
+                    Choose dropdown options to highlight proposal categories and connections
+                </FormLabel>
+            </div>
             <Grid container wrap={'wrap'}>
-                { dropDown("tic", tic, "TIC", "TIC", ticItems, ticLabelRef, ticLabelWidth) }
-                { dropDown("resource", resource, "Resources requested", "resources requested", resourceItems, resourceLabelRef, resourceLabelWidth) }
-                { dropDown("status", status, "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
-                { dropDown("org", org, "Organization", "organization", orgItems, orgLabelRef, orgLabelWidth) }
-                { dropDown("area", area, "Therapeutic Area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
-                { dropDown("pi", pi, "PI", "PI", piItems, piLabelRef, piLabelWidth) }
-                { dropDown("proposal", proposal, "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
+                { dropDown("tic", "TIC/RIC", "TIC/RIC", ticItems, ticLabelRef, ticLabelWidth) }
+                { dropDown("resource", "Resources requested", "resources requested", resourceItems, resourceLabelRef, resourceLabelWidth) }
+                { dropDown("status", "Status", "proposal status", statusItems, statusLabelRef, statusLabelWidth) }
+                { dropDown("org", "CTSA/Organization", "CTSA/organization", orgItems, orgLabelRef, orgLabelWidth) }
+                { dropDown("area", "Therapeutic area", "therapeutic area", areaItems, areaLabelRef, areaLabelWidth) }
+                { dropDown("pi", "PI", "PI", piItems, piLabelRef, piLabelWidth) }
+                { dropDown("proposal", "Proposal", "proposal", proposalItems, proposalLabelRef, proposalLabelWidth) }
             </Grid>
         </>
     );

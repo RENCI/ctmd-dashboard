@@ -20,3 +20,7 @@ a, a:hover, a:active, a:visited {
     flex-direction: column;
     min-height: 100vh;
 }
+
+.d3-tip-mod {
+    pointer-events: none !important;
+}
