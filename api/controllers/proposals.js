@@ -218,6 +218,8 @@ const getProposals = new Promise((resolve, reject) => {
                     profile: null,
                     requestedServices: [],
                     approvedServices: [],
+                    notableRisk: prop.notableRisk === true ? 'YES' : '',
+                    covidStudy: prop.covidStudy === true ? 'YES' : '',
                 }))
                 return t.any(`SELECT * FROM "StudyProfile";`)
                     .then(data => {
@@ -233,8 +235,6 @@ const getProposals = new Promise((resolve, reject) => {
                                 })
                                 proposals.forEach(proposal => {
                                     proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
-                                    proposal.notableRisk = proposal.notableRisk === true ? 'YES' : ''
-                                    proposal.covidStudy = proposal.covidStudy === true ? 'YES' : ''
                                 })
                                 return t.any(approvedServicesQuery)
                                     .then(data => {
