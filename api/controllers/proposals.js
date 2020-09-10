@@ -248,13 +248,8 @@ const getProposals = new Promise((resolve, reject) => {
                     })
             })
     })
-    .then(data => data)
-    .catch(error => {
-        console.log(error)
-        throw new Error(error)
-    })
-
 })
+
 exports.getProposals = getProposals
 
 // /proposals
