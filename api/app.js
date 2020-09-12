@@ -17,7 +17,7 @@ app.listen(PORT, () => {
 
 // Custom Middleware - Route-Logging
 const routeLogger = (req, res, next) => {
-    console.log(`HIT: ${ req.path }`)
+    console.log(`${ (new Date()).toTimeString() } :: HIT ${ req.path }`)
     next()
 }
 app.use(routeLogger)
