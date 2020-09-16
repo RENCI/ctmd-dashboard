@@ -4,8 +4,17 @@ import api from '../Api'
 
 export const StoreContext = React.createContext({})
 
+const initialStore = {
+    proposals: [],
+    organizations: [],
+    tics: [],
+    statuses: [],
+    therapeuticAreas: [],
+    services: [],
+}
+
 export const StoreProvider = ({ children }) => {
-    const [store, setStore] = useState({ })
+    const [store, setStore] = useState(initialStore)
     
     // Endpoints used from API Context Provider
     const promises = [
