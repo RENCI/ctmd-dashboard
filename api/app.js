@@ -59,6 +59,6 @@ app.use('/graphics', require('./routes/graphics'))
 // Auth
 app.post('/auth', (req, res) => {
   const code = req.body.code
-  console.log(`redirecting: https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://dev-ctmd.renci.org/&code=${ code }`)
-  res.redirect(`https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://dev-ctmd.renci.org/&code=${ code }`)
+  console.log(`redirecting: https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://stage-ctmd.renci.org/&code=${ code }`)
+  res.redirect(`https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://stage-ctmd.renci.org/&code=${ code }`)
 })
