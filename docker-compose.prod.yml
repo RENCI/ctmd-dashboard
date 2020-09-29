@@ -88,6 +88,7 @@ services:
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_PORT: $POSTGRES_PORT
+      FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
     depends_on:
       - db
     restart: always

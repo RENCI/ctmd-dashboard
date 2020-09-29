@@ -1,17 +1,26 @@
 import React, { Fragment, useContext, useState } from 'react'
-import { Title } from '../components/Typography'
+import { NavLink } from 'react-router-dom'
+import { AuthContext, SettingsContext } from '../contexts'
+import { Title, Paragraph } from '../components/Typography'
+import { Card, CardHeader, CardContent, CardActions, Button } from '@material-ui/core'
 import {
-    Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
-    Select, OutlinedInput, MenuItem, IconButton
+    Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch, Select, OutlinedInput, MenuItem
 } from '@material-ui/core'
-import { DangerZone, TaskManager } from '../components/Forms'
-import { SettingsContext } from '../contexts/SettingsContext'
+import { ExitToApp as LogoutIcon } from '@material-ui/icons'
 import { CollapsibleCard } from '../components/CollapsibleCard'
-import { Refresh as RefreshIcon } from '@material-ui/icons'
 
-export const SettingsPage = props => {
+const Detail = ({ name, info }) => {
+    return (
+        <Paragraph>
+            <strong>{ name }</strong>: { info } <br/>
+        </Paragraph>
+    )
+}
+
+export const ProfilePage = props => {
+    const { user } = useContext(AuthContext)
+
     const [settings, setSettings] = useContext(SettingsContext)
-    const [taskManagerKey, setTaskManagerKey] = useState(0)
 
     const handleChangeVisibleColumns = event => {
         const visibleColumns = { ...settings.tables.visibleColumns, [event.target.value]: event.target.checked }
@@ -28,29 +37,34 @@ export const SettingsPage = props => {
         setSettings({ ...settings, charts: chartSettings })
     }
 
-    const handleRefreshTaskManager = () => setTaskManagerKey(taskManagerKey === 0 ? 1 : 0)
-
     return (
         <Fragment>
-            <Title>Settings</Title>
-            
+            <Title>
+                <Grid container>
+                    <Grid item style={{ flex: 1 }}>
+                        Profile
+                    </Grid>
+                    <Grid item>
+                        <NavLink to="/logout" style={{ margin: 'auto' }}>
+                            <Button variant="contained" color="primary" startIcon={ <LogoutIcon /> }>Logout</Button>
+                        </NavLink>
+                    </Grid>
+                </Grid>
+            </Title>
+
             <Grid container spacing={ 8 }>
                 <Grid item xs={ 12 }>
-                    <CollapsibleCard
-                        title="Chart Settings"
-                        subheader="Settings affecting how charts are displayed"
-                    >
-                        <FormControl component="fieldset">
-                            <FormLabel component="legend">Hide Empty Groups</FormLabel>
-                            <FormHelperText>
-                                When toggled on, charts rendered throughout the proposal browsing pages will not display groups of proposals that are empty by default.
-                                This option can be changes on an individual basis, but will revert to the default setting when a chart re-renders.
-                            </FormHelperText>
-                            <FormGroup>
-                                <Switch checked={ settings.charts.hideEmptyGroups } onChange={ handleToggleHideEmptyGroups } value="hideEmptyGroups" />
-                            </FormGroup>
-                        </FormControl>
-                    </CollapsibleCard>
+                    <Card>
+                        <CardHeader title="User Details" />
+                        <CardContent>
+                            <Detail name="Username" info={ user.username } />
+                            <Detail name="First Name" info={ user.first_name } />
+                            <Detail name="Last Name" info={ user.last_name } />
+                            <Detail name="Email" info={ user.email } />
+                            <Detail name="Organization" info={ user.organization } />
+                            <Detail name="Access Level" info={ user.access_level } />
+                        </CardContent>
+                    </Card>
                 </Grid>
 
                 <Grid item xs={ 12 }>
@@ -74,8 +88,6 @@ export const SettingsPage = props => {
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.assignToInstitution } onChange={ handleChangeVisibleColumns } value="assignToInstitution" /> } label="Assign TIC/RIC" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.dateSubmitted } onChange={ handleChangeVisibleColumns } value="dateSubmitted" /> } label="Submission Date" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.meetingDate } onChange={ handleChangeVisibleColumns } value="meetingDate" /> } label="PAT Review Date" />
-                                <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.plannedGrantSubmissionDate } onChange={ handleChangeVisibleColumns } value="plannedGrantSubmissionDate" /> } label="Planned Grant Submission Date" />
-                                <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.actualGrantSubmissionDate } onChange={ handleChangeVisibleColumns } value="actualGrantSubmissionDate" /> } label="Actual Grant Submission Date" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.fundingStatus } onChange={ handleChangeVisibleColumns } value="fundingStatus" /> } label="Funding Status" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.fundingSource } onChange={ handleChangeVisibleColumns } value="fundingSource" /> } label="Funding Source" />
                                 <FormControlLabel control={ <Checkbox checked={ settings.tables.visibleColumns.newFundingSource } onChange={ handleChangeVisibleColumns } value="newFundingSource" /> } label="New Funding Source" />
@@ -130,26 +142,23 @@ export const SettingsPage = props => {
 
                 <Grid item xs={ 12 }>
                     <CollapsibleCard
-                        title="Danger Zone"
-                        subheader="Backup, restore, and synchronize data"
+                        title="Chart Settings"
+                        subheader="Settings affecting how charts are displayed"
                     >
-                        <DangerZone />
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Hide Empty Groups</FormLabel>
+                            <FormHelperText>
+                                When toggled on, charts rendered throughout the proposal browsing pages will not display groups of proposals that are empty by default.
+                                This option can be changes on an individual basis, but will revert to the default setting when a chart re-renders.
+                            </FormHelperText>
+                            <FormGroup>
+                                <Switch checked={ settings.charts.hideEmptyGroups } onChange={ handleToggleHideEmptyGroups } value="hideEmptyGroups" />
+                            </FormGroup>
+                        </FormControl>
                     </CollapsibleCard>
                 </Grid>
 
-                <Grid item xs={ 12 }>
-                    <CollapsibleCard
-                        title="Task Manager"
-                        subheader="View tasks and their statuses"
-                        actions={
-                            <IconButton color="secondary" aria-label="Refresh Tasks" onClick={ handleRefreshTaskManager }><RefreshIcon /></IconButton>
-                        }
-                    >
-                        <TaskManager key={ taskManagerKey }/>
-                    </CollapsibleCard>
-                </Grid>
             </Grid>
-
         </Fragment>
     )
 }

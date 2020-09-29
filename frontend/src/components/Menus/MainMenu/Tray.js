@@ -3,7 +3,11 @@ import classnames from 'classnames'
 import { NavLink } from 'react-router-dom'
 import { Paper, Tooltip, IconButton, ClickAwayListener } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { KeyboardArrowRight as ExpandIcon, Settings as SettingsIcon } from '@material-ui/icons'
+import {
+    KeyboardArrowRight as ExpandIcon,
+    AccountCircle as UserIcon,
+    Lock as AdminIcon,
+} from '@material-ui/icons'
 import { Menu } from './Menu'
 import { Brand } from '../../Brand'
 import { useWindowSize } from '../../../hooks'
@@ -40,24 +44,22 @@ const useStyles = makeStyles(theme => ({
         transform: 'rotate(-180deg)',
     },
     flexer: { flex: 1, },
-    settingsButton: {
+    trayButton: {
         marginBottom: theme.spacing(4),
-        '&:hover $settingsIcon': {
-            transform: 'scale(1.1) rotate(120deg)',
+        '&:hover $profileIcon': {
             color: theme.palette.common.white,
         },
     },
-    activeSettingsButton: {
+    activeTrayButton: {
         backgroundColor: theme.palette.extended.eno,
-        '& $settingsIcon': {
-            transform: 'scale(1.1) rotate(120deg)',
+        '& $profileIcon': {
             color: theme.palette.common.white,
         },
-        '&:hover $settingsIcon': {
+        '&:hover $profileIcon': {
             color: theme.palette.common.white,
         }
     },
-    settingsIcon: {
+    trayIcon: {
         color: theme.palette.grey[300],
         transform: 'scale(1)',
         transition: 'color 250ms, transform 500ms ease-out',
@@ -87,9 +89,15 @@ export const MenuTray = ({ children }) => {
                 
                 <div className={ classes.flexer } style={{ pointerEvents: 'none', }}/>
                     
-                <Tooltip title="Dashboard Settings" placement="top">
-                    <IconButton component={ NavLink } to={ '/settings' } className={ classes.settingsButton } activeClassName={ classes.activeSettingsButton }>
-                        <SettingsIcon className={ classes.settingsIcon } />
+                <Tooltip title="User Profile & Settings" placement="right">
+                    <IconButton component={ NavLink } to={ '/profile' } className={ classes.trayButton } activeClassName={ classes.activeTrayButton }>
+                        <UserIcon className={ classes.trayIcon } />
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Data Manager" placement="right">
+                    <IconButton component={ NavLink } to={ '/manage' } className={ classes.trayButton } activeClassName={ classes.activeTrayButton }>
+                        <AdminIcon className={ classes.trayIcon } />
                     </IconButton>
                 </Tooltip>
             </Paper>

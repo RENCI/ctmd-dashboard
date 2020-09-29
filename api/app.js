@@ -1,14 +1,15 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const bodyParser = require('body-parser')
 const db = require('./config/database')
+var multer = require('multer')
 
 // CORS
 app.use(cors())
 
 // Config
 const PORT = process.env.API_PORT || 3030
+const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
 
 // Tell me it's working!
 app.listen(PORT, () => {
@@ -24,7 +25,8 @@ app.use(routeLogger)
 
 // Middleware Parse request body
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
+app.use(multer().array())
 
 // // // Routes // // //
 
@@ -53,3 +55,10 @@ app.use('/template', require('./routes/template-download'))
 
 // Graphics
 app.use('/graphics', require('./routes/graphics'))
+
+// Auth
+app.post('/auth', (req, res) => {
+  const code = req.body.code
+  console.log(`redirecting: https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://dev-ctmd.renci.org/&code=${ code }`)
+  res.redirect(`https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://dev-ctmd.renci.org/&code=${ code }`)
+})

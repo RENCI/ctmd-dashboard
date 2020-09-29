@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { AuthContext } from './contexts'
 import { Switch, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { CssBaseline } from '@material-ui/core'
 import ScrollToTop from './utils/ScrollToTop'
 import { MenuTray } from './components/Menus/MainMenu'
-import { HomePage } from './views/Index'
-import { SettingsPage } from './views/Settings'
 import {
+    HomePage,
+    ManagementPage,
+    CollaborationsPage,
+    CtsasPage,
+    SitesPage,
+    UploadsPage,
+    ProfilePage,
+    LoginPage, ExitPage,
     ProposalsListPage,
     ProposalReportPage,
     ProposalsByOrganization,
@@ -16,12 +23,9 @@ import {
     ProposalsByDate,
     ProposalsByResourcesApproved,
     ProposalsByResourcesRequested,
-} from './views/Proposals'
-import { StudiesListPage, StudyReportPage } from './views/Studies'
-import { CollaborationsPage } from './views/Collaborations'
-import { CtsasPage } from './views/Ctsas'
-import { SitesPage } from './views/Sites'
-import { UploadsPage } from './views/Uploads'
+    StudiesListPage, StudyReportPage,
+} from './views'
+
 import { Footer } from './components/Footer'
 
 const useStyles = makeStyles(theme => ({
@@ -46,40 +50,48 @@ const useStyles = makeStyles(theme => ({
     main: {
         minHeight: '100vh',
         flexGrow: 1,
-        padding: `${ theme.spacing(4) }px`,
-        marginLeft: '6rem',
+        padding: `${ theme.spacing(6) }px`,
+        marginLeft: '5rem',
         transition: 'padding-top 250ms',
     },
 }))
 
 const Dashboard = props => {
     const classes = useStyles()
-    
+    const { user } = useContext(AuthContext)
+
     return (
         <div className={ classes.layout }>
             <MenuTray />
             <main className={ classes.main }>
                 <CssBaseline />
                 <ScrollToTop>
-                    <Switch>
-                        <Route exact path="/settings" component={ SettingsPage }/>
-                        <Route exact path="/proposals/:id(\d+)" component={ ProposalReportPage }/>
-                        <Route exact path="/proposals" component={ ProposalsListPage }/>
-                        <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
-                        <Route path="/proposals/tic" component={ ProposalsByTic }/>
-                        <Route path="/proposals/status" component={ ProposalsByStatus }/>
-                        <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
-                        <Route path="/proposals/date" component={ ProposalsByDate }/>
-                        <Route path="/proposals/resources-requested" component={ ProposalsByResourcesRequested }/>
-                        <Route path="/proposals/resources-approved" component={ ProposalsByResourcesApproved }/>
-                        <Route path="/collaborations" component={ CollaborationsPage }/>
-                        <Route exact path="/studies" component={ StudiesListPage }/>
-                        <Route exact path="/studies/:proposalID" component={ StudyReportPage }/>
-                        <Route path="/ctsas" component={ CtsasPage }/>
-                        <Route path="/sites" component={ SitesPage }/>
-                        <Route path="/uploads" component={ UploadsPage }/>
-                        <Route path="/" component={ HomePage }/>
-                    </Switch>
+                    {
+                        user && (
+                            <Switch>
+                                <Route exact path="/manage" component={ ManagementPage }/>
+                                <Route exact path="/proposals/:id(\d+)" component={ ProposalReportPage }/>
+                                <Route exact path="/proposals" component={ ProposalsListPage }/>
+                                <Route path="/proposals/organization" component={ ProposalsByOrganization }/>
+                                <Route path="/proposals/tic" component={ ProposalsByTic }/>
+                                <Route path="/proposals/status" component={ ProposalsByStatus }/>
+                                <Route path="/proposals/therapeutic-area" component={ ProposalsByTherapeuticArea }/>
+                                <Route path="/proposals/date" component={ ProposalsByDate }/>
+                                <Route path="/proposals/resources-requested" component={ ProposalsByResourcesRequested }/>
+                                <Route path="/proposals/resources-approved" component={ ProposalsByResourcesApproved }/>
+                                <Route path="/collaborations" component={ CollaborationsPage }/>
+                                <Route exact path="/studies" component={ StudiesListPage }/>
+                                <Route exact path="/studies/:proposalID" component={ StudyReportPage }/>
+                                <Route path="/ctsas" component={ CtsasPage }/>
+                                <Route path="/sites" component={ SitesPage }/>
+                                <Route path="/uploads" component={ UploadsPage }/>
+                                <Route path="/profile" component={ ProfilePage }/>
+                                <Route path="/logout" component={ ExitPage }/>
+                                <Route path="/" component={ HomePage }/>
+                            </Switch>
+                        )
+                    }
+                    { !user && <LoginPage /> }
                 </ScrollToTop>
             </main>
             <Footer />
