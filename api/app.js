@@ -10,6 +10,7 @@ app.use(cors())
 // Config
 const PORT = process.env.API_PORT || 3030
 const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
+const DASHBOARD_URL = process.env.DASHBOARD_URL
 
 // Tell me it's working!
 app.listen(PORT, () => {
@@ -59,6 +60,5 @@ app.use('/graphics', require('./routes/graphics'))
 // Auth
 app.post('/auth', (req, res) => {
   const code = req.body.code
-  console.log(`redirecting: https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://stage-ctmd.renci.org/&code=${ code }`)
-  res.redirect(`https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=https://stage-ctmd.renci.org/&code=${ code }`)
+  res.redirect(`https://auth-fuse.renci.org/v1/authorize?apikey=${ AUTH_API_KEY }&provider=venderbilt&return_url=${ DASHBOARD_URL }&code=${ code }`)
 })
