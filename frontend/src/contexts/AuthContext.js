@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('ctmd-user')
-        window.location = 'https://redcap.vanderbilt.edu/plugins/TIN/user/login'
+        window.location = 'https://redcap.vanderbilt.edu/plugins/TIN'
     }
 
     const authenticate = () => {
