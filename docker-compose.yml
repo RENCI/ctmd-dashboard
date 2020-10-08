@@ -9,7 +9,7 @@ services:
     restart: always
     environment: {}
     volumes:
-      - ./redis/data/:/data
+      - /data
     expose:
       - 6379
     command: ["--appendonly", "yes"]
@@ -68,6 +68,8 @@ services:
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_PORT: $POSTGRES_PORT
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
     expose:
       - ${POSTGRES_PORT}
 
