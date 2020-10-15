@@ -24,7 +24,7 @@ export const StoreProvider = ({ children }) => {
         axios.get(api.statuses),
         axios.get(api.therapeuticAreas),
         axios.get(api.resources),
-        // axios.get(api.sites),
+        axios.get(api.sites),
     ]
 
     const fetchStore = async () => {
@@ -38,7 +38,7 @@ export const StoreProvider = ({ children }) => {
                     statuses: response[3].data,
                     therapeuticAreas: response[4].data,
                     services: response[5].data,
-                    // sites: response[6].data,
+                    sites: response[6].data,
                 })
             })
             .catch(error => console.log('Error', error))
