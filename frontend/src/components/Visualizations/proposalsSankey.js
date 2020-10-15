@@ -149,8 +149,8 @@ export default function() {
   function linkNodes() {
     if (d3.values(typeActive).length !== nodeTypes.length) {
       typeActive = {};
-      nodeTypes.forEach((d, i) => {
-        typeActive[d] = i < 2;
+      nodeTypes.forEach(d => {
+        typeActive[d] = d === "tic" || d === "org";
       });
     }
 

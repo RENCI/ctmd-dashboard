@@ -75,7 +75,7 @@ export const ResourceMetrics = props => {
             if (resourceMetrics.Total === 0) resourceMetrics.Total = minValue
             if (resourceMetrics.Funded === 0) resourceMetrics.Funded = minValue
             if (resourceMetrics.Pending === 0) resourceMetrics.Pending = minValue
-            if (resourceMetrics['Not Funded'] === 0) resourceMetrics['Not Funded'] = minValue
+            if (resourceMetrics['Not Funded'] === 0) resourceMetrics['Not Funded'] = minValue           
 
             return resourceMetrics
         })
@@ -160,12 +160,13 @@ export const ResourceMetrics = props => {
                 id === 'Not Funded' ? 'non-funded' :
                 ''
 
-            const proposalText = 'proposal' + (value === 1 ? '' : 's')
+            const valueText = value < 1 ? 0 : value
+            const proposalText = 'proposal' + (value === 1 ? '' : 's')            
 
             return (
                 <ChartTooltip color={ color }>
                     <div><strong>{ indexValue }</strong></div>
-                    <div>{ type + ' ' + value + ' ' + idText + ' ' + proposalText }</div>
+                    <div>{ type + ' ' + valueText + ' ' + idText + ' ' + proposalText }</div>
                 </ChartTooltip>
             )
         }
