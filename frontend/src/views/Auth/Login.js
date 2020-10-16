@@ -22,7 +22,7 @@ export const LoginPage = props => {
                             action={ `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${ window.location.origin }/api/auth` }
                             style={{ display: 'flex', justifyContent: 'center' }} 
                         >
-                            <input type="submit" value="Authenticate" />
+                            <Button type="submit" color="primary" variant="contained">Authenticate</Button>
                         </form>
                     </Paragraph>
                 </CardContent>
