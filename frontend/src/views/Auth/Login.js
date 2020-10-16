@@ -19,7 +19,7 @@ export const LoginPage = props => {
                     <Paragraph center>
                         <form
                             method="POST"
-                            action={ `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${ window.location.host }/auth` }
+                            action={ `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${ window.location.origin }/auth` }
                             style={{ display: 'flex', justifyContent: 'center' }} 
                         >
                             <input type="submit" value="Authenticate" />
