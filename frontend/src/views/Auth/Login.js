@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Title, Paragraph } from '../../components/Typography'
-import { Card, CardHeader, CardContent } from '@material-ui/core'
+import { Card, CardHeader, CardContent, Button } from '@material-ui/core'
 
 export const LoginPage = props => {
     return (
@@ -11,12 +11,18 @@ export const LoginPage = props => {
                 <CardHeader title="Login" />
                 <CardContent>
                     <Paragraph>
-                        Please login to the <a href="https://redcap.vanderbilt.edu/plugins/TIN/user/login" rel="noopener noreferrer">TIN Dashboard</a> to view this page.
-                        Click the button below if you are already logged in to the TIN Dashboard.
+                        You must be logged in to the <a href="https://redcap.vanderbilt.edu/plugins/TIN/user/login" rel="noopener noreferrer">TIN Dashboard</a> to view this site.
+                    </Paragraph>
+                    <Paragraph>
+                        Click the button below to authenticate if you are already logged in to the TIN Dashboard.
                     </Paragraph>
                     <Paragraph center>
-                        <form method="POST" action={ `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${ window.location.host }/auth` }>
-                          <input type="submit" class="login-button" value="Login" />
+                        <form
+                            method="POST"
+                            action={ `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${ window.location.host }/auth` }
+                            style={{ display: 'flex', justifyContent: 'center' }} 
+                        >
+                            <Button type="submit" color="primary" variant="contained">Authenticate</Button>
                         </form>
                     </Paragraph>
                 </CardContent>
