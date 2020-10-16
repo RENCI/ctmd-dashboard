@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState()
     const [localStorageUser, setLocalStorageUser] = useLocalStorage('ctmd-user')
     // const validReferrer = document.referrer.includes('redcap.vanderbilt.edu') || process.env.NODE_ENV === 'development'
-    const validReferrer = document.referrer.includes('redcap.vanderbilt.edu')
+    const validReferrer = true
 
     const logout = () => {
         localStorage.removeItem('ctmd-user')
