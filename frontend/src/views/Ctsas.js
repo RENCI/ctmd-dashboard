@@ -27,7 +27,7 @@ export const CtsasPage = (props) => {
                     <Title>CTSAs</Title>
                 </Grid>
                 <Grid item xs={ 11 } md={ 5 }>
-                    <DropZone endpoint={ api.uploadCtsas } />
+                    <DropZone endpoint={ `${ api.uploadCtsas }/column/ctsaId` } />
                 </Grid>
                 <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
                     <DownloadButton path={ api.download('ctsas')} tooltip="Download CTSAs CSV Template" />
