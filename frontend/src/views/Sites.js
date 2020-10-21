@@ -8,6 +8,7 @@ import { StoreContext } from '../contexts/StoreContext'
 import { Grid } from '@material-ui/core'
 import { DropZone } from '../components/Forms/DropZone'
 import { DownloadButton } from '../components/Forms'
+import { DataUploadHelper } from '../components/Helper'
 
 export const SitesPage = (props) => {
     const [store, ] = useContext(StoreContext)
@@ -90,6 +91,7 @@ export const SitesPage = (props) => {
                 </Grid>
                 <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
                     <DownloadButton path={ api.download('sites')} tooltip="Download Sites CSV Template" />
+                    <DataUploadHelper />
                 </Grid>
             </Grid>
 

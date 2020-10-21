@@ -7,6 +7,7 @@ import { LookupTable } from '../components/Tables/LookupTable'
 import { Grid } from '@material-ui/core'
 import { DropZone } from '../components/Forms/DropZone'
 import { DownloadButton } from '../components/Forms'
+import { DataUploadHelper } from '../components/Helper'
 
 export const CtsasPage = (props) => {
     const [ctsas, setCtsas] = useState(null)
@@ -31,6 +32,7 @@ export const CtsasPage = (props) => {
                 </Grid>
                 <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
                     <DownloadButton path={ api.download('ctsas')} tooltip="Download CTSAs CSV Template" />
+                    <DataUploadHelper />
                 </Grid>
             </Grid>
 
