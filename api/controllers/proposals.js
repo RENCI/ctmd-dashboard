@@ -244,6 +244,7 @@ const getProposals = new Promise((resolve, reject) => {
                                         })
                                         resolve(proposals)
                                     })
+                                    .catch(error => reject(error))
                             })
                     })
             })
