@@ -209,7 +209,7 @@ const requestedServicesQuery =
         ORDER BY name.description;`
 
 // function to get proposals and build object for store
-const getProposals = new Promise((resolve, reject) => {
+const getProposals = () => new Promise((resolve, reject) => {
     db.task(async t => {
         let proposals = await t.any(proposalsQuery)
         if (proposals) {
@@ -223,7 +223,7 @@ const getProposals = new Promise((resolve, reject) => {
             const profiles = await t.any(`SELECT * FROM "StudyProfile";`)
             const requestedServices = await t.any(requestedServicesQuery)
             const approvedServices = await t.any(approvedServicesQuery)
-            
+
             profiles.forEach(profile => {
                 const index = proposals.findIndex(proposal => proposal.proposalID === +profile.ProposalID)
                 if (index >= 0) proposals[index].profile = profile                
@@ -251,7 +251,7 @@ exports.getProposals = getProposals
 
 // /proposals
 exports.list = (req, res) => {
-    getProposals
+    getProposals()
         .then(proposals => res.status(200).send(proposals))
         .catch(error => {
             console.log('ERROR:', error)
