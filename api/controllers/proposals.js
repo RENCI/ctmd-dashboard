@@ -210,45 +210,41 @@ const requestedServicesQuery =
 
 // function to get proposals and build object for store
 const getProposals = new Promise((resolve, reject) => {
-    return db.task(t => {
-        return t.any(proposalsQuery)
-            .then(data => {
-                const proposals = data.map(prop => ({
-                    ...prop,
-                    profile: null,
-                    requestedServices: [],
-                    approvedServices: [],
-                    notableRisk: prop.notableRisk === true ? 'YES' : '',
-                    covidStudy: prop.covidStudy === true ? 'YES' : '',
-                }))
-                return t.any(`SELECT * FROM "StudyProfile";`)
-                    .then(data => {
-                        data.forEach(profile => {
-                            const propIndex = proposals.findIndex(prop => prop.proposalID === +profile.ProposalID)
-                            if (propIndex >= 0) proposals[propIndex].profile = profile
-                        })
-                        return t.any(requestedServicesQuery)
-                            .then(data => {
-                                data.forEach(prop_serv => {
-                                    const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
-                                    if (propIndex >= 0) proposals[propIndex].requestedServices.push(prop_serv.service)
-                                })
-                                proposals.forEach(proposal => {
-                                    proposal.approvedForComprehensiveConsultation = proposal.requestedServices.length === 0
-                                })
-                                return t.any(approvedServicesQuery)
-                                    .then(data => {
-                                        data.forEach(prop_serv => {
-                                            const propIndex = proposals.findIndex(prop => prop.proposalID === prop_serv.proposalID)
-                                            if (propIndex >= 0) proposals[propIndex].approvedServices.push(prop_serv.service)
-                                        })
-                                        resolve(proposals)
-                                    })
-                                    .catch(error => reject(error))
-                            })
-                    })
+    db.task(async t => {
+        let proposals = await t.any(proposalsQuery)
+        if (proposals) {
+            proposals.forEach(proposal => {
+                proposal.profile = null
+                proposal.requestedServices = []
+                proposal.approvedServices = []
+                proposal.notableRisk = proposal.notableRisk === true ? 'YES' : ''
+                proposal.covidStudy = proposal.covidStudy === true ? 'YES' : ''
             })
+            const profiles = await t.any(`SELECT * FROM "StudyProfile";`)
+            const requestedServices = await t.any(requestedServicesQuery)
+            const approvedServices = await t.any(approvedServicesQuery)
+            
+            profiles.forEach(profile => {
+                const index = proposals.findIndex(proposal => proposal.proposalID === +profile.ProposalID)
+                if (index >= 0) proposals[index].profile = profile                
+            })
+
+            requestedServices.forEach(service => {
+                const index = proposals.findIndex(proposal => proposal.proposalID === service.proposalID)
+                if (index >= 0) proposals[index].requestedServices.push(service.service)
+            })
+
+            approvedServices.forEach(service => {
+                const index = proposals.findIndex(proposal => proposal.proposalID === service.proposalID)
+                if (index >= 0) proposals[index].approvedServices.push(service.service)
+            })
+
+            resolve(proposals)
+        } else {
+            reject('No proposals found')
+        }
     })
+
 })
 
 exports.getProposals = getProposals
