@@ -86,7 +86,7 @@ export const SitesPage = (props) => {
                     <Title>Sites</Title>
                 </Grid>
                 <Grid item xs={ 11 } md={ 5 }>
-                    <DropZone endpoint={ `${ api.uploadSites }/column/siteId` } />
+                    <DropZone endpoint={ api.uploadSites } method="PUT" />
                 </Grid>
                 <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
                     <DownloadButton path={ api.download('sites')} tooltip="Download Sites CSV Template" />
