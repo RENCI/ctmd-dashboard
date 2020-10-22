@@ -30,7 +30,7 @@ export const DataUploadHelper = () => {
         <Subsubheading>* Important Note</Subsubheading>
         <Paragraph>
           Uploading data will overwrite existing data.
-          If you need to perserve previously uploaded data in the CTMD, you must export it first using the <ExportIcon /> button.
+          If you need to preserve previously uploaded data in the CTMD, you must export it first using the <ExportIcon /> button.
         </Paragraph>
     </Helper>
   )
