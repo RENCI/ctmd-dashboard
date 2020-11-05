@@ -201,8 +201,18 @@ const approvedServicesQuery =
         INNER JOIN "Proposal_RemovedServices" ON "Proposal"."ProposalID" = "Proposal_RemovedServices"."ProposalID"
         INNER JOIN name ON name.id="Proposal_RemovedServices"."removedServices" AND name."column"='removedServices';`
 
-const requestedServicesQuery =
-    `SELECT CASE name.description WHEN 'Recruitment & Retention Plan' THEN 'Recruitment Plan' WHEN 'Single IRB' THEN 'Operationalize Single IRB' WHEN 'Standard Agreements' THEN 'Operationalize Standard Agreements' ELSE name.description END service, CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service2 FROM "Proposal" INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID" INNER JOIN name ON name.id="Proposal_NewServiceSelection"."serviceSelection" AND name."column"='serviceSelection' ORDER BY name.description;`
+const requestedServicesQuery = `SELECT CASE name.description
+        WHEN 'Recruitment & Retention Plan' THEN 'Recruitment Plan'
+        WHEN 'Single IRB' THEN 'Operationalize Single IRB'
+        WHEN 'Standard Agreements' THEN 'Operationalize Standard Agreements'
+        ELSE name.description END
+        service,
+        CAST("Proposal"."ProposalID" AS INT) as "proposalID",
+        name.description AS service2
+    FROM "Proposal"
+    INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID"
+    INNER JOIN name ON name.id="Proposal_NewServiceSelection"."serviceSelection" AND name."column"='serviceSelection'
+    ORDER BY name.description;`
 
 // function to get proposals and build object for store
 const getProposals = () => new Promise((resolve, reject) => {
@@ -227,7 +237,7 @@ const getProposals = () => new Promise((resolve, reject) => {
 
             requestedServices.forEach(service => {
                 const index = proposals.findIndex(proposal => proposal.proposalID === service.proposalID)
-                if (index >= 0) proposals[index].requestedServices.push(service.service)
+                if (index >= 0) proposals[index].requestedServices.push(service.service2)
             })
 
             approvedServices.forEach(service => {
