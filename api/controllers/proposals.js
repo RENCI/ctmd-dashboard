@@ -202,11 +202,7 @@ const approvedServicesQuery =
         INNER JOIN name ON name.id="Proposal_RemovedServices"."removedServices" AND name."column"='removedServices';`
 
 const requestedServicesQuery =
-    `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
-        FROM "Proposal"
-        INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID"
-        INNER JOIN name ON name.id="Proposal_NewServiceSelection"."serviceSelection" AND name."column"='serviceSelection'
-        ORDER BY name.description;`
+    `SELECT CASE name.description WHEN 'Recruitment & Retention Plan' THEN 'Recruitment Plan' WHEN 'Single IRB' THEN 'Operationalize Single IRB' WHEN 'Standard Agreements' THEN 'Operationalize Standard Agreements' ELSE name.description END service, CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service2 FROM "Proposal" INNER JOIN "Proposal_NewServiceSelection" ON "Proposal"."ProposalID" = "Proposal_NewServiceSelection"."ProposalID" INNER JOIN name ON name.id="Proposal_NewServiceSelection"."serviceSelection" AND name."column"='serviceSelection' ORDER BY name.description;`
 
 // function to get proposals and build object for store
 const getProposals = () => new Promise((resolve, reject) => {
