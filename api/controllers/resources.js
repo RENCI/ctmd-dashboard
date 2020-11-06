@@ -1,7 +1,14 @@
 const db = require('../config/database')
 
 exports.list = (req, res) => {
-    query = `SELECT description FROM name WHERE "column"='serviceSelection' ORDER BY index;`
+    query = `SELECT CASE name.description
+        WHEN 'Recruitment & Retention Plan' THEN 'Recruitment Plan'
+        WHEN 'Single IRB' THEN 'Operationalize Single IRB'
+        WHEN 'Standard Agreements' THEN 'Operationalize Standard Agreements'
+        ELSE name.description END description
+    FROM name WHERE "column"='serviceSelection'
+    ORDER BY index;
+    `
     db.any(query)
         .then(resources => {
             const resourcesArray = [...new Set(resources.map(({ description }) => description))]
