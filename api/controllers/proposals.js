@@ -237,7 +237,7 @@ const getProposals = () => new Promise((resolve, reject) => {
 
             requestedServices.forEach(service => {
                 const index = proposals.findIndex(proposal => proposal.proposalID === service.proposalID)
-                if (index >= 0) proposals[index].requestedServices.push(service.service2)
+                if (index >= 0) proposals[index].requestedServices.push(service.service)
             })
 
             approvedServices.forEach(service => {
