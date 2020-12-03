@@ -458,6 +458,8 @@ and the running containers will be replaced and immediately available on their r
 
 We often need to do a complete redeploy, which involves repopulating the database. This runs into permission errors with the host's previously created data directory. Thus, in this case, delete the `./db/data` directory and run the above command.
 
+To repopulate the database from REDCap, once the application is running and accessible, navigate to the Data Management page. Then find the click the SYNC button.
+
 ## Dependencies
 
 External image on Docker Hub: `zooh/ctmd-pipeline-reload:0.2.16` (used by `./docker-compose.prod.yml`).
