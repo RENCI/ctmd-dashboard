@@ -9,9 +9,10 @@ import {
 } from '@material-ui/icons'
 import { Heading } from '../components/Typography/Typography'
 import StudyMetricsForm from '../components/Forms/StudyMetrics/Metrics'
+import StudyArchitectureForm from '../components/Forms/StudyMetrics/Architecture'
 
 const useStyles = makeStyles(theme => ({
-    card: { },
+    card: {},
     cardActions: {
         flex: '3 0 auto',
     },
@@ -21,10 +22,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const StudyMetricsPage = props => {
-    const [store, ] = useContext(StoreContext)
-    const [currentProposal, setCurrentProposal] = useState(null)
+    const store = { proposals: [{ proposalStatus: "Ready for Implementation" }] }
+    const [currentProposal, setCurrentProposal] = useState({ proposalID: 1,  submitterInstitution: 'Duke'})
     const classes = useStyles()
     const theme = useTheme()
+    console.log("STORE", store)
 
     const handleChangeCurrentProposal = event => {
         setCurrentProposal(store.proposals.find(proposal => proposal.proposalID === event.target.value))
@@ -34,72 +36,72 @@ const StudyMetricsPage = props => {
         <div>
 
             <Heading>Study Metrics</Heading>
-            
-            <Grid container spacing={ 2 * theme.spacing.unit }>
-                <Grid item xs={ 12 }>
+
+            <Grid container spacing={2 * theme.spacing.unit}>
+                <Grid item xs={12}>
                     <Card classes={{ root: classes.card }}>
                         <CardHeader title="Proposal Details" classes={{ action: classes.cardActions }} action={
-                            store.proposals
-                            ? (
-                                <FormControl fullWidth variant="outlined">
-                                    <FormLabel>Select Proposal</FormLabel>
-                                    <Select
-                                        value={ currentProposal ? currentProposal.proposalID : -1 }
-                                        onChange={ handleChangeCurrentProposal }
-                                        input={ <OutlinedInput fullWidth labelWidth={ 0 } name="network" id="network" style={{ marginTop: '16px' }}/> }
-                                    >
-                                        <MenuItem value="-1">-</MenuItem>
-                                        {
-                                            store.proposals
-                                                .filter(proposal => proposal.proposalStatus === 'Ready for Implementation')
-                                                .map(proposal => <MenuItem key={ proposal.proposalID } value={ proposal.proposalID }>{ proposal.shortTitle } (id: { proposal.proposalID })</MenuItem>)
-                                        }
-                                    </Select>
-                                </FormControl>
-                            ) : '...'
-                        }/>
+
+
+                            <FormControl fullWidth variant="outlined">
+                                <FormLabel>Select Proposal</FormLabel>
+                                <Select
+                                    value={currentProposal ? currentProposal.proposalID : -1}
+                                    onChange={handleChangeCurrentProposal}
+                                    input={<OutlinedInput fullWidth labelWidth={0} name="network" id="network" style={{ marginTop: '16px' }} />}
+                                >
+                                    <MenuItem value="-1">-</MenuItem>
+                                    {
+                                        store.proposals
+                                            .filter(proposal => proposal.proposalStatus === 'Ready for Implementation')
+                                            .map(proposal => <MenuItem key={proposal.proposalID} value={proposal.proposalID}>{proposal.shortTitle} (id: {proposal.proposalID})</MenuItem>)
+                                    }
+                                </Select>
+                            </FormControl>
+
+                        } />
                         <CardContent>
                             <CardHeader
-                                subheader={ currentProposal ? (
+                                subheader={currentProposal ? (
                                     <div>
-                                        <div>{ currentProposal.longTitle } </div>
+                                        <div>{currentProposal.longTitle} </div>
                                         <div style={{ opacity: 0.5 }}>
-                                            { `${ currentProposal.shortTitle } (id: ${ currentProposal.proposalID })` }
+                                            {`${currentProposal.shortTitle} (id: ${currentProposal.proposalID})`}
                                         </div>
                                     </div>
-                                ) : null }
+                                ) : null}
                             />
-                            <List className={ classes.details } style={{ opacity: currentProposal ? 1 : 0.25 }}>
+                            <List className={classes.details} style={{ opacity: currentProposal ? 1 : 0.25 }}>
                                 <ListItem>
                                     <Avatar><InstitutionIcon /></Avatar>
                                     <ListItemText
                                         primary="Submitting Institution"
-                                        secondary={ currentProposal ? (currentProposal.submitterInstitution || '-') : '-' }
+                                        secondary={currentProposal ? (currentProposal.submitterInstitution || '-') : '-'}
                                     />
                                 </ListItem>
                                 <ListItem>
                                     <Avatar><TicIcon /></Avatar>
                                     <ListItemText
                                         primary="Assigned TIC/RIC"
-                                        secondary={ currentProposal ? (currentProposal.assignToInstitution || '-') : '-' }
+                                        secondary={currentProposal ? (currentProposal.assignToInstitution || '-') : '-'}
                                     />
                                 </ListItem>
                             </List>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={ 12 }>
+                <Grid item xs={12}>
                     {
                         currentProposal
-                        ? (
-                            <Card>
-                                 <StudyMetricsForm proposalID={ currentProposal.proposalID } />
-                            </Card>
-                        ) : null
+                            ? (
+                                <Card>
+                                    <StudyMetricsForm proposalID={currentProposal.proposalID} />
+                                </Card>
+                            ) : null
                     }
                 </Grid>
             </Grid>
-            
+
         </div>
     )
 }
