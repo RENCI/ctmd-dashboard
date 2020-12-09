@@ -15,3 +15,6 @@ backup/
 auxiliary/
 filter/
 block/
+
+# Mac
+.DS_Store
