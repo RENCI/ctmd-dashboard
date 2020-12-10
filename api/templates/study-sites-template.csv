@@ -1,0 +1,3 @@
+Proposal ID,Principal Investigator,Site Number,Site ID,CTSA ID,Site Name,Date Reg Packet Sent,Date Contract Sent,Date of IRB Submission,Date of IRB Approval,Date of Contract Execution,Last Patient First Visit,Date of Site Activation,First Patient First Visit,Number of Patients Consented,Number of Patients Enrolled,Number of Patients Withdrawn,Number of Patients Expected,Number of Queries,Number of Protocol Deviations
+ProposalID,principalInvestigator,siteNumber,siteId,ctsaId,siteName,dateRegPacketSent,dateContractSent,dateIrbSubmission,dateIrbApproval,dateContractExecution,lpfv,dateSiteActivated,fpfv,patientsConsentedCount,patientsEnrolledCount,patientsWithdrawnCount,patientsExpectedCount,queriesCount,protocolDeviationsCount
+,,,,,,,,,,,,,,,,,,,
