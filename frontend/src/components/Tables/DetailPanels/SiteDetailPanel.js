@@ -115,11 +115,11 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Expected to expected ratio" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
+                            <ListItemText primary="Actual to expected randomized patient ratio" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Ratio of randomized patients" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
+                            <ListItemText primary="Ratio of randomized patients that dropout of the study" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
