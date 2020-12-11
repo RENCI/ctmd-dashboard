@@ -31,6 +31,8 @@ export const SiteDetailPanel = props => {
             : `N/A`
     }
 
+    console.log(lpfv, dateSiteActivated)
+
     return (
         <DetailPanel heading={ siteName } subheading="Coordinating Center Metrics Report">
 
@@ -57,6 +59,29 @@ export const SiteDetailPanel = props => {
                             <ListItemIcon><StarBullet /></ListItemIcon>
                             <ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv || 'N/A' } />
                         </ListItem>
+                        
+
+
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Protocol to FPFV" secondary={ dayCount(dateRegPacketSent, fpfv) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Contract execution time" secondary={ dayCount(dateContractSent, dateContractExecution) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="sIRB Approval time" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Site open to FPFV" secondary={ dayCount(dateSiteActivated, fpfv) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Site open to LPFV" secondary={ dayCount(dateSiteActivated, lpfv)  } />
+                        </ListItem>
                     </List>
                 </Grid>
 
@@ -81,6 +106,28 @@ export const SiteDetailPanel = props => {
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
                             <ListItemText primary="Queries per eCRF page:" secondary={ queriesCount || 'N/A' } />
+                        </ListItem>
+
+
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Percent of consented patients randomized" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount)  } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Expected to expected ratio" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Ratio of randomized patients" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Major Protocol deviations per randomized patients" secondary={ displayRatio( protocolDeviationsCount, patientsEnrolledCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Queries per data elements" secondary={ 'N/A' } />
                         </ListItem>
                     </List>
                 </Grid>
