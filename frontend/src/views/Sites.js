@@ -62,7 +62,8 @@ export const SitesPage = (props) => {
         return studies.length === 0 ? {
             id: site.siteId,
             name: site.siteName,
-            studyName: "None"
+            studyName: "None",
+            ctsaId: site.ctsaId
         } : studies.map(studySite => {
             const enrolled = +studySite.patientsEnrolledCount
             const expected = +studySite.patientsExpectedCount
