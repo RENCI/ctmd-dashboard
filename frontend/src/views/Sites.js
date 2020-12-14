@@ -74,7 +74,8 @@ export const SitesPage = (props) => {
                 studyName: studyNames[studySite.ProposalID],
                 enrolled: enrolled,
                 expected: expected,
-                percentEnrolled: Math.round(percent)
+                percentEnrolled: Math.round(percent),
+                ctsaId: site.ctsaId
             }
         })
       }).flat())
