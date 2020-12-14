@@ -92,8 +92,9 @@ export const StudiesTable = ({ title, studies, paging }) => {
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                pageSize: settings.tables.pageSize,
-                pageSizeOptions: [15, 25, 50, 100, 200],
+                paging: false,
+                // pageSize: settings.tables.pageSize,
+                // pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
                 actionsColumnIndex: -1,
             }}
