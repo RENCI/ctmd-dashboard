@@ -454,7 +454,11 @@ There is no need t tear down the containers if you're building and deploying upd
 $ docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
-and the running containers will be replaced after the new ones are built.
+and the running containers will be replaced and immediately available on their respective ports after they start successfully. 
+
+We often need to do a complete redeploy, which involves repopulating the database. This runs into permission errors with the host's previously created data directory. Thus, in this case, delete the `./db/data` directory and run the above command.
+
+To repopulate the database from REDCap, once the application is running and accessible, navigate to the Data Management page. Then find the click the SYNC button.
 
 ## Dependencies
 
