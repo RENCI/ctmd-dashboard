@@ -2,6 +2,7 @@ import React from 'react'
 import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
+import { formatDate } from '../../../utils/DateFormat'
 
 export const SiteDetailPanel = props => {
     const {
@@ -31,8 +32,6 @@ export const SiteDetailPanel = props => {
             : `N/A`
     }
 
-    console.log(lpfv, dateSiteActivated)
-
     return (
         <DetailPanel heading={ siteName } subheading="Coordinating Center Metrics Report">
 
@@ -53,7 +52,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv || 'N/A' } />
+                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv ? formatDate(fpfv): 'N/A' } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
