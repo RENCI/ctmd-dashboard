@@ -40,7 +40,7 @@ export const SiteDetailPanel = props => {
                     <List>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv } />
+                            <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv ? formatDate(new Date(fpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
