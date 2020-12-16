@@ -52,7 +52,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv ? formatDate(fpfv): 'N/A' } />
+                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv ? formatDate(new Date(fpfv)): 'N/A' } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
