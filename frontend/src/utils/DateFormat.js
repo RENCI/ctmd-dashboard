@@ -5,10 +5,6 @@ const monthNames = [
   "October", "November", "December"
 ]
 
-export const formatDate = date => {
-  var day = date.getDate()
-  var monthIndex = date.getMonth()
-  var year = date.getFullYear()
-
-  return `${ monthNames[monthIndex] } ${ day }, ${ year }`
+export const formatDate = (date, options = {year: 'numeric', month: 'long', day: '2-digit'}, locales='en-US' ) => {
+  return date.toLocaleDateString(locales, options);
 }
