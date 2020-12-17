@@ -224,7 +224,7 @@ exports.proposalsByTic = (req, res) => {
             .style('dominant-baseline', 'central')
             .text(d => d);
 
-        res.status(200).type('application/xml').send(d3n.svgString())
+        res.status(200).type('image/svg+xml').send(d3n.svgString())
     }).catch(error => {
         console.log(error)
         res.status(500).send({ message: error })
