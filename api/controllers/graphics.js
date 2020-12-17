@@ -79,7 +79,7 @@ exports.proposalsByTic = (req, res) => {
             "#e1f1f2"
         ])
 
-        getProposals.then(proposals => {
+        getProposals().then(proposals => {
             d3n = new D3Node({
                 d3Module: d3,
             })
