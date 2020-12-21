@@ -1,6 +1,7 @@
 #db
 pgdata
 .env
+db/data
 
 #api
 node_modules
