@@ -73,15 +73,14 @@ endpoints = {
     dataSync: pipelineApiRoot + 'sync', // POST to sync with redcap
     dataGetTasks: pipelineApiRoot + 'task',
     dataGetTask: jobId => pipelineApiRoot + `task/${ jobId }`,
-    uploadSites: pipelineApiRoot + `table/StudySites`,
-    uploadCtsas: pipelineApiRoot + `table/CTSAs`,
-    uploadStudyProfile: pipelineApiRoot + `table/StudyProfile`,
-    uploadStudySites: pipelineApiRoot + `table/StudySites`,
-    uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation`,
+    uploadSites: pipelineApiRoot + `table/StudySites/column/siteId`,
+    uploadCtsas: pipelineApiRoot + `table/CTSAs/column/ctsaId`,
+    uploadStudyProfile: pipelineApiRoot + `table/StudyProfile/column/ProposalID`,
+    uploadStudySites: pipelineApiRoot + `table/StudySites/column/siteId`,
+    uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation/column/ProposalID`,
 }
 
 // Template Downloads
-
 endpoints = {
     ...endpoints,
     download: tableName => apiRoot + `template/${ tableName }`, // GET to download template

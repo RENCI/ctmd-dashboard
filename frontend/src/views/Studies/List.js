@@ -27,7 +27,7 @@ export const StudiesListPage = props => {
           <Title>Studies</Title>
         </Grid>
         <Grid item xs={ 11 } md={ 5 }>
-          <DropZone endpoint={ api.uploadStudyProfile } method="PUT" />
+          <DropZone endpoint={ api.uploadStudyProfile } method="POST" />
         </Grid>
         <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
           <DownloadButton path={ api.download('study-profile')} tooltip="Download Study Profile CSV Template" />

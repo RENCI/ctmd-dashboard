@@ -62,7 +62,8 @@ export const SitesPage = (props) => {
         return studies.length === 0 ? {
             id: site.siteId,
             name: site.siteName,
-            studyName: "None"
+            studyName: "None",
+            ctsaId: site.ctsaId
         } : studies.map(studySite => {
             const enrolled = +studySite.patientsEnrolledCount
             const expected = +studySite.patientsExpectedCount
@@ -74,7 +75,8 @@ export const SitesPage = (props) => {
                 studyName: studyNames[studySite.ProposalID],
                 enrolled: enrolled,
                 expected: expected,
-                percentEnrolled: Math.round(percent)
+                percentEnrolled: Math.round(percent),
+                ctsaId: site.ctsaId
             }
         })
       }).flat())
@@ -87,7 +89,7 @@ export const SitesPage = (props) => {
                     <Title>Sites</Title>
                 </Grid>
                 <Grid item xs={ 11 } md={ 5 }>
-                    <DropZone endpoint={ api.uploadSites } method="PUT" />
+                    <DropZone endpoint={ api.uploadSites } method="POST" />
                 </Grid>
                 <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
                     <DownloadButton path={ api.download('sites')} tooltip="Download Sites CSV Template" />

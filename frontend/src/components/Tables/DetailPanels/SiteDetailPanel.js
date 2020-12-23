@@ -2,6 +2,7 @@ import React from 'react'
 import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
+import { formatDate } from '../../../utils/DateFormat'
 
 export const SiteDetailPanel = props => {
     const {
@@ -39,7 +40,7 @@ export const SiteDetailPanel = props => {
                     <List>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv } />
+                            <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv ? formatDate(new Date(fpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
@@ -51,11 +52,34 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv || 'N/A' } />
+                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv ? formatDate(new Date(fpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv || 'N/A' } />
+                            <ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv ? formatDate(new Date(lpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
+                        </ListItem>
+                        
+
+
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Protocol to FPFV" secondary={ dayCount(dateRegPacketSent, fpfv) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Contract execution time" secondary={ dayCount(dateContractSent, dateContractExecution) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="sIRB Approval time" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Site open to FPFV" secondary={ dayCount(dateSiteActivated, fpfv) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Site open to LPFV" secondary={ dayCount(dateSiteActivated, lpfv)  } />
                         </ListItem>
                     </List>
                 </Grid>
@@ -81,6 +105,28 @@ export const SiteDetailPanel = props => {
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
                             <ListItemText primary="Queries per eCRF page:" secondary={ queriesCount || 'N/A' } />
+                        </ListItem>
+
+
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Percent of consented patients randomized" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount)  } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Actual to expected randomized patient ratio" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Ratio of randomized patients that dropout of the study" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Major Protocol deviations per randomized patients" secondary={ displayRatio( protocolDeviationsCount, patientsEnrolledCount) } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon><StarBullet /></ListItemIcon>
+                            <ListItemText primary="Queries per data elements" secondary={ 'N/A' } />
                         </ListItem>
                     </List>
                 </Grid>

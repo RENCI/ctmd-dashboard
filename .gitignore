@@ -1,6 +1,7 @@
 #db
 pgdata
 .env
+db/data
 
 #api
 node_modules
@@ -15,3 +16,6 @@ backup/
 auxiliary/
 filter/
 block/
+
+# Mac
+.DS_Store

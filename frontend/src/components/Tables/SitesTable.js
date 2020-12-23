@@ -74,6 +74,8 @@ export const SitesTable = props => {
                     { title: 'Patients Expected', field: 'patientsExpectedCount', hidden: true, },
                     { title: 'Queries Count', field: 'queriesCount', hidden: true, },
                     { title: 'Protocol Deviations', field: 'protocolDeviationsCount', hidden: true, },
+                    // { title: 'Data Elements ', field: 'DataElements', hidden: true, },
+                    // { title: 'Lost to Follow Up', field: 'LostToFollowUp', hidden: true, },
                 ]
             }
             data={ sites }
@@ -83,8 +85,9 @@ export const SitesTable = props => {
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                pageSize: 5,
-                pageSizeOptions: [5, 10, 25],
+                paging: false,
+                // pageSize: 5,
+                // pageSizeOptions: [5, 10, 25],
                 exportFileName: title,
             }}
             detailPanel={rowData => <SiteDetailPanel { ...rowData } />}

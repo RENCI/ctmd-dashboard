@@ -5,6 +5,7 @@ const templates = {
     'enrollment': 'enrollment-template.csv',
     'sites': 'sites-template.csv',
     'study-profile': 'study-profiles-template.csv',
+    'study-sites': 'study-sites-template.csv'
 }
 
 exports.download = (req, res) => {
