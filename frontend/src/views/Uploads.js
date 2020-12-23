@@ -15,7 +15,6 @@ const useStyles = makeStyles(theme => ({
 
 export const UploadsPage = props => {
     const classes = useStyles()
-    console.log(classes)
     return (
         <div>
             <Title>Uploads</Title>
