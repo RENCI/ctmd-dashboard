@@ -7,9 +7,7 @@ import { isSiteActive } from '../../utils/sites'
 
 Array.prototype.chunk = function (size) {
   var chunks = []
-  if (size < 1) {
-    chunks.push(this.slice())
-  } else {
+  if (size > 0) {
     for (var i = 0; i < this.length; i += size) {
       chunks.push(this.slice(i, i + size))
     }
