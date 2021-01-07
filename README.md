@@ -148,6 +148,30 @@ docker-compose version 1.23.2, build 1110ad01
 
 ## Workflow
 
+
+### Setting up your workspace (a.k.a., developer sandbox)
+
+When commiting code to address a ticket in the umbrella repo (http://github.com/RENCI/ctmd), refer to the issue number in the commit message. For example, if closign ticket #100, the commit message might look like the following:
+`git commit -m 'addresses ctmd#100'`
+For the reference to properly link, you'll need to add a client-side hook to your developer sandbox, like so:
+1. From your sandbox/workspace:
+```
+$ cd myrepo
+$ vi .git/hooks/commit-msg
+```
+2. add the following content:
+```
+#!/bin/sh
+projecta_issues_link="https:\/\/github.com\/git\/git\/issues\/"
+
+message=`cat $1 | sed "s/projecta/${projecta_issues_link}/g"`
+echo ${message} > $1
+exit 0
+```
+More information about this client-side hook is here: https://stackoverflow.com/questions/49607683/linking-issues-of-one-git-repository-to-commits-of-another-repository
+
+### Versioning
+
 Although unusual in this type of application, we attempt to follow a [semantic versioning](https://semver.org/) workflow and release pattern.
 
 ### Branching
