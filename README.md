@@ -162,9 +162,9 @@ $ vi .git/hooks/commit-msg
 2. add the following content:
 ```
 #!/bin/sh
-projecta_issues_link="https:\/\/github.com\/git\/git\/issues\/"
+ctmd_issues_link="https://github.com/RENCI/ctmd\/issues\/"
 
-message=`cat $1 | sed "s/projecta/${projecta_issues_link}/g"`
+message=`cat $1 | sed "s/ctmd#/${ctmd_issues_link}/g"`
 echo ${message} > $1
 exit 0
 ```
