@@ -22,12 +22,8 @@ export const ResourceMetrics = props => {
 
     const chartHeight = 200
     const borderWidth = 2
-    const requestedMargin = { top: 150, right: 100, bottom: 130, left: 140 }
+    const requestedMargin = { top: 70, right: 100, bottom: 130, left: 140 }
     const approvedMargin = { top: borderWidth / 2, right: requestedMargin.right, bottom: 20, left: requestedMargin.left }
-
-    const excludeApproved = metric => {
-        return ["Study Planning (Design, Budget, Timelines, Feasibility)"].includes(metric)
-    }
 
     const funded = ({ fundingStatus }) => {
       return fundingStatus === 'Funded (study funded)'
@@ -43,13 +39,6 @@ export const ResourceMetrics = props => {
 
     const approvedResource = (proposal, resource) => {
       return proposal.approvedServices.indexOf(resource) !== -1
-    }
-
-    const metricCompare = (a, b) => {
-        console.log(a);
-        return a.Resource.includes("Study Planning") ? 1 : b.Resource.includes("Study Planning") ? -1 :
-            a.Resource === "Other" ? 1 : b.Resource === "Other" ? -1 :
-            a.Resource < b.Resource ? -1 : b.Resource > b.Resource ? 1 : 0
     }
 
     const createMetrics = hasResource => {
@@ -82,16 +71,14 @@ export const ResourceMetrics = props => {
 
             resourceMetrics['Not Funded'] = notFundedProposals.length
 
-            if (!excludeApproved(resource)) {
-                const minValue = 0.5
-                if (resourceMetrics.Total === 0) resourceMetrics.Total = minValue
-                if (resourceMetrics.Funded === 0) resourceMetrics.Funded = minValue
-                if (resourceMetrics.Pending === 0) resourceMetrics.Pending = minValue
-                if (resourceMetrics['Not Funded'] === 0) resourceMetrics['Not Funded'] = minValue           
-            }
+            const minValue = 0.5
+            if (resourceMetrics.Total === 0) resourceMetrics.Total = minValue
+            if (resourceMetrics.Funded === 0) resourceMetrics.Funded = minValue
+            if (resourceMetrics.Pending === 0) resourceMetrics.Pending = minValue
+            if (resourceMetrics['Not Funded'] === 0) resourceMetrics['Not Funded'] = minValue           
 
             return resourceMetrics
-        }).sort(metricCompare)
+        })
     }
 
     useEffect(() => {
@@ -204,7 +191,7 @@ export const ResourceMetrics = props => {
             subtitle="Proposal Counts for Requested and Approved Resources"
             info="Click on any bar to populate the table with data for the corresponding proposals."
         >
-            <Typography variant="h4">Requested Support</Typography>
+            <Typography variant="h4">Requested Resources</Typography>
             <br/><br/>
             <div style={{ height: chartHeight + requestedMargin.top + requestedMargin.bottom }}>
                 {
@@ -228,14 +215,13 @@ export const ResourceMetrics = props => {
                             axisTop={{
                                 tickSize: 5,
                                 tickPadding: 5,
-                                tickRotation: 30,
+                                tickRotation: 15,
                                 legend: ''
                             } }
                             axisRight={ null }
                             axisLeft={ null }
                             axisBottom={{
                                 renderTick: tick => (
-                                    excludeApproved(tick.key) ? null : 
                                     <line
                                         key={ tick.key }
                                         stroke='#e6e6e6'
