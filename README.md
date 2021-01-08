@@ -154,21 +154,12 @@ docker-compose version 1.23.2, build 1110ad01
 When commiting code to address a ticket in the umbrella repo (http://github.com/RENCI/ctmd), refer to the issue number in the commit message. For example, if closign ticket #100, the commit message might look like the following:
 `git commit -m 'addresses ctmd#100'`
 For the reference to properly link, you'll need to add a client-side hook to your developer sandbox, like so:
-1. From your sandbox/workspace:
-```
-$ cd myrepo
-$ vi .git/hooks/commit-msg
-```
-2. add the following content:
-```
-#!/bin/sh
-# replace ticket number references in ctmd to point to ctmd issues
-ctmd_issues_link="https:\/\/github.com\/RENCI\/ctmd\/issues\/"
 
-message=$(cat "$1" | sed  "s/ ctmd#/ ${ctmd_issues_link}/g")
-echo "${message}" > "$1"
-exit 0
+From your sandbox/workspace:
 ```
+$ cp ctmd.commit-message .git/hooks/commit-msg
+```
+
 More information about this client-side hook is here: https://stackoverflow.com/questions/49607683/linking-issues-of-one-git-repository-to-commits-of-another-repository
 
 ### Versioning
