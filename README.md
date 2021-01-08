@@ -162,10 +162,11 @@ $ vi .git/hooks/commit-msg
 2. add the following content:
 ```
 #!/bin/sh
-projecta_issues_link="https:\/\/github.com\/git\/git\/issues\/"
+# replace ticket number references in ctmd to point to ctmd issues
+ctmd_issues_link="https:\/\/github.com\/RENCI\/ctmd\/issues\/"
 
-message=`cat $1 | sed "s/projecta/${projecta_issues_link}/g"`
-echo ${message} > $1
+message=$(cat "$1" | sed  "s/ ctmd#/ ${ctmd_issues_link}/g")
+echo "${message}" > "$1"
 exit 0
 ```
 More information about this client-side hook is here: https://stackoverflow.com/questions/49607683/linking-issues-of-one-git-repository-to-commits-of-another-repository
