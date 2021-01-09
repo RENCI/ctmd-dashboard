@@ -86,7 +86,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per data elements:" secondary={ 'N/A' } />
+                            <ListItemText primary="Queries per data elements:" secondary={ 'TBD' } />
                         </ListItem>
                     </List>
                 </Grid>
