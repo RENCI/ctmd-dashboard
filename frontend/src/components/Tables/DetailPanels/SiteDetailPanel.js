@@ -38,27 +38,7 @@ export const SiteDetailPanel = props => {
             <Grid container>
                 <Grid item xs={ 12 } md={ 6 }>
                     <List>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv ? formatDate(new Date(fpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Contract approval/execution cycle time:" secondary={ dayCount(dateContractSent, dateContractExecution) } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="IRB approval cycle time (Full Committee Review):" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to accrual to First Patient / First Visit (FPFV):" secondary={ fpfv ? formatDate(new Date(fpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to accrual to Last Patient / First Visit:" secondary={ lpfv ? formatDate(new Date(lpfv), {year: 'numeric', month: '2-digit', day: '2-digit'}, 'en-CA'): 'N/A' } />
-                        </ListItem>
-                        
+                      
 
 
                         <ListItem>
@@ -86,26 +66,6 @@ export const SiteDetailPanel = props => {
 
                 <Grid item xs={ 12 } md={ 6 }>
                     <List>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Randomized patients / Consented patients:" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount) } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Actual vs expected randomized patient ratio:" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Major protocol deviations / randomized patient:" secondary={ displayRatio(protocolDeviationsCount, patientsEnrolledCount) } />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per total data elements:" secondary={ queriesCount || 'N/A' } />
-                        </ListItem>
 
 
                         <ListItem>
@@ -126,7 +86,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per data elements:" secondary={ 'N/A' } />
+                            <ListItemText primary="Queries per data elements:" secondary={ 'TBD' } />
                         </ListItem>
                     </List>
                 </Grid>
