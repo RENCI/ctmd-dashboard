@@ -51,7 +51,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.proposalID,
                 },
                 {
-                    title: headerWithTooltip('Proposal Name', 'Proposal Name'),
+                    title: headerWithTooltip('Proposal Name', 'Short title of the TIN project proposal'),
                     field: 'shortTitle',
                     hidden: !settings.tables.visibleColumns.shortTitle,
                 },
@@ -61,32 +61,32 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.piName,
                 },
                 {
-                    title: headerWithTooltip('Resource Application Status', 'Resource Application Status'),
+                    title: headerWithTooltip('Proposal Status', 'Proposal Status'),
                     field: 'proposalStatus',
                     hidden: !settings.tables.visibleColumns.proposalStatus,
                 },
                 {
-                    title: headerWithTooltip('Therapeutic Area', 'Therapeutic Area'),
+                    title: headerWithTooltip('Therapeutic Area', 'Therapeutic area of the study'),
                     field: 'therapeuticArea',
                     hidden: !settings.tables.visibleColumns.therapeuticArea,
                 },
                 {
-                    title: headerWithTooltip('Submitting Institution', 'Submitting Institution'),
+                    title: headerWithTooltip('Submitting Institution', 'Submitter's organization name'),
                     field: 'submitterInstitution',
                     hidden: !settings.tables.visibleColumns.submitterInstitution,
                 },
                 {
-                    title: headerWithTooltip('Assigned TIC/RIC', 'Assigned TIC/RIC'),
+                    title: headerWithTooltip('Assigned TIC/RIC', 'TIC/RIC to which the study is assigned to carry out the consultation'),
                     field: 'assignToInstitution',
                     hidden: !settings.tables.visibleColumns.assignToInstitution,
                 },
                 {
-                    title: headerWithTooltip('Submission Date', 'Submission Date'),
+                    title: headerWithTooltip('Submission Date', 'Date proposal was submitted to TIN'),
                     field: 'dateSubmitted',
                     hidden: !settings.tables.visibleColumns.dateSubmitted, 
                 },
                 {
-                    title: headerWithTooltip('PAT Review Date', 'PAT Review Date'),
+                    title: headerWithTooltip('PAT Review Date', 'Proposal Assessment Team Review Date'),
                     field: 'meetingDate',
                     hidden: !settings.tables.visibleColumns.meetingDate,
                 },
@@ -101,7 +101,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
-                    title: headerWithTooltip('Funding Source', 'Funding Source'),
+                    title: headerWithTooltip('Funding Source', 'Current funding source of the study/trial'),
                     field: 'fundingSource',
                     hidden: !settings.tables.visibleColumns.fundingSource,
                 },
@@ -111,27 +111,27 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.newFundingSource,
                 },
                 {
-                    title: headerWithTooltip('Funding Status', 'Funding Status'),
+                    title: headerWithTooltip('Funding Status', 'New Funding Status'),
                     field: 'fundingStatus',
                     hidden: !settings.tables.visibleColumns.fundingStatus,
                 },
                 {
-                    title: headerWithTooltip('Grant Award Date', 'Grant Award Date'),
+                    title: headerWithTooltip('Grant Award Date', 'Actual Grant Award Date'),
                     field: 'fundingStart',
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
                 {
-                    title: headerWithTooltip('Funding Amount', 'Funding Amount'),
+                    title: headerWithTooltip('Funding Amount', 'Total amount awarded for the study'),
                     field: 'fundingAmount',
                     hidden: !settings.tables.visibleColumns.fundingAmount,
                 },
                 {
-                    title: headerWithTooltip('Funding Period', 'Funding Period'),
+                    title: headerWithTooltip('Funding Period', 'Total duration of the funding period'),
                     field: 'fundingPeriod',
                     hidden: !settings.tables.visibleColumns.fundingPeriod,
                 },
                 {
-                    title: headerWithTooltip('Estimated Funding Start Date', 'Estimated Funding Start Date'),
+                    title: headerWithTooltip('Estimated Funding Start Date', 'Projected/Estimated Funding Start Date'),
                     field: 'estimatedFundingStartDate',
                     hidden: !settings.tables.visibleColumns.estimatedFundingStartDate,
                 },
@@ -141,43 +141,43 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.actualFundingStartDate,
                 },
                 {
-                    title: headerWithTooltip('Approved for Comprehensive Consultation', 'Approved for Comprehensive Consultation'),
+                    title: headerWithTooltip('Recommend for Comprehensive Consultation', 'Recommend for Comprehensive Consultation'),
                     field: 'approvedForComprehensiveConsultation',
                     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
                     // filtering: false,
                 },
                 {
-                    title: headerWithTooltip('Study Population', 'Study Population'),
+                    title: headerWithTooltip('Study Population', 'Study Population Category'),
                     field: 'studyPopulation',
                     hidden: !settings.tables.visibleColumns.studyPopulation,
                 },
                 {
-                    title: headerWithTooltip('Phase', 'Phase'),
+                    title: headerWithTooltip('Phase', 'Study Phase'),
                     field: 'phase',
                     hidden: !settings.tables.visibleColumns.phase,
                 },
                 {
-                    title: headerWithTooltip('Funding Insitute 1', 'Funding Insitute 1'),
+                    title: headerWithTooltip('Funding Insitute 1', 'Institute/Center for first funding source'),
                     field: 'fundingInstitute',
                     hidden: !settings.tables.visibleColumns.fundingInstitute,
                 },
                 {
-                    title: headerWithTooltip('Funding Insitute 2', 'Funding Insitute 2'),
+                    title: headerWithTooltip('Funding Insitute 2', 'Insitute/Center for second funding source'),
                     field: 'fundingInstitute2',
                     hidden: !settings.tables.visibleColumns.fundingInstitute2,
                 },
                 {
-                    title: headerWithTooltip('Funding Insitute 3', 'Funding Insitute 3'),
+                    title: headerWithTooltip('Funding Insitute 3', 'Insitute/Center for third funding source'),
                     field: 'fundingInstitute3',
                     hidden: !settings.tables.visibleColumns.fundingInstitute3,
                 },
                 {
-                    title: headerWithTooltip('Funding Source Confirmation', 'Funding Source Confirmation'),
+                    title: headerWithTooltip('Funding Source Confirmation', 'Confirm whether the anticipated funding source is same or different'),
                     field: 'fundingSourceConfirmation',
                     hidden: !settings.tables.visibleColumns.fundingSourceConfirmation,
                 },
                 {
-                    title: headerWithTooltip('Notable Risk', 'Notable Risk'),
+                    title: headerWithTooltip('Notable Risk', 'Is there an identified risk?'),
                     field: 'notableRisk',
                     hidden: !settings.tables.visibleColumns.notableRisk,
                 },
@@ -187,7 +187,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.numberCTSAprogHubSites,
                 },
                 {
-                    title: headerWithTooltip('Number of Sites', 'Number of Sites'),
+                    title: headerWithTooltip('Number of Sites', 'Estimated number of Sites'),
                     field: 'numberSites',
                     hidden: !settings.tables.visibleColumns.numberSites,
                 },
@@ -203,12 +203,12 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.actualGrantAwardDate,
                 },
                 {
-                    title: headerWithTooltip('Approval Release Diff', 'Approval Release Diff'),
+                    title: headerWithTooltip('Approval Release Diff', 'Difference between PAT approval and actual release of funds'),
                     field: 'approvalReleaseDiff',
                     hidden: !settings.tables.visibleColumns.approvalReleaseDiff,
                 },
                 {
-                    title: headerWithTooltip('COVID Study', 'COVID Study'),
+                    title: headerWithTooltip('COVID Study', 'Is this a COVID related study?'),
                     field: 'covidStudy',
                     hidden: !settings.tables.visibleColumns.covidStudy,
                 },
@@ -216,9 +216,9 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 resource => ({
                         title: `Resource: ${ resource }`,
                         field: resource,
-                        hidden: !settings.tables.visibleColumns.resources,
-                    })
-                ))
+                        hidden: !settings.tables.visibleColumns.
+
+
             }
             data={ proposals }
             options={{
