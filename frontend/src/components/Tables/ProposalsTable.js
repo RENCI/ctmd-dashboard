@@ -216,9 +216,9 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 resource => ({
                         title: `Resource: ${ resource }`,
                         field: resource,
-                        hidden: !settings.tables.visibleColumns.
-
-
+                        hidden: !settings.tables.visibleColumns.resources,
+                })
+              ))  
             }
             data={ proposals }
             options={{
