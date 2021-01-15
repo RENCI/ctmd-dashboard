@@ -18,7 +18,7 @@ const dictionary = {
     ehrDatatransferOption: 'EHR Data Transfer Option',
     isConsentRequired: 'Study Requires Consent',
     isEfic: 'Is EFIC',
-    irbType: 'ORB Type',
+    irbType: 'IRB Type',
     regulatoryClassification: 'Regulatory Classification',
     clinicalTrialsGovId: 'ClinicalTrials.gov ID',
     isDsmbDmcRequired: 'DSMB/DMC Required',
