@@ -11,6 +11,7 @@ import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
 import { capitalizeFirstLetter } from '../../utils/String'
+import { convertBoolToYesOrNo } from '../../utils/Format'
 
 const useStyles = makeStyles((theme) => ({
   pairStyle: {
@@ -50,7 +51,7 @@ const StudyProfile = ({ profile }) => {
 
         const value =
           typeof profile[key].value === 'boolean'
-            ? capitalizeFirstLetter(String(profile[key].value))
+            ? convertBoolToYesOrNo(profile[key].value)
             : profile[key].value
         return (
           <div className={pairStyle} key={i}>
