@@ -8,12 +8,13 @@ import { Tooltip, TableCell } from '@material-ui/core'
 const resources = [
     'EHR-Based Cohort Assessment',
     'Community Engagement Studio',
-    'Recruitment & Retention Planning',
+    'Recruitment Plan',
     'Recruitment Feasibility Assessment',
     'Recruitment Materials',
-    'Single IRB',
-    'Standard Agreements',
+    'Operationalize Single IRB',
+    'Operationalize Standard Agreements',
     'Other',
+    'Study Planning (Design, Budget, Timelines, Feasibility)'
 ]
 
 const headerWithTooltip = (title, tooltip) => (
@@ -140,12 +141,12 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     field: 'actualFundingStartDate',
                     hidden: !settings.tables.visibleColumns.actualFundingStartDate,
                 },
-                {
-                    title: headerWithTooltip('Recommend for Comprehensive Consultation', 'Recommend for Comprehensive Consultation'),
-                    field: 'approvedForComprehensiveConsultation',
-                    hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
-                    // filtering: false,
-                },
+                // {
+                //     title: headerWithTooltip('Recommend for Comprehensive Consultation', 'Recommend for Comprehensive Consultation'),
+                //     field: 'approvedForComprehensiveConsultation',
+                //     hidden: !settings.tables.visibleColumns.approvedForComprehensiveConsultation,
+                //     // filtering: false,
+                // },
                 {
                     title: headerWithTooltip('Study Population', 'Study Population Category'),
                     field: 'studyPopulation',
