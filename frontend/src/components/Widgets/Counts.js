@@ -73,7 +73,7 @@ export const Counts = props => {
                             ).length
                             : <CircularLoader />
                         }
-                    </span> <span className={ classes.description }>This Year</span>
+                    </span> <span className={ classes.description }>This Grant Year</span>
                 </Grid>
                 <Grid item xs={ 12 } sm={ 4 } className={ classes.detail }>
                     <span className={ classes.value }>
