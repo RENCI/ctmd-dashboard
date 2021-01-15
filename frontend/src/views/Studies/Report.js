@@ -10,7 +10,6 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
-import { capitalizeFirstLetter } from '../../utils/String'
 import { convertBoolToYesOrNo } from '../../utils/Format'
 
 const useStyles = makeStyles((theme) => ({
