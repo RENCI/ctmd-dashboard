@@ -71,7 +71,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.therapeuticArea,
                 },
                 {
-                    title: headerWithTooltip('Submitting Institution', 'Submitter's organization name'),
+                    title: headerWithTooltip('Submitting Institution', "Submitter's organization name"),
                     field: 'submitterInstitution',
                     hidden: !settings.tables.visibleColumns.submitterInstitution,
                 },
