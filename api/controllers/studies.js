@@ -8,15 +8,46 @@ const lookupFieldName = require('../config/dictionary')
 
 exports.getProfile = (req, res) => {
     const proposalId = req.params.id
-    const query = `SELECT * FROM "StudyProfile" WHERE "ProposalID" = ${ proposalId };`
+    const query = `SELECT 
+                       "StudyProfile".*,
+                       "PhaseInfo"."phaseRedcap",
+                        case 
+                            when t.description like '%TIC%' then t.description
+                            else null
+                        end as "tic",
+                        case 
+                            when t.description like '%RIC%' then t.description
+                            else null
+                        end as "ric"
+                        FROM "StudyProfile"
+                        left join (select "name".description, ap."ProposalID" 
+                            from "AssignProposal" ap 
+                            join "name" on ap."assignToInstitution" = "name"."index" 
+                            where "name"."table" = 'AssignProposal') as t on t."ProposalID" = "StudyProfile"."ProposalID" 
+                        left join (select "name".description "phaseRedcap", ap."ProposalID" 
+                                   from "AssignProposal" ap 
+                                   join "name" on ap."assignToInstitution" = "name"."index" 
+                                   where "name"."table" = 'Proposal') as "PhaseInfo" on t."ProposalID" = "StudyProfile"."ProposalID" 
+                   WHERE "StudyProfile"."ProposalID" = ${ proposalId };`
     db.any(query)
         .then(data => {
             const profile = data[0]
+
+            /* We have to delete a key here because it is in the database but we don't want to use it.
+               We then have to rename the key from the other table as the deleted key because the keys show up as they come in.
+               Once phase is deleted from the table StudyProfile we can remove the delete and rename logic
+            */ 
+            delete profile['phase']
+            delete Object.assign(profile, {['phase']: profile['phaseRedcap'] })['phaseRedcap'];
+
             Object.keys(profile).forEach(key => {
+                
                 profile[key] = {
                     value: profile[key],
                     displayName: lookupFieldName(key),
                 }
+                
+               
             })
             res.status(200).send(profile)
         })
@@ -76,7 +107,8 @@ exports.getEnrollmentData = (req, res) => {
             "date",
             "revisedProjectedSites",
             "actualSites",
-            "actualEnrollment"
+            "actualEnrollment",
+            "targetEnrollment"
         FROM "EnrollmentInformation" WHERE "ProposalID" = ${ proposalId };`
     db.any(query)
         .then(data => {
