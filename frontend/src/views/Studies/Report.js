@@ -11,6 +11,7 @@ import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
 import { convertBoolToYesOrNo } from '../../utils/Format'
+import { formatDate } from '../../utils/DateFormat'
 
 const useStyles = makeStyles((theme) => ({
   pairStyle: {
@@ -39,19 +40,24 @@ const Value = ({ children }) => {
   return <span className={valueStyle}>{children}</span>
 }
 
-// Profile
+const dateFields = ['Date Funding was Awarded']
 
+// Profile
 const StudyProfile = ({ profile }) => {
   const { pairStyle } = useStyles()
   return (
     <article>
       {Object.keys(profile).map((key, i) => {
         const displayName = profile[key].displayName
+        let value =  profile[key].value
 
-        const value =
-          typeof profile[key].value === 'boolean'
-            ? convertBoolToYesOrNo(profile[key].value)
-            : profile[key].value
+        if (typeof profile[key].value === 'boolean') {
+          value = convertBoolToYesOrNo(profile[key].value)
+        }
+        else if (dateFields.includes(key)) {
+          value = formatDate(new Date(value))
+        }
+      
         return (
           <div className={pairStyle} key={i}>
             <Key>{displayName}</Key>
