@@ -1,3 +1,5 @@
 export * from './DateFormat'
 export * from './KeyGenerator'
+export * from './String'
+export * from './Format'
 // export * from './PrivateRoute'

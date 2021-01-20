@@ -24,7 +24,7 @@ export default function() {
       targetSitesKey = "revisedProjectedSites",
 
       // Colors
-      enrolledColor = "#8da0cb",
+      enrolledColor = "#fc8d62",
       sitesColor = "#66c2a5",
 
       // Start with empty selection
