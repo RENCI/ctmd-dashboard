@@ -116,11 +116,6 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.fundingStatus,
                 },
                 {
-                    title: headerWithTooltip('Grant Award Date', 'Actual Grant Award Date'),
-                    field: 'fundingStart',
-                    hidden: !settings.tables.visibleColumns.fundingStart,
-                },
-                {
                     title: headerWithTooltip('Funding Amount', 'Total amount awarded for the study'),
                     field: 'fundingAmount',
                     hidden: !settings.tables.visibleColumns.fundingAmount,
