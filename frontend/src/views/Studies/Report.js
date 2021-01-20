@@ -48,8 +48,6 @@ const StudyProfile = ({ profile }) => {
   return (
     <article>
       {Object.keys(profile).map((key, i) => {
-        // console.log(key)
-        console.log(key, dateFields.includes(key))
         const displayName = profile[key].displayName
         let value =  profile[key].value
 
