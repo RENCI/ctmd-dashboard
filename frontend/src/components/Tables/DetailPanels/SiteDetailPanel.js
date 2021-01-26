@@ -6,7 +6,7 @@ import { formatDate } from '../../../utils/DateFormat'
 
 export const SiteDetailPanel = props => {
     const {
-        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval, dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount
+        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval, dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount, dataElement
     } = props
     const dayCount = (startDate, endDate) => {
         if (startDate && endDate) {
@@ -86,7 +86,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per data elements:" secondary={ 'TBD' } />
+                            <ListItemText primary="Queries per data elements:" secondary={ displayRatio(queriesCount, dataElement )} />
                         </ListItem>
                     </List>
                 </Grid>

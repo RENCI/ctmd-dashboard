@@ -65,6 +65,8 @@ exports.getProfile = (req, res) => {
 exports.getSites = (req, res) => {
     const proposalId = req.params.id
     const query = `SELECT
+            "StudySites"."dataElement",
+            "StudySites"."lostToFollowUp",
             "StudySites"."ProposalID",
             "StudySites"."siteId",
             "StudySites"."ctsaId",
