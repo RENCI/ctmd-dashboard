@@ -74,8 +74,8 @@ export const SitesTable = props => {
                     { title: 'Patients Expected', field: 'patientsExpectedCount', hidden: true, },
                     { title: 'Queries Count', field: 'queriesCount', hidden: true, },
                     { title: 'Protocol Deviations', field: 'protocolDeviationsCount', hidden: true, },
-                    // { title: 'Data Elements ', field: 'DataElements', hidden: true, },
-                    // { title: 'Lost to Follow Up', field: 'LostToFollowUp', hidden: true, },
+                    { title: 'Data Element', field: 'dataElement', hidden: true, },
+                    { title: 'Lost to Follow Up', field: 'lostToFollowUp', hidden: true, },
                 ]
             }
             data={ sites }
