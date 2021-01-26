@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   redis:
@@ -13,16 +13,16 @@ services:
     expose:
       - 6379
     command: ["--appendonly", "yes"]
-    
+
   pipeline:
     container_name: ctmd-pipeline
-    image: zooh/ctmd-pipeline-reload@sha256:67d4570f58b022c2d2010f8d39601b24104f1100ca4cb8ccac693751b8d52424
+    image: txscience/ctmd-pipeline-reload:latest
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_PORT: $POSTGRES_PORT    
+      POSTGRES_PORT: $POSTGRES_PORT
       POSTGRES_HOST: db
       REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
       REDCAP_URL_BASE: "https://redcap.vanderbilt.edu/api/"
