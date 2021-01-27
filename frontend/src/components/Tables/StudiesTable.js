@@ -73,7 +73,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
                 },
                 {
-                    title: 'Grant Award Date', field: 'fundingStart',
+                    title: 'Grant Award Date', field: 'actualGrantAwardDate',
                     hidden: !settings.tables.visibleColumns.fundingStart,
                 },
                 {

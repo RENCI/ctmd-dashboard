@@ -16,7 +16,7 @@ services:
     
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: zooh/ctmd-pipeline-reload@sha256:67d4570f58b022c2d2010f8d39601b24104f1100ca4cb8ccac693751b8d52424
+    image: txscience/ctmd-pipeline-reload:latest
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -72,6 +72,9 @@ services:
       - ./db/data:/var/lib/postgresql/data
     expose:
       - ${POSTGRES_PORT}
+    ports:
+      - 5432:5432
+
 
   api:
     container_name: ctmd-api-dev
