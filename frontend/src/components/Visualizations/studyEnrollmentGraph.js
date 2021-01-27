@@ -418,7 +418,8 @@ export default function() {
     function drawAxes() {
       // Axes
       const xAxis = d3.axisBottom(xScale)
-          .ticks(d3.timeMonth.every(1));
+          .ticks(d3.timeMonth.every(1))
+          .tickFormat(d3.timeFormat("%b"));
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
 
