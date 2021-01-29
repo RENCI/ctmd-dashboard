@@ -66,19 +66,17 @@ export default function() {
               function valueString(type, key, format) {
                 let s = (key === "actual" ? "Actual: " : "Target: ");
 
-                let v1 = type[i][key],
-                    v2 = type[i + 1][key];
+                let v = type[i][key];
 
-                if (v1 === null || v2 === null) {
+                if (v === null) {
                   s += "NA";
                 }
                 else {
                   if (format) {
-                    v1 = format(v1);
-                    v2 = format(v2);
+                    v = format(v);
                   }
 
-                  s += v1 + (v2 !== v1 ? " ⮕ " + v2 : "");
+                  s += v;
                 }
 
                 return s;
@@ -119,18 +117,13 @@ export default function() {
 
       // Otherwise create the skeletal chart
       const svgEnter = svg.enter().append("svg")
-          .attr("class", "proposalsSankey")
-          .on("click", () => {
-//            dispatcher.call("selectNodes", this, null);
-          });
-
-//      svgEnter.append("g").attr("class", "legend");
+          .attr("class", "enrollmentGraph");
 
       const g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      const groups = ["background", "legend", "chart", "axes"];
+      const groups = ["legend", "chart", "axes"];
 
       g.selectAll("g")
           .data(groups)
@@ -159,21 +152,22 @@ export default function() {
   function draw() {
     // Set width and height
     svg.attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+      .select(".chart")
+        .style("pointer-events", "none");
 
     // Generate data
     enrolled = createTimeSeries(actualEnrolledKey, targetEnrolledKey, dateKey);
     sites = createTimeSeries(actualSitesKey, targetSitesKey, dateKey);
 
-    const timeSeriesData = [
-      { name: "sites", data: sites },
-      { name: "enrolled", data: enrolled }
-    ];
+    const barWidth = innerWidth() / sites.length / 4;
 
     // Scales
+    const xOffset = barWidth * 0.75 + 10;
+
     const xScale = d3.scaleTime()
         .domain(d3.extent(enrolled, d => d.date))
-        .range([0, innerWidth()]);
+        .range([xOffset, innerWidth() - xOffset]);
 
     const maxActualEnrolled = d3.max(enrolled, d => d.actual),
           maxTargetEnrolled = d3.max(enrolled, d => d.target),
@@ -188,24 +182,108 @@ export default function() {
         .domain([0, Math.max(maxActualSites, maxTargetSites)])
         .range([innerHeight(), 0]);
 
-    drawData();
-    drawBackground();
+    drawBarChart([{ name: "sites", data: sites }])
+    drawAreaChart([{ name: "enrolled", data: enrolled }]);
+    //drawBackground();
     drawAxes();
     drawLegend();
 
-    function drawData() {
+    function drawBarChart(data) {
       // Bind time series data
       const timeSeries = svg.select(".chart")
-          .style("pointer-events", "none")
-        .selectAll(".timeSeries")
-          .data(timeSeriesData);
+          .selectAll(".barTimeSeries")
+          .data(data);
 
       // Enter
       const timeSeriesEnter = timeSeries.enter().append("g")
-          .attr("class", "timeSeries");
+          .attr("class", "barTimeSeries");
+
+      // Enter + update
+      timeSeriesEnter.merge(timeSeries)
+          .each(drawTimeSeries);
+
+      // Exit
+      timeSeries.exit().remove();
+
+      function drawTimeSeries(d) {    
+        const yScale = d.name === "enrolled" ? enrolledScale : sitesScale;
+        const color = d.name === "enrolled" ? enrolledColor : sitesColor;
+
+        // Bind data for bars
+        const bars = d3.select(this).selectAll(".bars")
+          .data(d.data);
+
+        // Enter
+        const barsEnter = bars.enter().append("g")
+          .attr("class", "bars")
+          .style("pointer-events", "all")
+          .on("mouseover", function(d, i) {
+            tip.show(i, this);
+            d3.select(this).style("fill", "#fcfcfc");
+          })
+          .on("mouseout", function(d, i) {
+            tip.hide();
+            d3.select(this).style("fill", "none");
+          });
+
+        // Enter + update
+        barsEnter.merge(bars)
+            .each(drawBars);
+
+        // Exit
+        bars.exit().remove();
+
+        function drawBars(d) {
+          // Bind data
+          const bar = d3.select(this)
+              .attr("transform", "translate(" + (xScale(d.date) - barWidth / 2) + ")")
+            .selectAll(".bar")
+              .data([d.target, d.actual]);
+
+          const barX = d3.scaleOrdinal()
+              .domain([0, 1])
+              .range([barWidth / 4, -barWidth / 4])
+            
+          const barFill = d3.scaleOrdinal()
+              .domain([0, 1])
+              .range([d3.hsl(color).brighter(0.5), d3.hsl(color).brighter(1.2)]);
+
+          const barStroke = d3.scaleOrdinal()
+              .domain([0, 1])
+              .range([color, color]);
+
+          const barEnter = bar.enter().append("rect")
+              .attr("class", "bar")
+              .style("stroke-width", 2);
+
+          // Enter + update
+          barEnter.merge(bar)
+              .attr("x", (d, i) => barX(i))
+              .attr("y", d => yScale(d))
+              .attr("width", barWidth)
+              .attr("height", d => yScale(0) - yScale(d))
+              .style("fill", (d, i) => barFill(i))
+              .style("stroke", (d, i) => barStroke(i));
+
+          // Exit
+          bar.exit().remove();
+        }
+      }
+    }
+
+    function drawAreaChart(data) {
+      // Bind time series data
+      const timeSeries = svg.select(".chart")
+        .selectAll(".areaTimeSeries")
+          .data(data);
+
+      // Enter
+      const timeSeriesEnter = timeSeries.enter().append("g")
+          .attr("class", "areaTimeSeries");
 
       timeSeriesEnter.append("g").attr("class", "area");
       timeSeriesEnter.append("g").attr("class", "lines");
+      timeSeriesEnter.append("g").attr("class", "points");
 
       // Enter + update
       timeSeriesEnter.merge(timeSeries)
@@ -228,11 +306,13 @@ export default function() {
             .y(d => yScale(d.value));
 
         // Bind data for lines
+        const lineData = [
+          d.data.filter(d => d.actual !== null).map(d => ({ date: d.date, value: d.actual })),
+          d.data.map(d => ({ date: d.date, value: d.target }))
+        ];
+
         const line = d3.select(this).select(".lines").selectAll(".line")
-            .data([
-              d.data.filter(d => d.actual !== null).map(d => ({ date: d.date, value: d.actual })),
-              d.data.map(d => ({ date: d.date, value: d.target }))
-            ]);
+            .data(lineData);
 
         // Enter
         const lineEnter = line.enter().append("path")
@@ -248,6 +328,25 @@ export default function() {
 
         // Exit
         line.exit().remove();
+
+        // Bind data for points
+        const point = d3.select(this).select(".points").selectAll(".point")
+            .data(lineData[0].concat(lineData[1]));
+
+        // Enter
+        const pointEnter = point.enter().append("circle")
+            .attr("class", "point");
+
+        // Enter + update
+        pointEnter.merge(point)
+            .attr("cx", d => xScale(d.date))
+            .attr("cy", d => yScale(d.value))
+            .attr("r", 3)
+            .style("fill", color)
+            .style("stroke", "none");
+
+        // Exit
+        point.exit().remove();
 
         function drawArea(selection) {
           const data = selection.data()[0].data.filter(d => d.actual !== null);
@@ -416,9 +515,13 @@ export default function() {
     }
 
     function drawAxes() {
-      // Axes
+      // Axes      
+      const monthFormat = d3.timeFormat("%b");
+      const yearFormat = d3.timeFormat("%Y");
+
       const xAxis = d3.axisBottom(xScale)
-          .ticks(d3.timeMonth.every(1));
+          .ticks(d3.timeMonth.every(1))
+          .tickFormat(d => d.getMonth() === 0 ? yearFormat(d) : monthFormat(d));
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
 
@@ -518,9 +621,13 @@ export default function() {
 
       const yScale = d3.scaleOrdinal()
           .domain(entries)
-          .range([s * 3, s * 4, 0, s, ]);
+          .range([s * 3, s * 4, 0, s ]);
 
-      const colorScale = d3.scaleOrdinal()
+      const fillScale = d3.scaleOrdinal()
+          .domain(entries)
+          .range([null, null, d3.hsl(sitesColor).brighter(1.2), d3.hsl(sitesColor).brighter(0.5)]);
+
+      const strokeScale = d3.scaleOrdinal()
           .domain(entries)
           .range([enrolledColor, enrolledColor, sitesColor, sitesColor]);
 
@@ -536,21 +643,38 @@ export default function() {
           .data(entries);
 
       // Enter
-      const entryEnter = entry.enter().append("g")
+      entry.enter().append("g")
           .attr("class", "entry")
-          .attr("transform", d => "translate(0," + yScale(d) + ")");
+          .attr("transform", d => "translate(0," + yScale(d) + ")")
+          .each(function(d, i) {
+            const g = d3.select(this);
 
-      entryEnter.append("line")
-          .attr("x2", w)
-          .style("stroke", d => colorScale(d))
-          .style("stroke-width", 2)
-          .style("stroke-dasharray", d => dashScale(d));
+            if (i < 2) {
+              g.append("line")
+                  .attr("x2", w)
+                  .style("stroke", d => strokeScale(d))
+                  .style("stroke-width", 2)
+                  .style("stroke-dasharray", d => dashScale(d));
+            }
+            else {
+              const w2 = 10;
 
-      entryEnter.append("text")
-          .text(d => d)
-          .attr("x", w)
-          .attr("dx", ".5em")
-          .style("dominant-baseline", "middle");
+              g.append("rect")
+                  .attr("y", -w2 / 2)
+                  .attr("x", w / 2 - w2 / 2)
+                  .attr("width", w2)
+                  .attr("height", w2)
+                  .style("fill", d => fillScale(d))
+                  .style("stroke", d => strokeScale(d))
+                  .style("stroke-width", 2);
+            }
+  
+            g.append("text")
+                .text(d => d)
+                .attr("x", w)
+                .attr("dx", ".5em")
+                .style("dominant-baseline", "middle");
+          });
     }
   }
 
