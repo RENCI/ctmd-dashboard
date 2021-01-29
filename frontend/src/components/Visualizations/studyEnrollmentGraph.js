@@ -515,10 +515,13 @@ export default function() {
     }
 
     function drawAxes() {
-      // Axes
+      // Axes      
+      const monthFormat = d3.timeFormat("%b");
+      const yearFormat = d3.timeFormat("%Y");
+
       const xAxis = d3.axisBottom(xScale)
           .ticks(d3.timeMonth.every(1))
-          .tickFormat(d3.timeFormat("%b"));
+          .tickFormat(d => d.getMonth() === 0 ? yearFormat(d) : monthFormat(d));
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
 
