@@ -10,7 +10,7 @@ exports.getProfile = (req, res) => {
     const proposalId = req.params.id
     const query = `SELECT 
                     "StudyProfile".*,
-                    "PhaseInfo"."phaseRedcap",
+                    "PhaseOfStudy"."PhaseOfStudy",
                     "actualGrantAwardDate" as "Date Funding was Awarded",
                     case 
                         when t.description like '%TIC%' then t.description
@@ -25,10 +25,7 @@ exports.getProfile = (req, res) => {
                         from "AssignProposal" ap 
                         join "name" on ap."assignToInstitution" = "name"."index" 
                         where "name"."table" = 'AssignProposal') as t on t."ProposalID" = "StudyProfile"."ProposalID" 
-                    left join (select "name".description "phaseRedcap", ap."ProposalID" 
-                                from "AssignProposal" ap 
-                                join "name" on ap."assignToInstitution" = "name"."index" 
-                                where "name"."table" = 'Proposal') as "PhaseInfo" on t."ProposalID" = "StudyProfile"."ProposalID" 
+                    left join (select "PhaseOfStudy", "ProposalID" from "Proposal") as "PhaseOfStudy" on "PhaseOfStudy"."ProposalID" = "StudyProfile"."ProposalID" 
                     left join "ProtocolTimelines_estimated" on "ProtocolTimelines_estimated"."ProposalID" = "StudyProfile"."ProposalID" 
                     WHERE "StudyProfile"."ProposalID" = ${ proposalId };`
                     db.any(query)
@@ -41,7 +38,7 @@ exports.getProfile = (req, res) => {
             */ 
             delete profile['phase']
             delete profile['fundingAwardDate']
-            delete Object.assign(profile, {['phase']: profile['phaseRedcap'] })['phaseRedcap'];
+            delete Object.assign(profile, {['phase']: profile['PhaseOfStudy'] })['PhaseOfStudy'];
 
             Object.keys(profile).forEach(key => {
                 
