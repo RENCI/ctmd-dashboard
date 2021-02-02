@@ -101,16 +101,16 @@ export const Milestones = ({ sites }) => {
             <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="25% Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+            <ListItemText primary="25% Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="50% Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+            <ListItemText primary="50% Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="75% Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+            <ListItemText primary="75% Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="100% Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+            <ListItemText primary="100% Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
           </ListItem>
         </List>
       </CardContent>
