@@ -39,10 +39,9 @@ export const Milestones = ({ sites }) => {
       .map((site) => site[property])
       .filter((date) => date !== '')
       .map((date) => new Date(date))
-      .sort((d1, d2) => d1 > d2)
+      .sort((d1, d2) => d1 - d2)
 
     const dates = activationDates.chunk(quartileSize).map((chunk) => formatDate(chunk[chunk.length - 1]))
-
     for (let i = 0; i < 4; i++) {
       if (!dates[i]) {
         dates[i] = 'N/A'
@@ -102,16 +101,16 @@ export const Milestones = ({ sites }) => {
             <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="25% Enrolled" secondary={siteActivationPercentages[0]}></ListItemText>
+            <ListItemText primary="25% Activated" secondary={siteActivationPercentages[0]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="50% Enrolled" secondary={siteActivationPercentages[1]}></ListItemText>
+            <ListItemText primary="50% Activated" secondary={siteActivationPercentages[1]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="75% Enrolled" secondary={siteActivationPercentages[2]}></ListItemText>
+            <ListItemText primary="75% Activated" secondary={siteActivationPercentages[2]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="100% Enrolled" secondary={siteActivationPercentages[3]}></ListItemText>
+            <ListItemText primary="100% Activated" secondary={siteActivationPercentages[3]}></ListItemText>
           </ListItem>
         </List>
       </CardContent>
