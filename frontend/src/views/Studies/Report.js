@@ -4,7 +4,7 @@ import axios from 'axios'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Typography, Input, Slider } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Typography, Input, Slider, Button } from '@material-ui/core'
 import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
@@ -12,27 +12,63 @@ import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentCont
 import { Milestones } from './Milestones'
 import { convertBoolToYesOrNo } from '../../utils/Format'
 import { formatDate } from '../../utils/DateFormat'
+import { useForm } from 'react-hook-form'
+import { Edit } from '@material-ui/icons'
+import { motion } from 'framer-motion'
 
 const useStyles = makeStyles((theme) => ({
   pairStyle: {
-    fontSize: '125%',
     display: 'flex',
-    marginBottom: '0.5rem',
+    flexDirection: 'column',
+    rowGap: '9px',
+  },
+  action: {
+    height: 'initial',
+    marginTop: '0px',
+    marginRight: '0px',
+    cursor: 'pointer',
+  },
+  inputStyle: {
+    color: '#000000',
+    border: '1px solid #D3D3D3',
+    borderRadius: '4px',
+    padding: '7px',
+    width: '70%',
+    '&:focus': {
+      border: '1px solid #339898',
+      outline: 'none',
+    },
+  },
+  inputFocusedStyle: {
+    border: '1px solid red',
+    color: 'red',
+    fontSize: '300px;',
+  },
+  gridStyle: {
+    fontSize: '150%',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    marginBottom: '3rem',
+    gridRowGap: '22px',
   },
   keyStyle: {
-    color: theme.palette.grey[600],
+    color: theme.palette.primary.main,
     marginRight: '0.5rem',
+    fontWeight: 600,
   },
   valueStyle: {
-    color: theme.palette.primary.main,
+    color: theme.palette.grey[600],
     flex: 1,
-    borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  },
+  buttonGrid: {
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
 }))
 
 const Key = ({ children }) => {
   const { keyStyle } = useStyles()
-  return <span className={keyStyle}>{children}:</span>
+  return <span className={keyStyle}>{children}</span>
 }
 
 const Value = ({ children }) => {
@@ -43,25 +79,46 @@ const Value = ({ children }) => {
 const dateFields = ['Date Funding was Awarded']
 
 // Profile
-const StudyProfile = ({ profile }) => {
-  const { pairStyle } = useStyles()
+const StudyProfile = ({ profile, editMode, register }) => {
+  const { pairStyle, gridStyle, inputStyle, inputFocusedStyle } = useStyles()
+  // const { register, handleSubmit, watch, errors } = useForm()
+
+  const defaultState = {
+    opacity: 0,
+    scale: 0.6,
+  }
+
   return (
-    <article>
+    <article className={gridStyle}>
       {Object.keys(profile).map((key, i) => {
         const displayName = profile[key].displayName
-        let value =  profile[key].value
+        let value = profile[key].value
 
         if (typeof profile[key].value === 'boolean') {
           value = convertBoolToYesOrNo(profile[key].value)
-        }
-        else if (dateFields.includes(key)) {
+        } else if (dateFields.includes(key)) {
           value = formatDate(new Date(value))
         }
-      
+
         return (
           <div className={pairStyle} key={i}>
             <Key>{displayName}</Key>
-            <Value>{value}</Value>
+            {editMode ? (
+              <motion.input
+                className={inputStyle}
+                name={displayName}
+                ref={register}
+                defaultValue={value}
+                initial={defaultState}
+                exit={defaultState}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                }}
+              />
+            ) : (
+              <Value>{value}</Value>
+            )}
           </div>
         )
       })}
@@ -69,8 +126,22 @@ const StudyProfile = ({ profile }) => {
   )
 }
 
+const uploadProfileData = async (data) => {
+  console.log(api.uploadStudyProfile)
+  const response = await axios({
+    url: api.uploadStudyProfile,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: data,
+  })
+  console.log(response)
+}
+
 export const StudyReportPage = (props) => {
   const proposalId = props.match.params.proposalID
+  const { register, handleSubmit, watch, errors } = useForm()
   const [store] = useContext(StoreContext)
   const [study, setStudy] = useState(null)
   const [studyProfile, setStudyProfile] = useState(null)
@@ -78,6 +149,13 @@ export const StudyReportPage = (props) => {
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
+  const [editMode, setEditMode] = useState(false)
+  const classes = useStyles()
+  const onSubmit = (data, e) => {
+    uploadProfileData(data)
+    console.log(data, e)
+  }
+  const onError = (errors, e) => console.log(errors, e)
 
   useEffect(() => {
     if (store.proposals) {
@@ -168,15 +246,27 @@ export const StudyReportPage = (props) => {
         <Grid container spacing={8}>
           <Grid item xs={12} sm={6} md={7} lg={8}>
             <Card style={{ height: '100%' }}>
-              <CardHeader title="Study Profile" />
+              <CardHeader
+                title="Study Profile"
+                classes={{ action: classes.action }}
+                action={<Edit style={{ fill: 'rgb(91, 114, 135)' }} onClick={setEditMode} />}
+              />
+
               <CardContent>
                 {studyProfile ? (
-                  <StudyProfile profile={studyProfile} />
+                  <StudyProfile profile={studyProfile} editMode={editMode} register={register} />
                 ) : (
                   <Paragraph>
                     No profile found! <NavLink to="/uploads">Upload it</NavLink>!
                   </Paragraph>
                 )}
+                <div className={classes.buttonGrid}>
+                  <form onSubmit={handleSubmit(onSubmit, onError)}>
+                    <Button type="submit" variant="contained" color="secondary">
+                      Save
+                    </Button>
+                  </form>
+                </div>
               </CardContent>
             </Card>
           </Grid>
