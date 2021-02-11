@@ -1,4 +1,5 @@
 const express = require("express");
+const https = require("https");
 const app = express();
 const cors = require("cors");
 const db = require("./config/database");
@@ -84,12 +85,15 @@ app.use("/graphics", require("./routes/graphics"));
 // Auth
 app.post("/auth", (req, res, next) => {
   const code = req.body.code;
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
   // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
   if (!app.get("authenticated")) {
-    console.log("going in here");
     axios
       .get(
-        `http://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`
+        `http://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
+        { httpsAgent: agent }
       )
       .then((response) => {
         if (response.status === 200) {
