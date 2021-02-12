@@ -25,14 +25,17 @@ export const AuthProvider = ({ children }) => {
     window.location = 'https://redcap.vanderbilt.edu/plugins/TIN'
   }
 
-  const authenticate = () => {
-    if (authenticated) {
+  const authenticate = (auth_response) => {
+    if (auth_response) {
       let userData = {}
       // get query params--should have `status`, `username`, `organization`, `access_level`, `first_name`, `last_name`, `email`
       const params = new URLSearchParams(window.location.search)
       for (let params of params.entries()) {
         userData[params[0]] = params[1]
       }
+
+      // set auth status
+      setAuthenticated(true)
 
       // save user in local storage for later
       setLocalStorageUser(userData)
@@ -43,11 +46,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
-    setAuthenticated(response.data.authenticated)
+    const authenticated = response.data.authenticated
     if (authenticated) {
       setUser(localStorageUser)
     } else {
-      authenticate()
+      authenticate(response.data.authenticated)
     }
   }, [])
 
