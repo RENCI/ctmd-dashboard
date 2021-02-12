@@ -60,8 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = (props) => {
   const classes = useStyles()
-  const { user } = useContext(AuthContext)
-  console.log('USER', user)
+  const { authenticated } = useContext(AuthContext)
 
   return (
     <div className={classes.layout}>
@@ -69,7 +68,7 @@ const Dashboard = (props) => {
       <main className={classes.main}>
         <CssBaseline />
         <ScrollToTop>
-          {user && (
+          {authenticated && (
             <Switch>
               <Route exact path="/manage" component={ManagementPage} />
               <Route exact path="/proposals/:id(\d+)" component={ProposalReportPage} />
@@ -92,7 +91,7 @@ const Dashboard = (props) => {
               <Route path="/" component={HomePage} />
             </Switch>
           )}
-          {!user && <LoginPage />}
+          {!authenticated && <LoginPage />}
         </ScrollToTop>
       </main>
       <Footer />

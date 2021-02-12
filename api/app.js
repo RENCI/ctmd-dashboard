@@ -30,7 +30,7 @@ app.use((req, res, next) => {
   ) {
     next();
   } else {
-    if (req.session.authenticated) {
+    if (req.session.auth_info.authenticated) {
       next();
     } else {
       res.status(401).send("Please login");
@@ -89,12 +89,9 @@ app.use("/template", require("./routes/template-download"));
 app.use("/graphics", require("./routes/graphics"));
 
 app.get("/auth_status", (req, res, next) => {
-  const authenticated =
-    typeof req.session.authenticated === "undefined" ||
-    !req.session.authenticated
-      ? false
-      : true;
-  res.status(200).send({ authenticated: authenticated });
+  const authInfo =
+    typeof req.session.auth_info === "undefined" ? {} : req.session.auth_info;
+  res.status(200).send({ auth_info: authInfo });
 });
 
 // Auth
@@ -104,7 +101,7 @@ app.post("/auth", (req, res, next) => {
     rejectUnauthorized: false,
   });
   // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
-  if (!req.session.authenticated) {
+  if (!req.session.auth_info) {
     axios
       .get(
         `http://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
@@ -112,7 +109,9 @@ app.post("/auth", (req, res, next) => {
       )
       .then((response) => {
         if (response.status === 200) {
-          req.session.authenticated = true;
+          const data = response.data;
+          data.authenticated = true;
+          req.session.auth_info = data;
 
           res.redirect(
             `https://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
