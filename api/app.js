@@ -5,26 +5,32 @@ const cors = require("cors");
 const db = require("./config/database");
 var multer = require("multer");
 const axios = require("axios");
-const session = require("express-session");
+var cookieSession = require("cookie-session");
+
+const NON_PROTECTED_ROUTES = ["/auth_status", "/auth"];
 
 // CORS
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // session
 app.use(
-  session({
-    secret: process.env.API_SESSION_SECRET,
-    cookie: {
-      maxAge: 360000,
-    },
+  cookieSession({
+    name: "session",
+    keys: [process.env.API_SESSION_SECRET],
+
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
 
 app.use((req, res, next) => {
-  if (req.path === "/auth" || process.env.NODE_ENV === "development") {
+  if (
+    NON_PROTECTED_ROUTES.includes(req.path) ||
+    process.env.NODE_ENV === "developments"
+  ) {
     next();
   } else {
-    if (req.app.get("authenticated")) {
+    if (req.session.authenticated) {
       next();
     } else {
       res.status(401).send("Please login");
@@ -34,7 +40,7 @@ app.use((req, res, next) => {
 
 // Config
 const PORT = process.env.API_PORT || 3030;
-const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY;
+const AUTH_API_KEY = "TEST123"; //process.env.FUSE_AUTH_API_KEY;
 const DASHBOARD_URL = process.env.DASHBOARD_URL;
 
 // Tell me it's working!
@@ -82,6 +88,15 @@ app.use("/template", require("./routes/template-download"));
 // Graphics
 app.use("/graphics", require("./routes/graphics"));
 
+app.get("/auth_status", (req, res, next) => {
+  const authenticated =
+    typeof req.session.authenticated === "undefined" ||
+    !req.session.authenticated
+      ? false
+      : true;
+  res.status(200).send({ authenticated: authenticated });
+});
+
 // Auth
 app.post("/auth", (req, res, next) => {
   const code = req.body.code;
@@ -89,7 +104,7 @@ app.post("/auth", (req, res, next) => {
     rejectUnauthorized: false,
   });
   // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
-  if (!app.get("authenticated")) {
+  if (!req.session.authenticated) {
     axios
       .get(
         `http://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
@@ -97,10 +112,12 @@ app.post("/auth", (req, res, next) => {
       )
       .then((response) => {
         if (response.status === 200) {
-          app.set("authenticated", true);
+          req.session.authenticated = true;
+
           res.redirect(
             `https://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
           );
+          res.end();
         }
       })
       .catch((err) => {
