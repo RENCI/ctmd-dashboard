@@ -225,7 +225,6 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 grouping: true,
                 exportFileName: title,
                 groupTitle: rowData => {
-                    console.log(rowData)
                     return 'TITLE'
                 }
             }}
