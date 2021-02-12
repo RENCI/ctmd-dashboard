@@ -49,15 +49,14 @@ const StudyProfile = ({ profile }) => {
     <article>
       {Object.keys(profile).map((key, i) => {
         const displayName = profile[key].displayName
-        let value =  profile[key].value
+        let value = profile[key].value
 
         if (typeof profile[key].value === 'boolean') {
           value = convertBoolToYesOrNo(profile[key].value)
-        }
-        else if (dateFields.includes(key)) {
+        } else if (dateFields.includes(key)) {
           value = formatDate(new Date(value))
         }
-      
+
         return (
           <div className={pairStyle} key={i}>
             <Key>{displayName}</Key>
@@ -94,9 +93,9 @@ export const StudyReportPage = (props) => {
     const fetchStudyData = async (proposalID) => {
       await axios
         .all([
-          axios.get(api.studyProfile(proposalID)),
-          axios.get(api.studySites(proposalID)),
-          axios.get(api.studyEnrollmentData(proposalID)),
+          axios.get(api.studyProfile(proposalID), { withCredentials: true }),
+          axios.get(api.studySites(proposalID), { withCredentials: true }),
+          axios.get(api.studyEnrollmentData(proposalID), { withCredentials: true }),
         ])
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {

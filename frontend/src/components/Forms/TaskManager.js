@@ -53,7 +53,7 @@ const Task = ({ id }) => {
     
     useEffect(() => {
         const fetchTaskDetails = async () => {
-            await axios.get(api.dataGetTask(id))
+            await axios.get(api.dataGetTask(id),  { withCredentials: true })
                 .then(response => {
                     const { name, started_at, enqueued_at, ended_at, created_at } = response.data
                     setName(name)
@@ -112,7 +112,7 @@ export const TaskManager = props => {
 
     useEffect(() => {
         const fetchTasks = async () => {
-            await axios.get(api.dataGetTasks)
+            await axios.get(api.dataGetTasks,  { withCredentials: true })
                 .then(response => {
                     setQueuedTasks(response.data.queued)
                     setStartedTasks(response.data.started)
