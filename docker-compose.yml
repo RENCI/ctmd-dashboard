@@ -95,6 +95,7 @@ services:
       FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
       DASHBOARD_URL: $DASHBOARD_URL
       NODE_ENV: development
+      API_SESSION_SECRET: 'super_secret'
     depends_on:
       - db
     restart: always
