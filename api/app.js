@@ -24,13 +24,15 @@ app.use(
 );
 
 app.use((req, res, next) => {
+  const authInfo =
+    typeof req.session.auth_info === "undefined" ? {} : req.session.auth_info;
   if (
     NON_PROTECTED_ROUTES.includes(req.path) ||
     process.env.NODE_ENV === "developments"
   ) {
     next();
   } else {
-    if (req.session.auth_info.authenticated) {
+    if (authInfo) {
       next();
     } else {
       res.status(401).send("Please login");
