@@ -48,8 +48,10 @@ export const AuthProvider = ({ children }) => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
     const authenticated = response.data.authenticated
     if (authenticated) {
+      console.log('IN IF')
       setUser(localStorageUser)
     } else {
+      console.log('IN ELSE')
       authenticate(response.data.authenticated)
     }
   }, [])
