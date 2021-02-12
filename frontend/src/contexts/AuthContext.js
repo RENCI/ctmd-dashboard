@@ -34,9 +34,6 @@ export const AuthProvider = ({ children }) => {
         userData[params[0]] = params[1]
       }
 
-      // set auth status
-      setAuthenticated(true)
-
       // save user in local storage for later
       setLocalStorageUser(userData)
       // set active user in app for now
@@ -46,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
-    const authenticated = response.data.authenticated
+    setAuthenticated(response.data.authenticated)
     if (authenticated) {
       setUser(localStorageUser)
     } else {
