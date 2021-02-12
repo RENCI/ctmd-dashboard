@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   ) {
     next();
   } else {
-    if (authInfo) {
+    if (Object.keys(data).length) {
       next();
     } else {
       res.status(401).send("Please login");
