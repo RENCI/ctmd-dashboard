@@ -44,6 +44,7 @@ app.use((req, res, next) => {
 const PORT = process.env.API_PORT || 3030;
 const AUTH_API_KEY = "TEST123"; //process.env.FUSE_AUTH_API_KEY;
 const DASHBOARD_URL = process.env.DASHBOARD_URL;
+const AUTH_URL = process.env.AUTH_URL;
 
 // Tell me it's working!
 app.listen(PORT, () => {
@@ -102,11 +103,10 @@ app.post("/auth", (req, res, next) => {
   const agent = new https.Agent({
     rejectUnauthorized: false,
   });
-  // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
   if (!req.session.auth_info) {
     axios
       .get(
-        `http://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
+        `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
         { httpsAgent: agent }
       )
       .then((response) => {
@@ -116,7 +116,7 @@ app.post("/auth", (req, res, next) => {
           req.session.auth_info = data;
 
           res.redirect(
-            `https://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
+            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
           );
           res.end();
         }
@@ -127,7 +127,7 @@ app.post("/auth", (req, res, next) => {
       });
   } else {
     res.redirect(
-      `https://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
+      `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
     );
   }
 });

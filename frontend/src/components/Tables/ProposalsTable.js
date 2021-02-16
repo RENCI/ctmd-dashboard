@@ -106,11 +106,11 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     field: 'fundingSource',
                     hidden: !settings.tables.visibleColumns.fundingSource,
                 },
-                {
-                    title: headerWithTooltip('New Funding Source', 'New Funding Source'),
-                    field: 'newFundingSource',
-                    hidden: !settings.tables.visibleColumns.newFundingSource,
-                },
+                // {
+                //     title: headerWithTooltip('New Funding Source', 'New Funding Source'),
+                //     field: 'newFundingSource',
+                //     hidden: !settings.tables.visibleColumns.newFundingSource,
+                // },
                 {
                     title: headerWithTooltip('Funding Status', 'New Funding Status'),
                     field: 'fundingStatus',
