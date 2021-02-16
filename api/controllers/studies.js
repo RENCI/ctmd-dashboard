@@ -25,12 +25,9 @@ exports.getProfile = (req, res) => {
                         from "AssignProposal" ap 
                         join "name" on ap."assignToInstitution" = "name"."index" 
                         where "name"."table" = 'AssignProposal') as t on t."ProposalID" = "StudyProfile"."ProposalID" 
-                   left join (select "PhaseOfStudy", "ProposalID", "description" as "PhaseMapped"
-                            from "Proposal" 
-                            join "name" on "name"."index" = "Proposal"."PhaseOfStudy" 
-                            where "name"."column" = 'PhaseOfStudy') as "PhaseOfStudy" on "PhaseOfStudy"."ProposalID" = "StudyProfile"."ProposalID" 
-                   left join "ProtocolTimelines_estimated" on "ProtocolTimelines_estimated"."ProposalID" = "StudyProfile"."ProposalID" 
-                   WHERE "StudyProfile"."ProposalID" = ${proposalId};`;
+                    left join (select "PhaseOfStudy", "ProposalID" from "Proposal") as "PhaseOfStudy" on "PhaseOfStudy"."ProposalID" = "StudyProfile"."ProposalID" 
+                    left join "ProtocolTimelines_estimated" on "ProtocolTimelines_estimated"."ProposalID" = "StudyProfile"."ProposalID" 
+                    WHERE "StudyProfile"."ProposalID" = ${proposalId};`;
   db.any(query)
     .then((data) => {
       const profile = data[0];
@@ -41,8 +38,8 @@ exports.getProfile = (req, res) => {
             */
       delete profile["phase"];
       delete profile["fundingAwardDate"];
-      delete Object.assign(profile, { ["phase"]: profile["PhaseMapped"] })[
-        "PhaseMapped"
+      delete Object.assign(profile, { ["phase"]: profile["PhaseOfStudy"] })[
+        "PhaseOfStudy"
       ];
 
       Object.keys(profile).forEach((key) => {
