@@ -1,29 +1,38 @@
 const express = require("express");
+const https = require("https");
 const app = express();
 const cors = require("cors");
 const db = require("./config/database");
 var multer = require("multer");
 const axios = require("axios");
-const session = require("express-session");
+var cookieSession = require("cookie-session");
+
+const NON_PROTECTED_ROUTES = ["/auth_status", "/auth"];
 
 // CORS
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // session
 app.use(
-  session({
-    secret: process.env.API_SESSION_SECRET,
-    cookie: {
-      maxAge: 360000,
-    },
+  cookieSession({
+    name: "session",
+    keys: [process.env.API_SESSION_SECRET],
+
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
 
 app.use((req, res, next) => {
-  if (req.path === "/auth" || process.env.NODE_ENV === "development") {
+  const authInfo =
+    typeof req.session.auth_info === "undefined" ? {} : req.session.auth_info;
+  if (
+    NON_PROTECTED_ROUTES.includes(req.path) ||
+    process.env.NODE_ENV === "developments"
+  ) {
     next();
   } else {
-    if (req.app.get("authenticated")) {
+    if (Object.keys(authInfo).length) {
       next();
     } else {
       res.status(401).send("Please login");
@@ -35,6 +44,7 @@ app.use((req, res, next) => {
 const PORT = process.env.API_PORT || 3030;
 const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY;
 const DASHBOARD_URL = process.env.DASHBOARD_URL;
+const AUTH_URL = process.env.AUTH_URL;
 
 // Tell me it's working!
 app.listen(PORT, () => {
@@ -81,22 +91,34 @@ app.use("/template", require("./routes/template-download"));
 // Graphics
 app.use("/graphics", require("./routes/graphics"));
 
+app.get("/auth_status", (req, res, next) => {
+  const authInfo =
+    typeof req.session.auth_info === "undefined" ? {} : req.session.auth_info;
+  res.status(200).send({ auth_info: authInfo });
+});
+
 // Auth
 app.post("/auth", (req, res, next) => {
   const code = req.body.code;
-  // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
-  if (!app.get("authenticated")) {
-    console.log("going in here");
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
+  if (!req.session.auth_info) {
     axios
       .get(
-        `http://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`
+        `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
+        { httpsAgent: agent }
       )
       .then((response) => {
         if (response.status === 200) {
-          app.set("authenticated", true);
+          const data = response.data;
+          data.authenticated = true;
+          req.session.auth_info = data;
+
           res.redirect(
-            `https://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
+            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
           );
+          res.end();
         }
       })
       .catch((err) => {
@@ -105,7 +127,7 @@ app.post("/auth", (req, res, next) => {
       });
   } else {
     res.redirect(
-      `https://dev-auth-fuse.renci.org/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
+      `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`
     );
   }
 });

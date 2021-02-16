@@ -92,6 +92,7 @@ services:
       POSTGRES_PORT: $POSTGRES_PORT
       FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
       DASHBOARD_URL: $DASHBOARD_URL
+      API_SESSION_SECRET: $API_SESSION_SECRET
     depends_on:
       - db
     restart: always
