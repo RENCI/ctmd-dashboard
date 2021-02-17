@@ -9,25 +9,28 @@ const lookupFieldName = require("../config/dictionary");
 exports.getProfile = (req, res) => {
   const proposalId = req.params.id;
   const query = `SELECT 
-                     "StudyProfile".*,
-                     "PhaseOfStudy"."PhaseMapped",
-                     "actualGrantAwardDate" as "Date Funding was Awarded",
-                      case 
-                        when t.description like '%TIC%' then t.description
-                        else null
-                      end as "tic",
-                      case 
-                        when t.description like '%RIC%' then t.description
-                        else null
-                      end as "ric"
-                   FROM "StudyProfile"
-                   left join (select "name".description, ap."ProposalID" 
-                        from "AssignProposal" ap 
-                        join "name" on ap."assignToInstitution" = "name"."index" 
-                        where "name"."table" = 'AssignProposal') as t on t."ProposalID" = "StudyProfile"."ProposalID" 
-                    left join (select "PhaseOfStudy", "ProposalID" from "Proposal") as "PhaseOfStudy" on "PhaseOfStudy"."ProposalID" = "StudyProfile"."ProposalID" 
-                    left join "ProtocolTimelines_estimated" on "ProtocolTimelines_estimated"."ProposalID" = "StudyProfile"."ProposalID" 
-                    WHERE "StudyProfile"."ProposalID" = ${proposalId};`;
+                "StudyProfile".*,
+                "PhaseOfStudy"."PhaseMapped",
+                "actualGrantAwardDate" as "Date Funding was Awarded",
+                  case 
+                    when t.description like '%TIC%' then t.description
+                    else null
+                  end as "tic",
+                  case 
+                    when t.description like '%RIC%' then t.description
+                    else null
+                  end as "ric"
+                  FROM "StudyProfile"
+                  left join (select "name".description, ap."ProposalID" 
+                    from "AssignProposal" ap 
+                    join "name" on ap."assignToInstitution" = "name"."index" 
+                    where "name"."table" = 'AssignProposal') as t on t."ProposalID" = "StudyProfile"."ProposalID" 
+                  left join (select "PhaseOfStudy", "ProposalID", "description" as "PhaseMapped"
+                        from "Proposal" 
+                        join "name" on "name"."index" = "Proposal"."PhaseOfStudy" 
+                        where "name"."column" = 'PhaseOfStudy') as "PhaseOfStudy" on "PhaseOfStudy"."ProposalID" = "StudyProfile"."ProposalID" 
+                  left join "ProtocolTimelines_estimated" on "ProtocolTimelines_estimated"."ProposalID" = "StudyProfile"."ProposalID" 
+                  WHERE "StudyProfile"."ProposalID" = ${proposalId};`;
   db.any(query)
     .then((data) => {
       const profile = data[0];
@@ -38,8 +41,8 @@ exports.getProfile = (req, res) => {
             */
       delete profile["phase"];
       delete profile["fundingAwardDate"];
-      delete Object.assign(profile, { ["phase"]: profile["PhaseOfStudy"] })[
-        "PhaseOfStudy"
+      delete Object.assign(profile, { ["phase"]: profile["PhaseMapped"] })[
+        "PhaseMapped"
       ];
 
       Object.keys(profile).forEach((key) => {
