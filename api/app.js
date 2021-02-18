@@ -13,7 +13,6 @@ const AGENT = new https.Agent({
   rejectUnauthorized: false,
 })
 const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout']
-
 const PORT = process.env.API_PORT || 3030
 const AUTH_API_KEY = 'TEST123' // process.env.FUSE_AUTH_API_KEY;
 const DASHBOARD_URL = process.env.DASHBOARD_URL
@@ -150,5 +149,3 @@ app.post('/logout', (req, res, next) => {
   console.log(req)
   res.end()
 })
-
-//sD6Ed9mDaL
