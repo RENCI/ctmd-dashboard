@@ -5,27 +5,40 @@ const cors = require("cors");
 const db = require("./config/database");
 var multer = require("multer");
 const axios = require("axios");
-var cookieSession = require("cookie-session");
+// var cookieSession = require("cookie-session");
+const session = require("express-session");
 
-const NON_PROTECTED_ROUTES = ["/auth_status", "/auth"];
+// Config
+const AGENT = new https.Agent({
+  rejectUnauthorized: false,
+});
+const NON_PROTECTED_ROUTES = ["/auth_status", "/auth", "/logout"];
+
+const PORT = process.env.API_PORT || 3030;
+const AUTH_API_KEY = "TEST123"; // process.env.FUSE_AUTH_API_KEY;
+const DASHBOARD_URL = process.env.DASHBOARD_URL;
+const AUTH_URL = "https://dev-auth-fuse.renci.org"; // process.env.AUTH_URL;
 
 // CORS
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // session
 app.use(
-  cookieSession({
-    name: "session",
-    keys: [process.env.API_SESSION_SECRET],
-
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  session({
+    secret: process.env.API_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      expires: 12 * 60 * 60 * 1000,
+    },
   })
 );
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
+  const code = req.query.code;
   const authInfo =
     typeof req.session.auth_info === "undefined" ? {} : req.session.auth_info;
+
   if (
     NON_PROTECTED_ROUTES.includes(req.path) ||
     process.env.NODE_ENV === "developments"
@@ -33,18 +46,29 @@ app.use((req, res, next) => {
     next();
   } else {
     if (Object.keys(authInfo).length) {
+      req.session.touch();
       next();
+    } else if (code) {
+      axios
+        .get(
+          `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=http://localhost:3030&code=${code}&redirect=True`,
+          { httpsAgent: AGENT }
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            next();
+          }
+        })
+        .catch((err) => {
+          res
+            .status(err.request.res.statusCode)
+            .send(err.request.res.statusMessage);
+        });
     } else {
       res.status(401).send("Please login");
     }
   }
 });
-
-// Config
-const PORT = process.env.API_PORT || 3030;
-const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY;
-const DASHBOARD_URL = process.env.DASHBOARD_URL;
-const AUTH_URL = process.env.AUTH_URL;
 
 // Tell me it's working!
 app.listen(PORT, () => {
@@ -100,14 +124,12 @@ app.get("/auth_status", (req, res, next) => {
 // Auth
 app.post("/auth", (req, res, next) => {
   const code = req.body.code;
-  const agent = new https.Agent({
-    rejectUnauthorized: false,
-  });
+
   if (!req.session.auth_info) {
     axios
       .get(
         `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`,
-        { httpsAgent: agent }
+        { httpsAgent: AGENT }
       )
       .then((response) => {
         if (response.status === 200) {
@@ -131,3 +153,14 @@ app.post("/auth", (req, res, next) => {
     );
   }
 });
+
+app.post("/logout", (req, res, next) => {
+  console.log("in logout");
+  req.session.destroy(function (err) {
+    console.log(err);
+  });
+  console.log(req);
+  res.end();
+});
+
+//sD6Ed9mDaL
