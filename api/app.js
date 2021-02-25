@@ -14,9 +14,9 @@ const AGENT = new https.Agent({
 })
 const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout']
 const PORT = process.env.API_PORT || 3030
-const AUTH_API_KEY = 'TEST123' // process.env.FUSE_AUTH_API_KEY;
+const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
 const DASHBOARD_URL = process.env.DASHBOARD_URL
-const AUTH_URL = 'https://dev-auth-fuse.renci.org' // process.env.AUTH_URL;
+const AUTH_URL = process.env.AUTH_URL
 
 // CORS
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
@@ -37,7 +37,7 @@ app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
 
-  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'developments') {
+  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'development') {
     next()
   } else {
     if (Object.keys(authInfo).length) {
