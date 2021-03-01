@@ -80,6 +80,7 @@ endpoints = {
   uploadStudySites: pipelineApiRoot + `table/StudySites/column/siteId`,
   uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation/column/ProposalID`,
   authStatus: apiRoot + 'auth_status',
+  logout: apiRoot + 'logout'
 }
 
 // Template Downloads

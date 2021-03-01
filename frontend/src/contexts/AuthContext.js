@@ -20,9 +20,11 @@ export const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false)
   const validReferrer = document.referrer.includes('redcap.vanderbilt.edu') || process.env.NODE_ENV === 'developments'
 
-  const logout = () => {
+  const logout = async () => {
+    const response = await axios.post(api.logout, { withCredentials: true })
     localStorage.removeItem('ctmd-user-v2')
     window.location = 'https://redcap.vanderbilt.edu/plugins/TIN'
+    //  const response = await axios.post(api.logout, { withCredentials: true })
   }
 
   //   const authenticate = (auth_response) => {
