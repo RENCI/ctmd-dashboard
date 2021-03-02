@@ -59,7 +59,7 @@ export const SitesTable = props => {
                     { title: 'Site Name', field: 'siteName', hidden: false, },
                     { title: 'CTSA Name', field: 'ctsaName', hidden: false, },
                     { title: 'PI', field: 'principalInvestigator', hidden: false, },
-                    { title: 'Reg Packet Sent', field: 'dateRegPacketSent', hidden: true, },
+                    { title: 'Date Protocol Sent', field: 'dateRegPacketSent', hidden: true, },
                     { title: 'Contract Sent', field: 'dateContractSent', hidden: true, },
                     { title: 'IRB Submission', field: 'dateIrbSubmission', hidden: true, },
                     { title: 'IRB Approval', field: 'dateIrbApproval', hidden: true, },
