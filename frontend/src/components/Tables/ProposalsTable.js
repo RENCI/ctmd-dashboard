@@ -173,11 +173,6 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.fundingSourceConfirmation,
                 },
                 {
-                    title: headerWithTooltip('Notable Risk', 'Is there an identified risk?'),
-                    field: 'notableRisk',
-                    hidden: !settings.tables.visibleColumns.notableRisk,
-                },
-                {
                     title: headerWithTooltip('Number of CTSA Program Hub Sites', 'Number of CTSA Program Hub Sites'),
                     field: 'numberCTSAprogHubSites',
                     hidden: !settings.tables.visibleColumns.numberCTSAprogHubSites,
