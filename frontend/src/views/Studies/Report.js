@@ -77,6 +77,7 @@ export const StudyReportPage = (props) => {
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
+  const [initialParticipatingSiteCount, setInitialParticipatingSiteCount] = useState(null)
 
   useEffect(() => {
     if (store.proposals) {
@@ -112,6 +113,7 @@ export const StudyReportPage = (props) => {
 
             setStudySites(sitesResponse.data)
             setStudyEnrollmentData(enrollmentResponse.data)
+            setInitialParticipatingSiteCount(profileResponse.data.initialParticipatingSiteCount.value)
           })
         )
         .catch((err) => {
@@ -181,7 +183,7 @@ export const StudyReportPage = (props) => {
           </Grid>
 
           <Grid item xs={11} sm={5} md={4} lg={3}>
-            <Milestones sites={studySites} />
+            <Milestones sites={studySites} sitesCount={initialParticipatingSiteCount} />
           </Grid>
 
           <Grid item xs={11}>

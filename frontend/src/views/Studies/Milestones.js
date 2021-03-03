@@ -16,7 +16,7 @@ Array.prototype.chunk = function (size) {
   return chunks
 }
 
-export const Milestones = ({ sites }) => {
+export const Milestones = ({ sites, sitesCount }) => {
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
@@ -34,7 +34,7 @@ export const Milestones = ({ sites }) => {
   }
 
   const thresholds = (property) => {
-    const quartileSize = Math.round(sites.length / 4)
+    const quartileSize = Math.round(sitesCount / 4)
     const activationDates = sites
       .map((site) => site[property])
       .filter((date) => date !== '')
@@ -62,7 +62,7 @@ export const Milestones = ({ sites }) => {
     return sites.reduce(reducer, 0)
   }
 
-  const activeSitesPercentage = () => 100 * (activeSitesCount() / sites.length).toFixed(2)
+  const activeSitesPercentage = () => 100 * (activeSitesCount() / sitesCount).toFixed(2)
 
   useEffect(() => {
     if (sites) {
@@ -86,7 +86,7 @@ export const Milestones = ({ sites }) => {
         <Subsubheading align="center">Site Activation</Subsubheading>
         <SitesActivationPieChart percentage={activeSitesPercentage()} />
         <Caption align="center">
-          {activeSitesCount()} of {sites.length} sites
+          {activeSitesCount()} of {sitesCount} sites
         </Caption>
       </CardContent>
       <CardContent>
@@ -101,16 +101,16 @@ export const Milestones = ({ sites }) => {
             <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="25% Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+            <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="50% Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+            <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="75% Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+            <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
           </ListItem>
           <ListItem>
-            <ListItemText primary="100% Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+            <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
           </ListItem>
         </List>
       </CardContent>
