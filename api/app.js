@@ -129,7 +129,7 @@ app.post('/auth', (req, res, next) => {
           req.session.auth_info = data
 
           res.redirect(
-            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
+            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=true`
           )
           res.end()
         }
@@ -140,7 +140,7 @@ app.post('/auth', (req, res, next) => {
       })
   } else {
     res.redirect(
-      `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
+      `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=true`
     )
   }
 })
