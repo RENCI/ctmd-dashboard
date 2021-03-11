@@ -46,7 +46,7 @@ app.use(async (req, res, next) => {
     } else if (code) {
       axios
         .get(
-          `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=http://localhost:3030&code=${code}&redirect=True`,
+          `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=http://localhost:3030&code=${code}&redirect=true`,
           { httpsAgent: AGENT }
         )
         .then((response) => {
@@ -119,7 +119,7 @@ app.post('/auth', (req, res, next) => {
 
   if (!req.session.auth_info) {
     axios
-      .get(`${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=False`, {
+      .get(`${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`, {
         httpsAgent: AGENT,
       })
       .then((response) => {
@@ -128,7 +128,9 @@ app.post('/auth', (req, res, next) => {
           data.authenticated = true
           req.session.auth_info = data
 
-          res.redirect(`${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`)
+          res.redirect(
+            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
+          )
           res.end()
         }
       })
@@ -137,7 +139,9 @@ app.post('/auth', (req, res, next) => {
         res.status(400).send('error')
       })
   } else {
-    res.redirect(`${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}`)
+    res.redirect(
+      `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
+    )
   }
 })
 
