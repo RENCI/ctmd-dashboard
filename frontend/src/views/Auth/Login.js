@@ -3,7 +3,6 @@ import { Title, Paragraph } from '../../components/Typography'
 import { Card, CardHeader, CardContent, Button, List, ListItem } from '@material-ui/core'
 
 export const LoginPage = (props) => {
-  console.log('HEEERE', window.location.origin)
   return (
     <Fragment>
       <Title>Access Denied</Title>
@@ -20,7 +19,7 @@ export const LoginPage = (props) => {
           <Paragraph center>
             <form
               method="POST"
-              action={`https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${window.location.origin}/auth`}
+              action={`https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${window.location.origin}/api/auth`}
               style={{ display: 'flex', justifyContent: 'center' }}
             >
               <Button type="submit" color="primary" variant="contained">
