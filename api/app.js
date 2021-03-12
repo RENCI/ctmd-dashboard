@@ -114,7 +114,6 @@ app.get('/auth_status', (req, res, next) => {
 // Auth
 app.post('/auth', (req, res, next) => {
   const code = req.body.code
-  console.log(code)
   if (!req.session.auth_info) {
     axios
       .get(`${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`, {
@@ -127,7 +126,7 @@ app.post('/auth', (req, res, next) => {
           req.session.auth_info = data
 
           res.redirect(
-            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
+            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=true`
           )
           res.end()
         }
