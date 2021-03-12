@@ -33,30 +33,28 @@ app.use(
   })
 )
 
+// ${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=http://localhost:3030&code=${code}&redirect=alse
 app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
+  const url = `https://redcap.vanderbilt.edu/plugins/TIN/sso/check_login?code=${code}`
 
-  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'development') {
+  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'developments') {
     next()
   } else {
     if (Object.keys(authInfo).length) {
       req.session.touch()
       next()
     } else if (code) {
-      axios
-        .get(
-          `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=http://localhost:3030&code=${code}&redirect=true`,
-          { httpsAgent: AGENT }
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            next()
-          }
-        })
-        .catch((err) => {
-          res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
-        })
+      try {
+        const response = await axios.get(url, { httpsAgent: AGENT })
+        if (response.status === 200) {
+          next()
+        } else {
+        }
+      } catch (err) {
+        res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
+      }
     } else {
       res.status(401).send('Please login')
     }
@@ -116,7 +114,7 @@ app.get('/auth_status', (req, res, next) => {
 // Auth
 app.post('/auth', (req, res, next) => {
   const code = req.body.code
-
+  console.log(code)
   if (!req.session.auth_info) {
     axios
       .get(`${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`, {
@@ -129,7 +127,7 @@ app.post('/auth', (req, res, next) => {
           req.session.auth_info = data
 
           res.redirect(
-            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=true`
+            `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
           )
           res.end()
         }
@@ -147,8 +145,9 @@ app.post('/auth', (req, res, next) => {
 
 app.post('/logout', (req, res, next) => {
   console.log('in logout')
+  res.cookie('express.sid', '', { expires: new Date() })
   req.session.destroy(function (err) {
-    console.log(err)
+    console.log('ERROR', err)
   })
   console.log(req)
   res.end()
