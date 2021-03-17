@@ -94,6 +94,7 @@ services:
       DASHBOARD_URL: $DASHBOARD_URL
       API_SESSION_SECRET: $API_SESSION_SECRET
       AUTH_URL: $AUTH_URL
+      IS_HEAL_SERVER: $IS_HEAL_SERVER
     depends_on:
       - db
     restart: always

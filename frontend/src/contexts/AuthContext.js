@@ -47,18 +47,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
-    const data = response.data.auth_info
+    const data = response.data
 
-    if (Object.keys(data)) {
+    if (response.status == 200) {
       setUser(data)
       setLocalStorageUser(data)
-      setAuthenticated(response.data.auth_info.authenticated)
+      setAuthenticated(data.authenticated)
     }
   }, [])
 
-  return (
-    <AuthContext.Provider value={{ user: user, authenticated: authenticated, logout: logout }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={{ user: user, authenticated: authenticated, logout: logout }}>{children}</AuthContext.Provider>
 }
