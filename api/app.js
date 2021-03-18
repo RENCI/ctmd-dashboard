@@ -40,7 +40,7 @@ app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
   const url = `https://redcap.vanderbilt.edu/plugins/TIN/sso/check_login?code=${code}`
-  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'developments') {
+  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'development') {
     next()
   } else {
     if (Object.keys(authInfo).length) {
