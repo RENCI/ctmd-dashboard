@@ -18,7 +18,7 @@ const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
 const DASHBOARD_URL = process.env.DASHBOARD_URL
 const AUTH_URL = process.env.AUTH_URL
 const isHealServer = process.env.IS_HEAL_SERVER || false
-const HEAL_USERS = isHealServer ? getHealUsers('./heal-users.txt') : []
+const HEAL_USERS = getHealUsers('./heal-users.txt')
 
 // CORS
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
@@ -134,8 +134,8 @@ app.post('/auth', async (req, res, next) => {
   const urlNoRedirect = `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
 
   if (!req.session.auth_info) {
-    const response = await axios.get(urlNoRedirect, { httpsAgent: AGENT })
     try {
+      const response = await axios.get(urlNoRedirect, { httpsAgent: AGENT })
       if (response.status === 200) {
         const data = response.data
         data.authenticated = true
