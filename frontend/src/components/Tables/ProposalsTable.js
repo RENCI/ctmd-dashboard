@@ -106,11 +106,11 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     field: 'fundingSource',
                     hidden: !settings.tables.visibleColumns.fundingSource,
                 },
-                {
-                    title: headerWithTooltip('New Funding Source', 'New Funding Source'),
-                    field: 'newFundingSource',
-                    hidden: !settings.tables.visibleColumns.newFundingSource,
-                },
+                // {
+                //     title: headerWithTooltip('New Funding Source', 'New Funding Source'),
+                //     field: 'newFundingSource',
+                //     hidden: !settings.tables.visibleColumns.newFundingSource,
+                // },
                 {
                     title: headerWithTooltip('Funding Status', 'New Funding Status'),
                     field: 'fundingStatus',
@@ -173,11 +173,6 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     hidden: !settings.tables.visibleColumns.fundingSourceConfirmation,
                 },
                 {
-                    title: headerWithTooltip('Notable Risk', 'Is there an identified risk?'),
-                    field: 'notableRisk',
-                    hidden: !settings.tables.visibleColumns.notableRisk,
-                },
-                {
                     title: headerWithTooltip('Number of CTSA Program Hub Sites', 'Number of CTSA Program Hub Sites'),
                     field: 'numberCTSAprogHubSites',
                     hidden: !settings.tables.visibleColumns.numberCTSAprogHubSites,
@@ -225,7 +220,6 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 grouping: true,
                 exportFileName: title,
                 groupTitle: rowData => {
-                    console.log(rowData)
                     return 'TITLE'
                 }
             }}

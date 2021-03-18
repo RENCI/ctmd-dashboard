@@ -49,15 +49,14 @@ const StudyProfile = ({ profile }) => {
     <article>
       {Object.keys(profile).map((key, i) => {
         const displayName = profile[key].displayName
-        let value =  profile[key].value
+        let value = profile[key].value
 
         if (typeof profile[key].value === 'boolean') {
           value = convertBoolToYesOrNo(profile[key].value)
-        }
-        else if (dateFields.includes(key)) {
+        } else if (dateFields.includes(key)) {
           value = formatDate(new Date(value))
         }
-      
+
         return (
           <div className={pairStyle} key={i}>
             <Key>{displayName}</Key>
@@ -78,6 +77,7 @@ export const StudyReportPage = (props) => {
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
+  const [initialParticipatingSiteCount, setInitialParticipatingSiteCount] = useState(null)
 
   useEffect(() => {
     if (store.proposals) {
@@ -94,9 +94,9 @@ export const StudyReportPage = (props) => {
     const fetchStudyData = async (proposalID) => {
       await axios
         .all([
-          axios.get(api.studyProfile(proposalID)),
-          axios.get(api.studySites(proposalID)),
-          axios.get(api.studyEnrollmentData(proposalID)),
+          axios.get(api.studyProfile(proposalID), { withCredentials: true }),
+          axios.get(api.studySites(proposalID), { withCredentials: true }),
+          axios.get(api.studyEnrollmentData(proposalID), { withCredentials: true }),
         ])
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
@@ -113,6 +113,7 @@ export const StudyReportPage = (props) => {
 
             setStudySites(sitesResponse.data)
             setStudyEnrollmentData(enrollmentResponse.data)
+            setInitialParticipatingSiteCount(profileResponse.data.initialParticipatingSiteCount.value)
           })
         )
         .catch((err) => {
@@ -182,7 +183,7 @@ export const StudyReportPage = (props) => {
           </Grid>
 
           <Grid item xs={11} sm={5} md={4} lg={3}>
-            <Milestones sites={studySites} />
+            <Milestones sites={studySites} sitesCount={initialParticipatingSiteCount} />
           </Grid>
 
           <Grid item xs={11}>
