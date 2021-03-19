@@ -18,7 +18,8 @@ const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
 const DASHBOARD_URL = process.env.DASHBOARD_URL
 const AUTH_URL = process.env.AUTH_URL
 const isHealServer = process.env.IS_HEAL_SERVER || false
-const HEAL_USERS = getHealUsers('./heal-users.txt')
+const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
+const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
 
 // CORS
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
@@ -114,8 +115,6 @@ app.get('/auth_status', (req, res, next) => {
 
   if (isHealServer) {
     let healData = checkIfIsHealUser(req, HEAL_USERS)
-    // If the user isn't authorized that code should take precedence over heal user status check
-    statusCode = statusCode == 401 ? statusCode : healData.statusCode
     data = { ...authInfo, ...healData.data }
   }
 

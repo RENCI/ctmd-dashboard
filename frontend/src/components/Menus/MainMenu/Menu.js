@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { NavLink } from 'react-router-dom'
@@ -16,6 +16,7 @@ import { TINLogoIcon } from '../../Icons/TinLogo'
 import { HEALIcon } from '../../Icons/Heal'
 import axios from 'axios'
 import api from '../../../Api'
+import { AuthContext } from '../../../contexts'
 
 const useStyles = makeStyles((theme) => ({
   nav: {
@@ -95,27 +96,23 @@ const menuItems = [
   { text: 'Studies', path: '/studies', icon: StudiesIcon },
   { text: 'Sites', path: '/sites', icon: SitesIcon },
   { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon },
-  { text: 'Uploads', path: '/uploads', icon: UploadIcon },
   {}, // an empty object causes a Divider component to render in the menu
   { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
   {}, // an empty object causes a Divider component to render in the menu
   { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
+  {
+    text: 'HEAL Dashboard',
+    path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd/api/auth',
+    icon: HEALIcon,
+  },
 ]
 
 export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
-  const HEALMenuItem = {
-    text: 'HEAL Dashboard',
-    path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd/api/auth',
-    icon: HEALIcon,
+  const { isPLAdmin } = useContext(AuthContext)
+  if (isPLAdmin) {
+    menuItems.push({ text: 'Uploads', path: '/uploads', icon: UploadIcon })
   }
-
-  useEffect(async () => {
-    const response = await axios.get(api.isHealUser, { withCredentials: true })
-    if (response.status == 200) {
-      menuItems.push(HEALMenuItem)
-    }
-  }, [])
 
   return (
     <nav className={classes.nav}>
