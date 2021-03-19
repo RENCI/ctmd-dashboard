@@ -110,8 +110,9 @@ const menuItems = [
 export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
-  if (isPLAdmin) {
-    menuItems.push({ text: 'Uploads', path: '/uploads', icon: UploadIcon })
+  const uploadMenuItem = { text: 'Uploads', path: '/uploads', icon: UploadIcon }
+  if (isPLAdmin && !menuItems.some((e) => e.text === 'Uploads')) {
+    menuItems.push(uploadMenuItem)
   }
 
   return (
