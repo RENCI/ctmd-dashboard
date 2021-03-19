@@ -1,6 +1,5 @@
 const apiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
-const pipelineApiRoot =
-  process.env.NODE_ENV === 'production' ? process.env.REACT_APP_DATA_API_ROOT : 'http://localhost:5000/'
+const pipelineApiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_DATA_API_ROOT : 'http://localhost:5000/'
 
 /*
     There are lots of endpoints we've created since development of this application began, and many are no longer used.
@@ -62,6 +61,8 @@ endpoints = {
   // studyUploadEnrollmentData: proposalID => apiRoot + `studies/${ proposalID }/enrollment-data`, // POST - to send json file containing study enrollment data
   // sitesUpload: apiRoot + `sites`, // POST to send json file containing site metrics for a study (indicated in file)
   // ctsasUpload: apiRoot + `ctsas`, // POST to send json file containing CTSAs
+  authStatus: apiRoot + 'auth_status',
+  isHealUser: apiRoot + 'is_heal_user',
 }
 
 // Pipeline
@@ -79,8 +80,7 @@ endpoints = {
   uploadStudyProfile: pipelineApiRoot + `table/StudyProfile/column/ProposalID`,
   uploadStudySites: pipelineApiRoot + `table/StudySites/column/siteId`,
   uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation/column/ProposalID`,
-  authStatus: apiRoot + 'auth_status',
-  logout: apiRoot + 'logout'
+  logout: apiRoot + 'logout',
 }
 
 // Template Downloads

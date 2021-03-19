@@ -4,6 +4,7 @@ import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { CloudUpload as UploadIcon } from '@material-ui/icons'
 import { FlashMessageContext } from '../../contexts/FlashMessageContext'
+import { AuthContext } from '../../contexts'
 
 const useStyles = makeStyles((theme) => ({
   dropzone: {
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
+  const { isPLAdmin } = useContext(AuthContext)
   const classes = useStyles()
   const fileInputRef = useRef()
   const [file, setFile] = useState([])
@@ -74,11 +76,15 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   }
 
   return (
-    <div className={classes.dropzone}>
-      <input type="file" accept="text/csv" ref={fileInputRef} className={classes.fileInput} onChange={onFilesAdded} />
-      <Button color="secondary" variant="contained" className={classes.uploadButton} onClick={handleClickUpload}>
-        Upload <UploadIcon className={classes.buttonIcon} />
-      </Button>
-    </div>
+    <>
+      {isPLAdmin && (
+        <div className={classes.dropzone}>
+          <input type="file" accept="text/csv" ref={fileInputRef} className={classes.fileInput} onChange={onFilesAdded} />
+          <Button color="secondary" variant="contained" className={classes.uploadButton} onClick={handleClickUpload}>
+            Upload <UploadIcon className={classes.buttonIcon} />
+          </Button>
+        </div>
+      )}
+    </>
   )
 }
