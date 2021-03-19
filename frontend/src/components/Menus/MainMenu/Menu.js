@@ -102,7 +102,7 @@ const menuItems = [
   { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
   {
     text: 'HEAL Dashboard',
-    path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd/api/auth',
+    path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd.renci.org/api/auth',
     icon: HEALIcon,
   },
 ]
@@ -112,7 +112,7 @@ export const Menu = ({ expanded, clickHandler }) => {
   const { isPLAdmin } = useContext(AuthContext)
   const uploadMenuItem = { text: 'Uploads', path: '/uploads', icon: UploadIcon }
   if (isPLAdmin && !menuItems.some((e) => e.text === 'Uploads')) {
-    menuItems.push(uploadMenuItem)
+    menuItems.splice(6, 0, uploadMenuItem)
   }
 
   return (
@@ -125,8 +125,8 @@ export const Menu = ({ expanded, clickHandler }) => {
                 <MenuItem
                   component={'a'}
                   href={item.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={item.text == 'HEAL Dashboard' ? '_self' : '_blank'}
+                  rel={item.text == 'HEAL Dashboard' ? '' : 'noopener noreferrer'}
                   className={classes.menuItem}
                   onClick={clickHandler}
                 >
