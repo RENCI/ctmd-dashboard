@@ -12,6 +12,7 @@ import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentCont
 import { Milestones } from './Milestones'
 import { convertBoolToYesOrNo } from '../../utils/Format'
 import { formatDate } from '../../utils/DateFormat'
+import { AuthContext } from '../../contexts'
 
 const useStyles = makeStyles((theme) => ({
   pairStyle: {
@@ -45,6 +46,7 @@ const dateFields = ['Date Funding was Awarded']
 // Profile
 const StudyProfile = ({ profile }) => {
   const { pairStyle } = useStyles()
+
   return (
     <article>
       {Object.keys(profile).map((key, i) => {
@@ -78,6 +80,7 @@ export const StudyReportPage = (props) => {
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
   const [initialParticipatingSiteCount, setInitialParticipatingSiteCount] = useState(null)
+  const { isPLAdmin } = useContext(AuthContext)
 
   useEffect(() => {
     if (store.proposals) {
@@ -174,9 +177,7 @@ export const StudyReportPage = (props) => {
                 {studyProfile ? (
                   <StudyProfile profile={studyProfile} />
                 ) : (
-                  <Paragraph>
-                    No profile found! <NavLink to="/uploads">Upload it</NavLink>!
-                  </Paragraph>
+                  <Paragraph>No profile found! {isPLAdmin && <NavLink to="/uploads">Upload it</NavLink>}!</Paragraph>
                 )}
               </CardContent>
             </Card>
