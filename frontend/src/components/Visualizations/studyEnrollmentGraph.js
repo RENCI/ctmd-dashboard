@@ -534,7 +534,7 @@ export default function() {
       const yearFormat = d3.timeFormat("%Y");
 
       const xAxis = d3.axisBottom(xScale)
-          .ticks(d3.timeMonth.every(1))
+          .ticks(d3.utcMonth.every(1))
           .tickFormat(d => d.getMonth() === 0 ? yearFormat(d) : monthFormat(d));
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
@@ -554,16 +554,10 @@ export default function() {
           .attr("transform", "translate(0," + innerHeight() + ")")
           .call(xAxis);
 
-      // Shift labels and set year format 
-      const interval = xScale(new Date(2000, 1, 1)) - xScale(new Date(2000, 0, 1));
-
+      // Set year format 
       axes.select(".xAxis").selectAll(".tick text")
-          .attr("x", interval / 2)
           .style("font-weight", d => {
             return d.getMonth() === 0 ? "bold" : null;
-          })
-          .style("visibility", (d, i, a) => {
-            return i === a.length - 1 ? "hidden" : null;
           });
 
       // Draw enrolled axis
