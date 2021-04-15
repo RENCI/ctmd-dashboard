@@ -5,7 +5,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  let margin = { top: 10, left: 40, bottom: 20, right: 40 },
+  let margin = { top: 10, left: 50, bottom: 20, right: 60 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -167,7 +167,8 @@ export default function() {
 
     const xScale = d3.scaleTime()
         .domain(d3.extent(enrolled, d => d.date))
-        .range([xOffset, innerWidth() - xOffset]);
+        .range([xOffset, innerWidth() - xOffset])
+        .nice();
 
     const maxActualEnrolled = d3.max(enrolled, d => d.actual),
           maxTargetEnrolled = d3.max(enrolled, d => d.target),
@@ -540,10 +541,16 @@ export default function() {
           .attr("transform", "translate(0," + innerHeight() + ")")
           .call(xAxis);
 
-      // Set year format
+      // Shift labels and set year format 
+      const interval = xScale(new Date(2000, 1, 1)) - xScale(new Date(2000, 0, 1));
+
       axes.select(".xAxis").selectAll(".tick text")
+          .attr("x", interval / 2)
           .style("font-weight", d => {
             return d.getMonth() === 0 ? "bold" : null;
+          })
+          .style("visibility", (d, i, a) => {
+            return i === a.length - 1 ? "hidden" : null;
           });
 
       // Draw enrolled axis
