@@ -44,7 +44,7 @@ export default function() {
           .style("pointer-events", "none")
           .offset([-10, 0])
           .html(i => {
-            const dateFormat = d3.timeFormat("%B, %Y");
+            const dateFormat = d3.timeFormat("%B %d, %Y");
             const numberFormat = d3.format(".1f");
 
             return "<div style='font-weight: bold; margin-bottom: 10px;'>" + dateFormat(enrolled[i].date) + "</div>" +
@@ -150,6 +150,9 @@ export default function() {
   }
 
   function draw() {
+    const barStrokeWidth = 2;
+    const pointRadius = 3;
+
     // Set width and height
     svg.attr("width", width)
         .attr("height", height)
@@ -220,11 +223,21 @@ export default function() {
           .style("pointer-events", "all")
           .on("mouseover", function(d, i) {
             tip.show(i, this);
-            d3.select(this).style("fill", "#fcfcfc");
+
+            d3.select(this).selectAll("rect")
+                .style("stroke-width", barStrokeWidth + 1);
+
+            svg.select(".chart").selectAll(".point").filter(e => e.date.getTime() === d.date.getTime())
+                .attr("r", pointRadius + 1);
           })
           .on("mouseout", function(d, i) {
             tip.hide();
-            d3.select(this).style("fill", "none");
+            
+            d3.select(this).selectAll("rect")
+                .style("stroke-width", barStrokeWidth);
+
+            svg.select(".chart").selectAll(".point")
+                .attr("r", pointRadius);
           });
 
         // Enter + update
@@ -255,7 +268,7 @@ export default function() {
 
           const barEnter = bar.enter().append("rect")
               .attr("class", "bar")
-              .style("stroke-width", 2);
+              .style("stroke-width", barStrokeWidth);
 
           // Enter + update
           barEnter.merge(bar)
@@ -342,7 +355,7 @@ export default function() {
         pointEnter.merge(point)
             .attr("cx", d => xScale(d.date))
             .attr("cy", d => yScale(d.value))
-            .attr("r", 3)
+            .attr("r", pointRadius)
             .style("fill", color)
             .style("stroke", "none");
 
