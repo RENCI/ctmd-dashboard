@@ -5,7 +5,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  let margin = { top: 10, left: 50, bottom: 20, right: 60 },
+  let margin = { top: 10, left: 50, bottom: 30, right: 60 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -123,12 +123,14 @@ export default function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      const groups = ["legend", "chart", "axes"];
+      const groups = ["chart", "axes", "legend"];
 
       g.selectAll("g")
           .data(groups)
         .enter().append("g")
           .attr("class", d => d);
+
+      g.select(".legend").append("rect").attr("class", "background");
 
       svg = svgEnter.merge(svg);
 
@@ -168,10 +170,13 @@ export default function() {
     // Scales
     const xOffset = barWidth * 0.75 + 10;
 
+    const xExtent = d3.extent(enrolled, d => d.date);
+    xExtent[0] = d3.timeMonth.floor(xExtent[0]);
+    xExtent[1] = d3.timeMonth.offset(xExtent[1], 1);
+
     const xScale = d3.scaleTime()
-        .domain(d3.extent(enrolled, d => d.date))
-        .range([xOffset, innerWidth() - xOffset])
-        .nice();
+        .domain(xExtent)
+        .range([xOffset, innerWidth() - xOffset]);
 
     const maxActualEnrolled = d3.max(enrolled, d => d.actual),
           maxTargetEnrolled = d3.max(enrolled, d => d.target),
@@ -531,11 +536,12 @@ export default function() {
     function drawAxes() {
       // Axes      
       const monthFormat = d3.timeFormat("%b");
+      const monthDayFormat = d3.timeFormat("%b %d");
       const yearFormat = d3.timeFormat("%Y");
 
       const xAxis = d3.axisBottom(xScale)
-          .ticks(d3.utcMonth.every(1))
-          .tickFormat(d => d.getMonth() === 0 ? yearFormat(d) : monthFormat(d));
+          .ticks(d3.timeMonth.every(1))
+          .tickFormat(d => d.getMonth() === 0 ? monthDayFormat(d) : monthFormat(d));
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
 
@@ -554,11 +560,22 @@ export default function() {
           .attr("transform", "translate(0," + innerHeight() + ")")
           .call(xAxis);
 
-      // Set year format 
-      axes.select(".xAxis").selectAll(".tick text")
-          .style("font-weight", d => {
-            return d.getMonth() === 0 ? "bold" : null;
-          });
+      // Add extra year label for January       
+      axes.select(".xAxis").selectAll(".tick").filter(d => d.getMonth() === 0).each(function(d) {
+        const label = d3.select(this).select("text");
+
+        const text = d3.select(this).selectAll("text")
+            .data([d, d]);        
+
+        text.enter().append("text")
+          .merge(text)
+            .style("font-weight", "bold")
+          .filter((d, i) => i === 1)
+            .text(d => yearFormat(d))
+            .attr("fill", label.attr("fill"))
+            .attr("y", label.attr("y") * 2.5)
+            .attr("dy", label.attr("dy"));            
+      });         
 
       // Draw enrolled axis
       const gEnrolled = axes.selectAll(".enrolledAxis")
@@ -649,9 +666,20 @@ export default function() {
           .domain(entries)
           .range(["", "5 5", "", "5 5"]);
 
+      // Background
+      svg.select(".legend").select(".background")
+          .attr("x", -10)
+          .attr("y", -15)
+          .attr("width", 135)
+          .attr("height", 110)
+          .attr("rx", 5)
+          .style("fill", "#fff")
+          .style("fill-opacity", 0.8)
+          .style("stroke", "#ddd");
+
       // Bind data
       const entry = svg.select(".legend")
-          .attr("transform", "translate(30, 0)")
+          .attr("transform", "translate(30, 10)")
           .style("pointer-events", "none")
         .selectAll(".entry")
           .data(entries);
