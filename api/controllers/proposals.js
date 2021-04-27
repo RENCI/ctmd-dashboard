@@ -2,7 +2,7 @@ const db = require('../config/database')
 
 // /proposals/:id(\\d+)
 exports.getOne = (req, res) => {
-    const query = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
+  const query = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
             "Proposal"."ShortTitle" as "shortTitle",
             "Proposal"."FullTitle" as "longTitle",
             "Proposal"."ShortDescription" AS "shortDescription",
@@ -33,7 +33,7 @@ exports.getOne = (req, res) => {
             CAST("ProtocolTimelines_estimated"."actualProtocolFinalDate" AS VARCHAR) AS "actualProtocolFinalDate",
             CAST("ProtocolTimelines_estimated"."actualGrantAwardDate" AS VARCHAR) AS "actualGrantAwardDate",
             CAST("ProtocolTimelines_estimated"."approvalReleaseDiff" AS VARCHAR) AS "approvalReleaseDiff",
-            "ProposalDetails"."notableRisk",
+            
             "ProposalDetails"."numberCTSAprogHubSites",
             "ProposalDetails"."numberSites"
         FROM "Proposal"
@@ -57,15 +57,15 @@ exports.getOne = (req, res) => {
         LEFT JOIN name name12 ON name12.index = "ProposalFunding"."instituteCenter3" AND name12."column" = 'instituteCenter3'
         LEFT JOIN name name13 ON name13.index = "ProposalFunding"."newFundingSource" AND name13."column" = 'newFundingSource'
         LEFT JOIN name name14 ON name14.index = "ProposalFunding"."fundingSourceConfirmation" AND name14."column" = 'fundingSourceConfirmation'
-        WHERE "Proposal"."ProposalID"=${ req.params.id }`
-    db.any(query)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
+        WHERE "Proposal"."ProposalID"=${req.params.id}`
+  db.any(query)
+    .then((data) => {
+      res.status(200).send(data)
+    })
+    .catch((error) => {
+      console.log('ERROR:', error)
+      res.status(500).send('There was an error fetching data.')
+    })
 }
 
 const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID",
@@ -99,7 +99,7 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             CAST("ProtocolTimelines_estimated"."actualProtocolFinalDate" AS VARCHAR) AS "actualProtocolFinalDate",
             CAST("ProtocolTimelines_estimated"."actualGrantAwardDate" AS VARCHAR) AS "actualGrantAwardDate",
             CAST("ProtocolTimelines_estimated"."approvalReleaseDiff" AS VARCHAR) AS "approvalReleaseDiff",
-            "ProposalDetails"."notableRisk",
+           
             "ProposalDetails"."numberCTSAprogHubSites",
             "ProposalDetails"."numberSites"
         FROM "Proposal"
@@ -185,8 +185,7 @@ const query3 = `SELECT "Proposal"."ProposalID" as "proposalID",
                     INNER JOIN name name5 ON name5.id="Proposal_ServicesApproved"."servicesApproved" AND name5."column"='servicesApproved'
                     ORDER BY "proposalID";`
 
-const approvedServicesQuery =
-    `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
+const approvedServicesQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposalID", name.description AS service
         FROM "Proposal"
         INNER JOIN "Proposal_ServicesPatOutcome" ON "Proposal"."ProposalID" = "Proposal_ServicesPatOutcome"."ProposalID"
         INNER JOIN name ON name.id="Proposal_ServicesPatOutcome"."servicesPatOutcome" AND name."column"='servicesPatOutcome'
@@ -215,250 +214,254 @@ const requestedServicesQuery = `SELECT CASE name.description
     ORDER BY name.description;`
 
 // function to get proposals and build object for store
-const getProposals = () => new Promise((resolve, reject) => {
-    db.task(async t => {
-        let proposals = await t.any(proposalsQuery)
-        if (proposals) {
-            proposals.forEach(proposal => {
-                proposal.profile = null
-                proposal.requestedServices = []
-                proposal.approvedServices = []
-                proposal.notableRisk = proposal.notableRisk === true ? 'YES' : ''
-                proposal.covidStudy = proposal.covidStudy === true ? 'YES' : ''
-            })
-            const profiles = await t.any(`SELECT * FROM "StudyProfile";`)
-            const requestedServices = await t.any(requestedServicesQuery)
-            const approvedServices = await t.any(approvedServicesQuery)
+const getProposals = () =>
+  new Promise((resolve, reject) => {
+    db.task(async (t) => {
+      let proposals = await t.any(proposalsQuery)
+      if (proposals) {
+        proposals.forEach((proposal) => {
+          proposal.profile = null
+          proposal.requestedServices = []
+          proposal.approvedServices = []
+          proposal.covidStudy = proposal.covidStudy === true ? 'YES' : ''
+        })
+        const profiles = await t.any(`SELECT * FROM "StudyProfile";`)
+        const requestedServices = await t.any(requestedServicesQuery)
+        const approvedServices = await t.any(approvedServicesQuery)
 
-            profiles.forEach(profile => {
-                const index = proposals.findIndex(proposal => proposal.proposalID === +profile.ProposalID)
-                if (index >= 0) proposals[index].profile = profile                
-            })
+        profiles.forEach((profile) => {
+          const index = proposals.findIndex((proposal) => proposal.proposalID === +profile.ProposalID)
+          if (index >= 0) proposals[index].profile = profile
+        })
 
-            requestedServices.forEach(service => {
-                const index = proposals.findIndex(proposal => proposal.proposalID === service.proposalID)
-                if (index >= 0) proposals[index].requestedServices.push(service.service)
-            })
+        requestedServices.forEach((service) => {
+          const index = proposals.findIndex((proposal) => proposal.proposalID === service.proposalID)
+          if (index >= 0) proposals[index].requestedServices.push(service.service)
+        })
 
-            approvedServices.forEach(service => {
-                const index = proposals.findIndex(proposal => proposal.proposalID === service.proposalID)
-                if (index >= 0) proposals[index].approvedServices.push(service.service)
-            })
+        approvedServices.forEach((service) => {
+          const index = proposals.findIndex((proposal) => proposal.proposalID === service.proposalID)
+          if (index >= 0) proposals[index].approvedServices.push(service.service)
+        })
 
-            resolve(proposals)
-        } else {
-            reject('No proposals found')
-        }
+        resolve(proposals)
+      } else {
+        reject('No proposals found')
+      }
     })
-
-})
+  })
 
 exports.getProposals = getProposals
 
 // /proposals
 exports.list = (req, res) => {
-    getProposals()
-        .then(proposals => res.status(200).send(proposals))
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
+  getProposals()
+    .then((proposals) => res.status(200).send(proposals))
+    .catch((error) => {
+      console.log('ERROR:', error)
+      res.status(500).send('There was an error fetching data.')
+    })
 }
 
 // /proposals/by-status
 exports.byStatus = (req, res) => {
-    let statusQuery = `SELECT description AS name FROM name WHERE "column"='proposalStatus' ORDER BY index;`
-    db.any(statusQuery)
-        .then(statuses => {
-            statuses.forEach(status => { status.proposals = [] })
-            db.any(proposalsQuery)
-                .then(data => {
-                    data.forEach(proposal => {
-                        const index = statuses.findIndex(status => status.name === proposal.proposalStatus)
-                        if (index >= 0) statuses[index].proposals.push(proposal)
-                    })
-                    res.status(200).send(statuses)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                    res.status(500).send('There was an error fetching data.')
-                })
+  let statusQuery = `SELECT description AS name FROM name WHERE "column"='proposalStatus' ORDER BY index;`
+  db.any(statusQuery).then((statuses) => {
+    statuses.forEach((status) => {
+      status.proposals = []
+    })
+    db.any(proposalsQuery)
+      .then((data) => {
+        data.forEach((proposal) => {
+          const index = statuses.findIndex((status) => status.name === proposal.proposalStatus)
+          if (index >= 0) statuses[index].proposals.push(proposal)
         })
+        res.status(200).send(statuses)
+      })
+      .catch((error) => {
+        console.log('ERROR:', error)
+        res.status(500).send('There was an error fetching data.')
+      })
+  })
 }
 
 // /proposals/by-submitted-service
 exports.bySubmittedService = (req, res) => {
-    let serviceQuery = `SELECT description AS name FROM name WHERE "column"='serviceSelection' ORDER BY index;`
-    db.any(serviceQuery)
-        .then(services => {
-            services.forEach(service => { service.proposals = [] })
-            db.any(query2)
-                .then(data => {
-                    data.forEach(proposal => {
-                        const index = services.findIndex(service => service.name === proposal.serviceSelection)
-                        if (index >= 0) services[index].proposals.push(proposal)
-                    })
-                    res.status(200).send(services)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                    res.status(500).send('There was an error fetching data.')
-                })
+  let serviceQuery = `SELECT description AS name FROM name WHERE "column"='serviceSelection' ORDER BY index;`
+  db.any(serviceQuery).then((services) => {
+    services.forEach((service) => {
+      service.proposals = []
+    })
+    db.any(query2)
+      .then((data) => {
+        data.forEach((proposal) => {
+          const index = services.findIndex((service) => service.name === proposal.serviceSelection)
+          if (index >= 0) services[index].proposals.push(proposal)
         })
+        res.status(200).send(services)
+      })
+      .catch((error) => {
+        console.log('ERROR:', error)
+        res.status(500).send('There was an error fetching data.')
+      })
+  })
 }
 
 // /proposals/by-tic
 exports.byTic = (req, res) => {
-    let ticQuery = `SELECT description AS name FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
-    db.any(ticQuery)
-        .then(tics => {
-            tics.forEach(tic => { tic.proposals = [] })
-            db.any(proposalsQuery)
-                .then(data => {
-                    data.forEach(proposal => {
-                        const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
-                        if (index >= 0) tics[index].proposals.push(proposal)
-                    })
-                    res.status(200).send(tics)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                    res.status(500).send('There was an error fetching data.')
-                })
+  let ticQuery = `SELECT description AS name FROM name WHERE "column"='assignToInstitution' ORDER BY index;`
+  db.any(ticQuery).then((tics) => {
+    tics.forEach((tic) => {
+      tic.proposals = []
+    })
+    db.any(proposalsQuery)
+      .then((data) => {
+        data.forEach((proposal) => {
+          const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
+          if (index >= 0) tics[index].proposals.push(proposal)
         })
+        res.status(200).send(tics)
+      })
+      .catch((error) => {
+        console.log('ERROR:', error)
+        res.status(500).send('There was an error fetching data.')
+      })
+  })
 }
 
 // /proposals/by-organization
 exports.byOrganization = (req, res) => {
-    const organizationQuery = `SELECT description AS name FROM name WHERE "column"='submitterInstitution' ORDER BY index;`
-    db.any(organizationQuery)
-        .then(organizations => {
-            organizations.forEach(organization => { organization.proposals = [] })
-            db.any(proposalsQuery)
-                .then(proposals => {
-                    proposals.forEach(proposal => {
-                        const index = organizations.findIndex(organization => organization.name === proposal.submitterInstitution)
-                        if (index >= 0) organizations[index].proposals.push(proposal)
-                    })
-                    res.status(200).send(organizations)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                    res.status(500).send('There was an error fetching data.')
-                })
+  const organizationQuery = `SELECT description AS name FROM name WHERE "column"='submitterInstitution' ORDER BY index;`
+  db.any(organizationQuery).then((organizations) => {
+    organizations.forEach((organization) => {
+      organization.proposals = []
+    })
+    db.any(proposalsQuery)
+      .then((proposals) => {
+        proposals.forEach((proposal) => {
+          const index = organizations.findIndex((organization) => organization.name === proposal.submitterInstitution)
+          if (index >= 0) organizations[index].proposals.push(proposal)
         })
+        res.status(200).send(organizations)
+      })
+      .catch((error) => {
+        console.log('ERROR:', error)
+        res.status(500).send('There was an error fetching data.')
+      })
+  })
 }
 
 // /proposals/by-therapeutic-area
 exports.byTherapeuticArea = (req, res) => {
-    const areasQuery = `SELECT description AS name FROM name WHERE "column"='therapeuticArea' ORDER BY index;`
-    db.any(areasQuery)
-        .then(areas => {
-            areas.forEach(area => { area.proposals = [] })
-            db.any(proposalsQuery)
-                .then(proposals => {
-                    proposals.forEach(proposal => {
-                        proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
-                        const index = areas.findIndex(area => area.name === proposal.therapeuticArea)
-                        if (index >= 0) areas[index].proposals.push(proposal)
-                    })
-                    res.status(200).send(areas)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                    res.status(500).send('There was an error fetching data.')
-                })
+  const areasQuery = `SELECT description AS name FROM name WHERE "column"='therapeuticArea' ORDER BY index;`
+  db.any(areasQuery).then((areas) => {
+    areas.forEach((area) => {
+      area.proposals = []
+    })
+    db.any(proposalsQuery)
+      .then((proposals) => {
+        proposals.forEach((proposal) => {
+          proposal.submission_date = proposal.prop_submit ? proposal.prop_submit.toDateString() : null
+          const index = areas.findIndex((area) => area.name === proposal.therapeuticArea)
+          if (index >= 0) areas[index].proposals.push(proposal)
         })
+        res.status(200).send(areas)
+      })
+      .catch((error) => {
+        console.log('ERROR:', error)
+        res.status(500).send('There was an error fetching data.')
+      })
+  })
 }
 
 // /proposals/by-date
 exports.byDate = (req, res) => {
-    db.any(proposalsQuery)
-        .then(data => {
-            data.map(proposal => {                            // streamline this
-                proposal.day = proposal.dateSubmitted         // streamline this
-            })                                                // streamline this
-            dates = data.map(({ day }) => day || '')                // streamline this
-            proposalsByDate = []
-            dates.forEach(date => {
-                const dateIndex = proposalsByDate.findIndex(proposal => proposal.day === date)
-                if (dateIndex >= 0) {
-                    proposalsByDate[dateIndex].value += 1
-                } else {
-                    proposalsByDate.push({ day: date, value: 1 })
-                }
-            })
-            res.status(200).send(proposalsByDate)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
+  db.any(proposalsQuery)
+    .then((data) => {
+      data.map((proposal) => {
+        // streamline this
+        proposal.day = proposal.dateSubmitted // streamline this
+      }) // streamline this
+      dates = data.map(({ day }) => day || '') // streamline this
+      proposalsByDate = []
+      dates.forEach((date) => {
+        const dateIndex = proposalsByDate.findIndex((proposal) => proposal.day === date)
+        if (dateIndex >= 0) {
+          proposalsByDate[dateIndex].value += 1
+        } else {
+          proposalsByDate.push({ day: date, value: 1 })
+        }
+      })
+      res.status(200).send(proposalsByDate)
+    })
+    .catch((error) => {
+      console.log('ERROR:', error)
+      res.status(500).send('There was an error fetching data.')
+    })
 }
 
 // /proposals/approved-services
 exports.approvedServices = (req, res) => {
-    db.any(query3)
-        .then(data => {
-            let newData = []
-            data.forEach(proposal => {
-                proposal.proposal_id = parseInt(proposal.proposal_id)
-                const proposalIndex = newData.findIndex(q => q.proposal_id === proposal.proposal_id)
-                if (proposalIndex >= 0) {
-                    newData[proposalIndex].services_approved.push(proposal.service_approved)
-                } else {
-                    newData.push({
-                        proposal_id: proposal.proposal_id,
-                        services_approved: [proposal.service_approved],
-                        meeting_date: proposal.meeting_date.toDateString(),
-                    })
-                }
-            })
-            res.status(200).send(newData)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
+  db.any(query3)
+    .then((data) => {
+      let newData = []
+      data.forEach((proposal) => {
+        proposal.proposal_id = parseInt(proposal.proposal_id)
+        const proposalIndex = newData.findIndex((q) => q.proposal_id === proposal.proposal_id)
+        if (proposalIndex >= 0) {
+          newData[proposalIndex].services_approved.push(proposal.service_approved)
+        } else {
+          newData.push({
+            proposal_id: proposal.proposal_id,
+            services_approved: [proposal.service_approved],
+            meeting_date: proposal.meeting_date.toDateString(),
+          })
+        }
+      })
+      res.status(200).send(newData)
+    })
+    .catch((error) => {
+      console.log('ERROR:', error)
+      res.status(500).send('There was an error fetching data.')
+    })
 }
-
 
 // /proposals/submitted-services
 exports.submittedServices = (req, res) => {
-    db.any(query2)
-        .then(data => {
-            let newData = []
-            data.forEach(prop => {
-                prop.proposal_id = parseInt(prop.proposal_id)
-                const propIndex = newData.findIndex(q => q.proposal_id === prop.proposal_id)
-                if (propIndex >= 0) {
-                    newData[propIndex].new_service_selection.push(prop.new_service_selection)
-                } else {
-                    newData.push({
-                        proposal_id: prop.proposal_id,
-                        new_service_selection: [prop.new_service_selection],
-                        meeting_date: prop.meeting_date.toDateString(),
-                    })
-                }
-            })
-            res.status(200).send(newData)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
+  db.any(query2)
+    .then((data) => {
+      let newData = []
+      data.forEach((prop) => {
+        prop.proposal_id = parseInt(prop.proposal_id)
+        const propIndex = newData.findIndex((q) => q.proposal_id === prop.proposal_id)
+        if (propIndex >= 0) {
+          newData[propIndex].new_service_selection.push(prop.new_service_selection)
+        } else {
+          newData.push({
+            proposal_id: prop.proposal_id,
+            new_service_selection: [prop.new_service_selection],
+            meeting_date: prop.meeting_date.toDateString(),
+          })
+        }
+      })
+      res.status(200).send(newData)
+    })
+    .catch((error) => {
+      console.log('ERROR:', error)
+      res.status(500).send('There was an error fetching data.')
+    })
 }
 
 // /proposals/network
 exports.proposalsNetwork = (req, res) => {
-    db.any(proposalsQuery)
-        .then(data => {
-            res.status(200).send(data)
-        })
-        .catch(error => {
-            console.log('ERROR:', error)
-            res.status(500).send('There was an error fetching data.')
-        })
+  db.any(proposalsQuery)
+    .then((data) => {
+      res.status(200).send(data)
+    })
+    .catch((error) => {
+      console.log('ERROR:', error)
+      res.status(500).send('There was an error fetching data.')
+    })
 }
 
 // // Submitted for Services
@@ -772,7 +775,6 @@ exports.proposalsNetwork = (req, res) => {
 //             res.status(500).send('There was an error fetching data.')
 //         })
 // }
-
 
 // // /proposals/count-days/approval-to-grant-submission
 // exports.daysBetweenApprovalAndGrantSubmission = (req, res) => {

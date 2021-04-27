@@ -51,6 +51,7 @@ services:
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
+      - $MAPPING_LOCAL_PATH:/mapping.json
     depends_on:
       - db
       - redis

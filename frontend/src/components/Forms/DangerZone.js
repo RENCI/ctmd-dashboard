@@ -32,7 +32,7 @@ export const DangerZone = (props) => {
   useEffect(() => {
     const fetchBackups = async () => {
       await axios
-        .get(api.dataGetBackups, { withCredentials: true })
+        .get(api.dataGetBackups)
         .then((response) => {
           setBackups(response.data.splice(0, 5))
         })
@@ -44,7 +44,7 @@ export const DangerZone = (props) => {
   const handleBackup = (event) => {
     console.log('Initializing data backup...')
     axios
-      .get(api.dataPostBackup, { withCredentials: true })
+      .get(api.dataPostBackup)
       .then((response) => {
         if (response.status === 200) {
           addFlashMessage({ type: 'success', text: 'Scheduling data backup!' })
@@ -63,7 +63,7 @@ export const DangerZone = (props) => {
   const handleRestore = (timestamp) => (event) => {
     console.log(`Initializing data restoration from ${timestamp}...`)
     axios
-      .get(api.dataRestore(timestamp), { withCredentials: true })
+      .get(api.dataRestore(timestamp))
       .then((response) => {
         if (response.status === 200) {
           addFlashMessage({ type: 'success', text: 'Scheduling data restore!' })
@@ -103,9 +103,9 @@ export const DangerZone = (props) => {
       <Grid item xs={9}>
         <strong>Backup</strong>
         <Paragraph>
-          Store a current snapshot of the database within this instance of the application to the server. Executing a
-          manual backup here may be a desirable action before stopping the application to preserve data added or changed
-          since the last automatic backup, which occur nightly.
+          Store a current snapshot of the database within this instance of the application to the server. Executing a manual backup here may
+          be a desirable action before stopping the application to preserve data added or changed since the last automatic backup, which
+          occur nightly.
         </Paragraph>
       </Grid>
       <Grid item xs={3} style={{ textAlign: 'right' }}>
@@ -119,8 +119,7 @@ export const DangerZone = (props) => {
       <Grid item xs={12}>
         <strong>Restore</strong>
         <Paragraph>
-          Restore the state of the database to a previous backup. Note that only the five most recent backups are
-          displayed.
+          Restore the state of the database to a previous backup. Note that only the five most recent backups are displayed.
         </Paragraph>
       </Grid>
       <Grid item xs={12}>
@@ -133,13 +132,7 @@ export const DangerZone = (props) => {
                 </Paragraph>
               </Grid>
               <Grid item xs={12} sm={3}>
-                <Button
-                  size="large"
-                  fullWidth
-                  variant="outlined"
-                  classes={{ outlined: classes.danger }}
-                  onClick={handleRestore(timestamp)}
-                >
+                <Button size="large" fullWidth variant="outlined" classes={{ outlined: classes.danger }} onClick={handleRestore(timestamp)}>
                   Restore
                 </Button>
               </Grid>
