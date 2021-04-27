@@ -52,6 +52,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
       formdata.append('has_comments', 'true')
       headers = {
         ...headers,
+        // TODO: Figure out if this is needed
         'Access-Control-Allow-Origin': '*',
         // 'content-type': 'multipart/form-data'
       }
@@ -60,7 +61,6 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
         method: method,
         headers: headers,
         data: formdata,
-        withCredentials: true,
       }).then((response) => {
         console.log(response)
         if (response.status === 200) {
