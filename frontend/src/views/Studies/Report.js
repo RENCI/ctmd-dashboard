@@ -10,8 +10,7 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
-import { convertBoolToYesOrNo } from '../../utils/Format'
-import { formatDate } from '../../utils/DateFormat'
+import { convertBoolToYesOrNo, formatDate } from '../../utils'
 import { AuthContext } from '../../contexts'
 
 const useStyles = makeStyles((theme) => ({
@@ -104,6 +103,11 @@ export const StudyReportPage = (props) => {
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
             setStudyProfile(profileResponse.data)
+
+            console.log(profileResponse)
+            console.log(sitesResponse)
+            console.log(enrollmentResponse)
+
             sitesResponse.data.forEach((site) => {
               // Convert enrollment data to numbers
               site.patientsConsentedCount = +site.patientsConsentedCount
@@ -112,6 +116,8 @@ export const StudyReportPage = (props) => {
               site.patientsExpectedCount = +site.patientsExpectedCount
               site.queriesCount = +site.queriesCount
               site.protocolDeviationsCount = +site.protocolDeviationsCount
+              // Format date from timestamp
+              site.dateRegPacketSent = site.dateRegPacketSent ? formatDate(new Date(site.dateRegPacketSent)) : ''
             })
 
             setStudySites(sitesResponse.data)
