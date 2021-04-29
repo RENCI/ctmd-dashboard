@@ -56,7 +56,7 @@ services:
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
       # Uncomment this if you want to use a test dataset and change local file path for desired path
-      # Local file path must
+      # Comment out below
       # - ./test_data.json:/test_data.json
     depends_on:
       - db
