@@ -218,6 +218,8 @@ Environment variables live in the file `./.env` in the project root. This file c
 - `AUTH_API_KEY`: The api key for the auth server
 - `API_SESSION_SECRET`: The api session secret for the api
 - `AUTH_URL`: The url to the auth server. Needs to be set when deployed.
+- `MAPPING_LOCAL_PATH` the path to your dataset
+- `DATA_INPUT_FILE_PATH` the name of your dataset
 
 ```
 ProposalId
