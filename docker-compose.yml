@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:latest
+    image: txscience/ctmd-pipeline-reload:v2.0
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -47,8 +47,8 @@ services:
       SPARK_DRIVER_MEMORY: 8g
       PAUSE: $PAUSE
       # Uncomment both of these if you want to use a test dataset
-      # DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
-      # DOWNLOAD_REDCAP_DATA: 0
+      DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
+      DOWNLOAD_REDCAP_DATA: 0
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
@@ -56,8 +56,8 @@ services:
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
       # Uncomment this if you want to use a test dataset and change local file path for desired path
-      # Comment out below
-      # - ./test_data.json:/test_data.json
+      # Local file path must
+      - ./test_data.json:/test_data.json
     depends_on:
       - db
       - redis
