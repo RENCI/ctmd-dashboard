@@ -30,7 +30,7 @@ class StudyEnrollmentContainer extends Component {
     componentDidMount() {
         this.updateWindowDimensions();
 
-        axios.get(api.studyEnrollmentData(this.props.study.proposalID))
+        axios.get(api.studyEnrollmentData(this.props.study.proposalID),  { withCredentials: true })
             .then(result => {
                 this.setState({
                     enrollmentData: result.data

@@ -7,7 +7,7 @@ export const useProposal = id => {
     
     useEffect(() => {
         const fetchProposal = async () => {
-            const result = await axios(api.oneProposal(id))
+            const result = await axios(api.oneProposal(id),  { withCredentials: true })
             setProposal(result.data[0])
         }
         fetchProposal()

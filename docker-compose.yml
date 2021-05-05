@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   redis:
@@ -13,23 +13,23 @@ services:
     expose:
       - 6379
     command: ["--appendonly", "yes"]
-    
+
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:latest
+    image: txscience/ctmd-pipeline-reload:v2.0
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_PORT: $POSTGRES_PORT    
+      POSTGRES_PORT: $POSTGRES_PORT
       POSTGRES_HOST: db
       REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
       REDCAP_URL_BASE: "https://redcap.vanderbilt.edu/api/"
       POSTGRES_DUMP_PATH: /backup
       AUXILIARY_PATH: /auxiliary
       FILTER_PATH: /filter
-      BLOCK_PATH: /block
+      BLOCK_PATH: ./block
       RELOAD_SCHEDULE: $RELOAD_SCHEDULE
       RELOAD_DATABASE: $RELOAD_DATABASE
       SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
@@ -46,11 +46,18 @@ services:
       SPARK_EXECUTOR_MEMORY: 8g
       SPARK_DRIVER_MEMORY: 8g
       PAUSE: $PAUSE
+      # Uncomment both of these if you want to use a test dataset
+      DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
+      DOWNLOAD_REDCAP_DATA: 0
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
+      - $MAPPING_LOCAL_PATH:/mapping.json
+      # Uncomment this if you want to use a test dataset and change local file path for desired path
+      # Local file path must
+      - ./test_data.json:/test_data.json
     depends_on:
       - db
       - redis
@@ -75,7 +82,6 @@ services:
     ports:
       - 5432:5432
 
-
   api:
     container_name: ctmd-api-dev
     build:
@@ -87,13 +93,16 @@ services:
     ports:
       - $API_PORT:$API_PORT
     environment:
-      POSTGRES_PORT: $POSTGRES_HOST
+      POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_PORT: $POSTGRES_PORT
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
       DASHBOARD_URL: $DASHBOARD_URL
+      NODE_ENV: development
+      API_SESSION_SECRET: "super_secret"
+      AUTH_URL: $AUTH_URL
     depends_on:
       - db
     restart: always

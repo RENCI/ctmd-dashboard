@@ -46,7 +46,6 @@ export const ResourceMetrics = props => {
     }
 
     const metricCompare = (a, b) => {
-        console.log(a);
         return a.Resource.includes("Study Planning") ? 1 : b.Resource.includes("Study Planning") ? -1 :
             a.Resource === "Other" ? 1 : b.Resource === "Other" ? -1 :
             a.Resource < b.Resource ? -1 : b.Resource > b.Resource ? 1 : 0

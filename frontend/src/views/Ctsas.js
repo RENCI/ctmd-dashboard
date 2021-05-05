@@ -10,34 +10,38 @@ import { DownloadButton } from '../components/Forms'
 import { DataUploadHelper } from '../components/Helper'
 
 export const CtsasPage = (props) => {
-    const [ctsas, setCtsas] = useState(null)
+  const [ctsas, setCtsas] = useState(null)
 
-    useEffect(() => {
-        const fetchCtsas = async () => {
-            await axios.get(api.ctsas)
-                .then(response => setCtsas(response.data))
-                .catch(error => console.error(error))
-        }
-        fetchCtsas()
-    }, [])
+  useEffect(() => {
+    const fetchCtsas = async () => {
+      await axios
+        .get(api.ctsas, { withCredentials: true })
+        .then((response) => setCtsas(response.data))
+        .catch((error) => console.error(error))
+    }
+    fetchCtsas()
+  }, [])
 
-    return (
-        <div>
-            <Grid container>
-                <Grid item xs={ 11 } md={ 6 }>
-                    <Title>CTSAs</Title>
-                </Grid>
-                <Grid item xs={ 11 } md={ 5 }>
-                    <DropZone endpoint={ api.uploadCtsas } method="POST" />
-                </Grid>
-                <Grid item xs={ 1 } style={{ textAlign: 'right' }}>
-                    <DownloadButton path={ api.download('ctsas')} tooltip="Download CTSAs CSV Template" />
-                    <DataUploadHelper />
-                </Grid>
-            </Grid>
+  return (
+    <div>
+      <Grid container>
+        <Grid item xs={11} md={6}>
+          <Title>CTSAs</Title>
+        </Grid>
+        <Grid item xs={11} md={5}>
+          <DropZone endpoint={api.uploadCtsas} method="POST" />
+        </Grid>
+        <Grid item xs={1} style={{ textAlign: 'right' }}>
+          <DownloadButton path={api.download('ctsas')} tooltip="Download CTSAs CSV Template" />
+          <DataUploadHelper />
+        </Grid>
+      </Grid>
 
-            { ctsas ? <LookupTable data={ ctsas.map(ctsa => ({ id: ctsa.ctsaId, name: ctsa.ctsaName })) } /> : <CircularLoader /> }
-            
-        </div>
-    )
+      {ctsas ? (
+        <LookupTable data={ctsas.map((ctsa) => ({ id: ctsa.ctsaId, name: ctsa.ctsaName }))} />
+      ) : (
+        <CircularLoader />
+      )}
+    </div>
+  )
 }

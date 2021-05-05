@@ -1,24 +1,24 @@
 # Clinical Trial Management Dashboard
 
 - [Server Setup](#server-setup)
-  + [Install Docker](#install-docker)
-  + [Docker Post-Installation Steps](#docker-post-installation-steps)
-  + [Install Docker Compose](#install-docker-compose)
+  - [Install Docker](#install-docker)
+  - [Docker Post-Installation Steps](#docker-post-installation-steps)
+  - [Install Docker Compose](#install-docker-compose)
 - [Workflow](#workflow)
 - [Application Setup](#application-setup)
-  + [Clone](#clone)
-  + [Set up Environment Variables](#set-up-environment-variables)
-  + [Take a Snapshot of the Existing Database](#take-a-snapshot-of-the-existing-database)
+  - [Clone](#clone)
+  - [Set up Environment Variables](#set-up-environment-variables)
+  - [Take a Snapshot of the Existing Database](#take-a-snapshot-of-the-existing-database)
 - [Start](#start)
-  + [Development](#development)
-    * [Hot Reloading](#hot-reloading)
-    * [Installing New Modules](#installing-new-modules)
-  + [Production](#production)
-    * [Prerequisites](#prerequisites)
-    * [OK, Let's Go](#ok-lets-go)
+  - [Development](#development)
+    - [Hot Reloading](#hot-reloading)
+    - [Installing New Modules](#installing-new-modules)
+  - [Production](#production)
+    - [Prerequisites](#prerequisites)
+    - [OK, Let's Go](#ok-lets-go)
 - [Notes About Docker](#notes-about-docker)
-  + [Detaching](#detaching)
-  + [Tinkering in a Running Container](#tinkering-in-a-running-container)
+  - [Detaching](#detaching)
+  - [Tinkering in a Running Container](#tinkering-in-a-running-container)
 - [Tear it Down](#tear-it-down)
 - [References](#references)
 
@@ -148,7 +148,6 @@ docker-compose version 1.23.2, build 1110ad01
 
 ## Workflow
 
-
 ### Setting up your workspace (a.k.a., developer sandbox)
 
 When commiting code to address a ticket in the umbrella repo (http://github.com/RENCI/ctmd), refer to the issue number in the commit message. For example, if closign ticket #100, the commit message might look like the following:
@@ -156,6 +155,7 @@ When commiting code to address a ticket in the umbrella repo (http://github.com/
 For the reference to properly link, you'll need to add a client-side hook to your developer sandbox, like so:
 
 From your sandbox/workspace:
+
 ```
 $ cp ctmd.commit-message .git/hooks/commit-msg
 ```
@@ -215,6 +215,20 @@ Environment variables live in the file `./.env` in the project root. This file c
 - `AUXILIARY_PATH`: TBA
 - `FILTER_PATH`: This variable defines the location of a CSV file indicating which proposals to filter from the dashboard interface. This file is a one-column CSV and must have the following structure.
 - `IPAM_CONFIG_SUBNET`: This defines the subnet and gateway configurations for the network on which the containers will run.
+- `AUTH_API_KEY`: The api key for the auth server
+- `API_SESSION_SECRET`: The api session secret for the api
+- `AUTH_URL`: The url to the auth server. Needs to be set when deployed.
+- `MAPPING_LOCAL_PATH` the path to your dataset
+- `DATA_INPUT_FILE_PATH` the name of your dataset
+
+### Using test dataset
+
+To use test dataset do the following:
+
+- Uncomment the line `DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH` in the docker-compose file
+- Set `DOWNLOAD_REDCAP_DATA` under pipeline to 0.
+- uncomment the volume binding under pipeline container `./test_data.json:/test_data.json`
+- Ensure that the variables defined above are defined.
 
 ```
 ProposalId
@@ -232,7 +246,7 @@ then nothing will be shown in the dashboard.
 
 When in doubt, use the `.env.sample` file as a guide (and it can be copied as-is to get things working out of the box for local development).
 
-### Start 
+### Start
 
 In development, there are three services that we need to run. They are named `frontend`, `api`, and `db`, and the associated containers are prepended with `ctmd-`, and the development containers are appended with `-dev`. For example, the API is served in development from the container named `ctmd-api-dev`. One additional container called `pipeline` runs in production, which handles choreographing the persistence of data from the production host to the containerized application.
 
@@ -248,15 +262,15 @@ The above command starts and attaches the necessary containers, which results in
 
 ```bash
 $ docker-compose up
-Starting ctmd-db-dev ... 
+Starting ctmd-db-dev ...
 Starting ctmd-db-dev
-Starting ctmd-redis ... 
+Starting ctmd-redis ...
 Starting ctmd-db-dev ... done
-Starting ctmd-api-dev ... 
+Starting ctmd-api-dev ...
 Starting ctmd-redis ... done
-Starting ctmd-pipeline ... 
+Starting ctmd-pipeline ...
 Starting ctmd-pipeline ... done
-Starting ctmd-frontend-dev ... 
+Starting ctmd-frontend-dev ...
 Starting ctmd-frontend-dev ... done
 Attaching to ctmd-db-dev, ctmd-redis, ctmd-api-dev, ctmd-pipeline, ctmd-frontend-dev
 ctmd-db-dev  | 2019-11-07 06:04:58.866 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
@@ -265,11 +279,11 @@ ctmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # oO0OoO0OoO0Oo Redis is starting oO
 ctmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Redis version=5.0.5, bits=64, commit=00000000, modified=0, pid=1, just started
 ctmd-redis   | 1:C 07 Nov 2019 06:04:59.917 # Configuration loaded
 ctmd-db-dev  | 2019-11-07 06:04:58.874 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-ctmd-api-dev | 
+ctmd-api-dev |
 ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 * Running mode=standalone, port=6379.
 ctmd-api-dev | > api@1.0.0 start /usr/src/app
 ctmd-api-dev | > nodemon app
-ctmd-api-dev | 
+ctmd-api-dev |
 ctmd-redis   | 1:M 07 Nov 2019 06:04:59.918 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
 ctmd-pipeline | INFO:reload:waiting for database to start host=db port=5432
 ctmd-db-dev  | 2019-11-07 06:04:58.892 UTC [24] LOG:  database system was shut down at 2019-11-07 05:06:08 UTC
@@ -291,11 +305,11 @@ ctmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] ERROR:  relation "StudyPI" alrea
 ctmd-api-dev | [nodemon] starting `node app.js`
 ctmd-pipeline | INFO:reload:waiting for redis to start host=redis port=6379
 ctmd-db-dev  | 2019-11-07 06:05:02.466 UTC [32] STATEMENT:  create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
-ctmd-api-dev | 
-ctmd-db-dev  |   
+ctmd-api-dev |
+ctmd-db-dev  |
 ctmd-pipeline | INFO:rq.worker:*** Listening on default...
 ctmd-api-dev | Shhh... I'm listening on port 3030.
-ctmd-api-dev | 
+ctmd-api-dev |
 ctmd-pipeline | INFO:reload:redis started host=redis port=6379
 ctmd-pipeline | INFO:reload:create_tables=True
 ctmd-pipeline | INFO:rq.worker:Cleaning registries for queue: default
@@ -310,13 +324,13 @@ ctmd-pipeline |    Use a production WSGI server instead.
 ctmd-pipeline |  * Debug mode: off
 ctmd-pipeline | INFO:werkzeug: * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 ctmd-pipeline | INFO:reload:executing create table "StudyPI" ("AreYouStudyPI" boolean, "userId" bigint);
-ctmd-pipeline | 
+ctmd-pipeline |
 ctmd-pipeline | ERROR:reload:pipeline encountered an error when creating tablesrelation "StudyPI" already exists
-ctmd-pipeline | 
-ctmd-frontend-dev | 
+ctmd-pipeline |
+ctmd-frontend-dev |
 ctmd-frontend-dev | > duke-tic@0.1.0 start /usr/src/app
 ctmd-frontend-dev | > react-scripts start
-ctmd-frontend-dev | 
+ctmd-frontend-dev |
 ctmd-frontend-dev | Starting the development server...
   .
   .
@@ -327,7 +341,7 @@ Errors should be easy to spot at this point. Once everything is started up, poin
 
 ##### Hot Reloading
 
-Note that the development `frontend-dev` and `api-dev` services start with React's development server and nodemon, respectively, allowing hot reloading. 
+Note that the development `frontend-dev` and `api-dev` services start with React's development server and nodemon, respectively, allowing hot reloading.
 
 ##### Installing New Modules
 
@@ -363,14 +377,14 @@ The `ctmd-pipeline` container manages taking snapshots of the postgres database 
 
 The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. It holds usernames and hashed passwords, as the sample file--`./frontend/.htpasswd.sample` illustrates. To generate the hashed password, use `htpasswd` from `apache2-utils` or `httpd-tools`.
 
-To add a user and password, use `htpasswd` by executing `htpasswd  ./frontend/.htpasswd [username]`, where `[username]` is replaced with the desired login username. Then you'll be prompted to enter a password twice.
+To add a user and password, use `htpasswd` by executing `htpasswd ./frontend/.htpasswd [username]`, where `[username]` is replaced with the desired login username. Then you'll be prompted to enter a password twice.
 
 The entire interaction shows output like the following.
 
 ```bash
 $ sudo htpasswd ./frontend/.htpasswd myusername
-New password: 
-Re-type new password: 
+New password:
+Re-type new password:
 Adding password for user myusername
 ```
 
@@ -470,7 +484,7 @@ There is no need t tear down the containers if you're building and deploying upd
 $ docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
-and the running containers will be replaced and immediately available on their respective ports after they start successfully. 
+and the running containers will be replaced and immediately available on their respective ports after they start successfully.
 
 We often need to do a complete redeploy, which involves repopulating the database. This runs into permission errors with the host's previously created data directory. Thus, in this case, delete the `./db/data` directory and run the above command.
 
@@ -482,28 +496,28 @@ External image on Docker Hub: `zooh/ctmd-pipeline-reload:0.2.16` (used by `./doc
 The ctmd-pipeline-reload:0.2.16 image is built from https://github.com/RENCI/tic-map-pipeline-script.
 
 ## Trouble-shooting
+
 - `docker-compose up ... -V ` returns usage
-  + Check that you have the latest version of docker-compose; if you're running with a service account, use `sudo - <unprivileged-user>` to pick up that account's environment instead of your own, potentially custom environment.
-  + Make sure the service account has the right path to the correct version of docker-compose. For example, you may need to add ```PATH=/usr/local/bin:$PATH``` to ```/home/<unprivileged-user>/.bashrc```
-- `ERROR: Service 'frontend' failed to build: devicemapper: Error running  deviceCreate (CreateSnapDeviceRaw) dm_task_run failed`
-Try running with `-V` to remove the volume. Containers run with the same volume, and this error indicates there may be a collision
+  - Check that you have the latest version of docker-compose; if you're running with a service account, use `sudo - <unprivileged-user>` to pick up that account's environment instead of your own, potentially custom environment.
+  - Make sure the service account has the right path to the correct version of docker-compose. For example, you may need to add `PATH=/usr/local/bin:$PATH` to `/home/<unprivileged-user>/.bashrc`
+- `ERROR: Service 'frontend' failed to build: devicemapper: Error running deviceCreate (CreateSnapDeviceRaw) dm_task_run failed`
+  Try running with `-V` to remove the volume. Containers run with the same volume, and this error indicates there may be a collision
 
 ## References
 
 Links to some tools used in this project are below.
 
 - Docker
-  + Docker: https://docs.docker.com
-  + Docker Compose: https://docs.docker.com/compose/
-  + Docker Multi-Stage Builds https://docs.docker.com/develop/develop-images/multistage-build/
+  - Docker: https://docs.docker.com
+  - Docker Compose: https://docs.docker.com/compose/
+  - Docker Multi-Stage Builds https://docs.docker.com/develop/develop-images/multistage-build/
 - React
-  + React JS: https://reactjs.org/
-  + Material UI: https://material-ui.com/
-  + Nivo: https://nivo.rocks
+  - React JS: https://reactjs.org/
+  - Material UI: https://material-ui.com/
+  - Nivo: https://nivo.rocks
 - D3: https://d3js.org
 - Nodemon: https://nodemon.io
 - Express: https://expressjs.com/
 - Nginx: https://nginx.org/en/docs/
 - HTTP Authentication: https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
 - htpasswd: https://httpd.apache.org/docs/2.4/programs/htpasswd.html
-

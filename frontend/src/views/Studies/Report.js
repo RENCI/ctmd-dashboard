@@ -10,11 +10,8 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
-import { convertBoolToYesOrNo } from '../../utils/Format'
-import { formatDate } from '../../utils/DateFormat'
-import { useForm } from 'react-hook-form'
-import { Edit } from '@material-ui/icons'
-import { motion } from 'framer-motion'
+import { convertBoolToYesOrNo, formatDate } from '../../utils'
+import { AuthContext } from '../../contexts'
 
 const useStyles = makeStyles((theme) => ({
   pairStyle: {
@@ -79,14 +76,8 @@ const Value = ({ children }) => {
 const dateFields = ['Date Funding was Awarded']
 
 // Profile
-const StudyProfile = ({ profile, editMode, register }) => {
-  const { pairStyle, gridStyle, inputStyle, inputFocusedStyle } = useStyles()
-  // const { register, handleSubmit, watch, errors } = useForm()
-
-  const defaultState = {
-    opacity: 0,
-    scale: 0.6,
-  }
+const StudyProfile = ({ profile }) => {
+  const { pairStyle } = useStyles()
 
   return (
     <article className={gridStyle}>
@@ -149,13 +140,8 @@ export const StudyReportPage = (props) => {
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
-  const [editMode, setEditMode] = useState(false)
-  const classes = useStyles()
-  const onSubmit = (data, e) => {
-    uploadProfileData(data)
-    console.log(data, e)
-  }
-  const onError = (errors, e) => console.log(errors, e)
+  const [initialParticipatingSiteCount, setInitialParticipatingSiteCount] = useState(null)
+  const { isPLAdmin } = useContext(AuthContext)
 
   useEffect(() => {
     if (store.proposals) {
@@ -172,13 +158,18 @@ export const StudyReportPage = (props) => {
     const fetchStudyData = async (proposalID) => {
       await axios
         .all([
-          axios.get(api.studyProfile(proposalID)),
-          axios.get(api.studySites(proposalID)),
-          axios.get(api.studyEnrollmentData(proposalID)),
+          axios.get(api.studyProfile(proposalID), { withCredentials: true }),
+          axios.get(api.studySites(proposalID), { withCredentials: true }),
+          axios.get(api.studyEnrollmentData(proposalID), { withCredentials: true }),
         ])
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
             setStudyProfile(profileResponse.data)
+
+            console.log(profileResponse)
+            console.log(sitesResponse)
+            console.log(enrollmentResponse)
+
             sitesResponse.data.forEach((site) => {
               // Convert enrollment data to numbers
               site.patientsConsentedCount = +site.patientsConsentedCount
@@ -187,10 +178,13 @@ export const StudyReportPage = (props) => {
               site.patientsExpectedCount = +site.patientsExpectedCount
               site.queriesCount = +site.queriesCount
               site.protocolDeviationsCount = +site.protocolDeviationsCount
+              // Format date from timestamp
+              site.dateRegPacketSent = site.dateRegPacketSent ? formatDate(new Date(site.dateRegPacketSent)) : ''
             })
 
             setStudySites(sitesResponse.data)
             setStudyEnrollmentData(enrollmentResponse.data)
+            setInitialParticipatingSiteCount(profileResponse.data.initialParticipatingSiteCount.value)
           })
         )
         .catch((err) => {
@@ -256,9 +250,7 @@ export const StudyReportPage = (props) => {
                 {studyProfile ? (
                   <StudyProfile profile={studyProfile} editMode={editMode} register={register} />
                 ) : (
-                  <Paragraph>
-                    No profile found! <NavLink to="/uploads">Upload it</NavLink>!
-                  </Paragraph>
+                  <Paragraph>No profile found! {isPLAdmin && <NavLink to="/uploads">Upload it</NavLink>}!</Paragraph>
                 )}
                 <div className={classes.buttonGrid}>
                   <form onSubmit={handleSubmit(onSubmit, onError)}>
@@ -272,7 +264,7 @@ export const StudyReportPage = (props) => {
           </Grid>
 
           <Grid item xs={11} sm={5} md={4} lg={3}>
-            <Milestones sites={studySites} />
+            <Milestones sites={studySites} sitesCount={initialParticipatingSiteCount} />
           </Grid>
 
           <Grid item xs={11}>

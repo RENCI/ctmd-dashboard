@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline
-    image: txscience/ctmd-pipeline-reload:latest
+    image: txscience/ctmd-pipeline-reload:v2.0
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -40,17 +40,23 @@ services:
       REDIS_LOCK_HOST: redis
       REDIS_LOCK_PORT: 6379
       REDIS_LOCK_DB: 1
-      REDIS_LOCK_EXPIRE: 7200
-      REDIS_LOCK_TIMEOUT: 7200
-      TASK_TIME: 7200
+      REDIS_LOCK_EXPIRE: 28800
+      REDIS_LOCK_TIMEOUT: 28800
+      TASK_TIME: 28800
       SPARK_EXECUTOR_MEMORY: 8g
       SPARK_DRIVER_MEMORY: 8g
       PAUSE: $PAUSE
+      # Uncomment line if you want to use test dataset
+      # DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
+      DOWNLOAD_REDCAP_DATA: 1
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
+      - $MAPPING_LOCAL_PATH:/mapping.json
+      # Local file path must
+      # - ./test_data.json:/test_data.json
     depends_on:
       - db
       - redis
@@ -92,6 +98,9 @@ services:
       POSTGRES_PORT: $POSTGRES_PORT
       FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
       DASHBOARD_URL: $DASHBOARD_URL
+      API_SESSION_SECRET: $API_SESSION_SECRET
+      AUTH_URL: $AUTH_URL
+      IS_HEAL_SERVER: $IS_HEAL_SERVER
     depends_on:
       - db
     restart: always
