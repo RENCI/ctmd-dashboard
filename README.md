@@ -221,6 +221,15 @@ Environment variables live in the file `./.env` in the project root. This file c
 - `MAPPING_LOCAL_PATH` the path to your dataset
 - `DATA_INPUT_FILE_PATH` the name of your dataset
 
+### Using test dataset
+
+To use test dataset do the following:
+
+- Uncomment the line `DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH` in the docker-compose file
+- Set `DOWNLOAD_REDCAP_DATA` under pipeline to 0.
+- uncomment the volume binding under pipeline container `./test_data.json:/test_data.json`
+- Ensure that the variables defined above are defined.
+
 ```
 ProposalId
 171
