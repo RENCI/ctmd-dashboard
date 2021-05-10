@@ -85,6 +85,17 @@ For more examples and ideas, visit:
  https://docs.docker.com/get-started/
 
 ```
+Check there's enough disk space:
+```
+df -kh `docker info |grep "Docker Root Dir"| awk '{print $4}'`
+```
+By default, docker installs to /var/lib/docker, so this command should yield the disk space on the /var partition, which should be on the order of 40-50G. The above command should show something like the following
+```
+$ df -kh `docker info |grep "Docker Root Dir"| awk '{print $4}'`
+Filesystem              Size  Used Avail Use% Mounted on
+/dev/mapper/VGos-LVvar   50G  1.2G   49G   3% /var
+```
+
 
 ### Docker Post-Installation Steps
 
