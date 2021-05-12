@@ -3,6 +3,7 @@ import { Title, Paragraph } from '../../components/Typography'
 import { Card, CardHeader, CardContent, Button, List, ListItem } from '@material-ui/core'
 
 export const LoginPage = (props) => {
+  const redirectURL = process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3030/auth'
   return (
     <Fragment>
       <Title>Access Denied</Title>
@@ -19,8 +20,7 @@ export const LoginPage = (props) => {
           <Paragraph center>
             <form
               method="POST"
-              // TODO: Add this as env var. Locally can replace url with: http://localhost:3030/auth
-              action={`https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${window.location.origin}/api/auth`}
+              action={`https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${redirectURL}`}
               style={{ display: 'flex', justifyContent: 'center' }}
             >
               <Button type="submit" color="primary" variant="contained">

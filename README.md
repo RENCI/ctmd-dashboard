@@ -199,6 +199,17 @@ git checkout 1.19
 
 This automatically creates a local copy of that remote branch. Proceed by setting up the required environment variables below and continue with deployment instruction farther down.
 
+### Auth in local dev
+
+To override auth in local dev set node env to development in the api container
+
+### Using test dataset
+
+To use test dataset do the following:
+
+- Set `DOWNLOAD_REDCAP_DATA` env var to 0
+- Ensure that the variables defined below are defined.
+
 ### Set up Environment Variables
 
 Environment variables live in the file `./.env` in the project root. This file contains critical information to ensure communication between services running within Docker containers. The set of variables consists of database credentials, information about accessing the dashboard's API, REDCap database credentials, and data backup location. A brief desription of each environment variable follows.
@@ -220,15 +231,7 @@ Environment variables live in the file `./.env` in the project root. This file c
 - `AUTH_URL`: The url to the auth server. Needs to be set when deployed.
 - `MAPPING_LOCAL_PATH` the path to your dataset
 - `DATA_INPUT_FILE_PATH` the name of your dataset
-
-### Using test dataset
-
-To use test dataset do the following:
-
-- Uncomment the line `DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH` in the docker-compose file
-- Set `DOWNLOAD_REDCAP_DATA` under pipeline to 0.
-- uncomment the volume binding under pipeline container `./test_data.json:/test_data.json`
-- Ensure that the variables defined above are defined.
+- `DOWNLOAD_REDCAP_DATA` whether to download the redcap dataset and override local dataset
 
 ```
 ProposalId
