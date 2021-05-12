@@ -46,18 +46,15 @@ services:
       SPARK_EXECUTOR_MEMORY: 8g
       SPARK_DRIVER_MEMORY: 8g
       PAUSE: $PAUSE
-      # Uncomment both of these if you want to use a test dataset
       DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
-      DOWNLOAD_REDCAP_DATA: 0
+      DOWNLOAD_REDCAP_DATA: $DOWNLOAD_REDCAP_DATA
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
-      # Uncomment this if you want to use a test dataset and change local file path for desired path
-      # Local file path must
-      - ./test_data.json:/test_data.json
+      - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
     depends_on:
       - db
       - redis
