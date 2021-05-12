@@ -4,7 +4,6 @@ const app = express()
 const cors = require('cors')
 const db = require('./config/database')
 var multer = require('multer')
-const axios = require('axios')
 const session = require('express-session')
 const { getHealUsers, checkIfIsHealUser } = require('./utils/helpers')
 
@@ -14,9 +13,6 @@ const AGENT = new https.Agent({
 })
 const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout']
 const PORT = process.env.API_PORT || 3030
-const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
-const DASHBOARD_URL = process.env.DASHBOARD_URL
-const AUTH_URL = process.env.AUTH_URL
 const isHealServer = process.env.IS_HEAL_SERVER || false
 const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
 const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
@@ -41,11 +37,11 @@ app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
   const url = `https://redcap.vanderbilt.edu/plugins/TIN/sso/check_login?code=${code}`
-  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.NODE_ENV === 'development') {
+  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.AUTH_ENV === 'development') {
     next()
   } else {
     if (Object.keys(authInfo).length) {
-      req.session.touch()
+      req.session.touch() // renew session
       next()
     } else if (code) {
       try {
@@ -58,6 +54,7 @@ app.use(async (req, res, next) => {
         res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
       }
     } else {
+      console.log('HERE')
       res.status(401).send('Please login')
     }
   }
@@ -108,10 +105,25 @@ app.use('/template', require('./routes/template-download'))
 // Graphics
 app.use('/graphics', require('./routes/graphics'))
 
-app.get('/auth_status', (req, res, next) => {
+// Auth
+app.use('/auth', require('./routes/auth'))
+
+app.get('/auth_status', (req, res) => {
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
   let statusCode = Object.keys(authInfo).length ? 200 : 401
   let data = authInfo
+  if (process.env.AUTH_ENV === 'development') {
+    statusCode = 200
+    data = {
+      access_level: '1',
+      email: 'dev@email.com',
+      first_name: 'demo',
+      last_name: 'user',
+      organization: 'demo server',
+      username: 'demo',
+      authenticated: true,
+    }
+  }
 
   if (isHealServer) {
     let healData = checkIfIsHealUser(req, HEAL_USERS)
@@ -124,32 +136,6 @@ app.get('/auth_status', (req, res, next) => {
 app.get('/is_heal_user', (req, res, next) => {
   const data = checkIfIsHealUser(req, HEAL_USERS)
   res.status(data.statusCode).send(data.data)
-})
-
-// Auth
-app.post('/auth', async (req, res, next) => {
-  const code = req.body.code
-  const urlRedirect = `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=true`
-  const urlNoRedirect = `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=false`
-
-  if (!req.session.auth_info) {
-    try {
-      const response = await axios.get(urlNoRedirect, { httpsAgent: AGENT })
-      if (response.status === 200) {
-        const data = response.data
-        data.authenticated = true
-        req.session.auth_info = data
-
-        res.redirect(urlRedirect)
-        res.end()
-      }
-    } catch (err) {
-      console.log(err)
-      res.status(400).send('error')
-    }
-  } else {
-    res.redirect(urlRedirect)
-  }
 })
 
 app.post('/logout', (req, res, next) => {
