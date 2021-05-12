@@ -88,6 +88,7 @@ services:
     ports:
       - $API_PORT:$API_PORT
     environment:
+      AUTH_ENV: production
       NODE_ENV: production
       API_PORT: $API_PORT
       POSTGRES_DB: $POSTGRES_DB

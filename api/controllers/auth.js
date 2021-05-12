@@ -16,7 +16,7 @@ exports.auth = async (req, res) => {
   if (!req.session.auth_info) {
     try {
       const response = await axios.get(urlNoRedirect, { httpsAgent: AGENT })
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.AUTH_ENV === 'development') {
         const data = {
           access_level: '1',
           email: 'dev@email.com',
