@@ -201,7 +201,7 @@ This automatically creates a local copy of that remote branch. Proceed by settin
 
 ### Auth in local dev
 
-To override auth in local dev set node env to development in the api container
+To override auth in local dev set `AUTH_ENV` to development in the api container
 
 ### Using test dataset
 

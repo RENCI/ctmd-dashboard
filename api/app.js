@@ -37,7 +37,7 @@ app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
   const url = `https://redcap.vanderbilt.edu/plugins/TIN/sso/check_login?code=${code}`
-  if (NON_PROTECTED_ROUTES.includes(req.path)) {
+  if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.AUTH_ENV === 'development') {
     next()
   } else {
     if (Object.keys(authInfo).length) {
@@ -54,6 +54,7 @@ app.use(async (req, res, next) => {
         res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
       }
     } else {
+      console.log('HERE')
       res.status(401).send('Please login')
     }
   }
@@ -107,10 +108,22 @@ app.use('/graphics', require('./routes/graphics'))
 // Auth
 app.use('/auth', require('./routes/auth'))
 
-app.get('/auth_status', (req, res, next) => {
+app.get('/auth_status', (req, res) => {
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
   let statusCode = Object.keys(authInfo).length ? 200 : 401
   let data = authInfo
+  if (process.env.AUTH_ENV === 'development') {
+    statusCode = 200
+    data = {
+      access_level: '1',
+      email: 'dev@email.com',
+      first_name: 'demo',
+      last_name: 'user',
+      organization: 'demo server',
+      username: 'demo',
+      authenticated: true,
+    }
+  }
 
   if (isHealServer) {
     let healData = checkIfIsHealUser(req, HEAL_USERS)
