@@ -48,6 +48,7 @@ services:
       PAUSE: $PAUSE
       DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
       DOWNLOAD_REDCAP_DATA: $DOWNLOAD_REDCAP_DATA
+
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
@@ -55,6 +56,7 @@ services:
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
       - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
+
     depends_on:
       - db
       - redis
