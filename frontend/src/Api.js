@@ -53,6 +53,7 @@ endpoints = {
 
 endpoints = {
   ...endpoints,
+  updateProfile: (proposalID) => apiRoot + `studies/${proposalID}`,
   studyProfile: (proposalID) => apiRoot + `studies/${proposalID}`, // GET - send json file containing study profile
   studySites: (proposalID) => apiRoot + `studies/${proposalID}/sites`, // GET - send json file containing study sites
   studyEnrollmentData: (proposalID) => apiRoot + `studies/${proposalID}/enrollment-data`, // GET - send json file containing study enrollment data

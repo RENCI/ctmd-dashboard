@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:v2.0
+    image: test_pipeline_v5.8
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -57,7 +57,7 @@ services:
       - $MAPPING_LOCAL_PATH:/mapping.json
       # Uncomment this if you want to use a test dataset and change local file path for desired path
       # Local file path must
-      - ./test_data.json:/test_data.json
+      - ./test_data.json:/app/test_data.json
     depends_on:
       - db
       - redis

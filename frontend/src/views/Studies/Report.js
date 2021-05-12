@@ -10,8 +10,11 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
-import { convertBoolToYesOrNo, formatDate } from '../../utils'
-import { AuthContext } from '../../contexts'
+import { convertBoolToYesOrNo } from '../../utils/Format'
+import { formatDate } from '../../utils/DateFormat'
+import { useForm } from 'react-hook-form'
+import { Edit } from '@material-ui/icons'
+import { motion } from 'framer-motion'
 
 const useStyles = makeStyles((theme) => ({
   pairStyle: {
@@ -73,11 +76,16 @@ const Value = ({ children }) => {
   return <span className={valueStyle}>{children}</span>
 }
 
-const dateFields = ['Date Funding was Awarded']
+const dateFields = ['actualGrantAwardDate']
 
 // Profile
-const StudyProfile = ({ profile }) => {
-  const { pairStyle } = useStyles()
+const StudyProfile = ({ profile, editMode, register }) => {
+  const { pairStyle, gridStyle, inputStyle, inputFocusedStyle } = useStyles()
+
+  const defaultState = {
+    opacity: 0,
+    scale: 0.6,
+  }
 
   return (
     <article className={gridStyle}>
@@ -97,8 +105,8 @@ const StudyProfile = ({ profile }) => {
             {editMode ? (
               <motion.input
                 className={inputStyle}
-                name={displayName}
-                ref={register}
+                name={key}
+                {...register(key)}
                 defaultValue={value}
                 initial={defaultState}
                 exit={defaultState}
@@ -117,17 +125,16 @@ const StudyProfile = ({ profile }) => {
   )
 }
 
-const uploadProfileData = async (data) => {
-  console.log(api.uploadStudyProfile)
+const uploadProfileData = async (data, proposalID) => {
+  const url = 'http://localhost:5000/table/StudyProfile/column/ProposalID'
   const response = await axios({
-    url: api.uploadStudyProfile,
+    url: url, //api.updateProfile(proposalID),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     data: data,
   })
-  console.log(response)
 }
 
 export const StudyReportPage = (props) => {
@@ -140,9 +147,19 @@ export const StudyReportPage = (props) => {
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
-  const [initialParticipatingSiteCount, setInitialParticipatingSiteCount] = useState(null)
-  const { isPLAdmin } = useContext(AuthContext)
+  const [editMode, setEditMode] = useState(false)
+  const classes = useStyles()
+  const onSubmit = (data, e) => {
+    uploadProfileData(data, proposalId)
+    console.log(data)
+  }
 
+  const toggleEditMode = (e) => {
+    console.log(editMode)
+    setEditMode(!editMode)
+  }
+  const onError = (errors, e) => console.log(errors, e)
+  console.log('PROFILE', studyProfile)
   useEffect(() => {
     if (store.proposals) {
       try {
@@ -158,18 +175,13 @@ export const StudyReportPage = (props) => {
     const fetchStudyData = async (proposalID) => {
       await axios
         .all([
-          axios.get(api.studyProfile(proposalID), { withCredentials: true }),
-          axios.get(api.studySites(proposalID), { withCredentials: true }),
-          axios.get(api.studyEnrollmentData(proposalID), { withCredentials: true }),
+          axios.get(api.studyProfile(proposalID)),
+          axios.get(api.studySites(proposalID)),
+          axios.get(api.studyEnrollmentData(proposalID)),
         ])
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
             setStudyProfile(profileResponse.data)
-
-            console.log(profileResponse)
-            console.log(sitesResponse)
-            console.log(enrollmentResponse)
-
             sitesResponse.data.forEach((site) => {
               // Convert enrollment data to numbers
               site.patientsConsentedCount = +site.patientsConsentedCount
@@ -178,13 +190,10 @@ export const StudyReportPage = (props) => {
               site.patientsExpectedCount = +site.patientsExpectedCount
               site.queriesCount = +site.queriesCount
               site.protocolDeviationsCount = +site.protocolDeviationsCount
-              // Format date from timestamp
-              site.dateRegPacketSent = site.dateRegPacketSent ? formatDate(new Date(site.dateRegPacketSent)) : ''
             })
 
             setStudySites(sitesResponse.data)
             setStudyEnrollmentData(enrollmentResponse.data)
-            setInitialParticipatingSiteCount(profileResponse.data.initialParticipatingSiteCount.value)
           })
         )
         .catch((err) => {
@@ -243,14 +252,16 @@ export const StudyReportPage = (props) => {
               <CardHeader
                 title="Study Profile"
                 classes={{ action: classes.action }}
-                action={<Edit style={{ fill: 'rgb(91, 114, 135)' }} onClick={setEditMode} />}
+                action={<Edit style={{ fill: 'rgb(91, 114, 135)' }} onClick={toggleEditMode} />}
               />
 
               <CardContent>
                 {studyProfile ? (
                   <StudyProfile profile={studyProfile} editMode={editMode} register={register} />
                 ) : (
-                  <Paragraph>No profile found! {isPLAdmin && <NavLink to="/uploads">Upload it</NavLink>}!</Paragraph>
+                  <Paragraph>
+                    No profile found! <NavLink to="/uploads">Upload it</NavLink>!
+                  </Paragraph>
                 )}
                 <div className={classes.buttonGrid}>
                   <form onSubmit={handleSubmit(onSubmit, onError)}>
@@ -264,7 +275,7 @@ export const StudyReportPage = (props) => {
           </Grid>
 
           <Grid item xs={11} sm={5} md={4} lg={3}>
-            <Milestones sites={studySites} sitesCount={initialParticipatingSiteCount} />
+            <Milestones sites={studySites} />
           </Grid>
 
           <Grid item xs={11}>

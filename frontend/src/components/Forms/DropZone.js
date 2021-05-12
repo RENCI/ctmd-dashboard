@@ -53,7 +53,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
       headers = {
         ...headers,
         // TODO: Figure out if this is needed
-        'Access-Control-Allow-Origin': '*',
+        // 'Access-Control-Allow-Origin': '*',
         // 'content-type': 'multipart/form-data'
       }
       axios({
