@@ -20,7 +20,6 @@ export const LoginPage = (props) => {
           <Paragraph center>
             <form
               method="POST"
-              // TODO: Add this as env var. Locally can replace url with: http://localhost:3030/auth
               action={`https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${redirectURL}`}
               style={{ display: 'flex', justifyContent: 'center' }}
             >
