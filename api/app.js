@@ -57,6 +57,7 @@ app.use(async (req, res, next) => {
         res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
       }
     } else {
+      console.log('HERE')
       res.status(401).send('Please login')
     }
   }
