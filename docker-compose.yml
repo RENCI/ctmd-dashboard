@@ -55,7 +55,6 @@ services:
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
       - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
-
     depends_on:
       - db
       - redis
@@ -99,6 +98,7 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
       DASHBOARD_URL: $DASHBOARD_URL
+      REACT_APP_API_ROOT: $REACT_APP_API_ROOT
       NODE_ENV: development
       API_SESSION_SECRET: "super_secret"
       AUTH_URL: $AUTH_URL
