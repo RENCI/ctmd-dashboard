@@ -16,6 +16,8 @@ const PORT = process.env.API_PORT || 3030
 const isHealServer = process.env.IS_HEAL_SERVER || false
 const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
 const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
+const AUTH_URL = process.env.AUTH_URL
+const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
 
 // CORS
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
@@ -36,7 +38,8 @@ app.use(
 app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
-  const url = `https://redcap.vanderbilt.edu/plugins/TIN/sso/check_login?code=${code}`
+
+  const url = `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=http://localhost:3030&code=${code}&redirect=false`
   if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.AUTH_ENV === 'development') {
     next()
   } else {
@@ -54,7 +57,6 @@ app.use(async (req, res, next) => {
         res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
       }
     } else {
-      console.log('HERE')
       res.status(401).send('Please login')
     }
   }
