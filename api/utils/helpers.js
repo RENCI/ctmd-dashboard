@@ -34,7 +34,7 @@ exports.checkIfIsHealUser = (req, healUsers) => {
   if (!req.session.auth_info) {
     return { statusCode: 403, data: { data: 'not authenticated' } }
   } else {
-    console.log('incomingEmail', incomingEmail)
+    console.log(incomingEmail, 'incomingEmail')
     const incomingEmail = req.session.auth_info.email.toLowerCase()
     const isHealUser = healUsers.includes(incomingEmail)
     const statusCode = isHealUser ? 200 : 403
