@@ -63,7 +63,7 @@ export const DangerZone = (props) => {
   const handleRestore = (timestamp) => (event) => {
     console.log(`Initializing data restoration from ${timestamp}...`)
     axios
-      .get(api.dataRestore(timestamp))
+      .post(api.dataRestore(timestamp))
       .then((response) => {
         if (response.status === 200) {
           addFlashMessage({ type: 'success', text: 'Scheduling data restore!' })
