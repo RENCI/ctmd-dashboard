@@ -25,6 +25,7 @@ exports.getHealUsers = (filePath) => {
   try {
     const data = fs.readFileSync(filePath, 'utf8')
     return data.split('\n')
+      .map(address => address.toLowerCase())
   } catch (err) {
     console.error(err)
   }
