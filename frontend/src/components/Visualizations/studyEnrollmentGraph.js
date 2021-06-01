@@ -408,15 +408,17 @@ export default function() {
 
               const p = lineSegmentIntersection([ax, ay1], [bx, by1], [ax, ay2], [bx, by2]);
 
-              // Finish previous region
-              region.push({ x: p[0], y1: p[1], y2: p[1] });
+              if (p) {
+                // Finish previous region
+                region.push({ x: p[0], y1: p[1], y2: p[1] });
 
-              // Start new region
-              region = [
-                { x: p[0], y1: p[1], y2: p[1] },
-                { x: xScale(d.date), y1: yScale(d.actual), y2: yScale(d.target) },
-              ];
-              regions.push(region);
+                // Start new region
+                region = [
+                  { x: p[0], y1: p[1], y2: p[1] },
+                  { x: xScale(d.date), y1: yScale(d.actual), y2: yScale(d.target) },
+                ];
+                regions.push(region);
+              }
             }
 
             currentSign = sign;
@@ -461,13 +463,15 @@ export default function() {
           function lineSegmentIntersection(p1, p2, p3, p4) {
             // Check that none of the lines are of length 0
             if ((p1[0] === p2[0] && p1[1] === p2[1]) || (p3[0] === p4[0] && p3[1] === p4[1])) {
-              return false;
+              console.log("zero length");
+              return null;
             }
 
             const denominator = ((p4[1] - p3[1]) * (p2[0] - p1[0]) - (p4[0] - p3[0]) * (p2[1] - p1[1]));
 
             // Lines are parallel
             if (denominator === 0) {
+              console.log("parallel");
               return null;
             }
 
@@ -475,7 +479,10 @@ export default function() {
                   ub = ((p2[0] - p1[0]) * (p1[1] - p3[1]) - (p2[1] - p1[1]) * (p1[0] - p3[0])) / denominator;
 
             // Is the intersection along the segments?
-            if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+            const epsilon = 1e-6;
+            if (ua < 0 - epsilon || ua > 1 + epsilon || ub < 0 - epsilon || ub > 1 + epsilon) {
+              console.log("outside");
+              console.log(ua, ub)
               return null;
             }
 
