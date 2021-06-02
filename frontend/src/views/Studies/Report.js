@@ -1,10 +1,11 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
+import { scaleLinear } from 'd3-scale'
 import api from '../../Api'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { Grid, Card, CardHeader, CardContent, Typography, Input, Slider } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Input, InputLabel, Slider, Box } from '@material-ui/core'
 import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
@@ -78,6 +79,7 @@ export const StudyReportPage = (props) => {
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
+  const [maxEnrollmentRate, setMaxEnrollmentRate] = useState(2)
   const [initialParticipatingSiteCount, setInitialParticipatingSiteCount] = useState(null)
   const { isPLAdmin } = useContext(AuthContext)
 
@@ -103,10 +105,6 @@ export const StudyReportPage = (props) => {
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
             setStudyProfile(profileResponse.data)
-
-            console.log(profileResponse)
-            console.log(sitesResponse)
-            console.log(enrollmentResponse)
 
             sitesResponse.data.forEach((site) => {
               // Convert enrollment data to numbers
@@ -137,8 +135,6 @@ export const StudyReportPage = (props) => {
   }, [study, studyProfile, studySites, studyEnrollmentData])
 
   // Slider
-  const maxEnrollmentRate = 2
-
   const handleEnrollmentRateSliderChange = (event, value) => {
     setEnrollmentRate(value)
   }
@@ -155,19 +151,25 @@ export const StudyReportPage = (props) => {
     }
   }
 
-  // Marks for enrollment rate slider
-  const markStep = 0.1
-  const marks = Array(maxEnrollmentRate / markStep + 1)
-    .fill()
-    .map((d, i) => {
-      const v = i * 0.1
-      const s = v.toFixed(1)
+  const handleMaxEnrollmentRateInputChange = (event) => {
+    const value = event.target.value === '' ? '' : Number(event.target.value)
 
-      return {
-        value: +v,
-        label: s,
-      }
-    })
+    setMaxEnrollmentRate(value)
+
+    if (value && enrollmentRate > value) setEnrollmentRate(value)
+  }
+
+  const handleMaxEnrollmentRateInputBlur = () => {
+    if (maxEnrollmentRate < 0) {
+      setMaxEnrollmentRate(1)
+    }
+  }
+
+  // Marks for enrollment rate slider
+  const sliderScale = scaleLinear()
+      .domain([0, maxEnrollmentRate]);
+
+  const marks = sliderScale.ticks(20).map(d => ({ value: d, label: d }));
 
   return (
     <div>
@@ -216,33 +218,53 @@ export const StudyReportPage = (props) => {
                 {studyEnrollmentData && studyEnrollmentData.length > 0 ? (
                   <Fragment>
                     <StudyEnrollment study={study || null} sites={studySites || null} enrollmentRate={enrollmentRate} />
-                    <Typography align="right">Enrollment rate</Typography>
-                    <Grid container spacing={6} justify="flex-end">
-                      <Grid item xs={5}>
-                        <Slider
-                          value={enrollmentRate}
-                          min={0}
-                          max={maxEnrollmentRate}
-                          step={0.01}
-                          marks={marks}
-                          onChange={handleEnrollmentRateSliderChange}
-                        />
+                    <Box mt={3}>
+                      <Grid container spacing={6} justify="flex-end">
+                        <Grid item xs={5}>
+                          <Slider
+                            value={enrollmentRate}
+                            min={0}
+                            max={maxEnrollmentRate}
+                            step={0.01}
+                            marks={marks}
+                            onChange={handleEnrollmentRateSliderChange}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <InputLabel htmlFor="enrollment-rate-input">enrollment rate</InputLabel>
+                          <Input
+                            id="enrollment-rate-input"
+                            value={enrollmentRate}
+                            margin="dense"
+                            onChange={handleEnrollmentRateInputChange}
+                            onBlur={handleEnrollmentRateInputBlur}
+                            inputProps={{
+                              min: 0,
+                              max: maxEnrollmentRate,
+                              step: 0.01,
+                              type: 'number',
+                            }}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <InputLabel htmlFor="max-enrollment-rate-input">maximum</InputLabel>
+                          <Input
+                            id="max-enrollment-rate-input"
+                            value={maxEnrollmentRate}
+                            label="max"
+                            margin="dense"
+                            onChange={handleMaxEnrollmentRateInputChange}
+                            onBlur={handleMaxEnrollmentRateInputBlur}
+                            inputProps={{
+                              step: 1,
+                              min: 1,
+                              max: Number.MAX_VALUE,
+                              type: 'number',
+                            }}
+                          />
+                        </Grid>
                       </Grid>
-                      <Grid item mr={5}>
-                        <Input
-                          value={enrollmentRate}
-                          margin="dense"
-                          onChange={handleEnrollmentRateInputChange}
-                          onBlur={handleEnrollmentRateInputBlur}
-                          inputProps={{
-                            step: 0.01,
-                            min: 0,
-                            max: 2,
-                            type: 'number',
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
+                    </Box>
                   </Fragment>
                 ) : (
                   <Paragraph>
