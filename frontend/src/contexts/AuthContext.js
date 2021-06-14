@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
     const data = response.data
     if (response.status == 200) {
-      const isPLAdmin = typeof data.isHealUser === 'undefined' ? true : data.isHealUser
+      const isPLAdmin = typeof data.isHealUser === 'boolean' ? data.isHealUser : false
       setUser(data)
       setLocalStorageUser(data)
       setAuthenticated(data.authenticated)
