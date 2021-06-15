@@ -489,6 +489,17 @@ $ docker-compose -f docker-compose.prod.yml up --build -d
 
 and the running containers will be replaced and immediately available on their respective ports after they start successfully.
 
+Make it a point to comment out the following line from 'docker-compose.prod.yml' everytime before deployment:
+```bash
+#      - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
+```
+
+Make sure that the following environment variables are a part of the .env file:
+```bash
+DOWNLOAD_REDCAP_DATA=1
+DATA_INPUT_FILE_PATH=/redcap_export.json
+```
+
 We often need to do a complete redeploy, which involves repopulating the database. This runs into permission errors with the host's previously created data directory. Thus, in this case, delete the `./db/data` directory and run the above command.
 
 To repopulate the database from REDCap, once the application is running and accessible, navigate to the Data Management page. Then find the click the SYNC button.
