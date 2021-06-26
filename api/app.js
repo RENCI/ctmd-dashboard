@@ -118,7 +118,7 @@ app.get('/auth_status', (req, res) => {
     statusCode = 200
     data = {
       access_level: '1',
-      email: 'dev@email.com',
+      email: 'test@example.com',
       first_name: 'demo',
       last_name: 'user',
       organization: 'demo server',
