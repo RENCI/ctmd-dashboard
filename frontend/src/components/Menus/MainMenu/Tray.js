@@ -69,6 +69,9 @@ export const MenuTray = ({ children }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
 
+  const showDataManagerButton = process.env.REACT_APP_IS_HEAL_SERVER === 'false' // not on heal server
+                                || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin) // on heal server as a pladmin
+
   const handleToggleOpen = () => setOpen(!open)
   const handleClose = () => setOpen(false)
 
@@ -93,13 +96,15 @@ export const MenuTray = ({ children }) => {
           </IconButton>
         </Tooltip>
         <>
-          {isPLAdmin && (
-            <Tooltip title="Data Manager" placement="right">
-              <IconButton component={NavLink} to={'/manage'} className={classes.trayButton} activeClassName={classes.activeTrayButton}>
-                <AdminIcon className={classes.trayIcon} />
-              </IconButton>
-            </Tooltip>
-          )}
+          {
+            showDataManagerButton && (
+              <Tooltip title="Data Manager" placement="right">
+                <IconButton component={NavLink} to={'/manage'} className={classes.trayButton} activeClassName={classes.activeTrayButton}>
+                  <AdminIcon className={classes.trayIcon} />
+                </IconButton>
+              </Tooltip>
+            )
+          }
         </>
       </Paper>
     </ClickAwayListener>
