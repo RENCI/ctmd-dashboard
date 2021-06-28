@@ -93,7 +93,9 @@ export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
 
-  const shouldRenderUploadsLink = (process.env.IS_HEAL_SERVER && isPLAdmin) || process.env.NODE_ENV === 'development'
+  const shouldRenderUploadsLink = (process.env.REACT_APP_IS_HEAL_SERVER === 'false') // not on heal server
+                               || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin) // on heal server as a pladmin
+                               || (process.env.NODE_ENV === 'development')
 
   const menuItems = [
     {}, // an empty object causes a Divider component to render in the menu
