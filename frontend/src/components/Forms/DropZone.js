@@ -32,6 +32,12 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   const [file, setFile] = useState([])
   const addFlashMessage = useContext(FlashMessageContext)
 
+  // bail out here (don't render this component) if
+  // we're a non-pladmin user on the heal server
+  if (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && !isPLAdmin) {
+    return null
+  }
+
   const onFilesAdded = (event) => {
     try {
       setFile(event.target.files[0])
@@ -76,15 +82,11 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   }
 
   return (
-    <>
-      {isPLAdmin && (
-        <div className={classes.dropzone}>
-          <input type="file" accept="text/csv" ref={fileInputRef} className={classes.fileInput} onChange={onFilesAdded} />
-          <Button color="secondary" variant="contained" className={classes.uploadButton} onClick={handleClickUpload}>
-            Upload <UploadIcon className={classes.buttonIcon} />
-          </Button>
-        </div>
-      )}
-    </>
+    <div className={classes.dropzone}>
+      <input type="file" accept="text/csv" ref={fileInputRef} className={classes.fileInput} onChange={onFilesAdded} />
+      <Button color="secondary" variant="contained" className={classes.uploadButton} onClick={handleClickUpload}>
+        Upload <UploadIcon className={classes.buttonIcon} />
+      </Button>
+    </div>
   )
 }

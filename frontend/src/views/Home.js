@@ -6,10 +6,13 @@ import {
 } from '../components/Widgets'
 
 export const HomePage = (props) => {
-
+    console.log('process.env.REACT_APP_IS_HEAL_SERVER', process.env.REACT_APP_IS_HEAL_SERVER )
     return (
         <div>
-            <Title>Clinical Trial Management Dashboard</Title>
+            <Title>
+                Clinical Trial Management Dashboard
+                { process.env.REACT_APP_IS_HEAL_SERVER === 'true' && <span> — HEAL</span> }
+            </Title>
 
             <Grid container spacing={ 8 } alignItems="stretch">
                 <Grid item xs={ 12 } sm={ 11 }>

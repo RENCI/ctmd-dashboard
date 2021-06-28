@@ -116,6 +116,7 @@ services:
       - /usr/src/app/node_modules
     environment:
       NODE_ENV: development
+      REACT_APP_IS_HEAL_SERVER: $IS_HEAL_SERVER
     ports:
       - 3000:3000
     depends_on:

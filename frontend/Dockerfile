@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 
 # Add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV REACT_APP_IS_HEAL_SERVER $REACT_APP_IS_HEAL_SERVER
 
 # Environment variables
 
