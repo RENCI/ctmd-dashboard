@@ -96,6 +96,7 @@ const menuItems = [
   { text: 'Studies', path: '/studies', icon: StudiesIcon },
   { text: 'Sites', path: '/sites', icon: SitesIcon },
   { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon },
+  { text: 'Uploads', path: '/uploads', icon: UploadIcon },
   {}, // an empty object causes a Divider component to render in the menu
   { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
   {}, // an empty object causes a Divider component to render in the menu
@@ -109,15 +110,6 @@ const menuItems = [
 
 export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
-  const { isPLAdmin } = useContext(AuthContext)
-
-  const uploadMenuItem = { text: 'Uploads', path: '/uploads', icon: UploadIcon }
-  const shouldRenderUploadMenuItem = (!menuItems.some((e) => e.text === 'Uploads'))
-        && ((process.env.NODE_ENV === 'development') || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin))
-
-  if (shouldRenderUploadMenuItem) {
-    menuItems.splice(6, 0, uploadMenuItem)
-  }
 
   return (
     <nav className={classes.nav}>
