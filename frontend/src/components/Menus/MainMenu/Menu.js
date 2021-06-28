@@ -89,27 +89,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const menuItems = [
-  {}, // an empty object causes a Divider component to render in the menu
-  { text: 'Home', path: '/', icon: HomeIcon },
-  { text: 'Proposals', path: '/proposals', icon: ProposalsIcon },
-  { text: 'Studies', path: '/studies', icon: StudiesIcon },
-  { text: 'Sites', path: '/sites', icon: SitesIcon },
-  { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon },
-  { text: 'Uploads', path: '/uploads', icon: UploadIcon },
-  {}, // an empty object causes a Divider component to render in the menu
-  { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
-  {}, // an empty object causes a Divider component to render in the menu
-  { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
-  {
-    text: 'HEAL Dashboard',
-    path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd.renci.org/api/auth',
-    icon: HEALIcon,
-  },
-]
-
 export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
+  const { isPLAdmin } = useContext(AuthContext)
+
+  const shouldRenderUploadsLink = (process.env.IS_HEAL_SERVER && isPLAdmin) || process.env.NODE_ENV === 'development'
+
+  const menuItems = [
+    {}, // an empty object causes a Divider component to render in the menu
+    { text: 'Home', path: '/', icon: HomeIcon },
+    { text: 'Proposals', path: '/proposals', icon: ProposalsIcon },
+    { text: 'Studies', path: '/studies', icon: StudiesIcon },
+    { text: 'Sites', path: '/sites', icon: SitesIcon },
+    { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon },
+    shouldRenderUploadsLink ? { text: 'Uploads', path: '/uploads', icon: UploadIcon } : {},
+    { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
+    {}, // an empty object causes a Divider component to render in the menu
+    { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
+    {
+      text: 'HEAL Dashboard',
+      path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd.renci.org/api/auth',
+      icon: HEALIcon,
+    },
+  ]
 
   return (
     <nav className={classes.nav}>
