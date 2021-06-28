@@ -111,7 +111,11 @@ export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
   const uploadMenuItem = { text: 'Uploads', path: '/uploads', icon: UploadIcon }
-  if (isPLAdmin && !menuItems.some((e) => e.text === 'Uploads')) {
+
+  const shouldRenderUploadMenuItem = (!menuItems.some((e) => e.text === 'Uploads'))
+        && (process.env.NODE_ENV === 'development') || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin)
+
+  if (shouldRenderUploadMenuItem) {
     menuItems.splice(6, 0, uploadMenuItem)
   }
 
