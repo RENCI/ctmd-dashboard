@@ -9,16 +9,16 @@ import { AuthContext } from '../../contexts'
 export const DownloadButton = ({ path, tooltip = 'Download' }) => {
   const { isPLAdmin } = useContext(AuthContext)
 
+  if (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && !isPLAdmin) {
+    return null
+  }
+
   return (
-    <>
-      {isPLAdmin && (
-        <Tooltip title={tooltip} aria-label={tooltip}>
-          <IconButton aria-label="download template" component="a" href={path} download>
-            <CSVIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </>
+    <Tooltip title={tooltip} aria-label={tooltip}>
+      <IconButton aria-label="download template" component="a" href={path} download>
+        <CSVIcon />
+      </IconButton>
+    </Tooltip>
   )
 }
 
