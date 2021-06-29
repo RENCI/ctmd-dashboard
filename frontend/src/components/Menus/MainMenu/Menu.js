@@ -89,31 +89,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const menuItems = [
-  {}, // an empty object causes a Divider component to render in the menu
-  { text: 'Home', path: '/', icon: HomeIcon },
-  { text: 'Proposals', path: '/proposals', icon: ProposalsIcon },
-  { text: 'Studies', path: '/studies', icon: StudiesIcon },
-  { text: 'Sites', path: '/sites', icon: SitesIcon },
-  { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon },
-  {}, // an empty object causes a Divider component to render in the menu
-  { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
-  {}, // an empty object causes a Divider component to render in the menu
-  { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
-  {
-    text: 'HEAL Dashboard',
-    path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd.renci.org/api/auth',
-    icon: HEALIcon,
-  },
-]
-
 export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
-  const uploadMenuItem = { text: 'Uploads', path: '/uploads', icon: UploadIcon }
-  if (isPLAdmin && !menuItems.some((e) => e.text === 'Uploads')) {
-    menuItems.splice(6, 0, uploadMenuItem)
-  }
+
+  const shouldRenderUploadsLink = (process.env.REACT_APP_IS_HEAL_SERVER === 'false') // not on heal server
+                               || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin) // on heal server as a pladmin
+                               || (process.env.NODE_ENV === 'development')
+
+  const menuItems = [
+    {}, // an empty object causes a Divider component to render in the menu
+    { text: 'Home', path: '/', icon: HomeIcon },
+    { text: 'Proposals', path: '/proposals', icon: ProposalsIcon },
+    { text: 'Studies', path: '/studies', icon: StudiesIcon },
+    { text: 'Sites', path: '/sites', icon: SitesIcon },
+    { text: 'CTSAs', path: '/ctsas', icon: CTSAIcon },
+    shouldRenderUploadsLink ? { text: 'Uploads', path: '/uploads', icon: UploadIcon } : {},
+    { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
+    {}, // an empty object causes a Divider component to render in the menu
+    { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
+    {
+      text: 'HEAL Dashboard',
+      path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd.renci.org/api/auth',
+      icon: HEALIcon,
+    },
+  ]
 
   return (
     <nav className={classes.nav}>
