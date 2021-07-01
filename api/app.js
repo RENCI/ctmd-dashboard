@@ -13,7 +13,7 @@ const AGENT = new https.Agent({
 })
 const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout']
 const PORT = process.env.API_PORT || 3030
-const isHealServer = process.env.IS_HEAL_SERVER || false
+const isHealServer = process.env.IS_HEAL_SERVER === 'true' || false
 const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
 const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
 const AUTH_URL = process.env.AUTH_URL
