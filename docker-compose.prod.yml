@@ -74,6 +74,9 @@ services:
       POSTGRES_PORT: $POSTGRES_PORT
     volumes:
       - ./db/data:/var/lib/postgresql/data
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/groups:/etc/groups:ro
+    user: $USER
     expose:
       - $POSTGRES_PORT
 
