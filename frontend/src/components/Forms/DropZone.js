@@ -29,7 +29,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   const { isPLAdmin } = useContext(AuthContext)
   const classes = useStyles()
   const fileInputRef = useRef()
-  const [file, setFile] = useState([])
+  const [file, setFile] = useState(null)
   const addFlashMessage = useContext(FlashMessageContext)
 
   // bail out here (don't render this component) if
@@ -50,7 +50,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   }
 
   const handleClickUpload = (event) => {
-    if (file) {
+    if (file && file != undefined) {
       console.log('uploading', file.name)
       const formdata = new FormData()
       formdata.append('data', file)
@@ -60,7 +60,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
       headers = {
         ...headers,
         // TODO: Figure out if this is needed
-        'Access-Control-Allow-Origin': '*',
+        // 'Access-Control-Allow-Origin': '*',
         // 'content-type': 'multipart/form-data'
       }
       axios({
@@ -69,16 +69,26 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
         headers: headers,
         data: formdata,
       }).then((response) => {
-        console.log(response)
         if (response.status === 200) {
           addFlashMessage({ type: 'success', text: 'File uploaded!' })
         } else {
-          addFlashMessage({ type: 'error', text: 'Error uploading file!' })
+          addFlashMessage({ type: 'error', text: 'Error uploading file.' })
+        }
+      }).catch((error) => {
+        if(error.response && error.response.data) {
+          let errorMsg = "Error uploading file:"
+          let index = 1
+          error.response.data.forEach((elm) => {
+            errorMsg += `\n${index}. ${elm}`
+            index++
+          })
+          addFlashMessage({ type: 'error', text: errorMsg })
+        } else {
+          addFlashMessage({ type: 'error', text: 'Error uploading file.' })
         }
       })
     } else {
-      console.log('No file selected')
-      addFlashMessage({ type: 'error', text: 'Error uploading file!' })
+      addFlashMessage({ type: 'error', text: 'No file selected!' })
     }
   }
 
