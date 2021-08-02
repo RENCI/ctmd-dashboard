@@ -25,6 +25,7 @@ const useStyles = makeStyles(theme => ({
     },
     flashMessage: {
         borderRadius: theme.spacing(1),
+        whiteSpace: 'pre-wrap'
     },
     messageSpan: {
         display: 'flex',
