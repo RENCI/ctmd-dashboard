@@ -80,7 +80,7 @@ export const FlashMessage = props => {
             className={ classes.snackbar }
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             open={ open }
-            autoHideDuration={ 3000 }
+            autoHideDuration={ 10000 }
             onClose={ handleClose }
         >
             <SnackbarContent
