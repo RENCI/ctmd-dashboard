@@ -41,9 +41,13 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
 
   const onFilesAdded = (event) => {
     try {
-      setFile(event.target.files[0])
-      addFlashMessage({ type: 'success', text: 'File selected!' })
-      console.log('file selected')
+      if(event.target.files[0] && event.target.files[0].type !== 'text/csv'){
+        addFlashMessage({ type: 'error', text: 'File must be a CSV' })
+      }
+      else {
+        setFile(event.target.files[0])
+        addFlashMessage({ type: 'success', text: 'File selected!' })
+      }
     } catch (error) {
       console.error(error)
     }
