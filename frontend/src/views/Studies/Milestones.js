@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent, List, ListItem, ListItemText } from '@material-ui/core'
-import { Subsubheading, Caption } from '../../components/Typography'
+import { Subsubheading, Caption, Paragraph } from '../../components/Typography'
 import { SitesActivationPieChart } from '../../components/Charts'
 import { formatDate } from '../../utils'
 import { isSiteActive } from '../../utils/sites'
@@ -82,38 +82,51 @@ export const Milestones = ({ sites, sitesCount }) => {
   return (
     <Card style={{ height: '100%' }}>
       <CardHeader title="Milestones" />
-      <CardContent>
-        <Subsubheading align="center">Site Activation</Subsubheading>
-        <SitesActivationPieChart percentage={activeSitesPercentage()} />
-        <Caption align="center">
-          {activeSitesCount()} of {sitesCount} sites
-        </Caption>
-      </CardContent>
-      <CardContent>
-        <List dense>
-          <ListItem>
-            <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
-          </ListItem>
-        </List>
-      </CardContent>
+      {
+        !sitesCount ? (
+          <CardContent>
+            <Subsubheading align="center">Site Activation</Subsubheading>
+            <Paragraph>
+              This study has zero initial participating sites.
+            </Paragraph>
+          </CardContent>
+        ) : (
+          <Fragment>
+            <CardContent>
+              <Subsubheading align="center">Site Activation</Subsubheading>
+              <SitesActivationPieChart percentage={activeSitesPercentage()} />
+              <Caption align="center">
+                {activeSitesCount()} of {sitesCount} sites
+              </Caption>
+            </CardContent>
+            <CardContent>
+              <List dense>
+                <ListItem>
+                  <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Fragment>
+        )
+      }
     </Card>
   )
 }
