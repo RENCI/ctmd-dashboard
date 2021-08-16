@@ -71,6 +71,7 @@ exports.getSites = (req, res) => {
             "CTSAs"."ctsaId",
             "StudySites"."siteId",
             "StudySites"."siteName",
+            "StudySites"."siteNumber",
             "CTSAs"."ctsaId",
             "CTSAs"."ctsaName",
             "StudySites"."principalInvestigator",
