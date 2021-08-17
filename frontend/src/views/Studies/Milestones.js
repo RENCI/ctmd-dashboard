@@ -16,13 +16,6 @@ Array.prototype.chunk = function (size) {
 }
 
 export const Milestones = ({ sites, sitesCount }) => {
-  // console.table(sites.map(site => ({
-  //   dateContractExecution: site.dateContractExecution,
-  //   dateContractSent: site.dateContractSent,
-  //   dateIrbApproval: site.dateIrbApproval,
-  //   dateIrbSubmission: site.dateIrbSubmission,
-  //   dateRegPacketSent: site.dateRegPacketSent,
-  // })))
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
