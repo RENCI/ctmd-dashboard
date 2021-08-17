@@ -12,25 +12,24 @@ Array.prototype.chunk = function (size) {
       chunks.push(this.slice(i, i + size))
     }
   }
-
   return chunks
 }
 
 export const Milestones = ({ sites, sitesCount }) => {
-  console.table(sites.map(site => ({
-    dateContractExecution: site.dateContractExecution,
-    dateContractSent: site.dateContractSent,
-    dateIrbApproval: site.dateIrbApproval,
-    dateIrbSubmission: site.dateIrbSubmission,
-    dateRegPacketSent: site.dateRegPacketSent,
-  })))
+  // console.table(sites.map(site => ({
+  //   dateContractExecution: site.dateContractExecution,
+  //   dateContractSent: site.dateContractSent,
+  //   dateIrbApproval: site.dateIrbApproval,
+  //   dateIrbSubmission: site.dateIrbSubmission,
+  //   dateRegPacketSent: site.dateRegPacketSent,
+  // })))
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
   const [firstSubjectEnrolled, setFirstSubjectEnrolled] = useState()
   const [siteActivationPercentages, setSiteActivationPercentages] = useState([null, null, null, null])
 
-  const earliestDate = (property) => {
+  const earliestDate = property => {
     const reducer = (earliestDate, date) => (date < new Date(earliestDate) ? date : earliestDate)
     const sitesWithDates = sites.filter(site => !!site[property])
     let earliestDate = 'N/A'
@@ -43,21 +42,31 @@ export const Milestones = ({ sites, sitesCount }) => {
     return earliestDate
   }
 
-  const thresholds = (property) => {
-    const quartileSize = Math.round(sitesCount / 4)
-    const activationDates = sites
+  const thresholds = property => {
+    let count = 0
+    let thresholdDates = []
+
+    const dates = sites
       .map(site => site[property])
       .filter(date => !!date)
-      .map(date => new Date(date))
-      .sort((d1, d2) => d1 < d2 ? -1 : 1)
-
-    const dates = activationDates.chunk(quartileSize).map((chunk) => formatDate(chunk[chunk.length - 1]))
-    for (let i = 0; i < 4; i++) {
-      if (!dates[i]) {
-        dates[i] = 'N/A'
+      .sort((d1, d2) => d1 < d2 ? -1 : 1)    
+    let percentage = 0.25
+    dates.forEach(date => {
+      if (!!date) {
+        count += 1
+        if (count / sites.length >= 0.25 + 0.25 * thresholdDates.length) {
+          thresholdDates.push(date)
+        }
+      }
+    })
+    for (let i = 0; i < 4; i += 1) {
+      if (thresholdDates.length <= i) {
+        thresholdDates.push('N/A')
+      } else {
+        thresholdDates[i] = formatDate(new Date(thresholdDates[i]))
       }
     }
-    setSiteActivationPercentages(dates)
+    setSiteActivationPercentages(thresholdDates)
   }
 
   useEffect(() => {
