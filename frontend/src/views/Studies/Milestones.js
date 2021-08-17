@@ -42,7 +42,7 @@ export const Milestones = ({ sites, sitesCount }) => {
     return earliestDate
   }
 
-  const thresholds = property => {
+  const setThresholds = property => {
     let count = 0
     let thresholdDates = []
 
@@ -73,7 +73,7 @@ export const Milestones = ({ sites, sitesCount }) => {
     setFirstIRBApprovedDate(earliestDate('dateIrbApproval'))
     setFirstSiteActivationDate(earliestDate('dateSiteActivated'))
     setFirstSubjectEnrolled(earliestDate('fpfv'))
-    thresholds('dateSiteActivated')
+    setThresholds('dateSiteActivated')
   }, [])
 
   const activeSitesCount = () => {
