@@ -17,6 +17,13 @@ Array.prototype.chunk = function (size) {
 }
 
 export const Milestones = ({ sites, sitesCount }) => {
+  console.table(sites.map(site => ({
+    dateContractExecution: site.dateContractExecution,
+    dateContractSent: site.dateContractSent,
+    dateIrbApproval: site.dateIrbApproval,
+    dateIrbSubmission: site.dateIrbSubmission,
+    dateRegPacketSent: site.dateRegPacketSent,
+  })))
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
@@ -25,21 +32,24 @@ export const Milestones = ({ sites, sitesCount }) => {
 
   const earliestDate = (property) => {
     const reducer = (earliestDate, date) => (date < new Date(earliestDate) ? date : earliestDate)
-    const earliestDate = sites
-      .map((site) => site[property])
-      .filter((date) => !!date)
-      .map((date) => new Date(date))
-      .reduce(reducer, new Date())
-    return formatDate(earliestDate)
+    const sitesWithDates = sites.filter(site => !!site[property])
+    let earliestDate = 'N/A'
+    if (sitesWithDates.length) {
+      earliestDate = sitesWithDates
+        .map(site => new Date(site[property]))
+        .reduce(reducer, new Date())
+      return formatDate(earliestDate)
+    }
+    return earliestDate
   }
 
   const thresholds = (property) => {
     const quartileSize = Math.round(sitesCount / 4)
     const activationDates = sites
-      .map((site) => site[property])
-      .filter((date) => date !== '')
-      .map((date) => new Date(date))
-      .sort((d1, d2) => d1 - d2)
+      .map(site => site[property])
+      .filter(date => !!date)
+      .map(date => new Date(date))
+      .sort((d1, d2) => d1 < d2 ? -1 : 1)
 
     const dates = activationDates.chunk(quartileSize).map((chunk) => formatDate(chunk[chunk.length - 1]))
     for (let i = 0; i < 4; i++) {
