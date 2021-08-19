@@ -47,7 +47,7 @@ export const Milestones = ({ sites, sitesCount }) => {
     dates.forEach(date => {
       if (!!date) {
         count += 1
-        if (count / sites.length >= 0.25 + 0.25 * thresholdDates.length) {
+        if (count / sitesCount >= 0.25 + 0.25 * thresholdDates.length) {
           thresholdDates.push(date)
         }
       }
