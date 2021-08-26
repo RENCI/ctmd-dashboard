@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
-  const { isPLAdmin } = useContext(AuthContext)
+  const { isPLAdmin, user } = useContext(AuthContext)
   const classes = useStyles()
   const fileInputRef = useRef()
   const [file, setFile] = useState(null)
@@ -58,6 +58,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
       console.log('uploading', file.name)
       const formdata = new FormData()
       formdata.append('data', file)
+      formdata.append('user', user['email'])
       formdata.append('content-type', 'text/csv')
       formdata.append('json', '{}')
       formdata.append('has_comments', 'true')

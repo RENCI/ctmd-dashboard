@@ -19,7 +19,7 @@ export const SitesReport = ({ sites }) => {
                 <List>
                     <ListItem>
                         <ListItemIcon><StarIcon /></ListItemIcon>
-                        <ListItemText primary="Protocol Available to FPFV:" secondary={ fpfv } />
+                        <ListItemText primary="Activation (Protocol Available to FPFV):" secondary={ fpfv } />
                     </ListItem>
                     <ListItem>
                         <ListItemIcon><StarIcon /></ListItemIcon>

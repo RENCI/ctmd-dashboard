@@ -25,9 +25,13 @@ export const Milestones = ({ sites, sitesCount }) => {
 
   const earliestDate = (property) => {
     const reducer = (earliestDate, date) => (date < new Date(earliestDate) ? date : earliestDate)
-    const earliestDate = sites
+    let earliestDate = sites
       .map((site) => site[property])
-      .filter((date) => date !== '')
+      .filter((date) => date && date !== '')
+    if(earliestDate.length == 0){
+      return 'N/A';
+    }
+     earliestDate = earliestDate
       .map((date) => new Date(date))
       .reduce(reducer, new Date())
     return formatDate(earliestDate)

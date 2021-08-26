@@ -27,7 +27,7 @@ export const SiteReport = ({ currentSite }) => {
     return (
         <Fragment>
             <Paragraph>
-                <strong>Protocol Available to FPFV</strong>:&nbsp; 
+                <strong>Activation (Protocol Available to FPFV)</strong>:&nbsp; 
                 { currentSite['Reg Pack Sent'] || '-' }
             </Paragraph>
             <Paragraph>
