@@ -32,12 +32,6 @@ export const SiteDetailPanel = props => {
             : `N/A`
     }
 
-    const dateRangeFormat = (a, b) => {
-        start = a && a !== '' ? `${formatDate(new Date(a))}` : 'N/A'
-        end = b && b !== '' ? `${formatDate(new Date(b))}` : 'N/A'
-        return `${start} - ${end}`
-    }
-
     return (
         <DetailPanel heading={ siteName } subheading="Coordinating Center Metrics Report">
 
@@ -49,23 +43,23 @@ export const SiteDetailPanel = props => {
 
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Activation (Protocol to FPFV):" secondary={`${dateRangeFormat(dateRegPacketSent, fpfv)} (${dayCount(dateRegPacketSent, fpfv)})`}/>
+                            <ListItemText primary="Activation (Protocol to FPFV):" secondary={ dayCount(dateRegPacketSent, fpfv) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Contract execution time:" secondary={`${dateRangeFormat(dateContractSent, dateContractExecution)} (${dayCount(dateContractSent, dateContractExecution)})`}/>
+                            <ListItemText primary="Contract execution time:" secondary={ dayCount(dateContractSent, dateContractExecution) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="sIRB Approval time:" secondary={`${dateRangeFormat(dateIrbSubmission, dateIrbApproval)} (${dayCount(dateIrbSubmission, dateIrbApproval)})`}/>
+                            <ListItemText primary="sIRB Approval time:" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to FPFV:" secondary={`${dateRangeFormat(dateSiteActivated, fpfv)} (${dayCount(dateSiteActivated, fpfv)})`}/>
+                            <ListItemText primary="Site open to FPFV:" secondary={ dayCount(dateSiteActivated, fpfv) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Site open to LPFV:" secondary={`${dateRangeFormat(dateSiteActivated, lpfv)} (${dayCount(dateSiteActivated, lpfv)})`}/>
+                            <ListItemText primary="Site open to LPFV:" secondary={ dayCount(dateSiteActivated, lpfv)  } />
                         </ListItem>
                     </List>
                 </Grid>
@@ -76,23 +70,23 @@ export const SiteDetailPanel = props => {
 
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Percent of consented patients randomized:" secondary={`${patientsEnrolledCount || 'N/A'} - ${patientsConsentedCount || 'N/A'} (${displayRatio(patientsEnrolledCount, patientsConsentedCount)})`}/>
+                            <ListItemText primary="Percent of consented patients randomized:" secondary={ displayRatio(patientsEnrolledCount, patientsConsentedCount)  } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Actual to expected randomized patient ratio:" secondary={`${patientsEnrolledCount || 'N/A'} - ${patientsExpectedCount || 'N/A'} (${displayRatio(patientsEnrolledCount, patientsExpectedCount)})`}/>
+                            <ListItemText primary="Actual to expected randomized patient ratio:" secondary={ displayRatio(patientsEnrolledCount, patientsExpectedCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={`${patientsWithdrawnCount || 'N/A'} - ${patientsEnrolledCount || 'N/A'} (${displayRatio(patientsWithdrawnCount, patientsEnrolledCount)})`}/>
+                            <ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Major Protocol deviations per randomized patients:" secondary={`${protocolDeviationsCount || 'N/A'} - ${patientsEnrolledCount || 'N/A'} (${displayRatio(protocolDeviationsCount, patientsEnrolledCount)})`}/>
+                            <ListItemText primary="Major Protocol deviations per randomized patients:" secondary={ displayRatio( protocolDeviationsCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per data elements:" secondary={`${queriesCount || 'N/A'} - ${dataElement || 'N/A'} (${displayRatio(queriesCount, dataElement)})`}/>
+                            <ListItemText primary="Queries per data elements:" secondary={ displayRatio(queriesCount, dataElement )} />
                         </ListItem>
                     </List>
                 </Grid>
