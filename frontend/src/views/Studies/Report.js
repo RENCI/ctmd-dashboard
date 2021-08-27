@@ -190,7 +190,11 @@ export const StudyReportPage = (props) => {
           </Grid>
 
           <Grid item xs={11} sm={5} md={4} lg={3}>
-            <Milestones sites={studySites} sitesCount={initialParticipatingSiteCount} />
+            <Milestones
+              sites={studySites}
+              sitesCount={initialParticipatingSiteCount}
+              enrollmentGoal={+studyProfile.enrollmentGoal.value}
+            />
           </Grid>
 
           <Grid item xs={11}>
