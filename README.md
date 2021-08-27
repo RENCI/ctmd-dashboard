@@ -214,17 +214,8 @@ To use test dataset do the following:
 
 Environment variables live in the file `./.env` in the project root. This file contains critical information to ensure communication between services running within Docker containers. The set of variables consists of database credentials, information about accessing the dashboard's API, REDCap database credentials, and data backup location. A brief desription of each environment variable follows.
 
-- `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`: These provide credentials to connect to the database container.
 - `REACT_APP_API_ROOT`: Environment variables used in React begin with `REACT_APP_`. This variable is referenced in the front-ends source for defining the API endpoints. _This variable is only used in production._
 - `API_PORT`: This is the port the `ctmd-api` container should serve the API.
-- `REDCAP_APPLICATION_TOKEN`: This token grants access to the RedCap database. _This variable is only used in production._
-- `POSTGRES_DUMP_PATH`: This is the location on the host where Postgres backups (via `pg_dump`) will be stored. _This variable is only used in production._
-- `PAUSE`: TBA
-- `RELOAD_SCHEDULE`: TBA
-- `RELOAD_DATABASE`: TBA
-- `SCHEDULE_RUN_TIME`: This variable sets the time on the host machine to schedule the database backup process.
-- `AUXILIARY_PATH`: TBA
-- `FILTER_PATH`: This variable defines the location of a CSV file indicating which proposals to filter from the dashboard interface. This file is a one-column CSV and must have the following structure.
 - `IPAM_CONFIG_SUBNET`: This defines the subnet and gateway configurations for the network on which the containers will run.
 - `AUTH_API_KEY`: The api key for the auth server
 - `API_SESSION_SECRET`: The api session secret for the api
@@ -232,20 +223,32 @@ Environment variables live in the file `./.env` in the project root. This file c
 - `MAPPING_LOCAL_PATH` the path to your dataset
 - `DATA_INPUT_FILE_PATH` the name of your dataset
 - `DOWNLOAD_REDCAP_DATA` whether to download the redcap dataset and override local dataset
-
-```
-ProposalId
-171
-186
-```
-
-Proposal IDs listed will be shown in the dashboard. If the file is not present, nothing will be filtered, and the dashboard will show all proposals. If the file is present but contains no proposal IDs, _i.e._, contains only the column title, like
-
-```
-ProposalId
-```
-
-then nothing will be shown in the dashboard.
+- `POSTGRES_DATABASE_NAME`: postgres database name
+- `POSTGRES_USER`: postgres user
+- `POSTGRES_PASSWORD`: postgres password
+- `POSTGRES_PORT`: postgres port
+- `POSTGRES_HOST`: postgres host
+- `REDCAP_APPLICATION_TOKEN`: redcap application token
+- `REDCAP_URL_BASE`: redcap url base
+- `POSTGRES_DUMP_PATH`: postgres dump path
+- `AUXILIARY_PATH`: path to auxiliary files to be left joined with source data (source data is left)
+- `FILTER_PATH`: path to filter files to be inner joined with source data
+- `BLOCK_PATH`: path to block files to be right joined with source data and removed
+- `RELOAD_SCHEDULE`: set to 1 to daily reload
+- `SCHEDULE_RUN_TIME`: schedule run time of reload format HH:MM
+- `RELOAD_DATABASE`: set to 1 to reload database on start up
+- `SERVER`: set to 1 to run a REST API
+- `CREATE_TABLES`: set to 1 to create tables in database from data/tables.sql
+- `INSERT_DATA`: set to 1 to insert data in database from data/tables
+- `REDIS_QUEUE_HOST`: redis host for task queue
+- `REDIS_QUEUE_PORT`: redis port for task queue
+- `REDIS_QUEUE_DB`: redis database for task queue
+- `REDIS_LOCK_HOST`: redis host for distributed locking
+- `REDIS_LOCK_PORT`: redis port for distributed locking
+- `REDIS_LOCK_DB`: redis database for distributed locking
+- `REDIS_LOCK_EXPIRE`: expire time for distributed locking in seconds
+- `REDIS_LOCK_TIMEOUT`: timeout for distributed locking in seconds
+- `PAUSE`: pause at the end of test must be run using the run command
 
 When in doubt, use the `.env.sample` file as a guide (and it can be copied as-is to get things working out of the box for local development).
 
