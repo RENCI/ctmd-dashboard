@@ -114,8 +114,6 @@ export const StudyReportPage = (props) => {
               site.patientsExpectedCount = +site.patientsExpectedCount
               site.queriesCount = +site.queriesCount
               site.protocolDeviationsCount = +site.protocolDeviationsCount
-              // Format date from timestamp
-              site.dateRegPacketSent = site.dateRegPacketSent ? formatDate(new Date(site.dateRegPacketSent)) : ''
             })
 
             setStudySites(sitesResponse.data)
