@@ -376,6 +376,10 @@ Running this in production is quite similar to running the development environme
 
 ##### Prerequisites
 
+###### HEAL Users
+
+Users for the instance deployed on `heal-ctmd.renci.org` are managed in `./api/heal_users.txt`. To add users, add the email address of the user (as registered with REDCap) on a new line in the aforementioned file. Then run `docker-compose -f docker-compose.prod.yml up --build -d -V --no-deps api` so that the api reads the file again.
+
 ###### API URL
 
 The first thing the application needs set is the URL at which the frontend can access the container running the API. This is accomplished by specifying `REACT_APP_API_ROOT` in the environment variables file, `.env`. For example the corresponding line in the staging server for this application might look like `REACT_APP_API_ROOT=http://localhost/api/`.
@@ -389,29 +393,6 @@ The `ctmd-pipeline` container must communicate with the RedCap database, thus th
 ###### Postgres Dump Location
 
 The `ctmd-pipeline` container manages taking snapshots of the postgres database in the `ctmd-db` container, and stores it in the location specified by `POSTGRES_DUMP_PATH`. The backup of data dictionary is also stored at this path.
-
-###### HTTP Authentication
-
-The production server will employ basic http authentication. For this, we'll need a password file, and Docker will look for the file `frontend/.htpasswd`. It holds usernames and hashed passwords, as the sample file--`./frontend/.htpasswd.sample` illustrates. To generate the hashed password, use `htpasswd` from `apache2-utils` or `httpd-tools`.
-
-To add a user and password, use `htpasswd` by executing `htpasswd ./frontend/.htpasswd [username]`, where `[username]` is replaced with the desired login username. Then you'll be prompted to enter a password twice.
-
-The entire interaction shows output like the following.
-
-```bash
-$ sudo htpasswd ./frontend/.htpasswd myusername
-New password:
-Re-type new password:
-Adding password for user myusername
-```
-
-This will append a new line with `[username]:[hashed-password]` in the `.htpasswd` file. To completely replace the `.htpasswd` file, with the specified user's credentials, use the `-c` flag:
-
-```bash
-sudo htpasswd -c ./frontend/.htpasswd myusername
-```
-
-If usernames are not set up, Nginx will throw a `500 Internal Server Error` at your browser when you try to access the site.
 
 ###### PAUSE
 
