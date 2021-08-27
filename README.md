@@ -360,13 +360,11 @@ Alternatively, this can also be done by installing the dependencies within a con
 
 Running this in production is quite similar to running the development environment. A few things need to be in place first. Namely, we need to set up the aforementioned environment variables and set up authentication.
 
-####
-
 ##### Prerequisites
 
 ###### HEAL Users
 
-Users for the instance deployed on `heal-ctmd.renci.org` are managed in `./api/heal_users.txt`. To add users, add the email address of the user (as registered with REDCap) on a new line int eh aforementioned file. Then run `docker-compose -f docker-compose.prod.yml up --build -d -V --no-deps api` so that the api reads the file again.
+Users for the instance deployed on `heal-ctmd.renci.org` are managed in `./api/heal_users.txt`. To add users, add the email address of the user (as registered with REDCap) on a new line in the aforementioned file. Then run `docker-compose -f docker-compose.prod.yml up --build -d -V --no-deps api` so that the api reads the file again.
 
 ###### API URL
 
