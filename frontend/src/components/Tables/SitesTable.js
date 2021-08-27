@@ -53,7 +53,7 @@ export const SitesTable = props => {
             components={{ }}
             columns={
                 [
-                    { title: 'Protocol', field: 'protocol', hidden: true, },
+                    { title: 'Protocol (Short Description)', field: 'protocol', hidden: true, },
                     { title: 'Site ID', field: 'siteId', hidden: false, },
                     { title: 'CTSA ID', field: 'ctsaId', hidden: true, },
                     { title: 'Site Name', field: 'siteName', hidden: false, },

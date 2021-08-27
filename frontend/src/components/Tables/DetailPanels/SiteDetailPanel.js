@@ -43,7 +43,7 @@ export const SiteDetailPanel = props => {
 
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Protocol to FPFV:" secondary={ dayCount(dateRegPacketSent, fpfv) } />
+                            <ListItemText primary="Activation (Protocol to FPFV):" secondary={ dayCount(dateRegPacketSent, fpfv) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
