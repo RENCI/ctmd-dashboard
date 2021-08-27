@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent, List, ListItem, ListItemText } from '@material-ui/core'
-import { Subsubheading, Caption } from '../../components/Typography'
+import { Subsubheading, Caption, Paragraph } from '../../components/Typography'
 import { SitesActivationPieChart } from '../../components/Charts'
 import { formatDate } from '../../utils'
 import { isSiteActive } from '../../utils/sites'
@@ -12,7 +12,6 @@ Array.prototype.chunk = function (size) {
       chunks.push(this.slice(i, i + size))
     }
   }
-
   return chunks
 }
 
@@ -23,38 +22,51 @@ export const Milestones = ({ sites, sitesCount }) => {
   const [firstSubjectEnrolled, setFirstSubjectEnrolled] = useState()
   const [siteActivationPercentages, setSiteActivationPercentages] = useState([null, null, null, null])
 
-  const earliestDate = (property) => {
+  const earliestDate = property => {
     const reducer = (earliestDate, date) => (date < new Date(earliestDate) ? date : earliestDate)
-    const earliestDate = sites
-      .map((site) => site[property])
-      .filter((date) => date !== '')
-      .map((date) => new Date(date))
-      .reduce(reducer, new Date())
-    return formatDate(earliestDate)
+    const sitesWithDates = sites.filter(site => !!site[property])
+    let earliestDate = 'N/A'
+    if (sitesWithDates.length) {
+      earliestDate = sitesWithDates
+        .map(site => new Date(site[property]))
+        .reduce(reducer, new Date())
+      return formatDate(earliestDate)
+    }
+    return earliestDate
   }
 
-  const thresholds = (property) => {
-    const quartileSize = Math.round(sitesCount / 4)
-    const activationDates = sites
-      .map((site) => site[property])
-      .filter((date) => date !== '')
-      .map((date) => new Date(date))
-      .sort((d1, d2) => d1 - d2)
+  const setThresholds = property => {
+    let count = 0
+    let thresholdDates = []
 
-    const dates = activationDates.chunk(quartileSize).map((chunk) => formatDate(chunk[chunk.length - 1]))
-    for (let i = 0; i < 4; i++) {
-      if (!dates[i]) {
-        dates[i] = 'N/A'
+    const dates = sites
+      .map(site => site[property])
+      .filter(date => !!date)
+      .sort((d1, d2) => d1 < d2 ? -1 : 1)    
+    let percentage = 0.25
+    dates.forEach(date => {
+      if (!!date) {
+        count += 1
+        if (count / sitesCount >= 0.25 + 0.25 * thresholdDates.length) {
+          thresholdDates.push(date)
+        }
+      }
+    })
+    for (let i = 0; i < 4; i += 1) {
+      if (thresholdDates.length <= i) {
+        thresholdDates.push('N/A')
+      } else {
+        thresholdDates[i] = formatDate(new Date(thresholdDates[i]))
       }
     }
-    setSiteActivationPercentages(dates)
+    setSiteActivationPercentages(thresholdDates)
   }
 
   useEffect(() => {
     setFirstIRBApprovedDate(earliestDate('dateIrbApproval'))
     setFirstSiteActivationDate(earliestDate('dateSiteActivated'))
     setFirstSubjectEnrolled(earliestDate('fpfv'))
-    thresholds('dateSiteActivated')
+    setThresholds('dateSiteActivated')
   }, [])
 
   const activeSitesCount = () => {
@@ -82,38 +94,51 @@ export const Milestones = ({ sites, sitesCount }) => {
   return (
     <Card style={{ height: '100%' }}>
       <CardHeader title="Milestones" />
-      <CardContent>
-        <Subsubheading align="center">Site Activation</Subsubheading>
-        <SitesActivationPieChart percentage={activeSitesPercentage()} />
-        <Caption align="center">
-          {activeSitesCount()} of {sitesCount} sites
-        </Caption>
-      </CardContent>
-      <CardContent>
-        <List dense>
-          <ListItem>
-            <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
-          </ListItem>
-        </List>
-      </CardContent>
+      {
+        !sitesCount ? (
+          <CardContent>
+            <Subsubheading align="center">Site Activation</Subsubheading>
+            <Paragraph>
+              This study has zero initial participating sites.
+            </Paragraph>
+          </CardContent>
+        ) : (
+          <Fragment>
+            <CardContent>
+              <Subsubheading align="center">Site Activation</Subsubheading>
+              <SitesActivationPieChart percentage={activeSitesPercentage()} />
+              <Caption align="center">
+                {activeSitesCount()} of {sitesCount} sites
+              </Caption>
+            </CardContent>
+            <CardContent>
+              <List dense>
+                <ListItem>
+                  <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Fragment>
+        )
+      }
     </Card>
   )
 }
