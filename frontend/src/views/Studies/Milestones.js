@@ -133,25 +133,45 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={ <span>25% of Sites Activated ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })</span> }
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>25% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.25) } / { sitesCount } )</span>
+                      </div>
+                    }
                     secondary={ siteActivationPercentages[0] }
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={ <span>50% of Sites Activated ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })</span> }
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>50% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.5) } / { sitesCount } )</span>
+                      </div>
+                    }
                     secondary={ siteActivationPercentages[1] }
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={ <span>75% of Sites Activated ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })</span> }
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>75% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.75) } / { sitesCount } )</span>
+                      </div>
+                    }
                     secondary={ siteActivationPercentages[2] }
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={ <span>100% of Sites Activated ({ sitesCount } / { sitesCount })</span> }
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>100% of Sites Activated</span>
+                        <span>( { sitesCount } / { sitesCount } )</span>
+                      </div>
+                    }
                     secondary={ siteActivationPercentages[3] }
                   />
                 </ListItem>
