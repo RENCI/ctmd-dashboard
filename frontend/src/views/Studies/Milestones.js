@@ -132,16 +132,28 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                   <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+                  <ListItemText
+                    primary={ <span>25% of Sites Activated ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })</span> }
+                    secondary={ siteActivationPercentages[0] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+                  <ListItemText
+                    primary={ <span>50% of Sites Activated ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })</span> }
+                    secondary={ siteActivationPercentages[1] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+                  <ListItemText
+                    primary={ <span>75% of Sites Activated ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })</span> }
+                    secondary={ siteActivationPercentages[2] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+                  <ListItemText
+                    primary={ <span>100% of Sites Activated ({ sitesCount } / { sitesCount })</span> }
+                    secondary={ siteActivationPercentages[3] }
+                  />
                 </ListItem>
               </List>
             </CardContent>
