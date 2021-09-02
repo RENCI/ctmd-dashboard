@@ -16,7 +16,7 @@ export const SitesTable = props => {
                 if (protocols.hasOwnProperty(site.proposalId)) {
                     site.protocol = protocols[site.proposalId]
                 } else {
-                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalId === site.proposalId)
+                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
                     site.protocol = shortTitle
                 }
             })
