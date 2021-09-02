@@ -47,7 +47,7 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
     dates.forEach(date => {
       if (!!date) {
         count += 1
-        if (count / sites.length >= 0.25 + 0.25 * thresholdDates.length) {
+        if (count / sitesCount >= 0.25 + 0.25 * thresholdDates.length) {
           thresholdDates.push(date)
         }
       }
@@ -132,16 +132,48 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                   <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>25% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.25) } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[0] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>50% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.5) } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[1] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>75% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.75) } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[2] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>100% of Sites Activated</span>
+                        <span>( { sitesCount } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[3] }
+                  />
                 </ListItem>
               </List>
             </CardContent>
