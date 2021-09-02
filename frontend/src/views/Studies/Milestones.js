@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import { Card, CardHeader, CardContent, List, ListItem, ListItemText } from '@material-ui/core'
 import { Subsubheading, Caption, Paragraph } from '../../components/Typography'
-import { SitesActivationPieChart } from '../../components/Charts'
+import { EnrollmentPieChart, SitesActivationPieChart } from '../../components/Charts'
 import { formatDate } from '../../utils'
 import { isSiteActive } from '../../utils/sites'
 
@@ -15,7 +15,7 @@ Array.prototype.chunk = function (size) {
   return chunks
 }
 
-export const Milestones = ({ sites, sitesCount }) => {
+export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
@@ -74,7 +74,9 @@ export const Milestones = ({ sites, sitesCount }) => {
     return sites.reduce(reducer, 0)
   }
 
-  const activeSitesPercentage = () => 100 * (activeSitesCount() / sitesCount).toFixed(2)
+  const activeSitesPercentage = useMemo(() => 100 * (activeSitesCount() / sitesCount).toFixed(2), [sites, enrollmentGoal])
+  const enrollmentTotal = useMemo(() => sites.reduce((total, site) => total + site.patientsEnrolledCount, 0), [sites, enrollmentGoal])
+  const enrollmentPercentage = useMemo(() => 100 * (enrollmentTotal / enrollmentGoal).toFixed(2), [sites, enrollmentGoal])
 
   useEffect(() => {
     if (sites) {
@@ -105,8 +107,15 @@ export const Milestones = ({ sites, sitesCount }) => {
         ) : (
           <Fragment>
             <CardContent>
+              <Subsubheading align="center">Site Enrollment</Subsubheading>
+              <EnrollmentPieChart percentage={ enrollmentPercentage } />
+              <Caption align="center">
+                {enrollmentTotal} of {enrollmentGoal} enrolled
+              </Caption>
+            </CardContent>
+            <CardContent>
               <Subsubheading align="center">Site Activation</Subsubheading>
-              <SitesActivationPieChart percentage={activeSitesPercentage()} />
+              <SitesActivationPieChart percentage={activeSitesPercentage} />
               <Caption align="center">
                 {activeSitesCount()} of {sitesCount} sites
               </Caption>
@@ -123,16 +132,48 @@ export const Milestones = ({ sites, sitesCount }) => {
                   <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="25% of Sites Activated" secondary={siteActivationPercentages[0]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>25% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.25) } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[0] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="50% of Sites Activated" secondary={siteActivationPercentages[1]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>50% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.5) } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[1] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="75% of Sites Activated" secondary={siteActivationPercentages[2]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>75% of Sites Activated</span>
+                        <span>( { Math.ceil(sitesCount * 0.75) } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[2] }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="100% of Sites Activated" secondary={siteActivationPercentages[3]}></ListItemText>
+                  <ListItemText
+                    primary={
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>100% of Sites Activated</span>
+                        <span>( { sitesCount } / { sitesCount } )</span>
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[3] }
+                  />
                 </ListItem>
               </List>
             </CardContent>
@@ -142,3 +183,4 @@ export const Milestones = ({ sites, sitesCount }) => {
     </Card>
   )
 }
+
