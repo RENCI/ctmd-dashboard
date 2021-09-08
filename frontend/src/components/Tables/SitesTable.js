@@ -19,16 +19,16 @@ export const SitesTable = props => {
                     const { shortTitle } = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
                     site.protocol = shortTitle
                 }
-            site.protocolToFpfv = { dayCount(rowData.dateRegPacketSent, rowData.fpfv) }
-            site.contractExecutionTime = { dayCount(rowData.dateContractSent, rowData.dateContractExecution) }
-            site.sirbApprovalTime = { dayCount(rowData.dateIrbSubmission, rowData.dateIrbApproval) }
-            site.siteOpenToFpfv = { dayCount(rowData.dateSiteActivated, rowData.fpfv) }
-            site.protocolToLpfv = { dayCount(rowData.dateSiteActivated, rowData.lpfv) }
-            site.percentConsentedPtsRandomized = { displayRatio(rowData.patientsEnrolledCount, rowData.patientsConsentedCount) }
-            site.actualToExpectedRandomizedPtRatio = { displayRatio(rowData.patientsEnrolledCount, rowData.patientsExpectedCount) }
-            site.ratioRandomizedPtsDropout= { displayRatio(rowData.patientsWithdrawnCount, rowData.patientsEnrolledCount) }
-            site.majorProtocolDeviationsPerRandomizedPt= { displayRatio( rowData.protocolDeviationsCount, rowData.patientsEnrolledCount) }
-            site.queriesPerDataElement= { displayRatio(rowData.queriesCount, rowData.dataElement )}
+                site.protocolToFpfv = dayCount(rowData.dateRegPacketSent, rowData.fpfv)
+                site.contractExecutionTime = dayCount(rowData.dateContractSent, rowData.dateContractExecution)
+                site.sirbApprovalTime = dayCount(rowData.dateIrbSubmission, rowData.dateIrbApproval)
+                site.siteOpenToFpfv = dayCount(rowData.dateSiteActivated, rowData.fpfv)
+                site.protocolToLpfv = dayCount(rowData.dateSiteActivated, rowData.lpfv)
+                site.percentConsentedPtsRandomized = displayRatio(rowData.patientsEnrolledCount, rowData.patientsConsentedCount)
+                site.actualToExpectedRandomizedPtRatio = displayRatio(rowData.patientsEnrolledCount, rowData.patientsExpectedCount)
+                site.ratioRandomizedPtsDropout = displayRatio(rowData.patientsWithdrawnCount, rowData.patientsEnrolledCount)
+                site.majorProtocolDeviationsPerRandomizedPt = displayRatio( rowData.protocolDeviationsCount, rowData.patientsEnrolledCount)
+                site.queriesPerDataElement = displayRatio(rowData.queriesCount, rowData.dataElement )
             })
         }
     }, [sites, store.proposals])
