@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import MaterialTable from 'material-table'
 import { StoreContext } from '../../contexts/StoreContext'
-import { SiteDetailPanel } from './DetailPanels'
+import { SiteDetailPanel, dayCount, displayRatio } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 
 export const SitesTable = props => {
@@ -19,6 +19,16 @@ export const SitesTable = props => {
                     const { shortTitle } = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
                     site.protocol = shortTitle
                 }
+            site.protocolToFpfv = { dayCount(rowData.dateRegPacketSent, rowData.fpfv) }
+            site.contractExecutionTime = { dayCount(rowData.dateContractSent, rowData.dateContractExecution) }
+            site.sirbApprovalTime = { dayCount(rowData.dateIrbSubmission, rowData.dateIrbApproval) }
+            site.siteOpenToFpfv = { dayCount(rowData.dateSiteActivated, rowData.fpfv) }
+            site.protocolToLpfv = { dayCount(rowData.dateSiteActivated, rowData.lpfv) }
+            site.percentConsentedPtsRandomized = { displayRatio(rowData.patientsEnrolledCount, rowData.patientsConsentedCount) }
+            site.actualToExpectedRandomizedPtRatio = { displayRatio(rowData.patientsEnrolledCount, rowData.patientsExpectedCount) }
+            site.ratioRandomizedPtsDropout= { displayRatio(rowData.patientsWithdrawnCount, rowData.patientsEnrolledCount) }
+            site.majorProtocolDeviationsPerRandomizedPt= { displayRatio( rowData.protocolDeviationsCount, rowData.patientsEnrolledCount) }
+            site.queriesPerDataElement= { displayRatio(rowData.queriesCount, rowData.dataElement )}
             })
         }
     }, [sites, store.proposals])
@@ -77,6 +87,16 @@ export const SitesTable = props => {
                     { title: 'Protocol Deviations', field: 'protocolDeviationsCount', hidden: true, },
                     { title: 'Data Element', field: 'dataElement', hidden: true, },
                     { title: 'Lost to Follow Up', field: 'lostToFollowUp', hidden: true, },
+                    { title: 'Protocol to FPFV', field: 'protocolToFpfv', hidden: true, },
+                    { title: 'Contract Execution Time', field: 'contractExecutionTime', hidden: true, },
+                    { title: 'sIRB Approval Time', field: 'sirbApprovalTime', hidden: true, },
+                    { title: 'Site Open to FPFV', field: 'siteOpenToFpfv', hidden: true, },
+                    { title: 'Site Open to LPFV', field: 'protocolToLpfv', hidden: true, },
+                    { title: 'Percent of consented patients randomized', field: 'percentConsentedPtsRandomized', hidden: true, },
+                    { title: 'Actual to expected randomized patient ratio', field: 'actualToExpectedRandomizedPtRatio', hidden: true, },
+                    { title: 'Ratio of randomized patients that dropout of the study', field: 'ratioRandomizedPtsDropout', hidden: true, },
+                    { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPt', hidden: true, },
+                    { title: 'Queries per data element', field: 'queriesPerDataElement', hidden: true, }
                 ]
             }
             data={ sites }
