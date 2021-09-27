@@ -4,11 +4,7 @@ import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
 import { formatDate } from '../../../utils/DateFormat'
 
-export const SiteDetailPanel = props => {
-    const {
-        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval, dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount, dataElement
-    } = props
-    const dayCount = (startDate, endDate) => {
+export const dayCount = (startDate, endDate) => {
         if (startDate && endDate) {
             const num = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
             return `${ num } day${ num === 1 ? '' : 's' }`
@@ -17,7 +13,7 @@ export const SiteDetailPanel = props => {
         }
     }
 
-    const displayRatio = (a, b, precision = 2) => {
+export const displayRatio = (a, b, precision = 2) => {
         a = parseInt(a)
         b = parseInt(b)
         if ( !a || !b ) {
@@ -32,6 +28,11 @@ export const SiteDetailPanel = props => {
             : `N/A`
     }
 
+export const SiteDetailPanel = props => {
+    const {
+        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval, dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount, dataElement
+    } = props
+    
     return (
         <DetailPanel heading={ siteName } subheading="Coordinating Center Metrics Report">
 
