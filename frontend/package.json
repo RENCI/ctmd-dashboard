@@ -5,6 +5,8 @@
   "homepage": "https://ctmd.renci.org/",
   "devDependencies": {},
   "dependencies": {
+    "@cypress/react": "^5.10.0",
+    "@cypress/webpack-dev-server": "^1.6.0",
     "@material-ui/core": "^4.7.2",
     "@material-ui/icons": "^3.0.2",
     "@material-ui/lab": "^4.0.0-alpha.35",
@@ -14,7 +16,9 @@
     "@nivo/line": "^0.61.1",
     "@nivo/pie": "^0.58.0",
     "axios": "^0.19.0",
+    "babel-plugin-transform-dynamic-import": "^2.1.0",
     "caniuse-lite": "^1.0.30001015",
+    "cypress": "^8.5.0",
     "d3": "^5.9.1",
     "d3-sankey": "^0.12.3",
     "d3-scale-chromatic": "^1.3.3",
@@ -29,7 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "npx cypress open-ct",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "eject": "react-scripts eject"
