@@ -75,7 +75,7 @@ endpoints = {
   dataSync: pipelineApiRoot + 'sync', // POST to sync with redcap
   dataGetTasks: pipelineApiRoot + 'task',
   dataGetTask: (jobId) => pipelineApiRoot + `task/${jobId}`,
-  uploadSites: pipelineApiRoot + `table/StudySites/column/siteId`,
+  uploadSites: pipelineApiRoot + `table/Sites`,
   uploadCtsas: pipelineApiRoot + `table/CTSAs/column/ctsaId`,
   uploadStudyProfile: pipelineApiRoot + `table/StudyProfile/column/ProposalID`,
   uploadStudySites: pipelineApiRoot + `table/StudySites/column/siteId`,
