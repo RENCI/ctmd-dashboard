@@ -8,28 +8,42 @@ export const CombinedMetrics = ({ study, studyProfile, sites }) => {
   //      This seems like a bad idea to modify the site objects directly outside of a store/context.
   //      For now, recompute here, but suggest centralizing this somehow.
 
+  const invalidDisplay = 'N/A'
+
   const dayCount = (startDate, endDate) => {
     return startDate && endDate ? Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) : 0
   }
 
   const averageDays = (startKey, endKey) => {
-    return sites.reduce((sum, site) => {
-      return sum + dayCount(site[startKey], site[endKey])
-    }, 0) / sites.length
+    const total = sites.reduce((total, site) => {
+      const start = site[startKey]
+      const end = site[endKey]
+
+      if (start && end) {
+        total.sum += dayCount(start, end)
+        total.numDays++
+      }
+
+      return total
+    }, { sum: 0, numDays: 0 })
+
+    return total.numDays === 0 ? -1 : total.sum / total.numDays
   }
 
-
   const dayString = numDays => {
+    if (numDays < 0) return invalidDisplay
+
     const n = Math.round(numDays);
 
     return `${ n } day${ n === 1 ? '' : 's' }`
   }
+
   const sum = key => {
     return sites.reduce((sum, site) => sum + site[key], 0)
   }
 
   const ratioString = (a, b, precision = 2) => {
-    return b === 0 ? 'N/A' : `${ (100 * a/b).toFixed(precision) }% (${ a }/${ b })`
+    return b === 0 ? invalidDisplay : `${ (100 * a/b).toFixed(precision) }% (${ a }/${ b })`
   }
 
   const item = (label, value) => (

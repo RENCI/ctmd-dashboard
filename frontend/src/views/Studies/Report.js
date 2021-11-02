@@ -200,7 +200,7 @@ export const StudyReportPage = (props) => {
 
           <Grid item xs={11}>
             <Card>
-              <CardHeader title="Combined Metrics" />
+              <CardHeader title="Combined Metrics" subheader="Averaged across all study sites" />
               <CardContent>
                 {studyProfile ? (
                   <CombinedMetrics study={ study } studyProfile={ studyProfile } sites={ studySites } />
