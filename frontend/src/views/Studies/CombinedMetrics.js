@@ -69,7 +69,7 @@ export const CombinedMetrics = ({ study, studyProfile, sites }) => {
           { item('Percent of consented patients randomized', ratioString(sum('patientsEnrolledCount'), sum('patientsConsentedCount'))) }
           { item('Actual to expected randomized patient ratio', ratioString(sum('patientsEnrolledCount'), sum('patientsExpectedCount'))) }
           { item('Ratio of randomized patients that dropped out of the study', ratioString(sum('patientsWithdrawnCount'), sum('patientsEnrolledCount'))) }
-          { item('Major protocol deviations for randomized patients', ratioString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount'))) }        
+          { item('Major protocol deviations per randomized patients', ratioString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount'))) }        
           { item('Queries per data element', ratioString(sum('queriesCount'), sum('dataElement'))) }
         </List>
       </Grid>

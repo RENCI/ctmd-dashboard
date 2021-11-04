@@ -44,7 +44,7 @@ export const SiteDetailPanel = props => {
 
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Activation (Protocol to FPFV):" secondary={ dayCount(dateRegPacketSent, fpfv) } />
+                            <ListItemText primary="Activation (protocol to FPFV):" secondary={ dayCount(dateRegPacketSent, fpfv) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
@@ -52,7 +52,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="sIRB Approval time:" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
+                            <ListItemText primary="sIRB approval time:" secondary={ dayCount(dateIrbSubmission, dateIrbApproval) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
@@ -79,15 +79,15 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Ratio of randomized patients that dropout of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
+                            <ListItemText primary="Ratio of randomized patients that dropped out of the study:" secondary={ displayRatio(patientsWithdrawnCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Major Protocol deviations per randomized patients:" secondary={ displayRatio( protocolDeviationsCount, patientsEnrolledCount) } />
+                            <ListItemText primary="Major protocol deviations per randomized patients:" secondary={ displayRatio( protocolDeviationsCount, patientsEnrolledCount) } />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per data elements:" secondary={ displayRatio(queriesCount, dataElement )} />
+                            <ListItemText primary="Queries per data element:" secondary={ displayRatio(queriesCount, dataElement )} />
                         </ListItem>
                     </List>
                 </Grid>
