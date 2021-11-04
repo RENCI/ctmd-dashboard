@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:v2.0
+    image: txscience/ctmd-pipeline-reload:v2.2
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -29,7 +29,7 @@ services:
       POSTGRES_DUMP_PATH: /backup
       AUXILIARY_PATH: /auxiliary
       FILTER_PATH: /filter
-      BLOCK_PATH: /block
+      BLOCK_PATH: ./block
       RELOAD_SCHEDULE: $RELOAD_SCHEDULE
       RELOAD_DATABASE: $RELOAD_DATABASE
       SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
@@ -48,6 +48,7 @@ services:
       PAUSE: $PAUSE
       DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
       DOWNLOAD_REDCAP_DATA: $DOWNLOAD_REDCAP_DATA
+      GLOBAL_WRITE_PERMISSIONS: $GLOBAL_WRITE_PERMISSIONS
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
@@ -90,7 +91,7 @@ services:
     ports:
       - $API_PORT:$API_PORT
     environment:
-      AUTH_ENV: production
+      AUTH_ENV: development
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_PORT: $POSTGRES_PORT
       POSTGRES_DB: $POSTGRES_DB
@@ -116,6 +117,7 @@ services:
       - /usr/src/app/node_modules
     environment:
       NODE_ENV: development
+      REACT_APP_IS_HEAL_SERVER: $IS_HEAL_SERVER
     ports:
       - 3000:3000
     depends_on:
