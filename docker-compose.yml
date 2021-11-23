@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:v2.2
+    image: txscience/ctmd-pipeline-reload:2.4.2
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -55,7 +55,7 @@ services:
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
-      - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
+      # - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
     depends_on:
       - db
       - redis
