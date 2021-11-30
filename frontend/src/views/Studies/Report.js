@@ -11,6 +11,7 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { Milestones } from './Milestones'
+import { CombinedMetrics } from './CombinedMetrics'
 import { convertBoolToYesOrNo, formatDate } from '../../utils'
 import { AuthContext } from '../../contexts'
 
@@ -195,6 +196,19 @@ export const StudyReportPage = (props) => {
               sitesCount={initialParticipatingSiteCount}
               enrollmentGoal={+studyProfile.enrollmentGoal.value}
             />
+          </Grid>
+
+          <Grid item xs={11}>
+            <Card>
+              <CardHeader title="Combined Metrics" subheader="Averaged across all study sites" />
+              <CardContent>
+                {studyProfile ? (
+                  <CombinedMetrics study={ study } studyProfile={ studyProfile } sites={ studySites } />
+                ) : (
+                  <Paragraph>No profile found! {isPLAdmin && <NavLink to="/uploads">Upload it</NavLink>}!</Paragraph>
+                )}
+              </CardContent>
+            </Card>
           </Grid>
 
           <Grid item xs={11}>
