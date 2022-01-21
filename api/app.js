@@ -5,6 +5,7 @@ const cors = require('cors')
 const db = require('./config/database')
 var multer = require('multer')
 const session = require('express-session')
+const axios = require('axios')
 const { getHealUsers, checkIfIsHealUser } = require('./utils/helpers')
 
 // Config
@@ -52,8 +53,10 @@ app.use(async (req, res, next) => {
         if (response.status === 200) {
           next()
         } else {
+          throw new Error('An authentication error occurred.')
         }
       } catch (err) {
+        console.log(err)
         res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
       }
     } else {
