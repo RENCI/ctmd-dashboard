@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:v2.4.2
+    image: txscience/ctmd-pipeline-reload:2.4.2
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -49,13 +49,14 @@ services:
       DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
       DOWNLOAD_REDCAP_DATA: $DOWNLOAD_REDCAP_DATA
       GLOBAL_WRITE_PERMISSIONS: $GLOBAL_WRITE_PERMISSIONS
+      LOCAL_ENV: 'true'
     volumes:
       - $POSTGRES_DUMP_PATH:/backup
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
       - $MAPPING_LOCAL_PATH:/mapping.json
-      # - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
+      - $DATA_INPUT_FILE_PATH:/syntheticDataset.json
     depends_on:
       - db
       - redis
@@ -101,7 +102,7 @@ services:
       DASHBOARD_URL: $DASHBOARD_URL
       REACT_APP_API_ROOT: $REACT_APP_API_ROOT
       NODE_ENV: development
-      API_SESSION_SECRET: "super_secret"
+      API_SESSION_SECRET: $API_SESSION_SECRET
       AUTH_URL: $AUTH_URL
     depends_on:
       - db
