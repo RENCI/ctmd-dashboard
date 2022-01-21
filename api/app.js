@@ -56,7 +56,7 @@ app.use(async (req, res, next) => {
           throw new Error('An authentication error occurred.')
         }
       } catch (err) {
-        console.log({ error: err, request: req })
+        console.log(err)
         res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
       }
     } else {
