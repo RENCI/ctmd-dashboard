@@ -31,7 +31,7 @@ export const UploadsPage = (props) => {
               action={<DownloadButton path={api.download('sites')} tooltip="Download Sites CSV Template" />}
             />
             <CardContent>
-              <DropZone method="PUT" endpoint={api.uploadSites} />
+              <DropZone method="POST" endpoint={api.uploadSites} />
             </CardContent>
           </Card>
         </Grid>
