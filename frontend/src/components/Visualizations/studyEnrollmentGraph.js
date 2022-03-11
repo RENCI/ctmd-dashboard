@@ -5,7 +5,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  let margin = { top: 10, left: 50, bottom: 30, right: 60 },
+  let margin = { top: 10, left: 50, bottom: 60, right: 60 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -542,13 +542,15 @@ export default function() {
 
     function drawAxes() {
       // Axes      
+      const dayFormat = d3.timeFormat("%d");
       const monthFormat = d3.timeFormat("%b");
       const monthDayFormat = d3.timeFormat("%b %d");
       const yearFormat = d3.timeFormat("%Y");
+      const spacing = 1.2;
 
       const xAxis = d3.axisBottom(xScale)
-          .ticks(d3.timeMonth.every(1))
-          .tickFormat(d => d.getMonth() === 0 ? monthDayFormat(d) : monthFormat(d));
+          .tickValues(enrolled.map(d => d.date))
+          .tickFormat(monthFormat);
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
 
@@ -567,8 +569,8 @@ export default function() {
           .attr("transform", "translate(0," + innerHeight() + ")")
           .call(xAxis);
 
-      // Add extra year label for January       
-      axes.select(".xAxis").selectAll(".tick").filter(d => d.getMonth() === 0).each(function(d) {
+      // Add day labels
+      axes.select(".xAxis").selectAll(".tick").each(function(d) {
         const label = d3.select(this).select("text");
 
         const text = d3.select(this).selectAll("text")
@@ -576,11 +578,27 @@ export default function() {
 
         text.enter().append("text")
           .merge(text)
-            .style("font-weight", "bold")
           .filter((d, i) => i === 1)
+            .text(d => dayFormat(d))
+            .attr("fill", label.attr("fill"))
+            .attr("y", label.attr("y") * (1 + spacing))
+            .attr("dy", `calc(${ label.attr("dy") } + 2em)`);            
+      });      
+
+      // Add extra year label for January       
+      axes.select(".xAxis").selectAll(".tick").filter(d => d.getMonth() === 0).each(function(d) {
+        const label = d3.select(this).select("text");
+
+        const text = d3.select(this).selectAll("text")
+            .data([d, d, d]);        
+
+        text.enter().append("text")
+          .merge(text)
+            .style("font-weight", "bold")
+          .filter((d, i) => i === 2)
             .text(d => yearFormat(d))
             .attr("fill", label.attr("fill"))
-            .attr("y", label.attr("y") * 2.5)
+            .attr("y", label.attr("y") * (1 + spacing * 2))
             .attr("dy", label.attr("dy"));            
       });         
 
