@@ -111,7 +111,7 @@ export const Menu = ({ expanded, clickHandler }) => {
     { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
   ]
 
-  if (process.env.REACT_APP_IS_HEAL_SERVER) {
+  if (process.env.REACT_APP_IS_HEAL_SERVER === 'true') {
     menuItems.push({
       text: 'CTMD',
       path: 'https://ctmd.renci.org/',
