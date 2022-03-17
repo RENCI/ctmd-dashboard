@@ -113,15 +113,15 @@ export const Menu = ({ expanded, clickHandler }) => {
 
   if (process.env.REACT_APP_IS_HEAL_SERVER === 'true') {
     menuItems.push({
-      text: 'HEAL CTMD',
-      path: 'https://heal-ctmd.renci.org/',
-      icon: HEALIcon,
-    })
-  } else {
-    menuItems.push({
       text: 'CTMD',
       path: 'https://ctmd.renci.org/',
       icon: CTMDIcon,
+    })
+  } else {
+    menuItems.push({
+      text: 'HEAL CTMD',
+      path: 'https://heal-ctmd.renci.org/',
+      icon: HEALIcon,
     })
   }
 
