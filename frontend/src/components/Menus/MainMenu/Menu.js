@@ -13,6 +13,7 @@ import {
 } from '@material-ui/icons'
 import { CTSAIcon } from '../../Icons/Ctsa'
 import { TINLogoIcon } from '../../Icons/TinLogo'
+import { CTMDIcon } from '../../Icons/Ctmd'
 import { HEALIcon } from '../../Icons/Heal'
 import axios from 'axios'
 import api from '../../../Api'
@@ -97,7 +98,7 @@ export const Menu = ({ expanded, clickHandler }) => {
                                || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin) // on heal server as a pladmin
                                || (process.env.NODE_ENV === 'development')
 
-  const menuItems = [
+  let menuItems = [
     {}, // an empty object causes a Divider component to render in the menu
     { text: 'Home', path: '/', icon: HomeIcon },
     { text: 'Proposals', path: '/proposals', icon: ProposalsIcon },
@@ -108,12 +109,21 @@ export const Menu = ({ expanded, clickHandler }) => {
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
     {}, // an empty object causes a Divider component to render in the menu
     { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
-    {
-      text: 'HEAL Dashboard',
-      path: 'https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=https://heal-ctmd.renci.org/api/auth',
-      icon: HEALIcon,
-    },
   ]
+
+  if (process.env.REACT_APP_IS_HEAL_SERVER === 'true') {
+    menuItems.push({
+      text: 'HEAL CTMD',
+      path: 'https://heal-ctmd.renci.org/',
+      icon: HEALIcon,
+    })
+  } else {
+    menuItems.push({
+      text: 'CTMD',
+      path: 'https://ctmd.renci.org/',
+      icon: CTMDIcon,
+    })
+  }
 
   return (
     <nav className={classes.nav}>
