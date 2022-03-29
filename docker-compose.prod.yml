@@ -16,7 +16,7 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline
-    image: txscience/ctmd-pipeline-reload:v2.4.2
+    image: txscience/ctmd-pipeline-reload:v2.5
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
