@@ -5,7 +5,7 @@ import d3Tip from 'd3-tip';
 
 export default function() {
       // Size
-  let margin = { top: 10, left: 50, bottom: 30, right: 60 },
+  let margin = { top: 10, left: 50, bottom: 60, right: 60 },
       width = 800,
       height = 800,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -541,14 +541,61 @@ export default function() {
     }
 
     function drawAxes() {
-      // Axes      
+      // Different formats for printing tick labels     
       const monthFormat = d3.timeFormat("%b");
       const monthDayFormat = d3.timeFormat("%b %d");
-      const yearFormat = d3.timeFormat("%Y");
+      const monthYearFormat = d3.timeFormat("%b, %Y");
+      const monthDayYearFormat = d3.timeFormat("%b %d, %Y");
 
+      // Some math for filling in missing months
+      const mod = (n, m) => (n % m + m) % m;
+      const monthAdd = (a, b) => mod(mod(a, 12) + mod(b, 12), 12);
+      const daysInMonth = (m, y) => new Date(y, m, 0).getDate();
+
+      // Fill in missing months
+      const axisDates = enrolled.reduce((dates, { date }, i, a) => {
+        if (i === a.length - 1) {
+          dates.push({
+            date: date,
+            present: true
+          });
+        }
+        else {
+          const nextDate = a[i + 1].date;
+          const months = monthAdd(nextDate.getMonth(), -date.getMonth());
+
+          dates.push({
+            date: date,
+            present: true
+          });
+
+          for (let j = 0; j < months - 1; j++) {
+            date = new Date(date);
+            date.setDate(date.getDate() + daysInMonth(date.getMonth() + 1, date.getFullYear()));
+
+            dates.push({
+              date: date,
+              present: false
+            });
+          }
+        }
+
+        return dates;
+      }, []);
+
+      // Show year for first tick mark in the year
+      axisDates.forEach((d, i) => d.showYear = d.date.getMonth() === 0 && (i === 0 || axisDates[i - 1].date.getMonth() !== 0));
+
+      // Draw the axis
       const xAxis = d3.axisBottom(xScale)
-          .ticks(d3.timeMonth.every(1))
-          .tickFormat(d => d.getMonth() === 0 ? monthDayFormat(d) : monthFormat(d));
+          .tickValues(axisDates.map(d => d.date))
+          .tickFormat((d, i) => {
+            const { showYear, present } = axisDates[i];
+            return present && showYear ? monthDayYearFormat(d) : 
+              present ? monthDayFormat(d) : 
+              showYear ? monthYearFormat(d) : 
+              monthFormat(d);
+          });
       const enrolledAxis = d3.axisRight(enrolledScale);
       const sitesAxis = d3.axisLeft(sitesScale);
 
@@ -567,22 +614,16 @@ export default function() {
           .attr("transform", "translate(0," + innerHeight() + ")")
           .call(xAxis);
 
-      // Add extra year label for January       
-      axes.select(".xAxis").selectAll(".tick").filter(d => d.getMonth() === 0).each(function(d) {
-        const label = d3.select(this).select("text");
+      // Modify tick stroke
+      axes.select(".xAxis").selectAll(".tick > line")
+        .style("stroke", (d, i) => axisDates[i].present ? "#000" : "#999");          
 
-        const text = d3.select(this).selectAll("text")
-            .data([d, d]);        
-
-        text.enter().append("text")
-          .merge(text)
-            .style("font-weight", "bold")
-          .filter((d, i) => i === 1)
-            .text(d => yearFormat(d))
-            .attr("fill", label.attr("fill"))
-            .attr("y", label.attr("y") * 2.5)
-            .attr("dy", label.attr("dy"));            
-      });         
+      // Modify tick axis labels
+      axes.select(".xAxis").selectAll(".tick > text")
+          .attr("transform", "translate(5)rotate(45)")
+          .style("text-anchor", "start")
+          .style("fill", (d, i) => axisDates[i].showYear || axisDates[i].present ? "#000" : "#888")
+          .style("font-weight", (d, i) => axisDates[i].showYear ? "bold" : null);
 
       // Draw enrolled axis
       const gEnrolled = axes.selectAll(".enrolledAxis")
