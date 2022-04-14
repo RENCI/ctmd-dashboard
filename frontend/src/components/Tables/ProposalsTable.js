@@ -23,6 +23,9 @@ const headerWithTooltip = (title, tooltip) => (
     </Tooltip>
 )
 
+const exportCsv = (columns, rows) => {
+    console.log(columns, rows)
+}
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     const [settings] = useContext(SettingsContext)
@@ -221,7 +224,8 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 exportFileName: title,
                 groupTitle: rowData => {
                     return 'TITLE'
-                }
+                },
+                exportCsv: exportCsv,
             }}
             detailPanel={ rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={ (event, rowData, togglePanel) => togglePanel() }
