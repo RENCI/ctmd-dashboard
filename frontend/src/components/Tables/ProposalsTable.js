@@ -4,6 +4,7 @@ import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
+import { CsvBuilder } from 'filefy'
 
 const resources = [
     'EHR-Based Cohort Assessment',
@@ -24,7 +25,14 @@ const headerWithTooltip = (title, tooltip) => (
 )
 
 const exportCsv = (columns, rows) => {
-    console.log(columns, rows)
+    const columnHeaders = columns.map(column => column.field)
+    const data = rows.map(row => Object.values(row))
+    const builder = new CsvBuilder('proposals.csv')
+    builder
+        .setDelimeter(',')
+        .setColumns(columnHeaders)
+        .addRows(data)
+        .exportFile()
 }
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
