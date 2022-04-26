@@ -25,7 +25,9 @@ const headerWithTooltip = (title, tooltip) => (
 )
 
 const exportCsv = (columns, rows) => {
-    const columnHeaders = columns.map(column => column.field)
+    const columnHeaders = columns
+        .filter(column => !column.hidden)
+        .map(column => column.field)
     const data = rows.map(row => Object.values(row))
     const builder = new CsvBuilder('proposals.csv')
     builder
