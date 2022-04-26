@@ -25,11 +25,23 @@ const headerWithTooltip = (title, tooltip) => (
 )
 
 const exportCsv = (columns, rows) => {
+    // determine which headers are visible in the UI.
     const columnHeaders = columns
         .filter(column => !column.hidden)
         .map(column => column.field)
-    const data = rows.map(row => Object.values(row))
+    // grab the non-hidden columns (row properties) only for export.
+    const reducedRows = rows.map(row => {
+        const reducedRow = {}
+        columnHeaders.forEach(header => {
+            reducedRow[header] = row[header]
+        })
+        return reducedRow
+    })
+    // put these rows into arrays like [id, title, status, description, ...]
+    const data = reducedRows.map(row => Object.values(row))
+    // instantiate new builder.
     const builder = new CsvBuilder('proposals.csv')
+    // build and export the CSV file.
     builder
         .setDelimeter(',')
         .setColumns(columnHeaders)
