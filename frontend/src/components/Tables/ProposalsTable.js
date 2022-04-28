@@ -4,6 +4,7 @@ import { SettingsContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
+import { CsvBuilder } from 'filefy'
 
 const resources = [
     'EHR-Based Cohort Assessment',
@@ -23,6 +24,30 @@ const headerWithTooltip = (title, tooltip) => (
     </Tooltip>
 )
 
+const exportCsv = (columns, rows) => {
+    // determine which headers are visible in the UI.
+    const columnHeaders = columns
+        .filter(column => !column.hidden)
+        .map(column => column.field)
+    // grab the non-hidden columns (row properties) only for export.
+    const reducedRows = rows.map(row => {
+        const reducedRow = {}
+        columnHeaders.forEach(header => {
+            reducedRow[header] = row[header]
+        })
+        return reducedRow
+    })
+    // put these rows into arrays like [id, title, status, description, ...]
+    const data = reducedRows.map(row => Object.values(row))
+    // instantiate new builder.
+    const builder = new CsvBuilder('proposals.csv')
+    // build and export the CSV file.
+    builder
+        .setDelimeter(',')
+        .setColumns(columnHeaders)
+        .addRows(data)
+        .exportFile()
+}
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     const [settings] = useContext(SettingsContext)
@@ -221,7 +246,8 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 exportFileName: title,
                 groupTitle: rowData => {
                     return 'TITLE'
-                }
+                },
+                exportCsv: exportCsv,
             }}
             detailPanel={ rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={ (event, rowData, togglePanel) => togglePanel() }
