@@ -27,6 +27,7 @@ import {
   StudiesListPage,
   StudyReportPage,
 } from './views'
+import { RouteChangeTracker } from './RouteChangeTracker'
 
 import { Footer } from './components/Footer'
 
@@ -95,6 +96,7 @@ const Dashboard = (props) => {
         </ScrollToTop>
       </main>
       <Footer />
+      <RouteChangeTracker />
     </div>
   )
 }
