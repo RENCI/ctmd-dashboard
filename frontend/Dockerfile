@@ -5,11 +5,11 @@ FROM node:10.12.0-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+# Environment variables
 # Add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV REACT_APP_IS_HEAL_SERVER $REACT_APP_IS_HEAL_SERVER
-
-# Environment variables
+ENV REACT_APP_GA4_TRACKING_ID $REACT_APP_GA4_TRACKING_ID
 
 # Install and cache app dependencies
 RUN apk add git

@@ -120,6 +120,7 @@ services:
     environment:
       NODE_ENV: development
       REACT_APP_IS_HEAL_SERVER: $IS_HEAL_SERVER
+      REACT_APP_GA4_TRACKING_ID: $GA4_TRACKING_ID
     ports:
       - 3000:3000
     depends_on:
