@@ -4,6 +4,10 @@ import Theme from './Theme'
 import Dashboard from './Dashboard'
 import { ThemeProvider } from '@material-ui/styles'
 import { AuthProvider, SettingsProvider, StoreProvider, FlashMessageProvider } from './contexts'
+import Analytics from 'react-ga4'
+
+const TRACKING_ID = 'G-JEXX407FCJ'
+Analytics.initialize(TRACKING_ID)
 
 const App = props => {
     return (
