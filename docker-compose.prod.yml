@@ -105,6 +105,7 @@ services:
       REACT_APP_API_ROOT: $REACT_APP_API_ROOT
       AUTH_URL: $AUTH_URL
       IS_HEAL_SERVER: $IS_HEAL_SERVER
+      REACT_APP_GA4_TRACKING_ID: $GA4_TRACKING_ID
     depends_on:
       - db
     restart: always
