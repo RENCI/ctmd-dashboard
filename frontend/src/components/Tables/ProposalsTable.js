@@ -1,22 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import MaterialTable from 'material-table'
-import { SettingsContext } from '../../contexts'
+import { SettingsContext, StoreContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
 import { CsvBuilder } from 'filefy'
-
-const resources = [
-    'EHR-Based Cohort Assessment',
-    'Community Engagement Studio',
-    'Recruitment Plan',
-    'Recruitment Feasibility Assessment',
-    'Recruitment Materials',
-    'Operationalize Single IRB',
-    'Operationalize Standard Agreements',
-    'Other',
-    'Study Planning (Design, Budget, Timelines, Feasibility)'
-]
 
 const headerWithTooltip = (title, tooltip) => (
     <Tooltip title={tooltip} placement='top'>
@@ -51,12 +39,13 @@ const exportCsv = (columns, rows) => {
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
     const [settings] = useContext(SettingsContext)
+    const [{ services }] = useContext(StoreContext)
 
     useEffect(() => {
         if (proposals) {
             // Add property for each resource to each proposal, identify as requested, approved, or neither
             proposals.forEach(proposal => {
-                resources.forEach(resource => {
+                services.forEach(resource => {
                     proposal[resource] = proposal.approvedServices.includes(resource) ? 'Approved' : (proposal.requestedServices.includes(resource) ? 'Requested' : '')
                 })
             })
@@ -228,7 +217,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     field: 'covidStudy',
                     hidden: !settings.tables.visibleColumns.covidStudy,
                 },
-            ].concat(resources.map(
+            ].concat(services.map(
                 resource => ({
                         title: `Resource: ${ resource }`,
                         field: resource,
