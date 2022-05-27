@@ -177,7 +177,7 @@ export const StudyReportPage = (props) => {
       {isLoading && <CircularLoader />}
       {!isLoading && (
         <Grid container spacing={8}>
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid item xs={11} lg={5}>
             <Card style={{ height: '100%' }}>
               <CardHeader title="Study Profile" />
               <CardContent>
@@ -190,7 +190,7 @@ export const StudyReportPage = (props) => {
             </Card>
           </Grid>
 
-          <Grid item xs={11} md={5} lg={5}>
+          <Grid item xs={11} lg={6}>
             <Milestones
               sites={studySites}
               sitesCount={initialParticipatingSiteCount}

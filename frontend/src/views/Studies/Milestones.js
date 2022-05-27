@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
-import { Card, CardHeader, CardContent, List, ListItem, ListItemText } from '@material-ui/core'
+import { Box, Card, CardHeader, CardContent, Grid, List, ListItem, ListItemText } from '@material-ui/core'
 import { Subsubheading, Caption, Paragraph } from '../../components/Typography'
 import { EnrollmentPieChart, SitesActivationPieChart } from '../../components/Charts'
 import { formatDate } from '../../utils'
@@ -116,88 +116,90 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
   return (
     <Card style={{ height: '100%' }}>
       <CardHeader title="Milestones" />
-      {
-        !sitesCount ? (
-          <CardContent>
-            <Subsubheading align="center">Site Activation</Subsubheading>
-            <Paragraph>
-              This study has zero initial participating sites.
-            </Paragraph>
-          </CardContent>
-        ) : (
-          <Fragment>
-            <CardContent style={{ display: 'flex' }}>
-              <div style={{ flex: 1 }}>
-                <Subsubheading align="center">Site Activation</Subsubheading>
-                <SitesActivationPieChart percentage={activeSitesPercentage} />
-                <Caption align="center">
-                  {activeSitesCount()} of {sitesCount} sites
-                </Caption>
-              </div>
-              <div style={{ flex: 1 }}>
-                <Subsubheading align="center">Patient Enrollment</Subsubheading>
-                <EnrollmentPieChart percentage={ enrollmentPercentage } />
-                <Caption align="center">
-                  {enrollmentTotal} of {enrollmentGoal} enrolled
-                </Caption>
-              </div>
+        <Grid container style={{ height: '100%' }}>
+          <Grid item xs={6} style={{ borderRight: '1px solid #ddd' }}>
+            <CardContent>
+              <Subsubheading align="center">Site Activation</Subsubheading>
+              <br />
+              { !sitesCount
+                ? (
+                  <Paragraph align="center">
+                    This study has no no participating sites yet!
+                  </Paragraph>
+                ) : (
+                  <Fragment>
+                    <SitesActivationPieChart percentage={activeSitesPercentage} />
+                    <Caption align="center">
+                      {activeSitesCount()} of {sitesCount} sites
+                    </Caption>
+                    <br />
+                    <List dense>
+                      <ListItem>
+                        <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={
+                            <div>
+                              25% Site Activation{' '}
+                              ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })
+                            </div>
+                          }
+                          secondary={ siteActivationPercentages[0] }
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={
+                            <div>
+                              50% Site Activation{' '}
+                              ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })
+                            </div>
+                          }
+                          secondary={ siteActivationPercentages[1] }
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={
+                            <div>
+                              75% Site Activation{' '}
+                              ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })
+                            </div>
+                          }
+                          secondary={ siteActivationPercentages[2] }
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={
+                            <div>
+                              100% Site Activation{' '}
+                              ({ sitesCount } / { sitesCount })
+                            </div>
+                          }
+                          secondary={ siteActivationPercentages[3] }
+                        />
+                      </ListItem>
+                    </List>
+                  </Fragment>
+                )
+              }
             </CardContent>
-            <CardContent style={{ display: 'flex' }}>
-
-              <List dense style={{ flex: 1 }}>
-                <ListItem>
-                  <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText
-                    primary={
-                      <div>
-                        25% Site Activation{' '}
-                        ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })
-                      </div>
-                    }
-                    secondary={ siteActivationPercentages[0] }
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemText
-                    primary={
-                      <div>
-                        50% Site Activation{' '}
-                        ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })
-                      </div>
-                    }
-                    secondary={ siteActivationPercentages[1] }
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemText
-                    primary={
-                      <div>
-                        75% Site Activation{' '}
-                        ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })
-                      </div>
-                    }
-                    secondary={ siteActivationPercentages[2] }
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemText
-                    primary={
-                      <div>
-                        100% Site Activation{' '}
-                        ({ sitesCount } / { sitesCount })
-                      </div>
-                    }
-                    secondary={ siteActivationPercentages[3] }
-                  />
-                </ListItem>
-              </List>
-
-              <List dense style={{ flex: 1 }}>
+          </Grid>
+          <Grid item xs={6}>
+            <CardContent>
+              <Subsubheading align="center">Patient Enrollment</Subsubheading>
+              <br />
+              <EnrollmentPieChart percentage={ enrollmentPercentage } />
+              <Caption align="center">
+                {enrollmentTotal} of {enrollmentGoal} enrolled
+              </Caption>
+              <br />
+              <List dense>
                 <ListItem>
                   <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
                 </ListItem>
@@ -247,9 +249,8 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
                 </ListItem>
               </List>
             </CardContent>
-          </Fragment>
-        )
-      }
+          </Grid>
+        </Grid>
     </Card>
   )
 }
