@@ -21,6 +21,7 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
   const [firstSubjectEnrolled, setFirstSubjectEnrolled] = useState()
   const [siteActivationPercentages, setSiteActivationPercentages] = useState([null, null, null, null])
+  const [patientEnrollmentPercentages, setPatientEnrollmentPercentages] = useState([null, null, null, null])
 
   const earliestDate = property => {
     const reducer = (earliestDate, date) => (date < new Date(earliestDate) ? date : earliestDate)
@@ -35,21 +36,19 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
     return earliestDate
   }
 
-  const setThresholds = property => {
+  const setSiteActivationThresholds = () => {
     let count = 0
     let thresholdDates = []
 
     const dates = sites
-      .map(site => site[property])
+      .map(site => site.dateSiteActivated)
       .filter(date => !!date)
       .sort((d1, d2) => d1 < d2 ? -1 : 1)    
     let percentage = 0.25
     dates.forEach(date => {
-      if (!!date) {
-        count += 1
-        if (count / sitesCount >= 0.25 + 0.25 * thresholdDates.length) {
-          thresholdDates.push(date)
-        }
+      count += 1
+      if (count / sitesCount >= 0.25 + 0.25 * thresholdDates.length) {
+        thresholdDates.push(date)
       }
     })
     for (let i = 0; i < 4; i += 1) {
@@ -62,11 +61,20 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
     setSiteActivationPercentages(thresholdDates)
   }
 
+  const setPatientEnrollmentThresholds = () => {
+    let count = 0
+    let thresholdDates = []
+
+    console.log(sites)
+
+  }
+
   useEffect(() => {
     setFirstIRBApprovedDate(earliestDate('dateIrbApproval'))
     setFirstSiteActivationDate(earliestDate('dateSiteActivated'))
     setFirstSubjectEnrolled(earliestDate('fpfv'))
-    setThresholds('dateSiteActivated')
+    setSiteActivationThresholds()
+    setPatientEnrollmentThresholds()
   }, [])
 
   const activeSitesCount = () => {
@@ -106,22 +114,25 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
           </CardContent>
         ) : (
           <Fragment>
-            <CardContent>
-              <Subsubheading align="center">Site Enrollment</Subsubheading>
-              <EnrollmentPieChart percentage={ enrollmentPercentage } />
-              <Caption align="center">
-                {enrollmentTotal} of {enrollmentGoal} enrolled
-              </Caption>
+            <CardContent style={{ display: 'flex' }}>
+              <div style={{ flex: 1 }}>
+                <Subsubheading align="center">Site Activation</Subsubheading>
+                <SitesActivationPieChart percentage={activeSitesPercentage} />
+                <Caption align="center">
+                  {activeSitesCount()} of {sitesCount} sites
+                </Caption>
+              </div>
+              <div style={{ flex: 1 }}>
+                <Subsubheading align="center">Patient Enrollment</Subsubheading>
+                <EnrollmentPieChart percentage={ enrollmentPercentage } />
+                <Caption align="center">
+                  {enrollmentTotal} of {enrollmentGoal} enrolled
+                </Caption>
+              </div>
             </CardContent>
-            <CardContent>
-              <Subsubheading align="center">Site Activation</Subsubheading>
-              <SitesActivationPieChart percentage={activeSitesPercentage} />
-              <Caption align="center">
-                {activeSitesCount()} of {sitesCount} sites
-              </Caption>
-            </CardContent>
-            <CardContent>
-              <List dense>
+            <CardContent style={{ display: 'flex' }}>
+
+              <List dense style={{ flex: 1 }}>
                 <ListItem>
                   <ListItemText primary="First IRB Approved" secondary={firstIRBApprovedDate}></ListItemText>
                 </ListItem>
@@ -129,14 +140,11 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                   <ListItemText primary="First Site Activated" secondary={firstSiteActivationDate}></ListItemText>
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
-                </ListItem>
-                <ListItem>
                   <ListItemText
                     primary={
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>25% of Sites Activated</span>
-                        <span>( { Math.ceil(sitesCount * 0.25) } / { sitesCount } )</span>
+                      <div>
+                        25% Site Activation{' '}
+                        ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })
                       </div>
                     }
                     secondary={ siteActivationPercentages[0] }
@@ -145,9 +153,9 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                 <ListItem>
                   <ListItemText
                     primary={
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>50% of Sites Activated</span>
-                        <span>( { Math.ceil(sitesCount * 0.5) } / { sitesCount } )</span>
+                      <div>
+                        50% Site Activation{' '}
+                        ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })
                       </div>
                     }
                     secondary={ siteActivationPercentages[1] }
@@ -156,9 +164,9 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                 <ListItem>
                   <ListItemText
                     primary={
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>75% of Sites Activated</span>
-                        <span>( { Math.ceil(sitesCount * 0.75) } / { sitesCount } )</span>
+                      <div>
+                        75% Site Activation{' '}
+                        ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })
                       </div>
                     }
                     secondary={ siteActivationPercentages[2] }
@@ -167,9 +175,59 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                 <ListItem>
                   <ListItemText
                     primary={
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>100% of Sites Activated</span>
-                        <span>( { sitesCount } / { sitesCount } )</span>
+                      <div>
+                        100% Site Activation{' '}
+                        ({ sitesCount } / { sitesCount })
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[3] }
+                  />
+                </ListItem>
+              </List>
+
+              <List dense style={{ flex: 1 }}>
+                <ListItem>
+                  <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary={
+                      <div>
+                        25% Patient Enrollment{' '}
+                        ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[0] }
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary={
+                      <div>
+                        50% Patient Enrollment{' '}
+                        ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[1] }
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary={
+                      <div>
+                        75% Patient Enrollment{' '}
+                        ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })
+                      </div>
+                    }
+                    secondary={ siteActivationPercentages[2] }
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary={
+                      <div>
+                        100% Patient Enrollment{' '}
+                        ({ sitesCount } / { sitesCount })
                       </div>
                     }
                     secondary={ siteActivationPercentages[3] }
