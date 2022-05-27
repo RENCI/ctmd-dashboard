@@ -195,6 +195,7 @@ export const StudyReportPage = (props) => {
               sites={studySites}
               sitesCount={initialParticipatingSiteCount}
               enrollmentGoal={+studyProfile.enrollmentGoal.value}
+              enrollmentData={studyEnrollmentData}
             />
           </Grid>
 
