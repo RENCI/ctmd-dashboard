@@ -15,7 +15,7 @@ Array.prototype.chunk = function (size) {
   return chunks
 }
 
-export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
+export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }) => {
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
@@ -62,11 +62,23 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
   }
 
   const setPatientEnrollmentThresholds = () => {
-    let count = 0
-    let thresholdDates = []
+    let count = 1
+    const enrollment = [...enrollmentData]
+      .filter(d => !!d.actualEnrollment)
+      .sort((a, b) => a.date < b.date ? -1 : 1)
+      .map(d => ({ date: d.date, enrollment: +d.actualEnrollment }))
 
-    console.log(sites)
+    const thresholdDates = enrollment.reduce((dates, d) => {
+      const count = dates.indexOf('N/A')
+      let newDates = [...dates]
+      if (d.enrollment / enrollmentGoal >= (count + 1) * 0.25) {
+        newDates[count] = formatDate(new Date(d.date))
+      }
+      return [...newDates]
+    }, ['N/A', 'N/A', 'N/A', 'N/A'])
 
+    setPatientEnrollmentPercentages(thresholdDates)
+    setPatientEnrollmentPercentages(thresholdDates)
   }
 
   useEffect(() => {
@@ -194,10 +206,10 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                     primary={
                       <div>
                         25% Patient Enrollment{' '}
-                        ({ Math.ceil(sitesCount * 0.25) } / { sitesCount })
+                        ({ Math.ceil(enrollmentGoal * 0.25) } / { enrollmentGoal })
                       </div>
                     }
-                    secondary={ siteActivationPercentages[0] }
+                    secondary={ patientEnrollmentPercentages[0] }
                   />
                 </ListItem>
                 <ListItem>
@@ -205,10 +217,10 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                     primary={
                       <div>
                         50% Patient Enrollment{' '}
-                        ({ Math.ceil(sitesCount * 0.5) } / { sitesCount })
+                        ({ Math.ceil(enrollmentGoal * 0.5) } / { enrollmentGoal })
                       </div>
                     }
-                    secondary={ siteActivationPercentages[1] }
+                    secondary={ patientEnrollmentPercentages[1] }
                   />
                 </ListItem>
                 <ListItem>
@@ -216,10 +228,10 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                     primary={
                       <div>
                         75% Patient Enrollment{' '}
-                        ({ Math.ceil(sitesCount * 0.75) } / { sitesCount })
+                        ({ Math.ceil(enrollmentGoal * 0.75) } / { enrollmentGoal })
                       </div>
                     }
-                    secondary={ siteActivationPercentages[2] }
+                    secondary={ patientEnrollmentPercentages[2] }
                   />
                 </ListItem>
                 <ListItem>
@@ -227,10 +239,10 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal }) => {
                     primary={
                       <div>
                         100% Patient Enrollment{' '}
-                        ({ sitesCount } / { sitesCount })
+                        ({ enrollmentGoal } / { enrollmentGoal })
                       </div>
                     }
-                    secondary={ siteActivationPercentages[3] }
+                    secondary={ patientEnrollmentPercentages[3] }
                   />
                 </ListItem>
               </List>
