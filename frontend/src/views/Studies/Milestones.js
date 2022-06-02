@@ -19,7 +19,7 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
   const [patientCounts, setPatientCounts] = useState({ consented: 0, enrolled: 0, withdrawn: 0, expected: 0 })
   const [firstIRBApprovedDate, setFirstIRBApprovedDate] = useState()
   const [firstSiteActivationDate, setFirstSiteActivationDate] = useState()
-  const [firstSubjectEnrolled, setFirstSubjectEnrolled] = useState()
+  const [firstPatientEnrolled, setFirstPatientEnrolled] = useState()
   const [siteActivationPercentages, setSiteActivationPercentages] = useState([null, null, null, null])
   const [patientEnrollmentPercentages, setPatientEnrollmentPercentages] = useState([null, null, null, null])
 
@@ -84,7 +84,7 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
   useEffect(() => {
     setFirstIRBApprovedDate(earliestDate('dateIrbApproval'))
     setFirstSiteActivationDate(earliestDate('dateSiteActivated'))
-    setFirstSubjectEnrolled(earliestDate('fpfv'))
+    setFirstPatientEnrolled(earliestDate('fpfv'))
     setSiteActivationThresholds()
     setPatientEnrollmentThresholds()
   }, [])
@@ -201,7 +201,7 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
               <br />
               <List dense>
                 <ListItem>
-                  <ListItemText primary="First Subject Enrolled" secondary={firstSubjectEnrolled}></ListItemText>
+                  <ListItemText primary="First Patient Enrolled" secondary={firstPatientEnrolled}></ListItemText>
                 </ListItem>
                 <ListItem>
                   <ListItemText
