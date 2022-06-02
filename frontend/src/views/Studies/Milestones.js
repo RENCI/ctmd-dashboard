@@ -78,7 +78,6 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
     }, ['N/A', 'N/A', 'N/A', 'N/A'])
 
     setPatientEnrollmentPercentages(thresholdDates)
-    setPatientEnrollmentPercentages(thresholdDates)
   }
 
   useEffect(() => {
