@@ -5,6 +5,10 @@
   - [Docker Post-Installation Steps](#docker-post-installation-steps)
   - [Install Docker Compose](#install-docker-compose)
 - [Workflow](#workflow)
+  - [Sandbox](#sandbox)
+  - [Versioning](#versioning)
+  - [Branching](#branching)
+  - [Merging](#merging)
 - [Application Setup](#application-setup)
   - [Clone](#clone)
   - [Set up Environment Variables](#set-up-environment-variables)
@@ -159,7 +163,38 @@ docker-compose version 1.23.2, build 1110ad01
 
 ## Workflow
 
-### Setting up your workspace (a.k.a., developer sandbox)
+### Sandbox
+
+This section provides a protocol for setting up a local sandbox. For more information about setting up a development server, please refer to [Development](https://github.com/RENCI/ctmd-dashboard/edit/master/README.md#Development).
+
+To set up a sandbox for local development, including development on the pipeline, follow these steps:
+1. Install docker, docker-compose - refer to [Server Setup](https://github.com/RENCI/ctmd-dashboard/edit/master/README.md#server-setup).
+2. Clone this repo, refer to [Clone](https://github.com/RENCI/ctmd-dashboard/edit/master/README.md#clone)
+3. Clone and build the pipeline repo:
+```
+git clone --recursive http://github.com/RENCI/tic-map-pipeline-script.git
+cd tic-map-pipeline-script
+docker build . -t ctmd-pipeline
+cd ..
+```
+Edit docker-compose.yml to replace:
+```
+image: txscience/ctmd-pipeline-reload:v2.5
+```
+with:
+```
+image: ctmd-pipeline
+```
+Configure your sandbox environmental variables, then start-up the dashboard and pipeline containers:
+```
+cp .env.sample .env
+USER=$(id -u):$(id -g) docker-compose up --build -V -d
+```
+4. Browse to http://localhost:3000/manage
+5. click `Danger Zone`, then `SYNC`
+6. **Refresh browser cache**, you should see 6 proposals
+
+Now you're ready to create a feature branch and edit in your sandbox, then test by restarting the containers with your new code.
 
 When commiting code to address a ticket in the umbrella repo (http://github.com/RENCI/ctmd), refer to the issue number in the commit message. For example, if closign ticket #100, the commit message might look like the following:
 `git commit -m 'addresses ctmd#100'`
