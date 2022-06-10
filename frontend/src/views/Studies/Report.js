@@ -57,7 +57,7 @@ const StudyProfile = ({ profile }) => {
         if (typeof profile[key].value === 'boolean') {
           value = convertBoolToYesOrNo(profile[key].value)
         } else if (dateFields.includes(key)) {
-          value = formatDate(new Date(value))
+          value = value ? formatDate(new Date(value)) : 'N/A'
         }
 
         return (
