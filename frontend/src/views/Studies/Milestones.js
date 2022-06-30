@@ -93,9 +93,9 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
     return sites.reduce(reducer, 0)
   }
 
-  const activeSitesPercentage = useMemo(() => 100 * (activeSitesCount() / sitesCount).toFixed(2), [sites, enrollmentGoal])
+  const activeSitesPercentage = useMemo(() => Math.round(100 * (activeSitesCount() / sitesCount)), [sites, enrollmentGoal])
   const enrollmentTotal = useMemo(() => sites.reduce((total, site) => total + site.patientsEnrolledCount, 0), [sites, enrollmentGoal])
-  const enrollmentPercentage = useMemo(() => 100 * (enrollmentTotal / enrollmentGoal).toFixed(2), [sites, enrollmentGoal])
+  const enrollmentPercentage = useMemo(() => Math.round(100 * (enrollmentTotal / enrollmentGoal)), [sites, enrollmentGoal])
 
   useEffect(() => {
     if (sites) {
