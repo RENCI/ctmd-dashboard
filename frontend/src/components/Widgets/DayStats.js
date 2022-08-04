@@ -15,13 +15,13 @@ export const DayStats = props => {
     const [tic, setTic] = useState('')
     const theme = useTheme()
     const [averageDays, setAverageDays] = useState({
-        submsisionToPatApproval: 0,
+        submissionToPatApproval: 0,
         approvalToGrantSubmission: 0,
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
     })
     const [medianDays, setMedianDays] = useState({
-        submsisionToPatApproval: 0,
+        submissionToPatApproval: 0,
         approvalToGrantSubmission: 0,
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
@@ -79,19 +79,26 @@ export const DayStats = props => {
     useEffect(() => {
         if (proposals) {
             setAverageDays({
-                submsisionToPatApproval: findAverageDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
+                submissionToPatApproval: findAverageDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
                 approvalToGrantSubmission: findAverageDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
                 submissionToGrantSubmission: findAverageDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
                 grantSubmissionToGrantAward: findAverageDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
+                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'intro_call'),
+                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kick_off')
             }) 
             setMedianDays({
-                submsisionToPatApproval: findMedianDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
+                submissionToPatApproval: findMedianDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
                 approvalToGrantSubmission: findMedianDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
                 submissionToGrantSubmission: findMedianDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
                 grantSubmissionToGrantAward: findMedianDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
+                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'intro_call'),
+                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kick_off')
             }) 
         }
     }, [proposals])
+
+    console.log(proposals);
+    console.log(averageDays);
 
     return (
         <Widget
@@ -122,14 +129,16 @@ export const DayStats = props => {
                     <div style={{ height: '180px' }}>
                         <ResponsiveBar
                             data={[
-                                // { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward[0],    count: averageDays.grantSubmissionToGrantAward[1]},
-                                { timespan: 'Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission[0],    count: averageDays.submissionToGrantSubmission[1]},
-                                { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission[0],      count: averageDays.approvalToGrantSubmission[1]},
-                                { timespan: 'Submission to PAT Approval',         days: averageDays.submsisionToPatApproval[0],        count: averageDays.submsisionToPatApproval[1]},
+                                // { timespan: 'Grant Submission to Grant Award',    days: averageDays.grantSubmissionToGrantAward[0],    count: averageDays.grantSubmissionToGrantAward[1] },                                
+                                { timespan: 'Proposal Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission[0],    count: averageDays.submissionToGrantSubmission[1] },
+                                { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission[0],      count: averageDays.approvalToGrantSubmission[1] },
+                                { timespan: 'Proposal Submission to PAT Approval',         days: averageDays.submissionToPatApproval[0],        count: averageDays.submissionToPatApproval[1] },
+                                { timespan: 'Proposal Submission to Kick-off Meeting', days: 5, count: 5 },
+                                { timespan: 'Proposal Submission to Initial Contact', days: 5, count: 5 }
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 0, left: 216 }}
+                            margin={{ top: 0, right: 32, bottom: 0, left: 220 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }
