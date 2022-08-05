@@ -101,17 +101,12 @@ export const DayStats = props => {
         }
     }, [proposals])
 
-    console.log(proposals);
-    console.log(averageDays);
-
-    console.log(theme.palette.chartColors);
-
     // Reorder colors, as requested in issue #471
-    const c = theme.palette.chartColors;
+    const c = theme.palette.chartColors
     const colors = [
         //pink, yellow, purple, orange, green
         c[3], c[5], c[2], c[1], c[4]
-    ].reverse();
+    ].reverse()
 
     return (
         <Widget
