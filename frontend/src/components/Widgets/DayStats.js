@@ -19,12 +19,16 @@ export const DayStats = props => {
         approvalToGrantSubmission: 0,
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
+        submissionToContact: 0,
+        submissionToKickOff: 0
     })
     const [medianDays, setMedianDays] = useState({
         submissionToPatApproval: 0,
         approvalToGrantSubmission: 0,
         submissionToGrantSubmission: 0,
         grantSubmissionToGrantAward: 0,
+        submissionToContact: 0,
+        submissionToKickOff: 0
     })
 
     const handleClick = event => setAnchorEl(event.currentTarget)
@@ -83,22 +87,31 @@ export const DayStats = props => {
                 approvalToGrantSubmission: findAverageDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
                 submissionToGrantSubmission: findAverageDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
                 grantSubmissionToGrantAward: findAverageDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
-                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'intro_call'),
-                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kick_off')
+                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'firstContact'),
+                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kickOff')
             }) 
             setMedianDays({
                 submissionToPatApproval: findMedianDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
                 approvalToGrantSubmission: findMedianDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
                 submissionToGrantSubmission: findMedianDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
                 grantSubmissionToGrantAward: findMedianDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
-                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'intro_call'),
-                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kick_off')
+                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'firstContact'),
+                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kickOff')
             }) 
         }
     }, [proposals])
 
     console.log(proposals);
     console.log(averageDays);
+
+    console.log(theme.palette.chartColors);
+
+    // Reorder colors, as requested in issue #471
+    const c = theme.palette.chartColors;
+    const colors = [
+        //pink, yellow, purple, orange, green
+        c[3], c[5], c[2], c[1], c[4]
+    ].reverse();
 
     return (
         <Widget
@@ -133,16 +146,16 @@ export const DayStats = props => {
                                 { timespan: 'Proposal Submission to Grant Submission',     days: averageDays.submissionToGrantSubmission[0],    count: averageDays.submissionToGrantSubmission[1] },
                                 { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission[0],      count: averageDays.approvalToGrantSubmission[1] },
                                 { timespan: 'Proposal Submission to PAT Approval',         days: averageDays.submissionToPatApproval[0],        count: averageDays.submissionToPatApproval[1] },
-                                { timespan: 'Proposal Submission to Kick-off Meeting', days: 5, count: 5 },
-                                { timespan: 'Proposal Submission to Initial Contact', days: 5, count: 5 }
+                                { timespan: 'Proposal Submission to Kick-off Meeting', days: averageDays.submissionToKickOff[0], count: averageDays.submissionToKickOff[1] },
+                                { timespan: 'Proposal Submission to Initial Contact', days: averageDays.submissionToContact[0], count: averageDays.submissionToContact[1] }
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 0, left: 220 }}
+                            margin={{ top: 0, right: 32, bottom: 0, left: 240 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }
-                            colors={ theme.palette.chartColors }
+                            colors={ colors }
                             colorBy="index"
                             borderColor="inherit:darker(1.6)"
                             axisTop={ null }
