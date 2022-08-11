@@ -178,7 +178,7 @@ export const DayStats = props => {
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
-                            margin={{ top: 0, right: 32, bottom: 0, left: 240 }}
+                            margin={{ top: 0, right: 32, bottom: 0, left: 290 }}
                             layout="horizontal"
                             enableGridY={ false }
                             padding={ 0.1 }
