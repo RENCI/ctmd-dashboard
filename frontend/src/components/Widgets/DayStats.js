@@ -40,21 +40,53 @@ export const DayStats = props => {
     
     const handleClose = () => setAnchorEl(null)
 
-    const findAverageDaysBetween = (proposals, field1, field2) => {
+    const businessDaysBetween = (date1, date2) => {
+        // Clone date to avoid messing up original date and time
+        const d1 = new Date(date1.getTime())
+        const d2 = new Date(date2.getTime())
+        let days = 1;
+
+        // Reset time portion
+        d1.setHours(0, 0, 0, 0);
+        d2.setHours(0, 0, 0, 0);
+
+        while (d1 < d2) {
+            d1.setDate(d1.getDate() + 1);
+            const day = d1.getDay();
+            if (day !== 0 && day !== 6) {
+                days++;
+            }
+        }
+
+        return days;
+    }
+
+    const findAverageDaysBetween = (proposals, field1, field2, businessDays = false) => {
         let count = 0
         const total = proposals.reduce((totalDays, proposal) => {
             if (proposal[field1] && proposal[field2]) {
                 count += 1
-                return totalDays + Math.floor(new Date(proposal[field2]) - new Date(proposal[field1]))/(1000 * 60 * 60 * 24)
+                
+                const date1 = new Date(proposal[field1])
+                const date2 = new Date(proposal[field2])
+
+                return totalDays + (businessDays ? businessDaysBetween(date1, date2) :
+                    Math.floor(date2 - date1) / (1000 * 60 * 60 * 24))
             }
             return totalDays
         }, 0)
         return [Math.round(total / count), count]
     }
     
-    const findMedianDaysBetween = (proposals, field1, field2) => {
+    const findMedianDaysBetween = (proposals, field1, field2, businessDays = false) => {
         const differences = proposals.filter(proposal => proposal[field1] && proposal[field2])
-            .map(proposal => Math.floor((new Date(proposal[field2]) - new Date(proposal[field1])) / (1000 * 60 * 60 * 24)))
+            .map(proposal => {
+                const date1 = new Date(proposal[field2])
+                const date2 = new Date(proposal[field2])
+
+                return businessDays ? businessDaysBetween(date1, date2) :
+                    Math.floor((date2 - date1) / (1000 * 60 * 60 * 24))
+            })
             .sort()
         if (differences.length % 2 === 0) {
             const index1 = differences.length / 2 - 1
@@ -87,16 +119,16 @@ export const DayStats = props => {
                 approvalToGrantSubmission: findAverageDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
                 submissionToGrantSubmission: findAverageDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
                 grantSubmissionToGrantAward: findAverageDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
-                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'firstContact'),
-                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kickOff')
+                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kickOff'),
+                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'firstContact', true)
             }) 
             setMedianDays({
                 submissionToPatApproval: findMedianDaysBetween(proposals, 'dateSubmitted', 'meetingDate'),
                 approvalToGrantSubmission: findMedianDaysBetween(proposals, 'meetingDate', 'actualGrantSubmissionDate'),
                 submissionToGrantSubmission: findMedianDaysBetween(proposals, 'dateSubmitted', 'actualGrantSubmissionDate'),
                 grantSubmissionToGrantAward: findMedianDaysBetween(proposals, 'actualGrantSubmissionDate', 'fundingStart'),
-                submissionToContact: findAverageDaysBetween(proposals, 'dateSubmitted', 'firstContact'),
-                submissionToKickOff: findAverageDaysBetween(proposals, 'dateSubmitted', 'kickOff')
+                submissionToKickOff: findMedianDaysBetween(proposals, 'dateSubmitted', 'kickOff'),
+                submissionToContact: findMedianDaysBetween(proposals, 'dateSubmitted', 'firstContact', true)
             }) 
         }
     }, [proposals])
@@ -142,7 +174,7 @@ export const DayStats = props => {
                                 { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission[0],      count: averageDays.approvalToGrantSubmission[1] },
                                 { timespan: 'Proposal Submission to PAT Approval',         days: averageDays.submissionToPatApproval[0],        count: averageDays.submissionToPatApproval[1] },
                                 { timespan: 'Proposal Submission to Kick-off Meeting', days: averageDays.submissionToKickOff[0], count: averageDays.submissionToKickOff[1] },
-                                { timespan: 'Proposal Submission to Initial Contact', days: averageDays.submissionToContact[0], count: averageDays.submissionToContact[1] }
+                                { timespan: 'Proposal Submission to Initial Contact (business days)', days: averageDays.submissionToContact[0], count: averageDays.submissionToContact[1] }
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
