@@ -143,7 +143,7 @@ export const DayStats = props => {
     return (
         <Widget
             title="Timeline Metrics"
-            info="These graphs show the number of days between notable times over the proposal lifespan&mdash;from the time of submission, PAT approval, to grant submission, and grant approval."
+            info="These graphs show the number of days (business or calendar) between notable points over the proposal-to-grant submission lifespan&mdash;from the time of proposal submission to initial contact, to kick-off meeting, to PAT approval, and to grant submission, and from time of PAT approval to grant submission."
             action={
                 <Fragment>
                     <Button variant="text" color="primary"
@@ -174,7 +174,7 @@ export const DayStats = props => {
                                 { timespan: 'PAT Approval to Grant Submission',   days: averageDays.approvalToGrantSubmission[0],      count: averageDays.approvalToGrantSubmission[1] },
                                 { timespan: 'Proposal Submission to PAT Approval',         days: averageDays.submissionToPatApproval[0],        count: averageDays.submissionToPatApproval[1] },
                                 { timespan: 'Proposal Submission to Kick-off Meeting', days: averageDays.submissionToKickOff[0], count: averageDays.submissionToKickOff[1] },
-                                { timespan: 'Proposal Submission to Initial Contact (business days)', days: averageDays.submissionToContact[0], count: averageDays.submissionToContact[1] }
+                                { timespan: 'Proposal Submission to Initial Contact*', days: averageDays.submissionToContact[0], count: averageDays.submissionToContact[1] }
                             ]}
                             keys={ ['days'] }
                             indexBy="timespan"
@@ -204,6 +204,7 @@ export const DayStats = props => {
                                 </ChartTooltip>
                             )} 
                         />
+                        <div style={{ color: "#999", marginTop: "1em" }}>*Expressed in weekdays. All others are calendar days.</div>
                     </div>
                 </Grid>
             </Grid>
