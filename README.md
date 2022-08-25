@@ -179,7 +179,7 @@ cd ..
 ```
 Edit docker-compose.yml to replace:
 ```
-image: txscience/ctmd-pipeline-reload:v2.5
+image: txscience/ctmd-pipeline-reload:v2.11
 ```
 with:
 ```
