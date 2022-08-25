@@ -143,7 +143,7 @@ export const DayStats = props => {
     return (
         <Widget
             title="Timeline Metrics"
-            info="These graphs show the number of days (business or calendar) between notable points over the proposal-to-grant submission lifespan&mdash;from the time of proposal submission to initial contact, to kick-off meeting, to PAT approval, and to grant submission, and from time of PAT approval to grant submission."
+            info="These graphs show the number of days (weekday or calendar) between notable points over the proposal-to-grant submission lifespan&mdash;from the time of proposal submission to initial contact, to kick-off meeting, to PAT approval, and to grant submission, and from time of PAT approval to grant submission."
             action={
                 <Fragment>
                     <Button variant="text" color="primary"
