@@ -99,6 +99,8 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             CAST("ProtocolTimelines_estimated"."actualProtocolFinalDate" AS VARCHAR) AS "actualProtocolFinalDate",
             CAST("ProtocolTimelines_estimated"."actualGrantAwardDate" AS VARCHAR) AS "actualGrantAwardDate",
             CAST("ProtocolTimelines_estimated"."approvalReleaseDiff" AS VARCHAR) AS "approvalReleaseDiff",
+            CAST("InitialConsultationDates"."FirstContact" AS VARCHAR) AS "firstContact",
+            CAST("InitialConsultationDates"."kickOffDateOccurs" AS VARCHAR) AS "kickOff",
            
             "ProposalDetails"."numberCTSAprogHubSites",
             "ProposalDetails"."numberSites"
@@ -109,6 +111,8 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
         INNER JOIN "ProposalFunding" ON "Proposal"."ProposalID" = "ProposalFunding"."ProposalID"
         LEFT JOIN "PATMeeting" ON "Proposal"."ProposalID" = "PATMeeting"."ProposalID"
         LEFT JOIN "ProtocolTimelines_estimated" ON "Proposal"."ProposalID" = "ProtocolTimelines_estimated"."ProposalID"
+        LEFT JOIN "InitialConsultationDates" ON "Proposal"."ProposalID" = "InitialConsultationDates"."ProposalID"
+        
         LEFT JOIN name ON name.index = "Proposal"."proposalStatus" AND name."column" = 'proposalStatus'
         LEFT JOIN name name2 ON name2.index = "AssignProposal"."assignToInstitution" AND name2."column" = 'assignToInstitution'
         LEFT JOIN name name3 ON name3.index = "Submitter"."submitterInstitution" AND name3."column" = 'submitterInstitution'
