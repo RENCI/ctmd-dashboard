@@ -96,7 +96,7 @@ export const SitesTable = props => {
                     { title: 'Actual to expected randomized patient ratio', field: 'actualToExpectedRandomizedPtRatio', hidden: true, },
                     { title: 'Ratio of randomized patients that dropout of the study', field: 'ratioRandomizedPtsDropout', hidden: true, },
                     { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPt', hidden: true, },
-                    { title: 'Queries per data element', field: 'queriesPerDataElement', hidden: true, }
+                    { title: 'Number of Queries', field: 'queriesCount', hidden: true, }
                 ]
             }
             data={ sites }
