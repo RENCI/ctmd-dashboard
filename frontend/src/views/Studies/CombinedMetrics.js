@@ -42,8 +42,12 @@ export const CombinedMetrics = ({ study, studyProfile, sites }) => {
     return sites.reduce((sum, site) => sum + site[key], 0)
   }
 
-  const ratioString = (a, b, precision = 2) => {
-    return b === 0 ? invalidDisplay : `${ (100 * a/b).toFixed(precision) }% (${ a }/${ b })`
+  const ratioAsPercentString = (a, b, precision = 2) => {
+    return b === 0 ? invalidDisplay : `${ (100 * a/b).toFixed(precision) }% ≈ ${ a } / ${ b }`
+  }
+
+  const ratioAsWholeNumberString = (a, b) => {
+    return b === 0 ? invalidDisplay : `${ Math.round(a / b) } ≈ ${ a } / ${ b }`
   }
 
   const Metric = React.useCallback(({ label, value }) => (
@@ -83,23 +87,23 @@ export const CombinedMetrics = ({ study, studyProfile, sites }) => {
         <List>
           <Metric
             label="Percent of consented patients randomized"
-            value={ ratioString(sum('patientsEnrolledCount'), sum('patientsConsentedCount')) }
+            value={ ratioAsPercentString(sum('patientsEnrolledCount'), sum('patientsConsentedCount')) }
           />
           <Metric
             label="Actual to expected randomized patient ratio"
-            value={ ratioString(sum('patientsEnrolledCount'), sum('patientsExpectedCount')) }
+            value={ ratioAsPercentString(sum('patientsEnrolledCount'), sum('patientsExpectedCount')) }
           />
           <Metric
             label="Ratio of randomized patients that dropped out of the study"
-            value={ ratioString(sum('patientsWithdrawnCount'), sum('patientsEnrolledCount')) }
+            value={ ratioAsPercentString(sum('patientsWithdrawnCount'), sum('patientsEnrolledCount')) }
           />
           <Metric
             label="Major protocol deviations per randomized patients"
-            value={ ratioString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount')) }        
+            value={ ratioAsPercentString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount')) }        
           />
           <Metric
             label="Queries per total number of patients"
-            value={ ratioString(sum('queriesCount'), sum('patientsConsentedCount')) }
+            value={ ratioAsWholeNumberString(sum('queriesCount'), sum('patientsConsentedCount')) }
           />
         </List>
       </Grid>
