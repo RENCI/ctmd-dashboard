@@ -28,7 +28,7 @@ export const SitesTable = props => {
                 site.actualToExpectedRandomizedPtRatio = displayRatio(site.patientsEnrolledCount, site.patientsExpectedCount)
                 site.ratioRandomizedPtsDropout = displayRatio(site.patientsWithdrawnCount, site.patientsEnrolledCount)
                 site.majorProtocolDeviationsPerRandomizedPt = displayRatio( site.protocolDeviationsCount, site.patientsEnrolledCount)
-                site.queriesPerDataElement = displayRatio(site.queriesCount, site.dataElement )
+                site.queriesPerConsentedPatient = displayRatio(site.queriesCount, site.patientsConsentedCount )
             })
         }
     }, [sites, store.proposals])
@@ -97,7 +97,7 @@ export const SitesTable = props => {
                     { title: 'Number of Queries', field: 'queriesCount', hidden: true, },
                     {
                         title: 'Queries per Patient',
-                        render: row => Math.round(row.queriesCount / row.patientsConsentedCount) || '-',
+                        render: row => row.queriesPerConsentedPatient,
                         hidden: true,
                     },
                 ]

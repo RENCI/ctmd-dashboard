@@ -4,12 +4,14 @@ import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
 import { formatDate } from '../../../utils/DateFormat'
 
+const invalidDisplay = 'N/A'
+
 export const dayCount = (startDate, endDate) => {
         if (startDate && endDate) {
             const num = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
             return `${ num } day${ num === 1 ? '' : 's' }`
         } else {
-            return 'N/A'
+            return invalidDisplay
         }
     }
 
@@ -17,10 +19,10 @@ export const displayRatio = (a, b, precision = 2) => {
         a = parseInt(a)
         b = parseInt(b)
         if ( !a || !b ) {
-            return 'N/A'
+            return invalidDisplay
         }
         if (a === 0) {
-            if (b === 0) return `N/A`
+            if (b === 0) return invalidDisplay
             return `0% (${ a }/${ b })`
         }
         return b !== 0
@@ -28,9 +30,17 @@ export const displayRatio = (a, b, precision = 2) => {
             : `N/A`
     }
 
+const displayRatioAsWholeNumberString = (a, b) => {
+    return b === 0 ? invalidDisplay : `${ Math.round(a / b) } ≈ ${ a } / ${ b }`
+}
+
 export const SiteDetailPanel = props => {
+    console.log(props)
     const {
-        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval, dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount, patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount, dataElement
+        siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval,
+        dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount,
+        patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount, dataElement,
+        queriesPerConsentedPatient,
     } = props
     
     return (
@@ -87,7 +97,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per data element:" secondary={ displayRatio(queriesCount, dataElement )} />
+                            <ListItemText primary="Queries per total number of patients:" secondary={ displayRatioAsWholeNumberString(queriesCount, patientsConsentedCount) } />
                         </ListItem>
                     </List>
                 </Grid>
