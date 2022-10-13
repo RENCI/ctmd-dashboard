@@ -35,7 +35,6 @@ const displayRatioAsWholeNumberString = (a, b) => {
 }
 
 export const SiteDetailPanel = props => {
-    console.log(props)
     const {
         siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval,
         dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount,
