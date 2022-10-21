@@ -44,7 +44,7 @@ export const DayStats = props => {
         // Clone date to avoid messing up original date and time
         const d1 = new Date(date1.getTime())
         const d2 = new Date(date2.getTime())
-        let days = 1;
+        let days = 0;
 
         // Reset time portion
         d1.setHours(0, 0, 0, 0);
