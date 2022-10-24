@@ -309,6 +309,10 @@ Start all services required for development:
 ```bash
 $ docker-compose up
 ```
+In local development environment, a quick way to start all services can be done by running the up.sh script in the ctmd-dashboard directory as shown below:
+```bash
+$ ./up.sh
+```
 
 The above command starts and attaches the necessary containers, which results in output like the following, consisting of interleaved logs from all running containers.
 
@@ -511,7 +515,7 @@ This will plop you inside the container, and you may proceed normally.
 
 ## Tear it Down
 
-If you started without the detach flag, `-d`, you can stop the containers running with `CTRL+C`, and Docker will clean up after itself. If you ran things in detatched mode (_with_ the `-d` flag), then bring everything down with `$ docker-compose down` from withing the project's root directory.
+If you started without the detach flag, `-d`, you can stop the containers running with `CTRL+C`, and Docker will clean up after itself. If you ran things in detatched mode (_with_ the `-d` flag), then bring everything down with `$ docker-compose down` or simply running `$ ./down.sh` from withing the project's root directory.
 
 \* Note: the postgres storage (at `/db/pgdata`) is persisted on the host and is created with root privileges. If the `db` image needs to be rebuilt (with a new `.sql` file perhaps), Docker will squawk at you with a permission error. Remove this directory (with `$ sudo rm -r /db/pgdata`). Then the next time it builds, your new `.sql` file will be used repopulate the database with your updated data.
 
