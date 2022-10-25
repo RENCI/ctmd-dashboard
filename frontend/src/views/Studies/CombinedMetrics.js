@@ -102,7 +102,7 @@ export const CombinedMetrics = ({ study, studyProfile, sites }) => {
             value={ ratioAsPercentString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount')) }        
           />
           <Metric
-            label="Queries per total number of patients"
+            label="Queries per patient"
             value={ ratioAsWholeNumberString(sum('queriesCount'), sum('patientsConsentedCount')) }
           />
         </List>

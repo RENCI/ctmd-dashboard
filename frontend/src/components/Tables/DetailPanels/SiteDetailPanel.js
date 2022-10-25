@@ -96,7 +96,7 @@ export const SiteDetailPanel = props => {
                         </ListItem>
                         <ListItem>
                             <ListItemIcon><StarBullet /></ListItemIcon>
-                            <ListItemText primary="Queries per total number of patients:" secondary={ displayRatioAsWholeNumberString(queriesCount, patientsConsentedCount) } />
+                            <ListItemText primary="Queries per patient:" secondary={ displayRatioAsWholeNumberString(queriesCount, patientsConsentedCount) } />
                         </ListItem>
                     </List>
                 </Grid>

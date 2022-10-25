@@ -4,6 +4,12 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel, dayCount, displayRatio } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 
+const invalidDisplay = 'N/A'
+
+const ratioAsWholeNumberString = (a, b) => {
+    return b === 0 ? invalidDisplay : Math.round(a / b)
+}
+
 export const SitesTable = props => {
     let { title, sites } = props
     const [store, ] = useContext(StoreContext)
@@ -28,7 +34,7 @@ export const SitesTable = props => {
                 site.actualToExpectedRandomizedPtRatio = displayRatio(site.patientsEnrolledCount, site.patientsExpectedCount)
                 site.ratioRandomizedPtsDropout = displayRatio(site.patientsWithdrawnCount, site.patientsEnrolledCount)
                 site.majorProtocolDeviationsPerRandomizedPt = displayRatio( site.protocolDeviationsCount, site.patientsEnrolledCount)
-                site.queriesPerConsentedPatient = displayRatio(site.queriesCount, site.patientsConsentedCount )
+                site.queriesPerConsentedPatient = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount )
             })
         }
     }, [sites, store.proposals])
@@ -96,7 +102,7 @@ export const SitesTable = props => {
                     { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPt', hidden: true, },
                     { title: 'Number of Queries', field: 'queriesCount', hidden: true, },
                     {
-                        title: 'Queries per Patient',
+                        title: 'Queries per patient',
                         render: row => row.queriesPerConsentedPatient,
                         hidden: true,
                     },
