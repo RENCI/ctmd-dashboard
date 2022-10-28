@@ -19,8 +19,10 @@ export const LoginPage = (props) => {
           </ol>
           <Paragraph center>
             <form
-              method="POST"
-              action={`https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${redirectURL}`}
+              onSubmit={ (e) => {
+                e.preventDefault()
+                window.location.href = `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${encodeURIComponent(redirectURL)}`
+              } }
               style={{ display: 'flex', justifyContent: 'center' }}
             >
               <Button type="submit" color="primary" variant="contained">
