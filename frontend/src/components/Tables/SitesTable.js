@@ -4,6 +4,12 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel, dayCount, displayRatio } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 
+const invalidDisplay = 'N/A'
+
+const ratioAsWholeNumberString = (a, b) => {
+    return b === 0 ? invalidDisplay : Math.round(a / b)
+}
+
 export const SitesTable = props => {
     let { title, sites } = props
     const [store, ] = useContext(StoreContext)
@@ -28,7 +34,7 @@ export const SitesTable = props => {
                 site.actualToExpectedRandomizedPtRatio = displayRatio(site.patientsEnrolledCount, site.patientsExpectedCount)
                 site.ratioRandomizedPtsDropout = displayRatio(site.patientsWithdrawnCount, site.patientsEnrolledCount)
                 site.majorProtocolDeviationsPerRandomizedPt = displayRatio( site.protocolDeviationsCount, site.patientsEnrolledCount)
-                site.queriesPerDataElement = displayRatio(site.queriesCount, site.dataElement )
+                site.queriesPerConsentedPatient = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount )
             })
         }
     }, [sites, store.proposals])
@@ -59,7 +65,7 @@ export const SitesTable = props => {
 
     return (
         <MaterialTable
-            title={ title || null }
+            title={ null }
             components={{ }}
             columns={
                 [
@@ -83,9 +89,7 @@ export const SitesTable = props => {
                     { title: 'Patients Enrolled', field: 'patientsEnrolledCount', hidden: true, },
                     { title: 'Patients Withdrawn', field: 'patientsWithdrawnCount', hidden: true, },
                     { title: 'Patients Expected', field: 'patientsExpectedCount', hidden: true, },
-                    { title: 'Queries Count', field: 'queriesCount', hidden: true, },
                     { title: 'Protocol Deviations', field: 'protocolDeviationsCount', hidden: true, },
-                    { title: 'Data Element', field: 'dataElement', hidden: true, },
                     { title: 'Lost to Follow Up', field: 'lostToFollowUp', hidden: true, },
                     { title: 'Protocol to FPFV', field: 'protocolToFpfv', hidden: true, },
                     { title: 'Contract Execution Time', field: 'contractExecutionTime', hidden: true, },
@@ -96,7 +100,12 @@ export const SitesTable = props => {
                     { title: 'Actual to expected randomized patient ratio', field: 'actualToExpectedRandomizedPtRatio', hidden: true, },
                     { title: 'Ratio of randomized patients that dropout of the study', field: 'ratioRandomizedPtsDropout', hidden: true, },
                     { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPt', hidden: true, },
-                    { title: 'Queries per data element', field: 'queriesPerDataElement', hidden: true, }
+                    { title: 'Number of Queries', field: 'queriesCount', hidden: true, },
+                    {
+                        title: 'Queries per patient',
+                        render: row => row.queriesPerConsentedPatient,
+                        hidden: true,
+                    },
                 ]
             }
             data={ sites }

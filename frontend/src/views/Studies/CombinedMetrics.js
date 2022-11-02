@@ -42,35 +42,69 @@ export const CombinedMetrics = ({ study, studyProfile, sites }) => {
     return sites.reduce((sum, site) => sum + site[key], 0)
   }
 
-  const ratioString = (a, b, precision = 2) => {
-    return b === 0 ? invalidDisplay : `${ (100 * a/b).toFixed(precision) }% (${ a }/${ b })`
+  const ratioAsPercentString = (a, b, precision = 2) => {
+    return b === 0 ? invalidDisplay : `${ (100 * a/b).toFixed(precision) }% ≈ ${ a } / ${ b }`
   }
 
-  const item = (label, value) => (
+  const ratioAsWholeNumberString = (a, b) => {
+    return b === 0 ? invalidDisplay : `${ Math.round(a / b) } ≈ ${ a } / ${ b }`
+  }
+
+  const Metric = React.useCallback(({ label, value }) => (
     <ListItem>
       <ListItemIcon><StarBullet /></ListItemIcon>
       <ListItemText primary={ label + ":" } secondary={ value } />
     </ListItem>
-  )
+  ), [])
 
   return (
     <Grid container>
       <Grid item xs={ 12 } md={ 6 }>
         <List>
-          { item('Activation (protocol to FPFV)', dayString(averageDays('dateRegPacketSent', 'fpfv'))) }
-          { item('Contract execution time', dayString(averageDays('dateContractSent', 'dateContractExecution'))) }
-          { item('sIRB approval time', dayString(averageDays('dateIrbSubmission', 'dateIrbApproval'))) }
-          { item('Site open to FPFV', dayString(averageDays('dateSiteActivated', 'fpfv'))) }
-          { item('Site open to LPFV', dayString(averageDays('dateSiteActivated', 'lpfv'))) }
+          <Metric
+            label="Activation (protocol to FPFV)"
+            value={ dayString(averageDays('dateRegPacketSent', 'fpfv')) }
+          />
+          <Metric
+            label="Contract execution time"
+            value={ dayString(averageDays('dateContractSent', 'dateContractExecution')) }
+          />
+          <Metric
+            label="sIRB approval time"
+            value={ dayString(averageDays('dateIrbSubmission', 'dateIrbApproval')) }
+          />
+          <Metric
+            label="Site open to FPFV"
+            value={ dayString(averageDays('dateSiteActivated', 'fpfv')) }
+          />
+          <Metric
+            label="Site open to LPFV"
+            value={ dayString(averageDays('dateSiteActivated', 'lpfv')) }
+          />
         </List>
       </Grid>
       <Grid item xs={ 12 } md={ 6 }>
         <List>
-          { item('Percent of consented patients randomized', ratioString(sum('patientsEnrolledCount'), sum('patientsConsentedCount'))) }
-          { item('Actual to expected randomized patient ratio', ratioString(sum('patientsEnrolledCount'), sum('patientsExpectedCount'))) }
-          { item('Ratio of randomized patients that dropped out of the study', ratioString(sum('patientsWithdrawnCount'), sum('patientsEnrolledCount'))) }
-          { item('Major protocol deviations per randomized patients', ratioString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount'))) }        
-          { item('Queries per data element', ratioString(sum('queriesCount'), sum('dataElement'))) }
+          <Metric
+            label="Percent of consented patients randomized"
+            value={ ratioAsPercentString(sum('patientsEnrolledCount'), sum('patientsConsentedCount')) }
+          />
+          <Metric
+            label="Actual to expected randomized patient ratio"
+            value={ ratioAsPercentString(sum('patientsEnrolledCount'), sum('patientsExpectedCount')) }
+          />
+          <Metric
+            label="Ratio of randomized patients that dropped out of the study"
+            value={ ratioAsPercentString(sum('patientsWithdrawnCount'), sum('patientsEnrolledCount')) }
+          />
+          <Metric
+            label="Major protocol deviations per randomized patients"
+            value={ ratioAsPercentString(sum('protocolDeviationsCount'), sum('patientsEnrolledCount')) }        
+          />
+          <Metric
+            label="Queries per patient"
+            value={ ratioAsWholeNumberString(sum('queriesCount'), sum('patientsConsentedCount')) }
+          />
         </List>
       </Grid>
     </Grid>
