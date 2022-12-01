@@ -9,7 +9,7 @@ import { ChartTooltip } from '../Tooltip'
 import { Widget } from './Widget'
 
 // Filter proposals submitted on or after August 22, 2017, as per https://github.com/RENCI/ctmd/issues/524
-const filterDate = new Date('08-22-2017')
+const filterDate = new Date('08/22/2017')
 const filterProposals = proposals => proposals.filter(({ dateSubmitted }) => new Date(dateSubmitted) >= filterDate);
 
 export const DayStats = props => {
