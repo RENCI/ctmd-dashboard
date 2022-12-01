@@ -8,6 +8,10 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { ChartTooltip } from '../Tooltip'
 import { Widget } from './Widget'
 
+// Filter proposals submitted on or after August 22, 2017, as per https://github.com/RENCI/ctmd/issues/524
+const filterDate = new Date('08-22-2017')
+const filterProposals = proposals => proposals.filter(({ dateSubmitted }) => new Date(dateSubmitted) >= filterDate);
+
 export const DayStats = props => {
     const [store, ] = useContext(StoreContext)
     const [proposals, setProposals] = useState(null)
@@ -101,14 +105,14 @@ export const DayStats = props => {
     }
     
     useEffect(() => {
-        setProposals(store.proposals)
+        setProposals(filterProposals(store.proposals))
     }, [store])
 
     useEffect(() => {
         if (tic !== '') {
-            setProposals(store.proposals.filter(proposal => proposal.assignToInstitution === tic))
+            setProposals(filterProposals(store.proposals.filter(proposal => proposal.assignToInstitution === tic)))
         } else {
-            setProposals(store.proposals)
+            setProposals(filterProposals(store.proposals))
         }
     }, [tic])
     
@@ -143,6 +147,7 @@ export const DayStats = props => {
     return (
         <Widget
             title="Timeline Metrics"
+            subtitle={ `Includes proposals submitted on or after ${ filterDate.toLocaleDateString() }` }
             info="These graphs show the number of days (weekday or calendar) between notable points over the proposal-to-grant submission lifespan&mdash;from the time of proposal submission to initial contact, to kick-off meeting, to PAT approval, and to grant submission, and from time of PAT approval to grant submission."
             action={
                 <Fragment>
