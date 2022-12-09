@@ -59,10 +59,10 @@ exports.getProfile = (req, res) => {
     });
 };
 
-// /api/studies/:id/sites
+// /api/studies/studysites
 
-exports.getSites = (req, res) => {
-  const proposalId = req.params.id;
+exports.getStudySites = (req, res) => {
+
   const query = `SELECT
             "StudySites"."dataElement",
             "StudySites"."lostToFollowUp",
@@ -92,7 +92,7 @@ exports.getSites = (req, res) => {
         FROM "StudySites"
         LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
         LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
-        WHERE "ProposalID"=${proposalId};`;
+        `;
   db.any(query)
     .then((data) => {
       res.status(200).send(data);
