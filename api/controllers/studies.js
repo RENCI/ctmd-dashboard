@@ -59,10 +59,10 @@ exports.getProfile = (req, res) => {
     });
 };
 
-// /api/studies/:id/sites
+// /api/studies/studysites
 
-exports.getSites = (req, res) => {
-  const proposalId = req.params.id;
+exports.getStudySites = (req, res) => {
+
   const query = `SELECT
             "StudySites"."dataElement",
             "StudySites"."lostToFollowUp",
@@ -92,7 +92,7 @@ exports.getSites = (req, res) => {
         FROM "StudySites"
         LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
         LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
-        WHERE "ProposalID"=${proposalId};`;
+        `;
   db.any(query)
     .then((data) => {
       res.status(200).send(data);
@@ -102,6 +102,52 @@ exports.getSites = (req, res) => {
       res.status(500).send("There was an error fetching data.");
     });
 };
+
+
+// /api/studies/:id/sites
+
+exports.getSites = (req, res) => {
+    const proposalId = req.params.id;
+    const query = `SELECT
+            "StudySites"."dataElement",
+            "StudySites"."lostToFollowUp",
+            "StudySites"."ProposalID",
+            "StudySites"."siteId",
+            "CTSAs"."ctsaId",
+            "StudySites"."siteId",
+            "StudySites"."siteName",
+            "StudySites"."siteNumber",
+            "CTSAs"."ctsaId",
+            "CTSAs"."ctsaName",
+            "StudySites"."principalInvestigator",
+            CAST("StudySites"."dateRegPacketSent" as VARCHAR),
+            CAST("StudySites"."dateContractSent" as VARCHAR),
+            CAST("StudySites"."dateIrbSubmission" as VARCHAR),
+            CAST("StudySites"."dateIrbApproval" as VARCHAR),
+            CAST("StudySites"."dateContractExecution" as VARCHAR),
+            CAST("StudySites"."lpfv" as VARCHAR),
+            CAST("StudySites"."dateSiteActivated" as VARCHAR),
+            CAST("StudySites"."fpfv" as VARCHAR),
+            "StudySites"."patientsConsentedCount",
+            "StudySites"."patientsEnrolledCount",
+            "StudySites"."patientsWithdrawnCount",
+            "StudySites"."patientsExpectedCount",
+            "StudySites"."queriesCount",
+            "StudySites"."protocolDeviationsCount"
+        FROM "StudySites"
+        LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
+        LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"
+        WHERE "ProposalID"=${proposalId};`;
+    db.any(query)
+        .then((data) => {
+            res.status(200).send(data);
+        })
+        .catch((error) => {
+            console.log("ERROR:", error);
+            res.status(500).send("There was an error fetching data.");
+        });
+};
+
 
 // /api/studies/:id/enrollment-data
 

@@ -18,13 +18,14 @@ export const SitesTable = props => {
     useEffect(() => {
         if (sites && store.proposals) {
             let protocols = {}
-            sites.forEach(site => {
+            for (const site of sites) {
                 if (protocols.hasOwnProperty(site.proposalId)) {
                     site.protocol = protocols[site.proposalId]
                 } else {
-                    const { shortTitle } = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
-                    site.protocol = shortTitle
+                     const shortTitle  = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
+                     site.protocol = shortTitle
                 }
+
                 site.protocolToFpfv = dayCount(site.dateRegPacketSent, site.fpfv)
                 site.contractExecutionTime = dayCount(site.dateContractSent, site.dateContractExecution)
                 site.sirbApprovalTime = dayCount(site.dateIrbSubmission, site.dateIrbApproval)
@@ -35,7 +36,7 @@ export const SitesTable = props => {
                 site.ratioRandomizedPtsDropout = displayRatio(site.patientsWithdrawnCount, site.patientsEnrolledCount)
                 site.majorProtocolDeviationsPerRandomizedPt = displayRatio( site.protocolDeviationsCount, site.patientsEnrolledCount)
                 site.queriesPerConsentedPatient = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount )
-            })
+            }
         }
     }, [sites, store.proposals])
 

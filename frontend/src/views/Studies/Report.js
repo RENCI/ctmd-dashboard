@@ -100,11 +100,21 @@ export const StudyReportPage = (props) => {
       await axios
         .all([
           axios.get(api.studyProfile(proposalID), { withCredentials: true }),
-          axios.get(api.studySites(proposalID), { withCredentials: true }),
+          axios.get(api.studySitesByProposalId(proposalID), { withCredentials: true }),
           axios.get(api.studyEnrollmentData(proposalID), { withCredentials: true }),
         ])
         .then(
           axios.spread((profileResponse, sitesResponse, enrollmentResponse) => {
+            try{
+              let v = profileResponse.data.enrollmentGoal.value
+              v = v.replace(",","")
+              let parsed_v = parseInt(v)
+              profileResponse.data.enrollmentGoal.value = parsed_v
+            }
+            catch{
+                console.log("could not parse int")
+            }
+
             setStudyProfile(profileResponse.data)
 
             sitesResponse.data.forEach((site) => {
