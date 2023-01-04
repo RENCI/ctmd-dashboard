@@ -114,6 +114,16 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     title: headerWithTooltip('Actual Grant Submission Date', 'Actual Grant Submission Date'),
                     field: 'actualGrantSubmissionDate',
                     hidden: !settings.tables.visibleColumns.actualGrantSubmissionDate,
+                },                
+                {
+                    title: headerWithTooltip('Kick-off Meeting Date', 'Kick-off Meeting Date'),
+                    field: 'kickOff',
+                    hidden: !settings.tables.visibleColumns.kickOff,
+                },
+                {
+                    title: headerWithTooltip('Initial Contact Date', 'Initial Contact Date'),
+                    field: 'firstContact',
+                    hidden: !settings.tables.visibleColumns.firstContact,
                 },
                 {
                     title: headerWithTooltip('Funding Source', 'Current funding source of the study/trial'),
