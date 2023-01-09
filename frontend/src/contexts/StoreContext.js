@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import api from '../Api'
 
 export const StoreContext = React.createContext({})
+export const useStore = () => useContext(StoreContext)
 
 const initialStore = {
   proposals: [],
