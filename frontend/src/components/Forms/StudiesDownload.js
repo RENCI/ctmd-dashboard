@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { IconButton } from '@material-ui/core'
 import { DownloadIcon } from '../Icons/Download'
 import { useStore } from '../../contexts'
+import { CSVLink } from 'react-csv'
 
 export const StudiesDownloadForm = props => {
     const [store, ] = useStore()
@@ -13,13 +14,14 @@ export const StudiesDownloadForm = props => {
             .map(p => p.profile)
     }, [store.proposals])
 
-    const handleClickDownload = () => {
-        console.log(profiles)
-    }
-
     return (
         <div>
-            <IconButton onClick={ handleClickDownload }>
+            <IconButton
+                component={ CSVLink }
+                data={ profiles }
+                separator=","
+                filename="study-profiles"
+            >
                 <DownloadIcon />
             </IconButton>
         </div>
