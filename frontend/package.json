@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://ctmd.renci.org/",
-  "devDependencies": {},
   "dependencies": {
     "@material-ui/core": "^4.7.2",
     "@material-ui/icons": "^3.0.2",
@@ -21,6 +20,7 @@
     "d3-tip": "^0.9.1",
     "material-table": "^1.54.1",
     "react": "^16.8.6",
+    "react-csv": "^2.2.2",
     "react-dom": "^16.8.6",
     "react-ga4": "^1.4.1",
     "react-router-dom": "^5.0.1",
