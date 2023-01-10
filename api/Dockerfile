@@ -1,4 +1,4 @@
-FROM node:13.14.0
+FROM node:16
 
 RUN apt-get update && apt-get install -y nano tree tzdata
 
