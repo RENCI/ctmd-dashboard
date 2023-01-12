@@ -1,6 +1,10 @@
 import React from 'react'
 import MaterialTable from 'material-table'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
+import {IconButton} from "@material-ui/core";
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import axios from "axios";
+import api from "../../Api";
 
 export const SitesEnrollmentTable = props => {
     const title = 'SitesEnrollment'
@@ -31,6 +35,24 @@ export const SitesEnrollmentTable = props => {
         )
     }
 
+    const removeBtn = row => {
+        return(
+            <IconButton variant="outlined"
+                    color="secondary"
+                    title="remove"
+                    onClick={function () {
+                        if (window.confirm("Do you really want to remove this item?")) {
+
+                            axios.delete(api.sites, {data: {siteId: row.id, proposalID: row.proposalID}})
+                                    .then(data => window.alert("Item has been removed. Refresh the page to see the change."))
+                                    .catch(error => console.error(error))
+                        }
+
+                    }}>
+                    <RemoveCircleIcon htmlColor="red"></RemoveCircleIcon>
+            </IconButton>
+        )
+    }
     return (
         <MaterialTable
             columns={ [
@@ -41,7 +63,9 @@ export const SitesEnrollmentTable = props => {
                 { title: 'Enrolled', field: 'enrolled', type: 'numeric'},
                 { title: 'Expected', field: 'expected', type: 'numeric' },
                 { title: 'Percent Enrolled (%)', field: 'percentEnrolled', type: 'numeric' },
-                { title: 'CTSA ID', field: 'ctsaId'}
+                { title: 'CTSA ID', field: 'ctsaId'},
+                { title: 'Edit', hidden: false, render: removeBtn },
+
             ] }
             data={ props.data }
             options={{
@@ -55,6 +79,7 @@ export const SitesEnrollmentTable = props => {
                 // pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: `${ title }__${ now.toISOString() }`,
             }}
+
         />
     )
 }

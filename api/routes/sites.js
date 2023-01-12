@@ -5,8 +5,7 @@ const sitesController = require('../controllers/sites')
 // Routes beginning with "HOSTNAME/sites/..."
 
 router.route('/').get(sitesController.list)
-// router.route('/reports').post(sitesController.addReport)
-// router.route('/').post(sitesController.uploadSites)
-// router.route('/metrics').get(sitesController.metrics)
+router.route('/').delete(sitesController.removeSite)
+
 
 module.exports = router
