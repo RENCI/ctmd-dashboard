@@ -26,7 +26,7 @@ exports.removeCTSA = (req, res) => {
     const ctsaId = body.ctsaId
     const move1 = new PQ({
         text: `INSERT into removeditems (created, tablename, item)
-                                         SELECT current_timestamp, 'CTSAa',  to_jsonb(rows) FROM
+                                         SELECT current_timestamp, 'CTSAs',  to_jsonb(rows) FROM
                                             (select * from "CTSAs" as ss where ss."ctsaId"=$1) rows;`,
         values: [ctsaId]
     })
