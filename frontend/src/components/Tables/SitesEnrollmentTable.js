@@ -6,6 +6,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import axios from "axios";
 import api from "../../Api";
 
+
 export const SitesEnrollmentTable = props => {
     const title = 'SitesEnrollment'
     const now = new Date()
@@ -35,25 +36,9 @@ export const SitesEnrollmentTable = props => {
         )
     }
 
-    const removeBtn = row => {
-        return(
-            <IconButton variant="outlined"
-                    color="secondary"
-                    title="remove"
-                    onClick={function () {
-                        if (window.confirm("Do you really want to remove this item?")) {
 
-                            axios.delete(api.sites, {data: {siteId: row.id, proposalID: row.proposalID}})
-                                    .then(data => window.alert("Item has been removed. Refresh the page to see the change."))
-                                    .catch(error => console.error(error))
-                        }
-
-                    }}>
-                    <RemoveCircleIcon htmlColor="red"></RemoveCircleIcon>
-            </IconButton>
-        )
-    }
     return (
+        <div style={{ marginBottom: '6em' }}>
         <MaterialTable
             columns={ [
                 { title: 'ID', field: 'id', },
@@ -64,7 +49,7 @@ export const SitesEnrollmentTable = props => {
                 { title: 'Expected', field: 'expected', type: 'numeric' },
                 { title: 'Percent Enrolled (%)', field: 'percentEnrolled', type: 'numeric' },
                 { title: 'CTSA ID', field: 'ctsaId'},
-                { title: 'Edit', hidden: false, render: removeBtn },
+                { title: 'Action', hidden: true, render: RemoveBtn },
 
             ] }
             data={ props.data }
@@ -81,5 +66,32 @@ export const SitesEnrollmentTable = props => {
             }}
 
         />
+        </div>
+    )
+}
+
+export const RemoveBtn = row => {
+    return(
+        <IconButton variant="outlined"
+                    color="secondary"
+                    title="remove"
+                    onClick={function () {
+                        if (window.confirm("Do you really want to remove this item?")) {
+                            let siteId = row.id
+                            if(siteId === undefined)
+                                siteId = row.siteId
+
+                            let siteName = row.name
+                            if (siteName === undefined)
+                                siteName = row.siteName
+
+                            axios.delete(api.sites, {data: {siteId: siteId, ctsaId: row.ctsaId, siteName: siteName}})
+                                .then(data => window.alert("Item has been removed. Refresh the page to see the change."))
+                                .catch(error => console.error(error))
+                        }
+
+                    }}>
+            <RemoveCircleIcon htmlColor="red"></RemoveCircleIcon>
+        </IconButton>
     )
 }
