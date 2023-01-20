@@ -1,5 +1,10 @@
 import React from 'react'
 import MaterialTable from 'material-table'
+import {IconButton} from "@material-ui/core";
+import axios from "axios";
+import api from "../../Api";
+import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+
 
 export const LookupTable = ({ title, data }) => {
     const now = new Date()
@@ -8,6 +13,7 @@ export const LookupTable = ({ title, data }) => {
             columns={ [
                 { title: 'ID', field: 'id', },
                 { title: 'Name', field: 'name', },
+                { title: 'Action', hidden: true, render: RemoveBtn },
             ] }
             data={ data }
             options={{
@@ -22,5 +28,30 @@ export const LookupTable = ({ title, data }) => {
                 exportFileName: `${ title }__${ now.toISOString() }`,
             }}
         />
+    )
+}
+
+export const RemoveBtn = row => {
+    return(
+        <IconButton variant="outlined"
+                    color="secondary"
+                    title="remove"
+                    onClick={function () {
+                        if (window.confirm("Do you really want to remove this item?")) {
+
+                            axios.delete(api.ctsas, {data: {ctsaId: row.id }})
+                                .then(data => {
+                                    if (data.data === "OK")
+                                        window.alert("Item has been removed. Refresh the page to see the change.")
+                                    else
+                                        window.alert("Item cannot be removed.")
+                                })
+
+                                .catch(error => console.error(error))
+                        }
+
+                    }}>
+            <RemoveCircleIcon htmlColor="red"></RemoveCircleIcon>
+        </IconButton>
     )
 }

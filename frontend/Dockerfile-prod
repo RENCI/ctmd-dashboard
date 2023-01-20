@@ -1,6 +1,6 @@
 # Build environment
 ###################
-FROM node:10.12.0-alpine AS builder
+FROM node:16-alpine AS builder
 
 # Create and set working directory
 RUN mkdir /src
