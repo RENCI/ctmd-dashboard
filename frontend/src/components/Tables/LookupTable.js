@@ -13,7 +13,7 @@ export const LookupTable = ({ title, data }) => {
             columns={ [
                 { title: 'ID', field: 'id', },
                 { title: 'Name', field: 'name', },
-                { title: 'Action', hidden: true, render: RemoveBtn },
+                { title: 'Action', render: RemoveBtn },
             ] }
             data={ data }
             options={{
