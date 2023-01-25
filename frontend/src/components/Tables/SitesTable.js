@@ -109,7 +109,7 @@ export const SitesTable = props => {
                         render: row => row.queriesPerConsentedPatient,
                         hidden: true,
                     },
-                    { title: 'Action', render: RemoveBtn, hidden: true,},
+                    { title: 'Action', render: RemoveBtn, },
                 ]
             }
             data={ sites }

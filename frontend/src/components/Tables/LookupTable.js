@@ -10,12 +10,11 @@ export const LookupTable = ({ title, data }) => {
     const now = new Date()
     return (
         <div>
-            <div>HHH100</div>
         <MaterialTable
             columns={ [
                 { title: 'ID', field: 'id', },
                 { title: 'Name', field: 'name', },
-                { title: 'Action', render: RemoveBtn, hidden: true, },
+                { title: 'Action', render: RemoveBtn, },
             ] }
             data={ data }
             options={{
