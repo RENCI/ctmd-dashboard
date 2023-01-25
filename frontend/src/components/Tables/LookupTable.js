@@ -14,7 +14,7 @@ export const LookupTable = ({ title, data }) => {
         <MaterialTable
             columns={ [
                 { title: 'ID', field: 'id', },
-                { title: 'Name', field: 'name', },
+                { title: 'Name2222', field: 'name', },
                 { title: 'Action', hidden: true, render: RemoveBtn },
             ] }
             data={ data }
