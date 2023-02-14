@@ -67,6 +67,7 @@ export const SitesPage = (props) => {
                 tdata.push({
                     id: site.siteId,
                     name: studySite.siteName,
+                    siteNumber: studySite.siteNumber,
                     studyName: studyNames[studySite.ProposalID],
                     proposalID: studySite.ProposalID,
                     enrolled: enrolled,
@@ -80,6 +81,7 @@ export const SitesPage = (props) => {
             tdata.push({
                 id: site.siteId,
                 name: site.siteName,
+                siteNumber: null,
                 studyName: 'None',
                 ctsaId: site.ctsaId,
             })

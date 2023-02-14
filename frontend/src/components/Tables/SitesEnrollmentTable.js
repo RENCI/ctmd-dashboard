@@ -85,7 +85,7 @@ export const RemoveBtn = row => {
                             if (siteName === undefined)
                                 siteName = row.siteName
 
-                            axios.delete(api.sites, {data: {siteId: siteId, ctsaId: row.ctsaId, siteName: siteName}})
+                            axios.delete(api.sites, {data: {siteId: siteId, ctsaId: row.ctsaId, siteName: siteName, siteNumber: row.siteNumber}})
                                 .then(data => window.alert("Item has been removed. Refresh the page to see the change."))
                                 .catch(error => console.error(error))
                         }
