@@ -16,8 +16,10 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline
-    image: txscience/ctmd-pipeline-reload:v2.11
     restart: always
+    build:
+      context: ./../tic-map-pipeline-script
+      dockerfile: Dockerfile
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
