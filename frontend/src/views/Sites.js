@@ -68,7 +68,6 @@ export const SitesPage = (props) => {
                     id: site.siteId,
                     name: studySite.siteName,
                     studyName: studyNames[studySite.ProposalID],
-                    proposalID: studySite.ProposalID,
                     enrolled: enrolled,
                     expected: expected,
                     percentEnrolled: percent,

@@ -38,9 +38,7 @@ export const CtsasPage = (props) => {
       </Grid>
 
       {ctsas ? (
-          <div style={{ marginBottom: '6em' }}>
-              <LookupTable data={ctsas.map((ctsa) => ({ id: ctsa.ctsaId, name: ctsa.ctsaName }))} />
-          </div>
+        <LookupTable data={ctsas.map((ctsa) => ({ id: ctsa.ctsaId, name: ctsa.ctsaName }))} />
       ) : (
         <CircularLoader />
       )}

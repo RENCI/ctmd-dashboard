@@ -3,7 +3,6 @@ import MaterialTable from 'material-table'
 import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel, dayCount, displayRatio } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
-import { RemoveBtn } from './SitesEnrollmentTable'
 
 const invalidDisplay = 'N/A'
 
@@ -66,7 +65,6 @@ export const SitesTable = props => {
     }
 
     return (
-        <div style={{ marginBottom: '6em' }}>
         <MaterialTable
             title={ null }
             components={{ }}
@@ -109,7 +107,6 @@ export const SitesTable = props => {
                         render: row => row.queriesPerConsentedPatient,
                         hidden: true,
                     },
-                    { title: 'Action', hidden: true, render: RemoveBtn },
                 ]
             }
             data={ sites }
@@ -127,6 +124,5 @@ export const SitesTable = props => {
             detailPanel={rowData => <SiteDetailPanel { ...rowData } />}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}
         />
-        </div>
     )
 }
