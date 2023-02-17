@@ -49,7 +49,7 @@ export const SitesEnrollmentTable = props => {
                 { title: 'Expected', field: 'expected', type: 'numeric' },
                 { title: 'Percent Enrolled (%)', field: 'percentEnrolled', type: 'numeric' },
                 { title: 'CTSA ID', field: 'ctsaId'},
-                { title: 'Action', render: RemoveBtn },
+                { title: 'Action', hidden: true, render: RemoveBtn },
 
             ] }
             data={ props.data }
