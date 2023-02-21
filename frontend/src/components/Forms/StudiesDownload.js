@@ -9,8 +9,11 @@ export const StudiesDownloadForm = props => {
 
     const profiles = useMemo(() => {
         return proposals
-            .filter(p => p.profile !== null)
-            .map(p => p.profile)
+            .filter(p => !!p.profile)
+            .map(p => {
+                const { profile, ...rest } = p
+                return { ...rest, ...p.profile }
+            })
     }, [proposals])
 
     return (
