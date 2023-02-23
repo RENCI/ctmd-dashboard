@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { IconButton, Tooltip } from '@material-ui/core'
+import { Button, Tooltip } from '@material-ui/core'
 import { DownloadIcon } from '../Icons/Download'
 import { useStore } from '../../contexts'
 import { CSVLink } from 'react-csv'
@@ -17,15 +17,15 @@ export const StudiesDownloadForm = props => {
     }, [proposals])
 
     return (
-        <Tooltip title="Download studies" aria-label="Download studies">
-            <IconButton
+        <Tooltip title="Download study profiles" aria-label="Download study profiles">
+            <Button
                 component={ CSVLink }
+                variant="outlined"
                 data={ profiles }
                 separator=","
                 filename="study-profiles"
-            >
-                <DownloadIcon />
-            </IconButton>
+                startIcon={ <DownloadIcon /> }
+            >Study profiles</Button>
         </Tooltip>
     )
 }
