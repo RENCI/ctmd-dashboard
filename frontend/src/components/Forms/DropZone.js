@@ -10,12 +10,14 @@ const useStyles = makeStyles((theme) => ({
   dropzone: {
     display: 'flex',
     alignItems: 'center',
+    mxWidth: '400px',
   },
   fileInput: {
     flex: 1,
     backgroundColor: theme.palette.grey[300],
     borderTopRightRadius: '4px',
     borderBottomRightRadius: '4px',
+    padding: '6px',
   },
   uploadButton: {
     margin: theme.spacing(2),
