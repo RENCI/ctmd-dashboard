@@ -7,10 +7,9 @@ import { CSVLink } from 'react-csv'
 export const StudiesDownloadForm = props => {
     const [{ proposals }, ] = useStore()
 
-    const profiles = useMemo(() => {
-        const studies = proposals.filter(p => !!p.profile)
-        console.log(studies)
-        return studies
+    const reports = useMemo(() => {
+        return proposals
+            .filter(p => !!p.profile)
             .map(p => ({
                 'Proposal ID': p.proposalID,
                 'Short Title': p.shortTitle,
@@ -48,15 +47,15 @@ export const StudiesDownloadForm = props => {
     }, [proposals])
 
     return (
-        <Tooltip title="Download study profiles" aria-label="Download study profiles">
+        <Tooltip title="Download study reports" aria-label="Download study reports">
             <Button
                 component={ CSVLink }
                 variant="outlined"
-                data={ profiles }
+                data={ reports }
                 separator=","
-                filename="study-profiles"
+                filename="study-reports"
                 startIcon={ <DownloadIcon /> }
-            >Study profiles</Button>
+            >Study Reports</Button>
         </Tooltip>
     )
 }
