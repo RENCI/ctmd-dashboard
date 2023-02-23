@@ -4,7 +4,7 @@ import api from '../../Api'
 import { Title, Subsubheading, Paragraph } from '../../components/Typography'
 import { StudiesTable } from '../../components/Tables'
 import { Grid, List, ListItem, ListItemText } from '@material-ui/core'
-import { DropZone, DownloadButton, StudiesDownloadForm } from '../../components/Forms'
+import { DropZone, DownloadButton as TemplateDownload, StudiesDownloadForm } from '../../components/Forms'
 import { DataUploadHelper } from '../../components/Helper'
 
 export const StudiesListPage = (props) => {
@@ -21,15 +21,12 @@ export const StudiesListPage = (props) => {
   return (
     <div>
       <Grid container>
-        <Grid item xs={11} md={6}>
+        <Grid item xs={12} md={7}>
           <Title>Studies</Title>
         </Grid>
-        <Grid item xs={11} md={5}>
+        <Grid item xs={12} md={5}  style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <TemplateDownload path={api.download('study-profile')} tooltip="Download Study Profile CSV Template" />
           <DropZone endpoint={api.uploadStudyProfile} method="POST" />
-        </Grid>
-        <Grid item xs={1} style={{ textAlign: 'right' }}>
-          <DownloadButton path={api.download('study-profile')} tooltip="Download Study Profile CSV Template" />
-          <DataUploadHelper />
           <StudiesDownloadForm />
         </Grid>
       </Grid>
