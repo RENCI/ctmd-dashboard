@@ -102,9 +102,13 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   return (
     <div className={classes.dropzone}>
       <input type="file" accept="text/csv" ref={fileInputRef} className={classes.fileInput} onChange={onFilesAdded} />
-      <Button color="secondary" variant="contained" className={classes.uploadButton} onClick={handleClickUpload}>
-        Upload <UploadIcon className={classes.buttonIcon} />
-      </Button>
+      <Button
+        color="secondary"
+        variant="contained"
+        className={classes.uploadButton}
+        onClick={handleClickUpload}
+        startIcon={<UploadIcon className={classes.buttonIcon} />}
+      >Upload</Button>
     </div>
   )
 }
