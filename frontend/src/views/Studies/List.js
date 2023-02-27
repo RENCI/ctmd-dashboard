@@ -21,10 +21,10 @@ export const StudiesListPage = (props) => {
   return (
     <div>
       <Grid container>
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={4}>
           <Title>Studies</Title>
         </Grid>
-        <Grid item xs={12} md={5}  style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Grid item xs={12} md={8}  style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem' }}>
           <TemplateDownload path={api.download('study-profile')} tooltip="Download Study Profile CSV Template" />
           <DropZone endpoint={api.uploadStudyProfile} method="POST" />
           <StudiesDownloadForm />
