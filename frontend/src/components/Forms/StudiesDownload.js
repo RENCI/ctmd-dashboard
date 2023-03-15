@@ -36,12 +36,13 @@ export const StudiesDownloadForm = props => {
     return proposals
       .filter(p => !!p.profile)
       .map(p => {
-        let ret = {}
+        let ret = {
+          'Proposal ID': p.proposalID,
+          'Short Title': p.shortTitle,
+        }
         if (exportFields.studies) {
           ret = {
             ...ret,
-            'Proposal ID': p.proposalID,
-            'Short Title': p.shortTitle,
             'Network': p.profile.network,
             'Assigned TIC/RIC': p.assignToInstitution,
             'Type': p.profile.type,
@@ -77,8 +78,7 @@ export const StudiesDownloadForm = props => {
         if (exportFields.proposals) {
           ret = {
             ...ret,
-            'Proposal ID': p.proposalID,
-            'Short Title': p.shortTitle,
+            //  general
             'PI': p.piName,
             'Proposal Status': p.proposalStatus,
             'Therapeutic Area': p.therapeuticArea,
@@ -89,8 +89,33 @@ export const StudiesDownloadForm = props => {
             'Planned Grant Submission Date': p.plannedGrantSubmissionDate,
             'Actual Grant Submission Date': p.actualGrantSubmissionDate,
             'Grant Award Date': p.actualGrantAwardDate,
+            // funding
             'Funding Amount': p.fundingAmount,
             'Funding Period': p.fundingPeriod,
+            'fundingStatusWhenApproved': p.fundingStatusWhenApproved,
+            'Funding Status': p.fundingStatus,
+            'Funding Source': p.fundingSource,
+            'Funding Insitute 1': p.fundingInstitute,
+            'Funding Insitute 2': p.fundingInstitute2,
+            'Funding Insitute 3': p.fundingInstitute3,
+            'New Funding Source': p.newFundingSource,
+            'Funding Source Confirmation': p.fundingSourceConfirmation,
+            'Actual Funding Start Date': p.actualFundingStartDate,
+            'Estimated Funding Start Date': p.estimatedFundingStartDate,
+            // dates
+            'Actual Protocol Final Date': p.actualProtocolFinalDate,
+            'Approval Release Diff': p.approvalReleaseDiff,
+            'Initial Contact Date': p.firstContact,
+            'Kick-off Meeting Date': p.kickOff,
+            // sites
+            'Number of CTSA Program Hub Sites': p.numberCTSAprogHubSites,
+            'Number of Sites': p.numberSites,
+            // consult
+            'Recommend for Comprehensive Consultation': p.approvedForComprehensiveConsultation,
+            //
+            'Study Population': p.studyPopulation,
+            'Phase': p.phase,
+            'COVID Study': p.covidStudy,
           }
         }
         return ret
@@ -165,26 +190,3 @@ export const StudiesDownloadForm = props => {
     </Fragment>
   )
 }
-
-
-// other columns
-// 'COVID Study': p.covidStudy,
-// 'fundingStatusWhenApproved': p.fundingStatusWhenApproved,
-// 'Funding Status': p.fundingStatus,
-// 'Study Population': p.studyPopulation,
-// 'Phase': p.phase,
-// 'Funding Source': p.fundingSource,
-// 'Funding Insitute 1': p.fundingInstitute,
-// 'Funding Insitute 2': p.fundingInstitute2,
-// 'Funding Insitute 3': p.fundingInstitute3,
-// 'New Funding Source': p.newFundingSource,
-// 'Funding Source Confirmation': p.fundingSourceConfirmation,
-// 'Actual Funding Start Date': p.actualFundingStartDate,
-// 'Estimated Funding Start Date': p.estimatedFundingStartDate,
-// 'Actual Protocol Final Date': p.actualProtocolFinalDate,
-// 'Approval Release Diff': p.approvalReleaseDiff,
-// 'Initial Contact Date': p.firstContact,
-// 'Kick-off Meeting Date': p.kickOff,
-// 'Number of CTSA Program Hub Sites': p.numberCTSAprogHubSites,
-// 'Number of Sites': p.numberSites,
-// 'Recommend for Comprehensive Consultation': p.approvedForComprehensiveConsultation,
