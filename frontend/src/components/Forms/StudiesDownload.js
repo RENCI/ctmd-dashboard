@@ -95,7 +95,7 @@ export const StudiesDownloadForm = props => {
         }
         return ret
       })
-  }, [proposals])
+  }, [exportFields, proposals])
 
   return (
     <Fragment>
@@ -125,28 +125,32 @@ export const StudiesDownloadForm = props => {
                 flexDirection: 'column',
               }}>
                 <Typography variant="h6" style={{ padding: '0.5rem 1rem' }}>Select Export Fields</Typography>
+                
                 <Divider />
+                
                 <FormGroup style={{ padding: '0.5rem 1rem' }}>
                   <FormControlLabel
+                    label="Studies Fields"
                     control={
                       <Checkbox
                         checked={ exportFields.studies }
                         onChange={ handleToggleExportFields('studies') }
                       />
                     }
-                    label="Studies Fields"
                   />
                   <FormControlLabel
+                    label="Proposals Fields"
                     control={
                       <Checkbox
                         checked={ exportFields.proposals }
                         onChange={ handleToggleExportFields('proposals') }
                       />
                     }
-                    label="Proposals Fields"
                   />
                 </FormGroup>
+                
                 <Divider />
+                
                 <Button
                   component={ CSVLink }
                   data={ reports }
