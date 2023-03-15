@@ -1,11 +1,27 @@
-import React, { useMemo } from 'react'
-import { Button, Tooltip } from '@material-ui/core'
+import React, { useMemo, useState } from 'react'
+import { Button, Fade, IconButton, Paper, Popper, Tooltip } from '@material-ui/core'
 import { DownloadIcon } from '../Icons/Download'
 import { useStore } from '../../contexts'
 import { CSVLink } from 'react-csv'
 
 export const StudiesDownloadForm = props => {
+    const [popperAnchor, setPopperAnchor] = useState(null)
+    const [open, setOpen] = useState(false)
     const [{ proposals }, ] = useStore()
+    const [exportFields, setExportFields] = useState({
+        proposals: true,
+        studies: true,
+    })
+    const handleToggleExportFields = event => {
+        const { field } = event.target.dataset
+        if (!['studies', 'proposals'].includes(field)) {
+            return
+        }
+        setExportFields({
+            ...exportFields,
+            [event.target.dataset.field]: event.target.checked,
+        })
+    }
 
     const reports = useMemo(() => {
         return proposals
@@ -83,16 +99,56 @@ export const StudiesDownloadForm = props => {
             }))
     }, [proposals])
 
+    const handleClickOpen = event => {
+        setPopperAnchor(event.currentTarget)
+        setOpen(prev => !prev);
+    }
+
     return (
-        <Tooltip title="Download study reports" aria-label="Download study reports">
-            <Button
-                component={ CSVLink }
-                variant="outlined"
-                data={ reports }
-                separator=","
-                filename="study-reports"
-                startIcon={ <DownloadIcon /> }
-            >Study Reports</Button>
-        </Tooltip>
+        <div>
+            <Tooltip title="Download study reports" aria-label="Download study reports">
+                <Button
+                    variant="outlined"
+                    data={ reports }
+                    separator=","
+                    filename="study-reports"
+                    startIcon={ <DownloadIcon /> }
+                    onClick={ handleClickOpen }
+                >Study Reports</Button>
+            </Tooltip>
+            <Popper
+                open={ open }
+                anchorEl={ popperAnchor }
+                placement="bottom"
+                transition
+            >
+                {
+                    ({ TransitionProps }) => (
+                        <Fade { ...TransitionProps } timeout={ 350 }>
+                            <Paper>
+                                <input
+                                    type="checkbox"
+                                    data-field="studies"
+                                    checked={ exportFields.studies }
+                                    onChange={ handleToggleExportFields }
+                                />
+                                <input
+                                    type="checkbox"
+                                    data-field="proposals"
+                                    checked={ exportFields.proposals }
+                                    onChange={ handleToggleExportFields }
+                                />
+                                <IconButton
+                                    component={ CSVLink }
+                                    data={ reports }
+                                    separator=","
+                                    filename="study-reports"
+                                ><DownloadIcon /></IconButton>
+                            </Paper>
+                        </Fade>
+                    )
+                }
+            </Popper>
+        </div>
     )
 }
