@@ -6,21 +6,93 @@ import { DownloadIcon } from '../Icons/Download'
 import { useStore } from '../../contexts'
 import { CSVLink } from 'react-csv'
 
+//
+
+const generalColumns = [
+  { label: 'Proposal ID',                              key: 'proposalID' },
+  { label: 'Short Title',                              key: 'shortTitle' },
+]
+
+const studyColumns = [
+  { label: 'Network',                                  key: 'profile.network' },
+  { label: 'Assigned TIC/RIC',                         key: 'assignToInstitution' },
+  { label: 'Type',                                     key: 'profile.type' },
+  { label: 'Has Linked Studies',                       key: 'profile.linkedStudies' },
+  { label: 'Design',                                   key: 'profile.design' },
+  { label: 'Study is Randomized',                      key: 'profile.isRandomized' },
+  { label: 'Randomization Unit',                       key: 'profile.randomizationUnit' },
+  { label: 'Randomization Feature',                    key: 'profile.randomizationFeature' },
+  { label: 'Ascertainment',                            key: 'profile.ascertainment' },
+  { label: 'Observations',                             key: 'profile.observations' },
+  { label: 'Pilot Study',                              key: 'profile.isPilot' },
+  { label: 'Is Registry?',                             key: 'profile.isRegistry' },
+  { label: 'EHR Data Transfer',                        key: 'profile.ehrDataTransfer' },
+  { label: 'EHR Data Transfer Option',                 key: 'profile.ehrDatatransferOption' },
+  { label: 'Study Requires Consent',                   key: 'profile.isConsentRequired' },
+  { label: 'Is EFIC',                                  key: 'profile.isEfic' },
+  { label: 'IRB Type',                                 key: 'profile.irbType' },
+  { label: 'Regulatory Classification',                key: 'profile.regulatoryClassification' },
+  { label: 'ClinicalTrials.gov ID',                    key: 'profile.clinicalTrialsGovId' },
+  { label: 'DSMB/DMC Required',                        key: 'profile.isDsmbDmcRequired' },
+  { label: 'Initial ParticipatingSiteCount',           key: 'profile.initialParticipatingSiteCount' },
+  { label: 'Enrollment Goal',                          key: 'profile.enrollmentGoal' },
+  { label: 'Initial Projected Enrollment Duration',    key: 'profile.initialProjectedEnrollmentDuration' },
+  { label: 'Lead PIs',                                 key: 'profile.leadPIs' },
+  { label: 'Awardee Site Acronym',                     key: 'profile.awardeeSiteAcronym' },
+  { label: 'Primary Funding Type',                     key: 'profile.primaryFundingType' },
+  { label: 'Funded Primarily by Infrastructure',       key: 'profile.isFundedPrimarilyByInfrastructure' },
+  { label: 'Was Previously Funded',                    key: 'profile.isPreviouslyFunded' },
+  { label: 'Date Funding was Awarded',                 key: 'profile.fundingAwardDate' },
+  { label: 'Phase',                                    key: 'phase' },
+]
+
+const proposalColumns = [
+  { label: 'PI',                                       key: 'piName' },
+  { label: 'Proposal Status',                          key: 'proposalStatus' },
+  { label: 'Therapeutic Area',                         key: 'therapeuticArea' },
+  { label: 'Submitting Institution',                   key: 'submitterInstitution' },
+  { label: 'Assigned TIC/RIC',                         key: 'assignToInstitution' },
+  { label: 'Funding Amount',                           key: 'fundingAmount' },
+  { label: 'Funding Period',                           key: 'fundingPeriod' },
+  { label: 'fundingStatusWhenApproved',                key: 'fundingStatusWhenApproved' },
+  { label: 'Funding Status',                           key: 'fundingStatus' },
+  { label: 'Funding Source',                           key: 'fundingSource' },
+  { label: 'Funding Insitute 1',                       key: 'fundingInstitute' },
+  { label: 'Funding Insitute 2',                       key: 'fundingInstitute2' },
+  { label: 'Funding Insitute 3',                       key: 'fundingInstitute3' },
+  { label: 'New Funding Source',                       key: 'newFundingSource' },
+  { label: 'Funding Source Confirmation',              key: 'fundingSourceConfirmation' },
+  { label: 'Actual Funding Start Date',                key: 'actualFundingStartDate' },
+  { label: 'Estimated Funding Start Date',             key: 'estimatedFundingStartDate' },
+  { label: 'Submission Date',                          key: 'dateSubmitted' },
+  { label: 'PAT Review Date',                          key: 'meetingDate' },
+  { label: 'Planned Grant Submission Date',            key: 'plannedGrantSubmissionDate' },
+  { label: 'Actual Grant Submission Date',             key: 'actualGrantSubmissionDate' },
+  { label: 'Grant Award Date',                         key: 'actualGrantAwardDate' },
+  { label: 'Actual Protocol Final Date',               key: 'actualProtocolFinalDate' },
+  { label: 'Initial Contact Date',                     key: 'firstContact' },
+  { label: 'Kick-off Meeting Date',                    key: 'kickOff' },
+  { label: 'Number of CTSA Program Hub Sites',         key: 'numberCTSAprogHubSites' },
+  { label: 'Number of Sites',                          key: 'numberSites' },
+  { label: 'Recommend for Comprehensive Consultation', key: 'approvedForComprehensiveConsultation' },
+  { label: 'Approval Release Diff',                    key: 'approvalReleaseDiff' },
+  { label: 'Study Population',                         key: 'studyPopulation' },
+  { label: 'Phase',                                    key: 'phase' },
+  { label: 'COVID Study',                              key: 'covidStudy' },
+]
+
+//
+
 export const StudiesDownloadForm = props => {
   const [{ proposals }, ] = useStore()
 
   const [popperAnchor, setPopperAnchor] = useState(null)
   const [open, setOpen] = useState(false)
 
-  const [exportFields, setExportFields] = useState({
-    proposals: true,
-    studies: true,
-  })
+  const [exportFields, setExportFields] = useState({ proposals: true, studies: true })
 
   const handleToggleExportFields = field => event => {
-    if (!['studies', 'proposals'].includes(field)) {
-      return
-    }
+    if (!['studies', 'proposals'].includes(field)) { return }
     setExportFields({
       ...exportFields,
       [field]: event.target.checked,
@@ -29,107 +101,32 @@ export const StudiesDownloadForm = props => {
 
   const handleClickOpen = event => {
     setPopperAnchor(event.currentTarget)
-    setOpen(prev => !prev);
+    setOpen(prevOpen => !prevOpen)
   }
+
+  const headers = useMemo(() => {
+    let cols = [...generalColumns]
+    if (exportFields.studies) {
+      cols = [...cols, ...studyColumns]
+    }
+    if (exportFields.proposals) {
+      cols = [...cols, ...proposalColumns]
+    }
+    return [...cols]
+  }, [exportFields])
+
+  console.log(headers)
 
   const reports = useMemo(() => {
     return proposals
       .filter(p => !!p.profile)
-      .map(p => {
-        let ret = {
-          'Proposal ID': p.proposalID,
-          'Short Title': p.shortTitle,
-        }
-        if (exportFields.studies) {
-          ret = {
-            ...ret,
-            'Network': p.profile.network,
-            'Assigned TIC/RIC': p.assignToInstitution,
-            'Type': p.profile.type,
-            'Has Linked Studies': p.profile.linkedStudies,
-            'Design': p.profile.design,
-            'Study is Randomized': p.profile.isRandomized,
-            'Randomization Unit': p.profile.randomizationUnit,
-            'Randomization Feature': p.profile.randomizationFeature,
-            'Ascertainment': p.profile.ascertainment,
-            'Observations': p.profile.observations,
-            'Pilot Study': p.profile.isPilot,
-            'Is Registry?': p.profile.isRegistry,
-            'EHR Data Transfer': p.profile.ehrDataTransfer,
-            'EHR Data Transfer Option': p.profile.ehrDatatransferOption,
-            'Study Requires Consent': p.profile.isConsentRequired,
-            'Is EFIC': p.profile.isEfic,
-            'IRB Type': p.profile.irbType,
-            'Regulatory Classification': p.profile.regulatoryClassification,
-            'ClinicalTrials.gov ID': p.profile.clinicalTrialsGovId,
-            'DSMB/DMC Required': p.profile.isDsmbDmcRequired,
-            'Initial ParticipatingSiteCount': p.profile.initialParticipatingSiteCount,
-            'Enrollment Goal': p.profile.enrollmentGoal,
-            'Initial Projected Enrollment Duration': p.profile.initialProjectedEnrollmentDuration,
-            'Lead PIs': p.profile.leadPIs,
-            'Awardee Site Acronym': p.profile.awardeeSiteAcronym,
-            'Primary Funding Type': p.profile.primaryFundingType,
-            'Funded Primarily by Infrastructure': p.profile.isFundedPrimarilyByInfrastructure,
-            'Was Previously Funded': p.profile.isPreviouslyFunded,
-            'Date Funding was Awarded': p.profile.fundingAwardDate,
-            'Phase': p.phase,
-          }
-        }
-        if (exportFields.proposals) {
-          ret = {
-            ...ret,
-            //  general
-            'PI': p.piName,
-            'Proposal Status': p.proposalStatus,
-            'Therapeutic Area': p.therapeuticArea,
-            'Submitting Institution': p.submitterInstitution,
-            'Assigned TIC/RIC': p.assignToInstitution,
-            'Submission Date': p.dateSubmitted,
-            'PAT Review Date': p.meetingDate,
-            'Planned Grant Submission Date': p.plannedGrantSubmissionDate,
-            'Actual Grant Submission Date': p.actualGrantSubmissionDate,
-            'Grant Award Date': p.actualGrantAwardDate,
-            // funding
-            'Funding Amount': p.fundingAmount,
-            'Funding Period': p.fundingPeriod,
-            'fundingStatusWhenApproved': p.fundingStatusWhenApproved,
-            'Funding Status': p.fundingStatus,
-            'Funding Source': p.fundingSource,
-            'Funding Insitute 1': p.fundingInstitute,
-            'Funding Insitute 2': p.fundingInstitute2,
-            'Funding Insitute 3': p.fundingInstitute3,
-            'New Funding Source': p.newFundingSource,
-            'Funding Source Confirmation': p.fundingSourceConfirmation,
-            'Actual Funding Start Date': p.actualFundingStartDate,
-            'Estimated Funding Start Date': p.estimatedFundingStartDate,
-            // dates
-            'Actual Protocol Final Date': p.actualProtocolFinalDate,
-            'Approval Release Diff': p.approvalReleaseDiff,
-            'Initial Contact Date': p.firstContact,
-            'Kick-off Meeting Date': p.kickOff,
-            // sites
-            'Number of CTSA Program Hub Sites': p.numberCTSAprogHubSites,
-            'Number of Sites': p.numberSites,
-            // consult
-            'Recommend for Comprehensive Consultation': p.approvedForComprehensiveConsultation,
-            //
-            'Study Population': p.studyPopulation,
-            'Phase': p.phase,
-            'COVID Study': p.covidStudy,
-          }
-        }
-        return ret
-      })
-  }, [exportFields, proposals])
+  }, [proposals])
 
   return (
     <Fragment>
       <Tooltip title="Download study reports" aria-label="Download study reports">
         <Button
           variant="outlined"
-          data={ reports }
-          separator=","
-          filename="study-reports"
           startIcon={ <DownloadIcon /> }
           onClick={ handleClickOpen }
         >Study Reports</Button>
@@ -149,7 +146,10 @@ export const StudiesDownloadForm = props => {
                 display: 'flex',
                 flexDirection: 'column',
               }}>
-                <Typography variant="h6" style={{ padding: '0.5rem 1rem' }}>Select Export Fields</Typography>
+                <Typography
+                  variant="h6"
+                  style={{ padding: '0.5rem 1rem' }}
+                >Select Export Fields</Typography>
                 
                 <Divider />
                 
@@ -178,6 +178,7 @@ export const StudiesDownloadForm = props => {
                 
                 <Button
                   component={ CSVLink }
+                  headers={ headers }
                   data={ reports }
                   separator=","
                   filename="study-reports"
