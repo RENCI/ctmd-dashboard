@@ -13,7 +13,7 @@ const generalColumns = [
   { label: 'Short Title',                              key: 'shortTitle' },
 ]
 
-const studyColumns = [
+const profileColumns = [
   { label: 'Network',                                  key: 'profile.network' },
   { label: 'Assigned TIC/RIC',                         key: 'assignToInstitution' },
   { label: 'Type',                                     key: 'profile.type' },
@@ -83,6 +83,18 @@ const proposalColumns = [
 
 //
 
+const transformToYesNo = str => {
+  if (typeof str === 'boolean') {
+    return str ? 'yes' : 'no'
+  }
+  if (typeof str !== 'string') { return str }
+  if (str.toLowerCase() === 'true')  { return 'Yes' }
+  if (str.toLowerCase() === 'false')  { return 'No' }
+  return str
+}
+
+//
+
 export const StudiesDownloadForm = props => {
   const [{ proposals }, ] = useStore()
 
@@ -107,7 +119,7 @@ export const StudiesDownloadForm = props => {
   const headers = useMemo(() => {
     let cols = [...generalColumns]
     if (exportFields.studies) {
-      cols = [...cols, ...studyColumns]
+      cols = [...cols, ...profileColumns]
     }
     if (exportFields.proposals) {
       cols = [...cols, ...proposalColumns]
@@ -115,12 +127,17 @@ export const StudiesDownloadForm = props => {
     return [...cols]
   }, [exportFields])
 
-  console.log(headers)
-
   const reports = useMemo(() => {
-    return proposals
+    const data = proposals
       .filter(p => !!p.profile)
-  }, [proposals])
+    data.forEach(d => {
+      d.profile = Object.keys(d.profile).reduce((acc, key) => ({
+        ...acc,
+        [key]: transformToYesNo(d.profile[key]),
+      }))
+    })
+    return data
+  }, [exportFields, proposals])
 
   return (
     <Fragment>
@@ -155,7 +172,7 @@ export const StudiesDownloadForm = props => {
                 
                 <FormGroup style={{ padding: '0.5rem 1rem' }}>
                   <FormControlLabel
-                    label="Studies Fields"
+                    label="Study Profile Data"
                     control={
                       <Checkbox
                         checked={ exportFields.studies }
@@ -164,7 +181,7 @@ export const StudiesDownloadForm = props => {
                     }
                   />
                   <FormControlLabel
-                    label="Proposals Fields"
+                    label="Proposal Data"
                     control={
                       <Checkbox
                         checked={ exportFields.proposals }
