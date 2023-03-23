@@ -36,6 +36,14 @@ export const SitesTable = props => {
                 site.ratioRandomizedPtsDropout = displayRatio(site.patientsWithdrawnCount, site.patientsEnrolledCount)
                 site.majorProtocolDeviationsPerRandomizedPt = displayRatio( site.protocolDeviationsCount, site.patientsEnrolledCount)
                 site.queriesPerConsentedPatient = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount )
+                site.shortDescription = site.protocol.shortDescription
+
+                // Enrollment
+                const enrolled = site.patientsEnrolledCount
+                const expected = site.patientsExpectedCount
+                const percentEnrolled = expected === 0 ? 0 : Math.round(enrolled / expected * 100)                
+                site.enrollment = `${ enrolled } / ${ expected }: ${ percentEnrolled }%`
+                site.percentEnrolled = percentEnrolled;
             }
         }
     }, [sites, store.proposals])
@@ -56,6 +64,7 @@ export const SitesTable = props => {
                 data={ row }
                 enrolledKey='patientsEnrolledCount'
                 expectedKey='patientsExpectedCount'
+                percentKey='percentEnrolled'
                 maxValue={ maxExpected }
                 height={ barHeight }
                 width={ barWidth }
@@ -70,7 +79,7 @@ export const SitesTable = props => {
             components={{ }}
             columns={
                 [
-                    { title: 'Protocol (Short Description)', render: d => d.protocol.shortDescription, hidden: true, },
+                    { title: 'Protocol (Short Description)', field: 'shortDescription', hidden: true, },
                     { title: 'Site ID', field: 'siteId', hidden: false, },
                     { title: 'CTSA ID', field: 'ctsaId', hidden: true, },
                     { title: 'Site Name', field: 'siteName', hidden: false, },
@@ -85,7 +94,7 @@ export const SitesTable = props => {
                     { title: 'Site Activation', field: 'dateSiteActivated', hidden: true, },
                     { title: 'LPFV', field: 'lpfv', hidden: true, },
                     { title: 'FPFV', field: 'fpfv', hidden: true, },
-                    { title: 'Enrollment', render: bar, hidden: false, },
+                    { title: 'Enrollment', field: 'enrollment', render: bar, hidden: false, },
                     { title: 'Patients Consented', field: 'patientsConsentedCount', hidden: true, },
                     { title: 'Patients Enrolled', field: 'patientsEnrolledCount', hidden: true, },
                     { title: 'Patients Withdrawn', field: 'patientsWithdrawnCount', hidden: true, },
@@ -102,11 +111,7 @@ export const SitesTable = props => {
                     { title: 'Ratio of randomized patients that dropout of the study', field: 'ratioRandomizedPtsDropout', hidden: true, },
                     { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPt', hidden: true, },
                     { title: 'Number of Queries', field: 'queriesCount', hidden: true, },
-                    {
-                        title: 'Queries per patient',
-                        render: row => row.queriesPerConsentedPatient,
-                        hidden: true,
-                    },
+                    { title: 'Queries per patient', field: 'queriesPerConsentedPatient', hidden: true, },
                 ]
             }
             data={ sites }
