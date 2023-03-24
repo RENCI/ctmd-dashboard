@@ -4,7 +4,7 @@ import { ResponsiveBar } from '@nivo/bar'
 export const EnrollmentBar = props => {
     const enrolled = props.data[props.enrolledKey]
     const expected = props.data[props.expectedKey]
-    const percentEnrolled = expected === 0 ? 0 : Math.round(enrolled / expected * 100)
+    const percentEnrolled = props.data[props.percentKey]
     const width = props.maxValue === 0 ? 0 : (expected / props.maxValue) * props.width
 
     const barTooltip = () => {
