@@ -10,12 +10,14 @@ const useStyles = makeStyles((theme) => ({
   dropzone: {
     display: 'flex',
     alignItems: 'center',
+    mxWidth: '400px',
   },
   fileInput: {
     flex: 1,
     backgroundColor: theme.palette.grey[300],
     borderTopRightRadius: '4px',
     borderBottomRightRadius: '4px',
+    padding: '6px',
   },
   uploadButton: {
     margin: theme.spacing(2),
@@ -100,9 +102,13 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   return (
     <div className={classes.dropzone}>
       <input type="file" accept="text/csv" ref={fileInputRef} className={classes.fileInput} onChange={onFilesAdded} />
-      <Button color="secondary" variant="contained" className={classes.uploadButton} onClick={handleClickUpload}>
-        Upload <UploadIcon className={classes.buttonIcon} />
-      </Button>
+      <Button
+        color="secondary"
+        variant="contained"
+        className={classes.uploadButton}
+        onClick={handleClickUpload}
+        startIcon={<UploadIcon className={classes.buttonIcon} />}
+      >Upload</Button>
     </div>
   )
 }
