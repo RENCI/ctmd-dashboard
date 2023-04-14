@@ -1,6 +1,18 @@
 version: "3"
 
 services:
+  auth:
+    container_name: ctmd-auth
+    image: renci/txautht:1.1
+    restart: always
+    environment:
+      API_KEY: $AUTH_API_KEY
+      PROVIDERS: $AUTH_PROVIDER
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+
   redis:
     container_name: ctmd-redis
     build:
@@ -100,7 +112,7 @@ services:
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_PORT: $POSTGRES_PORT
-      FUSE_AUTH_API_KEY: $FUSE_AUTH_API_KEY
+      FUSE_AUTH_API_KEY: $AUTH_API_KEY
       DASHBOARD_URL: $DASHBOARD_URL
       API_SESSION_SECRET: $API_SESSION_SECRET
       REACT_APP_API_ROOT: $REACT_APP_API_ROOT
