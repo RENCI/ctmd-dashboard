@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles'
 import axios from 'axios'
 import { scaleLinear } from 'd3-scale'
 import api from '../../Api'
+import { convertEnrollmentData } from '../../utils/sites'
 import { NavLink } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent, Input, InputLabel, Slider, Box } from '@material-ui/core'
@@ -117,15 +118,7 @@ export const StudyReportPage = (props) => {
 
             setStudyProfile(profileResponse.data)
 
-            sitesResponse.data.forEach((site) => {
-              // Convert enrollment data to numbers
-              site.patientsConsentedCount = +site.patientsConsentedCount
-              site.patientsEnrolledCount = +site.patientsEnrolledCount
-              site.patientsWithdrawnCount = +site.patientsWithdrawnCount
-              site.patientsExpectedCount = +site.patientsExpectedCount
-              site.queriesCount = +site.queriesCount
-              site.protocolDeviationsCount = +site.protocolDeviationsCount
-            })
+            sitesResponse.data.forEach(convertEnrollmentData)
 
             setStudySites(sitesResponse.data)
             setStudyEnrollmentData(enrollmentResponse.data)

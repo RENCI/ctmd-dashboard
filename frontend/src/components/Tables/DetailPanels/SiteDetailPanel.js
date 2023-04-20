@@ -2,33 +2,8 @@ import React from 'react'
 import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/core'
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
+import { dayCount, displayRatio, invalidDisplay } from '../../../utils/sites'
 import { formatDate } from '../../../utils/DateFormat'
-
-const invalidDisplay = 'N/A'
-
-export const dayCount = (startDate, endDate) => {
-        if (startDate && endDate) {
-            const num = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
-            return `${ num } day${ num === 1 ? '' : 's' }`
-        } else {
-            return invalidDisplay
-        }
-    }
-
-export const displayRatio = (a, b, precision = 2) => {
-        a = parseInt(a)
-        b = parseInt(b)
-        if ( !a || !b ) {
-            return invalidDisplay
-        }
-        if (a === 0) {
-            if (b === 0) return invalidDisplay
-            return `0% (${ a }/${ b })`
-        }
-        return b !== 0
-            ? `${ (100 * a/b).toFixed(precision) }% (${ a }/${ b })`
-            : `N/A`
-    }
 
 const displayRatioAsWholeNumberString = (a, b) => {
     return b === 0 ? invalidDisplay : `${ Math.round(a / b) } ≈ ${ a } / ${ b }`
