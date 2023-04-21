@@ -3,7 +3,6 @@ import { Grid, List, ListItemIcon, ListItem, ListItemText } from '@material-ui/c
 import { DetailPanel } from './DetailPanel'
 import { StarBullet } from '../../Bullets' 
 import { dayCount, displayRatio, invalidDisplay } from '../../../utils/sites'
-import { formatDate } from '../../../utils/DateFormat'
 
 const displayRatioAsWholeNumberString = (a, b) => {
     return b === 0 ? invalidDisplay : `${ Math.round(a / b) } ≈ ${ a } / ${ b }`
