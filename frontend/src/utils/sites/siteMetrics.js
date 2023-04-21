@@ -1,10 +1,20 @@
 export const invalidDisplay = 'N/A'
 
+const ratio = (a, b) => {
+  return b === 0 ? null : a / b
+}
+
 const ratioAsWholeNumberString = (a, b) => {
   return b === 0 ? invalidDisplay : Math.round(a / b)
 }
 
-export const displayRatio = (a, b, precision = 2) => {
+const percent = (a, b) => {
+  a = parseInt(a)
+  b = parseInt(b)
+  return !a || !b ? null : b === 0 ? null : a / b * 100;
+}
+
+export const percentDisplay = (a, b, precision = 2) => {
   a = parseInt(a)
   b = parseInt(b)
   if ( !a || !b ) {
@@ -19,9 +29,13 @@ export const displayRatio = (a, b, precision = 2) => {
     : `N/A`
 }
 
-export const dayCount = (startDate, endDate) => {
+const dayCount = (startDate, endDate) => {
+  return Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+}
+
+export const dayCountDisplay = (startDate, endDate) => {
   if (startDate && endDate) {
-    const num = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+    const num = dayCount(startDate, endDate)
     return `${ num } day${ num === 1 ? '' : 's' }`
   } else {
       return invalidDisplay
@@ -40,14 +54,31 @@ export const convertEnrollmentData = site => {
 
 export const computeMetrics = site => {
   site.protocolToFpfv = dayCount(site.dateRegPacketSent, site.fpfv)
+  site.protocolToFpfvDisplay = dayCountDisplay(site.dateRegPacketSent, site.fpfv)
   site.contractExecutionTime = dayCount(site.dateContractSent, site.dateContractExecution)
+  site.contractExecutionTimeDisplay = dayCountDisplay(site.dateContractSent, site.dateContractExecution)
   site.sirbApprovalTime = dayCount(site.dateIrbSubmission, site.dateIrbApproval)
+  site.sirbApprovalTimeDisplay = dayCountDisplay(site.dateIrbSubmission, site.dateIrbApproval)
   site.siteOpenToFpfv = dayCount(site.dateSiteActivated, site.fpfv)
+  site.siteOpenToFpfvDisplay = dayCountDisplay(site.dateSiteActivated, site.fpfv)
   site.protocolToLpfv = dayCount(site.dateSiteActivated, site.lpfv)
-  site.percentConsentedPtsRandomized = displayRatio(site.patientsEnrolledCount, site.patientsConsentedCount)
-  site.actualToExpectedRandomizedPtRatio = displayRatio(site.patientsEnrolledCount, site.patientsExpectedCount)
-  site.ratioRandomizedPtsDropout = displayRatio(site.patientsWithdrawnCount, site.patientsEnrolledCount)
-  site.majorProtocolDeviationsPerRandomizedPt = displayRatio( site.protocolDeviationsCount, site.patientsEnrolledCount)
-  site.queriesPerConsentedPatient = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount )
+  site.protocolToLpfvDisplay = dayCountDisplay(site.dateSiteActivated, site.lpfv)
+  site.percentConsentedPtsRandomized = ratio(site.patientsEnrolledCount, site.patientsConsentedCount)
+  site.percentConsentedPtsRandomizedDisplay = percentDisplay(site.patientsEnrolledCount, site.patientsConsentedCount)
+  site.actualToExpectedRandomizedPtRatio = percent(site.patientsEnrolledCount, site.patientsExpectedCount)
+  site.actualToExpectedRandomizedPtRatioDisplay = percentDisplay(site.patientsEnrolledCount, site.patientsExpectedCount)
+  site.ratioRandomizedPtsDropout = percent(site.patientsWithdrawnCount, site.patientsEnrolledCount)
+  site.ratioRandomizedPtsDropoutDisplay = percentDisplay(site.patientsWithdrawnCount, site.patientsEnrolledCount)
+  site.majorProtocolDeviationsPerRandomizedPt = percent( site.protocolDeviationsCount, site.patientsEnrolledCount)
+  site.majorProtocolDeviationsPerRandomizedPtDisplay = percentDisplay(site.protocolDeviationsCount, site.patientsEnrolledCount)
+  site.queriesPerConsentedPatient = ratio(site.queriesCount, site.patientsConsentedCount)
+  site.queriesPerConsentedPatientDisplay = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount)
+
+  // Enrollment
+  const enrolled = site.patientsEnrolledCount
+  const expected = site.patientsExpectedCount
+  const percentEnrolled = expected === 0 ? 0 : Math.round(enrolled / expected * 100)                
+  site.enrollment = `${ enrolled } / ${ expected }: ${ percentEnrolled }%`
+  site.percentEnrolled = percentEnrolled;
 }
 

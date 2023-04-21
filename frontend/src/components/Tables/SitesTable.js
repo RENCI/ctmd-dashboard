@@ -23,13 +23,6 @@ export const SitesTable = props => {
 
                 computeMetrics(site)                
                 site.shortDescription = site.protocol.shortDescription
-
-                // Enrollment
-                const enrolled = site.patientsEnrolledCount
-                const expected = site.patientsExpectedCount
-                const percentEnrolled = expected === 0 ? 0 : Math.round(enrolled / expected * 100)                
-                site.enrollment = `${ enrolled } / ${ expected }: ${ percentEnrolled }%`
-                site.percentEnrolled = percentEnrolled;
             }
         }
     }, [sites, store.proposals])
@@ -87,17 +80,17 @@ export const SitesTable = props => {
                     { title: 'Patients Expected', field: 'patientsExpectedCount', hidden: true, },
                     { title: 'Protocol Deviations', field: 'protocolDeviationsCount', hidden: true, },
                     { title: 'Lost to Follow Up', field: 'lostToFollowUp', hidden: true, },
-                    { title: 'Protocol to FPFV', field: 'protocolToFpfv', hidden: true, },
-                    { title: 'Contract Execution Time', field: 'contractExecutionTime', hidden: true, },
-                    { title: 'sIRB Approval Time', field: 'sirbApprovalTime', hidden: true, },
-                    { title: 'Site Open to FPFV', field: 'siteOpenToFpfv', hidden: true, },
-                    { title: 'Site Open to LPFV', field: 'protocolToLpfv', hidden: true, },
-                    { title: 'Percent of consented patients randomized', field: 'percentConsentedPtsRandomized', hidden: true, },
-                    { title: 'Actual to expected randomized patient ratio', field: 'actualToExpectedRandomizedPtRatio', hidden: true, },
-                    { title: 'Ratio of randomized patients that dropout of the study', field: 'ratioRandomizedPtsDropout', hidden: true, },
-                    { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPt', hidden: true, },
+                    { title: 'Protocol to FPFV', field: 'protocolToFpfvDisplay', hidden: true, },
+                    { title: 'Contract Execution Time', field: 'contractExecutionTimeDisplay', hidden: true, },
+                    { title: 'sIRB Approval Time', field: 'sirbApprovalTimeDisplay', hidden: true, },
+                    { title: 'Site Open to FPFV', field: 'siteOpenToFpfvDisplay', hidden: true, },
+                    { title: 'Site Open to LPFV', field: 'protocolToLpfvDisplay', hidden: true, },
+                    { title: 'Percent of consented patients randomized', field: 'percentConsentedPtsRandomizedDisplay', hidden: true, },
+                    { title: 'Actual to expected randomized patient ratio', field: 'actualToExpectedRandomizedPtRatioDisplay', hidden: true, },
+                    { title: 'Ratio of randomized patients that dropout of the study', field: 'ratioRandomizedPtsDropoutDisplay', hidden: true, },
+                    { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPtDisplay', hidden: true, },
                     { title: 'Number of Queries', field: 'queriesCount', hidden: true, },
-                    { title: 'Queries per patient', field: 'queriesPerConsentedPatient', hidden: true, },
+                    { title: 'Queries per patient', field: 'queriesPerConsentedPatientDisplay', hidden: true, },
                 ]
             }
             data={ sites }
