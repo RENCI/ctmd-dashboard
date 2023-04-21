@@ -56,7 +56,6 @@ export const SiteMetricsDownload = () => {
       try {
         const sites = [];
         for (const proposal of proposals) {
-          console.log(proposal);
           const response = await axios.get(api.studySitesByProposalId(proposal.proposalID))
   
           const proposalSites = response.data;
@@ -80,8 +79,6 @@ export const SiteMetricsDownload = () => {
 
     getSites();
   }, [proposals])
-
-  console.log(sites);
 
   return (
     <Tooltip title='Download site metrics' aria-label='Download site metrics'>
