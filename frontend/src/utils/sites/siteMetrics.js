@@ -1,17 +1,21 @@
 export const invalidDisplay = 'N/A'
 
-const ratio = (a, b) => {
-  return b === 0 ? null : a / b
+const ratio = (a, b, precision = null) => {
+  const v = b === 0 ? null : a / b
+  return v && precision !== null ? v.toFixed(precision) : v
 }
 
 const ratioAsWholeNumberString = (a, b) => {
   return b === 0 ? invalidDisplay : Math.round(a / b)
 }
 
-const percent = (a, b) => {
+const percent = (a, b, precision = null) => {
   a = parseInt(a)
   b = parseInt(b)
-  return !a || !b ? null : b === 0 ? null : a / b * 100;
+  
+  const v = !a || !b ? null : b === 0 ? null : a / b * 100
+
+  return v && precision !== null ? v.toFixed(precision) : v
 }
 
 export const percentDisplay = (a, b, precision = 2) => {
@@ -63,15 +67,15 @@ export const computeMetrics = site => {
   site.siteOpenToFpfvDisplay = dayCountDisplay(site.dateSiteActivated, site.fpfv)
   site.protocolToLpfv = dayCount(site.dateSiteActivated, site.lpfv)
   site.protocolToLpfvDisplay = dayCountDisplay(site.dateSiteActivated, site.lpfv)
-  site.percentConsentedPtsRandomized = ratio(site.patientsEnrolledCount, site.patientsConsentedCount)
+  site.percentConsentedPtsRandomized = percent(site.patientsEnrolledCount, site.patientsConsentedCount, 0)
   site.percentConsentedPtsRandomizedDisplay = percentDisplay(site.patientsEnrolledCount, site.patientsConsentedCount)
-  site.actualToExpectedRandomizedPtRatio = percent(site.patientsEnrolledCount, site.patientsExpectedCount)
+  site.actualToExpectedRandomizedPtRatio = percent(site.patientsEnrolledCount, site.patientsExpectedCount, 0)
   site.actualToExpectedRandomizedPtRatioDisplay = percentDisplay(site.patientsEnrolledCount, site.patientsExpectedCount)
-  site.ratioRandomizedPtsDropout = percent(site.patientsWithdrawnCount, site.patientsEnrolledCount)
+  site.ratioRandomizedPtsDropout = percent(site.patientsWithdrawnCount, site.patientsEnrolledCount, 0)
   site.ratioRandomizedPtsDropoutDisplay = percentDisplay(site.patientsWithdrawnCount, site.patientsEnrolledCount)
-  site.majorProtocolDeviationsPerRandomizedPt = percent( site.protocolDeviationsCount, site.patientsEnrolledCount)
+  site.majorProtocolDeviationsPerRandomizedPt = percent( site.protocolDeviationsCount, site.patientsEnrolledCount, 0)
   site.majorProtocolDeviationsPerRandomizedPtDisplay = percentDisplay(site.protocolDeviationsCount, site.patientsEnrolledCount)
-  site.queriesPerConsentedPatient = ratio(site.queriesCount, site.patientsConsentedCount)
+  site.queriesPerConsentedPatient = ratio(site.queriesCount, site.patientsConsentedCount, 2)
   site.queriesPerConsentedPatientDisplay = ratioAsWholeNumberString(site.queriesCount, site.patientsConsentedCount)
 
   // Enrollment

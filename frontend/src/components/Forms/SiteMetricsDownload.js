@@ -13,8 +13,9 @@ import { convertEnrollmentData, computeMetrics } from '../../utils/sites'
 
 const columns = [
   { label: 'Proposal ID',                                                 key: 'ProposalID' },
-  { label: 'Protocol Name',                                               key: 'ProposalTitle' },
+  { label: 'Proposal Name',                                               key: 'ProposalTitle' },
   { label: 'Protocol (Short Description)',                                key: 'ProposalDescription' },
+  { label: 'CTSA Name',                                                   key: 'ctsaName' },
   { label: 'Site ID',                                                     key: 'siteId' },
   { label: 'CTSA ID',                                                     key: 'ctsaId' },
   { label: 'Site name',                                                   key: 'siteName' },
@@ -26,6 +27,7 @@ const columns = [
   { label: 'IRB Approval',                                                key: 'dateIrbApproval' },
   { label: 'ContractExecution',                                           key: 'dateContractExecution' },
   { label: 'Site Activation',                                             key: 'dateSiteActivated' },
+  { label: 'FPFV',                                                        key: 'fpfv' },
   { label: 'LPFV',                                                        key: 'lpfv' },
   { label: 'Enrollment',                                                  key: 'enrollment'},
   { label: 'Patients Consented',                                          key: 'patientsConsentedCount'},
@@ -42,7 +44,7 @@ const columns = [
   { label: 'Percent of consented patients randomized',                    key: 'percentConsentedPtsRandomized' },
   { label: 'Actual to expected randomized patient ratio',                 key: 'actualToExpectedRandomizedPtRatio' },
   { label: 'Ratio of randomized patients that dropped out of the study',  key: 'ratioRandomizedPtsDropout' },
-  { label: 'Major protocol deviations per randomized patients',           key: 'majorProtocolDeviationsPerRandomizedPt' },
+  { label: 'Major protocol deviations per randomized patient',            key: 'majorProtocolDeviationsPerRandomizedPt' },
   { label: 'Number of Queries',                                           key: 'queriesCount' },
   { label: 'Queries per patient',                                         key: 'queriesPerConsentedPatient' },
 ];
@@ -54,20 +56,25 @@ export const SiteMetricsDownload = () => {
   useEffect(() => {
     const getSites = async () => {
       try {
-        const sites = [];
+        const sites = []
         for (const proposal of proposals) {
           const response = await axios.get(api.studySitesByProposalId(proposal.proposalID))
   
-          const proposalSites = response.data;
+          const proposalSites = response.data
+
+          //console.log(proposal);
   
           proposalSites.forEach(site => {
             convertEnrollmentData(site)
             computeMetrics(site)
+
+            console.log(site);
+
             site.ProposalTitle = proposal.shortTitle
             site.ProposalDescription = proposal.shortDescription
           });
   
-          sites.push(...proposalSites);
+          sites.push(...proposalSites)
         }
   
         setSites(sites)
