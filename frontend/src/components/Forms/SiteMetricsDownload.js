@@ -61,14 +61,10 @@ export const SiteMetricsDownload = () => {
           const response = await axios.get(api.studySitesByProposalId(proposal.proposalID))
   
           const proposalSites = response.data
-
-          //console.log(proposal);
   
           proposalSites.forEach(site => {
             convertEnrollmentData(site)
             computeMetrics(site)
-
-            console.log(site);
 
             site.ProposalTitle = proposal.shortTitle
             site.ProposalDescription = proposal.shortDescription
