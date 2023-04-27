@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
-  Button,Tooltip
+  Button, Checkbox, Divider, Fade, FormControlLabel, FormGroup, Paper, Popper, Tooltip, Typography,
 } from '@material-ui/core'
 import api from '../../Api'
 import { DownloadIcon } from '../Icons/Download'
+import { Warning as WarningIcon } from '@material-ui/icons';
 import { useStore } from '../../contexts'
 import { CSVLink } from 'react-csv'
 import { convertEnrollmentData, computeMetrics } from '../../utils/sites'
@@ -52,6 +53,8 @@ const columns = [
 export const SiteMetricsDownload = () => {
   const [{ proposals }] = useStore()
   const [sites, setSites] = useState([])
+  const [popperAnchor, setPopperAnchor] = useState(null)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     const getSites = async () => {
@@ -72,7 +75,7 @@ export const SiteMetricsDownload = () => {
   
           sites.push(...proposalSites)
         }
-  
+
         setSites(sites)
       }
       catch (error) {
@@ -83,16 +86,60 @@ export const SiteMetricsDownload = () => {
     getSites();
   }, [proposals])
 
+  const onClickOpen = event => {
+    setPopperAnchor(event.currentTarget)
+    setOpen(prevOpen => !prevOpen)
+  }
+
   return (
-    <Tooltip title='Download site metrics' aria-label='Download site metrics'>
-      <Button
-        component={ CSVLink }
-        headers={ columns }
-        data={ sites }
-        filename='site-metrics'
-        variant='outlined'
-        startIcon={ <DownloadIcon /> }
-      >Site Metrics</Button>
-    </Tooltip>
+    <>
+      <Tooltip title='Download site metrics' aria-label='Download site metrics'>
+        <Button
+          variant='outlined'
+          startIcon={ <DownloadIcon /> }
+          onClick={ onClickOpen }
+        >Site Metrics</Button>
+      </Tooltip>
+      <Popper
+        open={ open }
+        anchorEl={ popperAnchor }
+        placement='bottom'
+        transition
+        style={{ zIndex: 99 }}
+      >
+        {
+          ({ TransitionProps }) => (
+            <Fade { ...TransitionProps } timeout={ 350 }>
+              <Paper style={{ width: '200px',
+                display: 'flex',
+                flexDirection: 'column', }}>
+                <Typography
+                  variant='h6'
+                  style={{ padding: '0.5rem 1rem' }}
+                >
+                  Site Metrics Download
+                </Typography>
+                
+                <Divider />
+                
+                <div style={{ padding: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                  <div><WarningIcon /></div>
+                  <div>Wait for file to finish downloading before opening, or data may be missing.</div>
+                </div>                
+                
+                <Divider />
+                
+                <Button
+                  component={ CSVLink }
+                  headers={ columns }
+                  data={ sites }
+                  filename='site-metrics'
+                >Download</Button>
+              </Paper>
+            </Fade>
+          )
+        }
+      </Popper>
+    </>
   )
 }
