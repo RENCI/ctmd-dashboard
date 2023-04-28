@@ -124,7 +124,7 @@ export const SiteMetricsDownload = () => {
                 
                 <div style={{ padding: '0.5rem', display: 'flex', gap: '0.5rem' }}>
                   <div><WarningIcon /></div>
-                  <div>Wait for file to finish downloading before opening, or data may be missing.</div>
+                  <div>After you click the DOWNLOAD button wait for the file to finish downloading before opening, or data may be missing.</div>
                 </div>                
                 
                 <Divider />
