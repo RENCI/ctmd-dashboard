@@ -12,8 +12,7 @@ export const SiteDetailPanel = props => {
     const {
         siteName, dateRegPacketSent, dateContractSent, dateIrbSubmission, dateIrbApproval,
         dateContractExecution, dateSiteActivated, lpfv, fpfv, patientsConsentedCount, patientsEnrolledCount,
-        patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount, dataElement,
-        queriesPerConsentedPatient,
+        patientsWithdrawnCount, patientsExpectedCount, queriesCount, protocolDeviationsCount,
     } = props
     
     return (

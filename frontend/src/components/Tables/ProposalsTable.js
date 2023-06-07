@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import MaterialTable from 'material-table'
 import { SettingsContext, StoreContext } from '../../contexts'
 import { ProposalDetailPanel } from './DetailPanels'
-import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
 import { CsvBuilder } from 'filefy'
 

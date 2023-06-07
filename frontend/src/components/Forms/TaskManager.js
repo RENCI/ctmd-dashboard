@@ -1,8 +1,7 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { FlashMessageContext } from '../../contexts/FlashMessageContext'
 import { makeStyles } from '@material-ui/styles'
-import { Grid, Button, Divider } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { Subsubheading, Paragraph } from '../Typography'
 import api from '../../Api'
 
@@ -100,7 +99,6 @@ const TaskList = ({ tasks }) => {
 }
 
 export const TaskManager = (props) => {
-  const addFlashMessage = useContext(FlashMessageContext)
   const [queuedTasks, setQueuedTasks] = useState([])
   const [startedTasks, setStartedTasks] = useState([])
   const [finishedTasks, setFinishedTasks] = useState([])

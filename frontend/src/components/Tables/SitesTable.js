@@ -17,8 +17,9 @@ export const SitesTable = props => {
                 if (protocols.hasOwnProperty(site.proposalId)) {
                     site.protocol = protocols[site.proposalId]
                 } else {
-                     const shortTitle  = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
-                     site.protocol = shortTitle
+                    // eslint-disable-next-line eqeqeq
+                    const shortTitle  = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
+                    site.protocol = shortTitle
                 }
 
                 computeMetrics(site)                
@@ -95,7 +96,6 @@ export const SitesTable = props => {
             }
             data={ sites }
             options={{
-                paging: props.paging,
                 columnsButton: true,
                 exportButton: true,
                 filtering: true,

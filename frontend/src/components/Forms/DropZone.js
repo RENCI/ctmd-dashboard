@@ -56,7 +56,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
   }
 
   const handleClickUpload = (event) => {
-    if (file && file != undefined) {
+    if (file && file !== undefined) {
       console.log('uploading', file.name)
       const formdata = new FormData()
       formdata.append('data', file)

@@ -3,15 +3,15 @@ import { Grid, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/c
 import { StarBullet as StarIcon } from '../../components/Bullets' 
 
 export const SitesReport = ({ sites }) => {
-    const [fpfv, setFpfv] = useState()
-    const [contractCycleTime, setContractCycleTime] = useState()
-    const [irbCycleTime, setIrbCycleTime] = useState()
-    const [lpfv, setLpfv] = useState()
-    const [randomizedPatientRatio, setRandomizedPatientRatio] = useState()
-    const [expectedPatientRatio, setExpectedPatientRatio] = useState()
-    const [withdrawnPatientRatio, setWithdrawnPatientRatio] = useState()
-    const [protocolDeviations, setProtocolDeviations] = useState()
-    const [queries, setQueries] = useState()
+    const [fpfv, ] = useState()
+    const [contractCycleTime, ] = useState()
+    const [irbCycleTime, ] = useState()
+    const [lpfv, ] = useState()
+    const [randomizedPatientRatio, ] = useState()
+    const [expectedPatientRatio, ] = useState()
+    const [withdrawnPatientRatio, ] = useState()
+    const [protocolDeviations, ] = useState()
+    const [queries, ] = useState()
 
     return (
         <Grid container>

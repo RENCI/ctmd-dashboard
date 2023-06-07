@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
-  Button, Checkbox, Divider, Fade, FormControlLabel, FormGroup, Paper, Popper, Tooltip, Typography,
+  Button, Divider, Fade, Paper, Popper, Tooltip, Typography,
 } from '@material-ui/core'
 import api from '../../Api'
 import { DownloadIcon } from '../Icons/Download'

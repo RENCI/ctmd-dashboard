@@ -1,8 +1,8 @@
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { AuthContext, SettingsContext } from '../contexts'
 import { Title, Paragraph } from '../components/Typography'
-import { Card, CardHeader, CardContent, CardActions, Button } from '@material-ui/core'
+import { Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import {
   Grid,
   FormControl,

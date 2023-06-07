@@ -1,10 +1,12 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
-import { Box, Card, CardHeader, CardContent, Grid, List, ListItem, ListItemText } from '@material-ui/core'
+import { Card, CardHeader, CardContent, Grid, List, ListItem, ListItemText } from '@material-ui/core'
 import { Subsubheading, Caption, Paragraph } from '../../components/Typography'
 import { EnrollmentPieChart, SitesActivationPieChart } from '../../components/Charts'
 import { formatDate } from '../../utils'
 import { isSiteActive } from '../../utils/sites'
 
+// this extension is ok
+// eslint-disable-next-line no-extend-native
 Array.prototype.chunk = function (size) {
   var chunks = []
   if (size > 0) {
@@ -44,7 +46,6 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
       .map(site => site.dateSiteActivated)
       .filter(date => !!date)
       .sort((d1, d2) => d1 < d2 ? -1 : 1)    
-    let percentage = 0.25
     dates.forEach(date => {
       count += 1
       if (count / sitesCount >= 0.25 + 0.25 * thresholdDates.length) {
@@ -62,7 +63,6 @@ export const Milestones = ({ sites, sitesCount, enrollmentGoal, enrollmentData }
   }
 
   const setPatientEnrollmentThresholds = () => {
-    let count = 1
     const enrollment = [...enrollmentData]
       .filter(d => !!d.actualEnrollment)
       .sort((a, b) => a.date < b.date ? -1 : 1)

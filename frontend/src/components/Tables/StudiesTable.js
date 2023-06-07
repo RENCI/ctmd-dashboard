@@ -11,6 +11,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
     if (title) title += ` (${ studies.length } Studies)`
     
     const getSitesForStudy = proposalID => {
+        // eslint-disable-next-line eqeqeq
         return store.sites.filter(site => site.proposalID == proposalID)
     }
 
@@ -26,7 +27,6 @@ export const StudiesTable = ({ title, studies, paging }) => {
     return (
         <MaterialTable
             title={ title || null }
-            components={{ }}
             columns={ [
                 {
                     title: 'ID', field: 'proposalID',
@@ -87,7 +87,6 @@ export const StudiesTable = ({ title, studies, paging }) => {
             ] }
             data={ studies }
             options={{
-                paging: paging,
                 columnsButton: true,
                 exportButton: true,
                 filtering: true,

@@ -395,7 +395,6 @@ export default function() {
     }
 
     function drawLinks() {
-      const maxLink = d3.max(network.links, d => d.value);
 
       const widthScale = d3.scaleLinear()
           .domain([0.5, radiusScale.domain()[1]])

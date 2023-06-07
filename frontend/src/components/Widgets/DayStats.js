@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
-import { Grid, CardHeader, Typography } from '@material-ui/core'
+import { Grid, Typography } from '@material-ui/core'
 import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
@@ -27,7 +27,7 @@ export const DayStats = props => {
         submissionToContact: 0,
         submissionToKickOff: 0
     })
-    const [medianDays, setMedianDays] = useState({
+    const [, setMedianDays] = useState({
         submissionToPatApproval: 0,
         approvalToGrantSubmission: 0,
         submissionToGrantSubmission: 0,

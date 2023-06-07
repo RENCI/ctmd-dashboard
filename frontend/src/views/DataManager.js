@@ -1,11 +1,7 @@
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { Title } from '../components/Typography'
-import {
-    Grid, FormControl, FormGroup, FormLabel, FormControlLabel, Checkbox, FormHelperText, Switch,
-    Select, OutlinedInput, MenuItem, IconButton
-} from '@material-ui/core'
+import { Grid, IconButton } from '@material-ui/core'
 import { DangerZone, TaskManager } from '../components/Forms'
-import { SettingsContext } from '../contexts'
 import { CollapsibleCard } from '../components/CollapsibleCard'
 import { Refresh as RefreshIcon } from '@material-ui/icons'
 

@@ -79,7 +79,8 @@ const getDisplayName = status => {
     const displayName = index > -1 ? statusMap[index].displayName : status
     return displayName
 }
-
+// this extension is ok
+// eslint-disable-next-line no-extend-native
 Array.prototype.countBy = function(prop) {
     return this.reduce(function(groups, item) {
         const val = item[prop]

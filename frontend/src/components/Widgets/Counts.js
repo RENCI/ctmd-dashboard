@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { makeStyles, useTheme } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/styles'
 import { Grid } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../../components/Progress/Progress'

@@ -1,8 +1,6 @@
 import React, { useContext } from 'react'
-import api from '../../Api'
 import PropTypes from 'prop-types'
 import { IconButton, Tooltip } from '@material-ui/core'
-import { DropZone } from './DropZone'
 import { CSVIcon } from '../Icons/Csv'
 import { AuthContext } from '../../contexts'
 

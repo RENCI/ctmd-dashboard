@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useContext } from 'react'
 import classnames from 'classnames'
 import { makeStyles } from '@material-ui/styles'
 import { NavLink } from 'react-router-dom'
@@ -15,8 +15,6 @@ import { CTSAIcon } from '../../Icons/Ctsa'
 import { TINLogoIcon } from '../../Icons/TinLogo'
 import { CTMDIcon } from '../../Icons/Ctmd'
 import { HEALIcon } from '../../Icons/Heal'
-import axios from 'axios'
-import api from '../../../Api'
 import { AuthContext } from '../../../contexts'
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
   menuItem: {
     // ...theme.mixins.debug,
-    padding: 0,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -135,8 +132,8 @@ export const Menu = ({ expanded, clickHandler }) => {
                 <MenuItem
                   component={'a'}
                   href={item.path}
-                  target={item.text == 'HEAL Dashboard' ? '_self' : '_blank'}
-                  rel={item.text == 'HEAL Dashboard' ? '' : 'noopener noreferrer'}
+                  target={item.text === 'HEAL Dashboard' ? '_self' : '_blank'}
+                  rel={item.text === 'HEAL Dashboard' ? '' : 'noopener noreferrer'}
                   className={classes.menuItem}
                   onClick={clickHandler}
                 >

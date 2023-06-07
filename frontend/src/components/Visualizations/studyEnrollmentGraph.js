@@ -496,49 +496,49 @@ export default function() {
       }
     }
 
-    function drawBackground() {
-      // Bind data for rectangles
-      const rects = svg.select(".background").selectAll(".backgroundRect")
-          .data(d3.pairs(enrolled.map(d => d.date)));
+    // function drawBackground() {
+    //   // Bind data for rectangles
+    //   const rects = svg.select(".background").selectAll(".backgroundRect")
+    //       .data(d3.pairs(enrolled.map(d => d.date)));
 
-      // Enter + update
-      rects.enter().append("rect")
-          .attr("class", "backgroundRect")
-          .style("fill", "none")
-          .style("pointer-events", "all")
-          .on("mouseover", function(d, i) {
-            tip.show(i, this);
-            d3.select(this).style("fill", "#fcfcfc");
-          })
-          .on("mouseout",  function(d, i) {
-            tip.hide();
-            d3.select(this).style("fill", "none");
-          })
-        .merge(rects)
-          .attr("x", d => xScale(d[0]))
-          .attr("width", d => xScale(d[1]) - xScale(d[0]))
-          .attr("height", innerHeight());
+    //   // Enter + update
+    //   rects.enter().append("rect")
+    //       .attr("class", "backgroundRect")
+    //       .style("fill", "none")
+    //       .style("pointer-events", "all")
+    //       .on("mouseover", function(d, i) {
+    //         tip.show(i, this);
+    //         d3.select(this).style("fill", "#fcfcfc");
+    //       })
+    //       .on("mouseout",  function(d, i) {
+    //         tip.hide();
+    //         d3.select(this).style("fill", "none");
+    //       })
+    //     .merge(rects)
+    //       .attr("x", d => xScale(d[0]))
+    //       .attr("width", d => xScale(d[1]) - xScale(d[0]))
+    //       .attr("height", innerHeight());
 
-      // Exit
-      rects.exit().remove();
+    //   // Exit
+    //   rects.exit().remove();
 
-      // Bind data for lines
-      const lines = svg.select(".background").selectAll(".backgroundLine")
-          .data(enrolled.map(d => d.date));
+    //   // Bind data for lines
+    //   const lines = svg.select(".background").selectAll(".backgroundLine")
+    //       .data(enrolled.map(d => d.date));
 
-      // Enter + update
-      lines.enter().append("line")
-          .attr("class", "backgroundLine")
-          .style("stroke", "#eee")
-          .style("pointer-events", "none")
-        .merge(lines)
-          .attr("x1", d => xScale(d))
-          .attr("y1", innerHeight())
-          .attr("x2", d => xScale(d));
+    //   // Enter + update
+    //   lines.enter().append("line")
+    //       .attr("class", "backgroundLine")
+    //       .style("stroke", "#eee")
+    //       .style("pointer-events", "none")
+    //     .merge(lines)
+    //       .attr("x1", d => xScale(d))
+    //       .attr("y1", innerHeight())
+    //       .attr("x2", d => xScale(d));
 
-      // Exit
-      lines.exit().remove();
-    }
+    //   // Exit
+    //   lines.exit().remove();
+    // }
 
     function drawAxes() {
       // Different formats for printing tick labels     

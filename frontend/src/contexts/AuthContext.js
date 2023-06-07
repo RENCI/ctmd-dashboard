@@ -5,24 +5,13 @@ import api from '../Api'
 
 export const AuthContext = React.createContext({})
 
-const emptyUser = {
-  username: null,
-  organization: null,
-  access_level: null,
-  first_name: null,
-  last_name: null,
-  email: null,
-}
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState()
-  const [localStorageUser, setLocalStorageUser] = useLocalStorage('ctmd-user-v2')
+  const [, setLocalStorageUser] = useLocalStorage('ctmd-user-v2')
   const [authenticated, setAuthenticated] = useState(false)
   const [isPLAdmin, setIsPLAdmin] = useState(false)
-  const validReferrer = document.referrer.includes('redcap.vanderbilt.edu') || process.env.NODE_ENV === 'developments'
 
   const logout = async () => {
-    const response = await axios.post(api.logout, { withCredentials: true })
     localStorage.removeItem('ctmd-user-v2')
     window.location = 'https://redcap.vanderbilt.edu/plugins/TIN'
     //  const response = await axios.post(api.logout, { withCredentials: true })
@@ -49,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(async () => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
     const data = response.data
-    if (response.status == 200) {
+    if (response.status === 200) {
       const isPLAdmin = typeof data.isHealUser === 'boolean' ? data.isHealUser : false
       setUser(data)
       setLocalStorageUser(data)

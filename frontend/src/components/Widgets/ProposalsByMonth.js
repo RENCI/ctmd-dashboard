@@ -4,7 +4,12 @@ import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveLine } from '@nivo/line'
 import { Button, Tooltip } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon, BarChart as BarGraphIcon, ShowChart as LineGraphIcon } from '@material-ui/icons'
+import {
+    KeyboardArrowLeft as LeftIcon,
+    KeyboardArrowRight as RightIcon,
+    BarChart as BarGraphIcon,
+    ShowChart as LineGraphIcon,
+} from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
@@ -16,9 +21,6 @@ const thisYear = (new Date()).getFullYear()
 
 const BAR = 'bar'
 const LINE = 'line'
-const commonChartAttributes = {
-
-}
 
 export const ProposalsByMonthChart = props => {
     const [store, ] = useContext(StoreContext)

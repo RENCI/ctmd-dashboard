@@ -88,6 +88,7 @@ export const StudyReportPage = (props) => {
   useEffect(() => {
     if (store.proposals) {
       try {
+        // eslint-disable-next-line eqeqeq
         const studyFromRoute = store.proposals.find((proposal) => proposal.proposalID == proposalId)
         setStudy(studyFromRoute)
       } catch (error) {

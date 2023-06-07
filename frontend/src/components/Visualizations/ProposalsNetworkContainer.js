@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useState, useEffect, useReducer } from 'react';
+import React, { useContext, useState, useEffect, useReducer } from 'react';
 import { useTheme } from '@material-ui/styles'
 import * as d3 from 'd3';
 import Controls from './ProposalsNetworkControls';

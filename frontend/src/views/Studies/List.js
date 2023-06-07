@@ -1,11 +1,10 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { StoreContext } from '../../contexts/StoreContext'
 import api from '../../Api'
-import { Title, Subsubheading, Paragraph } from '../../components/Typography'
+import { Title } from '../../components/Typography'
 import { StudiesTable } from '../../components/Tables'
-import { Grid, List, ListItem, ListItemText } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { DropZone, DownloadButton as TemplateDownload, StudiesDownloadForm, SiteMetricsDownload } from '../../components/Forms'
-import { DataUploadHelper } from '../../components/Helper'
 
 export const StudiesListPage = (props) => {
   const [store] = useContext(StoreContext)
