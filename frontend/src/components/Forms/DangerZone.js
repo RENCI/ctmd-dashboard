@@ -44,7 +44,7 @@ export const DangerZone = (props) => {
   const handleBackup = (event) => {
     console.log('Initializing data backup...')
     axios
-      .get(api.dataPostBackup)
+      .post(api.dataPostBackup)
       .then((response) => {
         if (response.status === 200) {
           addFlashMessage({ type: 'success', text: 'Scheduling data backup!' })
