@@ -21,7 +21,7 @@ export const LoginPage = (props) => {
             <form
               onSubmit={ (e) => {
                 e.preventDefault()
-                window.location.href = `https://redcap.vanderbilt.edu/plugins/TIN/sso/send_login?target-url=${encodeURIComponent(redirectURL)}`
+                window.location.href = `https://redcap.vumc.org/plugins/TIN/sso/send_login?target-url=${encodeURIComponent(redirectURL)}`
               } }
               style={{ display: 'flex', justifyContent: 'center' }}
             >
