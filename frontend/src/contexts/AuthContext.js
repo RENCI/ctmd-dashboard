@@ -19,12 +19,12 @@ export const AuthProvider = ({ children }) => {
   const [localStorageUser, setLocalStorageUser] = useLocalStorage('ctmd-user-v2')
   const [authenticated, setAuthenticated] = useState(false)
   const [isPLAdmin, setIsPLAdmin] = useState(false)
-  const validReferrer = document.referrer.includes('redcap.vanderbilt.edu') || process.env.NODE_ENV === 'developments'
+  const validReferrer = document.referrer.includes('redcap.vumc.org') || process.env.NODE_ENV === 'developments'
 
   const logout = async () => {
     const response = await axios.post(api.logout, { withCredentials: true })
     localStorage.removeItem('ctmd-user-v2')
-    window.location = 'https://redcap.vanderbilt.edu/plugins/TIN'
+    window.location = 'https://redcap.vumc.org/plugins/TIN'
     //  const response = await axios.post(api.logout, { withCredentials: true })
   }
 
