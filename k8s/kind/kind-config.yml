@@ -1,0 +1,17 @@
+# https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings
+# This maps the kind port to the host port, for ease of use in testing.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 6379
+    hostPort: 6379
+  - containerPort: 5432
+    hostPort: 5432
+  - containerPort: 5000
+    hostPort: 5000
+  - containerPort: 3000
+    hostPort: 3000
+  - containerPort: 3030
+    hostPort: 3030

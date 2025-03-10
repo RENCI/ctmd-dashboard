@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.postgres.name }}
+  name: {{ .Values.postgres.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.postgres.name }}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.postgres.name }}
+    spec:
+      containers:
+      {{- if .Values.postgres.publicRepository }}
+      - image: postgres:latest
+      {{- else }}
+      - image: {{ .Values.images.repository }}/{{ .Values.postgres.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+      {{- end }}
+        name: {{ .Values.postgres.name }}
+        ports:
+        - containerPort: 5432
+        resources: {}
+status: {}
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.postgres.name }}
+  name: {{ .Values.postgres.name }}
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: {{ .Values.postgres.name }}
+status:
+  loadBalancer: {}

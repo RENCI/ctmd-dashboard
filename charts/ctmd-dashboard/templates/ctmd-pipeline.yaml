@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: {{ .Values.pipeline.name }}
+  name: {{ .Values.pipeline.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pipeline.name }}
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: {{ .Values.pipeline.name }}
+    spec:
+      containers:
+      - image: "{{ .Values.images.repository }}/{{ .Values.pipeline.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+        name: {{ .Values.pipeline.name }}
+        ports:
+        - containerPort: 5000
+        resources: {}
+status: {}

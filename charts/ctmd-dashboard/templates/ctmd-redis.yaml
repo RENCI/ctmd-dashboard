@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.redis.name }}
+  name: {{ .Values.redis.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.name }}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.redis.name }}
+    spec:
+      containers:
+      {{- if .Values.redis.publicRepository }}
+      - image: postgres:latest
+      {{- else }}
+      - image: {{ .Values.images.repository }}/{{ .Values.redis.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+      {{- end }}
+        name: {{ .Values.redis.name }}
+        ports:
+        - containerPort: 6379
+        resources: {}
+status: {}
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.redis.name }}
+  name: {{ .Values.redis.name }}
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: {{ .Values.redis.name }}
+status:
+  loadBalancer: {}
