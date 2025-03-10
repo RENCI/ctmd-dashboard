@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ctmd-db
+  name: ctmd-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ctmd-db
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ctmd-db
+    spec:
+      containers:
+      - image: containers.renci.org/ctmd/ctmd-db:latest
+        name: ctmd-db
+        ports:
+        - containerPort: 5432
+        resources: {}
+status: {}
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ctmd-db
+  name: ctmd-db
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: ctmd-db
+status:
+  loadBalancer: {}

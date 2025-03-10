@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ctmd-api
+  name: ctmd-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ctmd-api
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ctmd-api
+    spec:
+      containers:
+      - image: containers.renci.org/ctmd/ctmd-api:latest
+        name: ctmd-api
+        ports:
+        - containerPort: 3030
+        resources: {}
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ctmd-api
+  name: ctmd-api
+spec:
+  ports:
+  - port: 3030
+    protocol: TCP
+    targetPort: 3030
+  selector:
+    app: ctmd-api
+status:
+  loadBalancer: {}

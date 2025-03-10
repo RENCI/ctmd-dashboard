@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ctmd-pipeline
+  name: ctmd-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ctmd-pipeline
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ctmd-pipeline
+    spec:
+      containers:
+      - image: containers.renci.org/ctmd/ctmd-pipeline:latest
+        name: ctmd-pipeline
+        ports:
+        - containerPort: 5000
+        resources: {}
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ctmd-pipeline
+  name: ctmd-pipeline
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: ctmd-pipeline
+status:
+  loadBalancer: {}

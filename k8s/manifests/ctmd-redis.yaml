@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ctmd-redis
+  name: ctmd-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ctmd-redis
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ctmd-redis
+    spec:
+      containers:
+      - image: containers.renci.org/ctmd/ctmd-redis:latest
+        name: ctmd-redis
+        ports:
+        - containerPort: 6379
+        resources: {}
+status: {}
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ctmd-redis
+  name: ctmd-redis
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: ctmd-redis
+status:
+  loadBalancer: {}
