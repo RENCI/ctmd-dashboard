@@ -36,3 +36,14 @@ kind-up:
 # Delete the kind cluster
 kind-down:
 	kind delete cluster --name $(KIND_CLUSTER)
+
+
+
+
+
+### DOCKER COMPOSE STUFF ###
+compse-up:
+	USER=$(shell id -u):$(shell id -g) docker-compose up --build -V -d
+
+compose-down:
+	USER=$(shell id -u):$(shell id -g) docker-compose down 

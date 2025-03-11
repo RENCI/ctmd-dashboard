@@ -16,6 +16,7 @@ spec:
         app: ctmd-redis
     spec:
       containers:
+      ## Currently redis:5.0.5 
       - image: containers.renci.org/ctmd/ctmd-redis:latest
         name: ctmd-redis
         ports:
