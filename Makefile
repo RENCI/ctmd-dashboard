@@ -74,9 +74,19 @@ build-ui:
 
 build-all: build-api build-ui
 
+################################ LEGACY ################################
 ### DOCKER COMPOSE STUFF ###
 compse-up:
 	USER=$(shell id -u):$(shell id -g) docker-compose up --build -V -d
 
 compose-down:
 	USER=$(shell id -u):$(shell id -g) docker-compose down 
+
+### Update CTMD Issues
+CTMD_ISSUES_LINK = https://github.com/RENCI/ctmd/issues/
+#
+# Use with a file 
+# make update-issue-links file=yourfile.txt 
+update-issue-links:
+	@echo "Updating ctmd# links in the file..."
+	@sed -i '' "s/ ctmd#/ $(CTMD_ISSUES_LINK)/g" $(file)
