@@ -1,8 +1,23 @@
-BASE_IMAGE := ctmd-dashboard
-IMAGE_TAG := $(BASE_IMAGE):$(VERSION)
-KIND_CLUSTER := ctmd-dashboard
-KIND_IMAGE := kindest/node:v1.29.0@sha256:eaa1450915475849a73a9227b8f201df25e55e268e5d619312131292e324d570 
+# config.env file
+# You can change the default config with `make cnf="config_special.env" build`
+cnf ?= config.env
+include $(cnf)
 
+## Environment Variables
+API_BASE_IMAGE := ctmd-api
+API_VERSION := 2.16.0
+API_IMAGE_TAG := $(API_BASE_IMAGE):$(API_VERSION)
+
+UI_BASE_IMAGE := ctmd-frontend
+UI_VERSION := 2.16.0
+UI_IMAGE_TAG := $(UI_BASE_IMAGE):$(UI_VERSION)
+
+BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
+# BUILD_DATE := `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+## Kind Env
+KIND_CLUSTER := ctmd-dashboard
+
+## Computer Setup
 setup.mac:
 	brew update
 	brew list kubectl || brew install kubectl
@@ -27,7 +42,6 @@ setup.windows:
 # Similar to docker host:container port mappings with --expose or -p flags.
 kind-up:
 	kind create cluster \
-		--image $(KIND_IMAGE) \
 		--name $(KIND_CLUSTER) \
 		--config k8s/kind/kind-config.yml
 	kubectl create ns ctmd
@@ -37,9 +51,28 @@ kind-up:
 kind-down:
 	kind delete cluster --name $(KIND_CLUSTER)
 
+kind-load-api:
 
+kind-load-frontend:
 
+kind-load:
 
+### Docker 
+build-api:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/api/api.Dockerfile \
+	./services/api
+
+build-ui:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/frontend/ui.Dockerfile \
+	./services/frontend/
+
+build-all: build-api build-ui
 
 ### DOCKER COMPOSE STUFF ###
 compse-up:

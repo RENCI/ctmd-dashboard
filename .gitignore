@@ -6,7 +6,7 @@ db/data
 #api
 node_modules
 duketic.sql
-api/temp/*
+app/api/temp/*
 heal-users.txt
 
 # frontend
