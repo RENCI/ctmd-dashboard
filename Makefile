@@ -1,4 +1,5 @@
-# config.env file
+# ==============================================================================
+## Environment File
 # You can change the default config with `make cnf="config_special.env" build`
 cnf ?= config.env
 include $(cnf)
@@ -16,7 +17,7 @@ BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 # BUILD_DATE := `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 ## Kind Env
 KIND_CLUSTER := ctmd-dashboard
-
+# ==============================================================================
 ## Computer Setup
 setup.mac:
 	brew update
@@ -56,8 +57,9 @@ kind-load-api:
 kind-load-frontend:
 
 kind-load:
-
+# ==============================================================================
 ### Docker 
+#
 build-api:
 	docker buildx build \
 	--platform=linux/amd64 \
@@ -74,15 +76,22 @@ build-ui:
 
 build-all: build-api build-ui
 
+# ==============================================================================
 ################################ LEGACY ################################
 ### DOCKER COMPOSE STUFF ###
-compse-up:
-	USER=$(shell id -u):$(shell id -g) docker-compose up --build -V -d
+# This should all still work as expected
+compose-up:
+	@echo "Starting services with Docker Compose..."
+	USER=$(shell id -u):$(shell id -g) 
+	@export $(cat $(cnf) | xargs) && docker-compose -f ./compose/docker-compose.yml --env-file $(cnf) up --build -V -d
 
 compose-down:
-	USER=$(shell id -u):$(shell id -g) docker-compose down 
+	@echo "Stopping services with Docker Compose..."
+	USER=$(shell id -u):$(shell id -g) 
+	@export $(cat $(cnf) | xargs) && docker-compose -f ./compose/docker-compose.yml --env-file $(cnf) down
 
-### Update CTMD Issues
+### ctmd.issues-script
+# Update CTMD Issues
 CTMD_ISSUES_LINK = https://github.com/RENCI/ctmd/issues/
 #
 # Use with a file 
