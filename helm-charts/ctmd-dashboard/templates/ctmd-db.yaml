@@ -1,45 +1,72 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.postgres.dsnSecrets.name | quote }}
+data:
+  # All env vars are expected to be quoted.
+  POSTGRES_DB: {{ .Values.postgres.dsnSecrets.database | b64enc | quote }}
+  POSTGRES_HOST: {{ .Values.postgres.name | b64enc | quote }}
+  POSTGRES_PASSWORD: {{ .Values.postgres.dsnSecrets.password | b64enc | quote }}
+  POSTGRES_PORT: {{ .Values.postgres.service.port | toString | b64enc | quote }}
+  POSTGRES_USER: {{ .Values.postgres.dsnSecrets.user | b64enc | quote }}
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
-    app: {{ .Values.postgres.name }}
-  name: {{ .Values.postgres.name }}
+    app: {{ .Values.postgres.name | quote }}
+  name: {{ .Values.postgres.name | quote }}
 spec:
+  serviceName: {{ .Values.postgres.name | quote }}
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.postgres.name }}
-  strategy: {}
+      app: {{ .Values.postgres.name | quote }}
   template:
     metadata:
       labels:
-        app: {{ .Values.postgres.name }}
+        app: {{ .Values.postgres.name | quote }}
     spec:
       containers:
-      {{- if .Values.postgres.publicRepository }}
-      - image: postgres:latest
-      {{- else }}
-      - image: {{ .Values.images.repository }}/{{ .Values.postgres.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
-      {{- end }}
-        name: {{ .Values.postgres.name }}
-        ports:
-        - containerPort: 5432
-        resources: {}
-status: {}
+        - name: {{ .Values.postgres.name | quote }}
+          {{- if .Values.postgres.publicRepository }}
+          image: postgres:latest
+          {{- else }}
+          image: {{ .Values.images.repository }}/{{ .Values.postgres.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.postgres.dsnSecrets.name | quote }}
+          ports:
+            - containerPort: 5432
+          resources: {}
+          volumeMounts:
+            - name: data
+              mountPath: "/var/lib/postgresql/data"
+  volumeClaimTemplates:
+    - metadata:
+        name: data  
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi  
+        storageClassName: "standard"  
 
 --- 
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: {{ .Values.postgres.name }}
-  name: {{ .Values.postgres.name }}
+    app: {{ .Values.postgres.name | quote  }}
+  name: {{ .Values.postgres.name | quote }}
 spec:
   ports:
   - port: 5432
     protocol: TCP
     targetPort: 5432
   selector:
-    app: {{ .Values.postgres.name }}
+    app: {{ .Values.postgres.name | quote }}
 status:
   loadBalancer: {}

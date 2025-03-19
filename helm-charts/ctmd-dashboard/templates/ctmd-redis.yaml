@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       {{- if .Values.redis.publicRepository }}
-      - image: postgres:latest
+      - image: redis:latest
       {{- else }}
       - image: {{ .Values.images.repository }}/{{ .Values.redis.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
       {{- end }}

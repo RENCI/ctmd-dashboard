@@ -6,7 +6,7 @@
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 
 images:
-  repository: containers.renci.org/ctmd/
+  repository: containers.renci.org/ctmd
   tag: "latest"
 
 serviceAccounts:
@@ -36,9 +36,12 @@ frontend:
 
 api:
   create: true
-  name: ctmd-api 
+  name: ctmd-api
+  # The ports are informational values and 
+  # not used in templates currently.
   service:
-    port: 80
+    apiPort: 3030
+    graphicsApiPort: 4040
   resources:
     limits:
       cpu: 500m
@@ -46,27 +49,24 @@ api:
     requests:
       cpu: 200m
       memory: 300Mi
+  # The below section will be environment vars in the application.
   env:
-    - name: AUTH_ENV
-      value: "development"
-    - name: FUSE_AUTH_API_KEY
-      value: ""
-    - name: DASHBOARD_URL
-      value: ""
-    - name: REACT_APP_API_ROOT
-      value: ""
-    - name: NODE_ENV
-      value: "development"
-    - name: $API_SESSION_SECRET
-      value: ""
-    - name: AUTH_URL
-      value: ""
+    # "development" or "production" same value as nodeEnvironment
+    authEnvironment: "development"
+    nodeEnvironment: "development"
+    dashboardURL: "http://localhost:3000"
+    reactAppAPIRoot: http://localhost/api/
+    fuseAuthAPIKey: "SECRET"
+    apiSessionSecret: "SECRET"
+    authURL: "https://some-auth-url.com"
 
 postgres:
   create: true
   name: ctmd-db
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
+  # The ports are informational values and 
+  # not used in templates currently.
   service:
     port: 5432
   resources:
@@ -76,17 +76,19 @@ postgres:
     requests:
       cpu: 200m
       memory: 300Mi
-  env:
-    - name: POSTGRES_HOST
-      value:
-    - name: POSTGRES_PORT
-      value: 5432
-    - name: POSTGRES_DB
-      value: "postgres"
-    - name: POSTGRES_USER 
-      value: "ctmd-user"
-    - name: POSTGRES_PASSWORD
-      value: ""
+# This will create a secret object that is used to populate 
+# environment variables with DSN information.
+  dsnSecrets:
+    name: "db-dsn"
+    database: "postgres" 
+    user: "ctmd-user"
+    password: "password123"
+  # persistence:
+  #   enabled: true
+  #   volumeName: "ctmd-data"
+  #   mountPath: "/var/lib/postgresql/data"
+  #   storageClass: ""
+    
 
 redis:
   create: true

@@ -1,62 +1,3 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: {{ include "ctmd-dashboard.fullname" . }}
-#   labels:
-#     {{- include "ctmd-dashboard.labels" . | nindent 4 }}
-# spec:
-#   {{- if not .Values.autoscaling.enabled }}
-#   replicas: {{ .Values.replicaCount }}
-#   {{- end }}
-#   selector:
-#     matchLabels:
-#       {{- include "ctmd-dashboard.selectorLabels" . | nindent 6 }}
-#   template:
-#     metadata:
-#       {{- with .Values.podAnnotations }}
-#       annotations:
-#         {{- toYaml . | nindent 8 }}
-#       {{- end }}
-#       labels:
-#         {{- include "ctmd-dashboard.labels" . | nindent 8 }}
-#         {{- with .Values.podLabels }}
-#         {{- toYaml . | nindent 8 }}
-#         {{- end }}
-#     spec:
-#       {{- with .Values.imagePullSecrets }}
-#       imagePullSecrets:
-#         {{- toYaml . | nindent 8 }}
-#       {{- end }}
-#       serviceAccountName: {{ include "ctmd-dashboard.serviceAccountName" . }}
-#       securityContext:
-#         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-#       containers:
-#         - name: {{ .Chart.Name }}
-#           securityContext:
-#             {{- toYaml .Values.securityContext | nindent 12 }}
-#           image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
-#           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          
-#           env:
-#             {{- toYaml .Values.api.env | nindent 12 }}
-#           ports:
-#             - name: http
-#               containerPort: {{ .Values.api.service.port }}
-#               protocol: TCP
-#           livenessProbe:
-#             {{- toYaml .Values.livenessProbe | nindent 12 }}
-#           readinessProbe:
-#             {{- toYaml .Values.readinessProbe | nindent 12 }}
-#           resources:
-#             {{- toYaml .Values.resources | nindent 12 }}
-#           {{- with .Values.volumeMounts }}
-#           volumeMounts:
-#             {{- toYaml . | nindent 12 }}
-#           {{- end }}
-#       {{- with .Values.volumes }}
-#       volumes:
-#         {{- toYaml . | nindent 8 }}
-#       {{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -68,19 +9,40 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.api.name }}
-  strategy: {}
+  strategy: {}  # Optional, can be removed if not needed
   template:
     metadata:
       labels:
         app: {{ .Values.api.name }}
     spec:
+      # TODO: Add initContainer to ensure db is up.
       containers:
-      - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
-        name: {{ .Values.api.name }}
-        ports:
-        - containerPort: 3030
-        resources: {}
-status: {}
+        - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+          name: {{ .Values.api.name }}
+          ports:
+            - containerPort: 3030
+              name: api
+            - containerPort: 4040
+              name: graphics-api
+          env:
+            - name: AUTH_ENV
+              value: {{ .Values.api.env.authEnvironment | quote }}
+            - name: FUSE_AUTH_API_KEY
+              value: {{ .Values.api.env.fuseAuthAPIKey | quote }}
+            - name: DASHBOARD_URL
+              value: {{ .Values.api.env.dashboardURL | quote }}
+            - name: REACT_APP_API_ROOT
+              value: {{ .Values.api.env.reactAppAPIRoot | quote }}
+            - name: NODE_ENV
+              value: {{ .Values.api.env.nodeEnvironment | quote }}
+            - name: API_SESSION_SECRET  # Fixed environment variable name
+              value: {{ .Values.api.env.apiSessionSecret | quote }}
+            - name: AUTH_URL
+              value: {{ .Values.api.env.authURL | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.postgres.dsnSecrets.name }}
+      resources: {}  # Optional, can be removed if not needed
 
 ---
 apiVersion: v1
@@ -91,9 +53,14 @@ metadata:
   name: {{ .Values.api.name }}
 spec:
   ports:
-  - port: 3030
-    protocol: TCP
-    targetPort: 3030
+    - port: 3030
+      protocol: TCP
+      targetPort: 3030
+      name: api
+    - port: 4040
+      protocol: TCP
+      targetPort: 4040
+      name: graphics-api
   selector:
     app: {{ .Values.api.name }}
 status:
