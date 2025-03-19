@@ -83,11 +83,10 @@ postgres:
     database: "postgres" 
     user: "ctmd-user"
     password: "password123"
-  # persistence:
-  #   enabled: true
-  #   volumeName: "ctmd-data"
-  #   mountPath: "/var/lib/postgresql/data"
-  #   storageClass: ""
+  persistence:
+    # To use the default provisioner leave blank.
+    storageClass: ""
+    size: "2Gi"
     
 
 redis:

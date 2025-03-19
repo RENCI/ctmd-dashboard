@@ -76,6 +76,28 @@ build-ui:
 
 build-all: build-api build-ui
 
+# For local development we deploy directly from the chart. 
+# To pass in a different values file set FILE=(/your/values.yaml)
+FILE := ./helm-charts/ctmd-dashboard/values.yaml
+# helm-up:
+#   @echo "Processing file: $(FILE)"
+#   @if [ -f $(FILE) ]; then echo "File exists. Processing ..."; \
+#   	helm install ctmd-dashboard ./helm-charts/ctmd-dashboard -f $(FILE); \
+# 	fi
+
+helm-up:
+	@echo "Processing file: $(FILE)"
+	@if [ -f $(FILE) ]; then \
+		echo "File exists. Processing..."; \
+		helm install ctmd-dashboard ./helm-charts/ctmd-dashboard -f $(FILE); \
+	else \
+		echo "Error: File does not exist."; \
+		exit 1; \
+	fi
+	
+helm-down:
+	helm uninstall ctmd-dashboard 
+
 # ==============================================================================
 ################################ LEGACY ################################
 ### DOCKER COMPOSE STUFF ###
