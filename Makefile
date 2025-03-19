@@ -84,7 +84,8 @@ FILE := ./helm-charts/ctmd-dashboard/values.yaml
 #   @if [ -f $(FILE) ]; then echo "File exists. Processing ..."; \
 #   	helm install ctmd-dashboard ./helm-charts/ctmd-dashboard -f $(FILE); \
 # 	fi
-
+# ========================== Helm =============================
+# Helm dev up - this ensures pvcs are removed when uninstalled
 helm-up:
 	@echo "Processing file: $(FILE)"
 	@if [ -f $(FILE) ]; then \
@@ -94,7 +95,12 @@ helm-up:
 		echo "Error: File does not exist."; \
 		exit 1; \
 	fi
-	
+
+# Will ensure pvc's are deleted when uninstalled.
+helm-dev-down:
+	helm uninstall ctmd-dashboard
+	kubectl delete pvc data-ctmd-db-0
+
 helm-down:
 	helm uninstall ctmd-dashboard 
 

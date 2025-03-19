@@ -51,7 +51,7 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: {{ .Values.postgres.persistence.size | default "2Gi" }} 
+            storage: {{ .Values.postgres.persistence.size | default "2Gi" | quote }} 
         storageClassName: {{ .Values.postgres.persistence.storageClass | default "standard" | quote }}
 
 --- 
