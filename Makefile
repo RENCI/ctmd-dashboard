@@ -1,10 +1,6 @@
 # ==============================================================================
-## Environment File
-# You can change the default config with `make cnf="config_special.env" build`
-cnf ?= config.env
-include $(cnf)
-
-## Environment Variables
+## Environment
+#
 API_BASE_IMAGE := ctmd-api
 API_VERSION := 2.16.0
 API_IMAGE_TAG := $(API_BASE_IMAGE):$(API_VERSION)
@@ -14,11 +10,12 @@ UI_VERSION := 2.16.0
 UI_IMAGE_TAG := $(UI_BASE_IMAGE):$(UI_VERSION)
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
-# BUILD_DATE := `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+
 ## Kind Env
 KIND_CLUSTER := ctmd-dashboard
 # ==============================================================================
 ## Computer Setup
+#
 setup.mac:
 	brew update
 	brew list kubectl || brew install kubectl
@@ -36,6 +33,7 @@ setup.windows:
 	choco install kubernetes-cli
 # ==============================================================================
 ## KiND Kubernetes 
+#
 # Create a new kind cluster
 # the k8s/kind/kind-config.yml file specifies
 # host to container port mappings for easy ingress/egress
@@ -76,16 +74,13 @@ build-ui:
 
 build-all: build-api build-ui
 
+# =======================================================
+## Helm
+#
 # For local development we deploy directly from the chart. 
 # To pass in a different values file set FILE=(/your/values.yaml)
 FILE := ./helm-charts/ctmd-dashboard/values.yaml
-# helm-up:
-#   @echo "Processing file: $(FILE)"
-#   @if [ -f $(FILE) ]; then echo "File exists. Processing ..."; \
-#   	helm install ctmd-dashboard ./helm-charts/ctmd-dashboard -f $(FILE); \
-# 	fi
-# ========================== Helm =============================
-# Helm dev up - this ensures pvcs are removed when uninstalled
+
 helm-up:
 	@echo "Processing file: $(FILE)"
 	@if [ -f $(FILE) ]; then \
@@ -107,7 +102,12 @@ helm-down:
 # ==============================================================================
 ################################ LEGACY ################################
 ### DOCKER COMPOSE STUFF ###
-# This should all still work as expected
+#
+# You can change the default config with `make cnf="config_special.env" build`
+# This is used with Docker-Compose only
+cnf ?= config.env
+include $(cnf)
+
 compose-up:
 	@echo "Starting services with Docker Compose..."
 	USER=$(shell id -u):$(shell id -g) 
