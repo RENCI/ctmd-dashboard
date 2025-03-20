@@ -78,7 +78,8 @@ build-all: build-api build-ui
 ## Helm
 #
 # For local development we deploy directly from the chart. 
-# To pass in a different values file set FILE=(/your/values.yaml)
+# To pass in a different values file set FILE=/your/values.yaml
+# example: make helm-up FILE=/custom/values.yaml
 FILE := ./helm-charts/ctmd-dashboard/values.yaml
 
 helm-up:
@@ -105,7 +106,7 @@ helm-down:
 #
 # You can change the default config with `make cnf="config_special.env" build`
 # This is used with Docker-Compose only
-cnf ?= config.env
+cnf ?= ./compose/config.env
 include $(cnf)
 
 compose-up:
