@@ -42,8 +42,7 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.dsnSecrets.name }}
-      resources: {}  # Optional, can be removed if not needed
-
+          resources: {} 
 ---
 apiVersion: v1
 kind: Service
@@ -63,7 +62,6 @@ spec:
       name: graphics-api
   selector:
     app: {{ .Values.api.name }}
-status:
-  loadBalancer: {}
+
 
 

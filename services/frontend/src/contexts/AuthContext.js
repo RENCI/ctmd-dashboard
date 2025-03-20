@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [localStorageUser, setLocalStorageUser] = useLocalStorage('ctmd-user-v2')
   const [authenticated, setAuthenticated] = useState(false)
   const [isPLAdmin, setIsPLAdmin] = useState(false)
-  const validReferrer = document.referrer.includes('redcap.vumc.org') || process.env.NODE_ENV === 'developments'
+  const validReferrer = document.referrer.includes('redcap.vumc.org') || process.env.NODE_ENV === 'development'
 
   const logout = async () => {
     const response = await axios.post(api.logout, { withCredentials: true })

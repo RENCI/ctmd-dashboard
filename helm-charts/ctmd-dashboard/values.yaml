@@ -5,6 +5,10 @@
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 
+# TODO (Phase 2): postgres currently creates a pvc upon creation- this should
+#           extend to mount an existing pvc if already created.
+#
+
 images:
   repository: containers.renci.org/ctmd
   tag: "latest"
@@ -21,7 +25,9 @@ securityContext:
 
 frontend:
   create: true 
-  name: ctmd-frontend 
+  name: ctmd-frontend
+  # The ports are informational values and 
+  # not used to change templates currently.
   service:
     type: ClusterIP
     port: 3000
@@ -38,7 +44,7 @@ api:
   create: true
   name: ctmd-api
   # The ports are informational values and 
-  # not used in templates currently.
+  # not used to change templates currently.
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -66,7 +72,7 @@ postgres:
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
   # The ports are informational values and 
-  # not used in templates currently.
+  # not used to change templates currently.
   service:
     port: 5432
   resources:
@@ -79,14 +85,16 @@ postgres:
 # This will create a secret object that is used to populate 
 # environment variables with DSN information.
   dsnSecrets:
+    create: true
     name: "db-dsn"
     database: "postgres" 
     user: "ctmd-user"
     password: "password123"
   persistence:
-    # To use the default provisioner leave blank.
+    # To use the default provisioner leave storageClass blank.
     storageClass: ""
-    size: "2Gi"
+    # To use default of 1Gi (dev mode) leave blank.
+    size: "1Gi"
     
 
 redis:
@@ -94,6 +102,8 @@ redis:
   name: ctmd-redis
   # Will use a public docker image of redis, otherwise uses images.repository/redis.name.
   publicRepository: true
+  # The ports are informational values and 
+  # not used to change templates currently.
   service:
     port: 6379
   resources:
@@ -107,6 +117,8 @@ redis:
 pipeline:
   create: true
   name: ctmd-pipeline
+  # The ports are informational values and 
+  # not used to change templates currently.
   service:
     port: 5000
   resources:

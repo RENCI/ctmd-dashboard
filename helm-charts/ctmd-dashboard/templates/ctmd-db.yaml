@@ -1,3 +1,4 @@
+{{- if .Values.postgres.dsnSecrets.create }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -9,7 +10,9 @@ data:
   POSTGRES_PASSWORD: {{ .Values.postgres.dsnSecrets.password | b64enc | quote }}
   POSTGRES_PORT: {{ .Values.postgres.service.port | toString | b64enc | quote }}
   POSTGRES_USER: {{ .Values.postgres.dsnSecrets.user | b64enc | quote }}
+{{ end }}
 ---
+{{- if .Values.postgres.create }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -39,7 +42,6 @@ spec:
                 name: {{ .Values.postgres.dsnSecrets.name | quote }}
           ports:
             - containerPort: 5432
-          resources: {}
           volumeMounts:
             - name: data
               mountPath: "/var/lib/postgresql/data"
@@ -51,9 +53,8 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: {{ .Values.postgres.persistence.size | default "2Gi" | quote }} 
+            storage: {{ .Values.postgres.persistence.size | default "1Gi" }}
         storageClassName: {{ .Values.postgres.persistence.storageClass | default "standard" | quote }}
-
 --- 
 apiVersion: v1
 kind: Service
@@ -68,5 +69,4 @@ spec:
     targetPort: 5432
   selector:
     app: {{ .Values.postgres.name | quote }}
-status:
-  loadBalancer: {}
+{{ end }}

@@ -128,3 +128,12 @@ CTMD_ISSUES_LINK = https://github.com/RENCI/ctmd/issues/
 update-issue-links:
 	@echo "Updating ctmd# links in the file..."
 	@sed -i '' "s/ ctmd#/ $(CTMD_ISSUES_LINK)/g" $(file)
+#
+# BASH CODE FOR ABOVE 
+#!/bin/sh
+# replace ticket number references in ctmd to point to ctmd issues
+# ctmd_issues_link="https:\/\/github.com\/RENCI\/ctmd\/issues\/"
+
+# message=$(cat "$1" | sed  "s/ ctmd#/ ${ctmd_issues_link}/g")
+# echo "${message}" > "$1"
+# exit 0
