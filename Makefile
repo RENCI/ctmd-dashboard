@@ -56,7 +56,7 @@ kind-load-frontend:
 
 kind-load:
 # ==============================================================================
-### Docker 
+## Docker 
 #
 build-api:
 	docker buildx build \
@@ -102,7 +102,7 @@ helm-down:
 
 # ==============================================================================
 ################################ LEGACY ################################
-### DOCKER COMPOSE STUFF ###
+## DOCKER COMPOSE STUFF ###
 #
 # You can change the default config with `make cnf="config_special.env" build`
 # This is used with Docker-Compose only

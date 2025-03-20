@@ -108,7 +108,7 @@ export const Menu = ({ expanded, clickHandler }) => {
     shouldRenderUploadsLink ? { text: 'Uploads', path: '/uploads', icon: UploadIcon } : {},
     { text: 'Collaborations', path: '/collaborations', icon: CollaborationsIcon },
     {}, // an empty object causes a Divider component to render in the menu
-    { text: 'TIN Dashboard', path: 'https://redcap.vanderbilt.edu/plugins/TIN/', icon: TINLogoIcon },
+    { text: 'TIN Dashboard', path: 'https://redcap.vumc.org/plugins/TIN/', icon: TINLogoIcon },
   ]
 
   if (process.env.REACT_APP_IS_HEAL_SERVER === 'true') {
