@@ -1,3 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipeline-synthetic-data
+data:
+  {{ .Values.pipeline.config.syntheticDataFile }}: {{ .Files.Get .Values.pipeline.config.syntheticDataFile }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-mapping
+data:
+  {{ .Values.pipeline.config.databaseMappingFile }}: {{ .Files.Get .Values.pipeline.config.databaseMappingFile }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -10,7 +24,6 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.pipeline.name }}
-  strategy: {}
   template:
     metadata:
       creationTimestamp: null
@@ -22,5 +35,79 @@ spec:
         name: {{ .Values.pipeline.name }}
         ports:
         - containerPort: 5000
+        env:
+          - name: REDCAP_APPLICATION_TOKEN
+            value: {{ .Values.pipeline.env.REDCAP_APPLICATION_TOKEN | quote }}
+          - name: REDCAP_URL_BASE
+            value: {{ .Values.pipeline.env.REDCAP_URL_BASE | quote }}
+          - name: POSTGRES_DUMP_PATH
+            value: {{ .Values.pipeline.env.POSTGRES_DUMP_PATH | quote }}
+          - name: AUXILIARY_PATH
+            value: {{ .Values.pipeline.env.AUXILIARY_PATH | quote }}
+          - name: FILTER_PATH
+            value: {{ .Values.pipeline.env.FILTER_PATH | quote }}
+          - name: BLOCK_PATH
+            value: {{ .Values.pipeline.env.BLOCK_PATH | quote }}
+          - name: RELOAD_SCHEDULE
+            value: {{ .Values.pipeline.env.RELOAD_SCHEDULE | quote }}
+          - name: RELOAD_DATABASE
+            value: {{ .Values.pipeline.env.RELOAD_DATABASE | quote }}
+          - name: SCHEDULE_RUN_TIME
+            value: {{ .Values.pipeline.env.SCHEDULE_RUN_TIME | quote }}
+          - name: SERVER
+            value: {{ .Values.pipeline.env.SERVER | quote }}
+          - name: REDIS_QUEUE_HOST
+            value: {{ .Values.pipeline.env.REDIS_LOCK_HOST | quote }}
+          - name: REDIS_QUEUE_PORT
+            value: {{ .Values.pipeline.env.REDIS_QUEUE_PORT | quote }}
+          - name: REDIS_QUEUE_DB
+            value: {{ .Values.pipeline.env.REDIS_QUEUE_DB | quote }}
+          - name: REDIS_LOCK_HOST
+            value: {{ .Values.pipeline.env.REDIS_LOCK_HOST | quote }}
+          - name: REDIS_LOCK_PORT
+            value: {{ .Values.pipeline.env.REDIS_LOCK_PORT | quote }}
+          - name: REDIS_LOCK_DB
+            value: {{ .Values.pipeline.env.REDIS_LOCK_DB | quote }}
+          - name: REDIS_LOCK_EXPIRE
+            value: {{ .Values.pipeline.env.REDIS_LOCK_EXPIRE | quote }}
+          - name: REDIS_LOCK_TIMEOUT
+            value: {{ .Values.pipeline.env.REDIS_LOCK_TIMEOUT | quote }}
+          - name: TASK_TIME
+            value: {{ .Values.pipeline.env.TASK_TIME | quote }}
+          - name: SPARK_EXECUTOR_MEMORY
+            value: {{ .Values.pipeline.env.SPARK_EXECUTOR_MEMORY | quote }}
+          - name: SPARK_DRIVER_MEMORY
+            value: {{ .Values.pipeline.env.SPARK_DRIVER_MEMORY | quote }}
+          - name: PAUSE
+            value: {{ .Values.pipeline.env.PAUSE | quote }}
+          - name: DOWNLOAD_REDCAP_DATA
+            value: {{ .Values.pipeline.env.DOWNLOAD_REDCAP_DATA | quote }}
+          - name: CREATE_TABLES
+            value: {{ .Values.pipeline.env.CREATE_TABLES | quote }}
+          - name: GLOBAL_WRITE_PERMISSIONS
+            value: {{ .Values.pipeline.env.GLOBAL_WRITE_PERMISSIONS | quote }}
+          - name: LOCAL_ENV
+            value: {{ .Values.pipeline.env.LOCAL_ENV | quote }}
+          # ConfigMap mounted file - see volumeMounts - here we mount at the root currently.
+          - name: DATA_INPUT_FILE_PATH
+            value: {{ printf "/%s" .Values.pipeline.config.syntheticDataFile | quote }}
+        envFrom:
+        # Mounts the database connection secrets
+          - secretRef:
+              name: {{ .Values.postgres.secrets.name }}
         resources: {}
-status: {}
+        volumeMounts:
+          - name: pipeline-synthetic-data
+            mountPath: /{{ .Values.pipeline.config.syntheticDataFile }}  
+            subPath: {{ .Values.pipeline.config.syntheticDataFile }}
+          - name: database-mapping
+            mountPath: /{{ .Values.pipeline.config.databaseMappingFile }}  
+            subPath: {{ .Values.pipeline.config.databaseMappingFile }}  
+      volumes:
+        - name: pipeline-synthetic-data
+          configMap:
+            name: pipeline-synthetic-data
+          # This volume uses the files/mapping.json file
+        - name: database-mapping
+          configMap:
+            name: database-mapping

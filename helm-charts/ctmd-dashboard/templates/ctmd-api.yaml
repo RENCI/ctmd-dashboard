@@ -41,7 +41,7 @@ spec:
               value: {{ .Values.api.env.authURL | quote }}
           envFrom:
             - secretRef:
-                name: {{ .Values.postgres.dsnSecrets.name }}
+                name: {{ .Values.postgres.secrets.name }}
           resources: {} 
 ---
 apiVersion: v1

@@ -9,7 +9,6 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.frontend.name }}
-  strategy: {}
   template:
     metadata:
       labels:
@@ -20,8 +19,13 @@ spec:
         name: {{ .Values.frontend.name }}
         ports:
         - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.frontend.env.NODE_ENV | quote }}
+        - name: REACT_APP_IS_HEAL_SERVER
+          value: {{ .Values.frontend.env.REACT_APP_IS_HEAL_SERVER | quote }}
         resources: {}
-status: {}
+
 ---
 apiVersion: v1
 kind: Service
@@ -36,5 +40,3 @@ spec:
     targetPort: 3000
   selector:
     app: {{ .Values.frontend.name }}
-status:
-  loadBalancer: {}

@@ -1,5 +1,7 @@
 # https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings
 # This maps the kind port to the host port, for ease of use in testing.
+
+# TODO - Currently this is not working on all machines. 
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:

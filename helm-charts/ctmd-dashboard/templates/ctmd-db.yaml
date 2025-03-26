@@ -1,15 +1,15 @@
-{{- if .Values.postgres.dsnSecrets.create }}
+{{- if .Values.postgres.secrets.create }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .Values.postgres.dsnSecrets.name | quote }}
+  name: {{ .Values.postgres.secrets.name | quote }}
 data:
   # All env vars are expected to be quoted.
-  POSTGRES_DB: {{ .Values.postgres.dsnSecrets.database | b64enc | quote }}
+  POSTGRES_DB: {{ .Values.postgres.secrets.database | b64enc | quote }}
   POSTGRES_HOST: {{ .Values.postgres.name | b64enc | quote }}
-  POSTGRES_PASSWORD: {{ .Values.postgres.dsnSecrets.password | b64enc | quote }}
+  POSTGRES_PASSWORD: {{ .Values.postgres.secrets.password | b64enc | quote }}
   POSTGRES_PORT: {{ .Values.postgres.service.port | toString | b64enc | quote }}
-  POSTGRES_USER: {{ .Values.postgres.dsnSecrets.user | b64enc | quote }}
+  POSTGRES_USER: {{ .Values.postgres.secrets.user | b64enc | quote }}
 {{ end }}
 ---
 {{- if .Values.postgres.create }}
@@ -39,7 +39,7 @@ spec:
           {{- end }}
           envFrom:
             - secretRef:
-                name: {{ .Values.postgres.dsnSecrets.name | quote }}
+                name: {{ .Values.postgres.secrets.name | quote }}
           ports:
             - containerPort: 5432
           volumeMounts:

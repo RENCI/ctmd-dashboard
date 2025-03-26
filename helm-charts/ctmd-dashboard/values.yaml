@@ -5,8 +5,11 @@
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 
-# TODO (Phase 2): postgres currently creates a pvc upon creation- this should
-#           extend to mount an existing pvc if already created.
+# TODO (Phase 2): 
+#  - postgres.persistence should support mounting existing pvc when deploying (currently does not).
+#  - Add further security considerations - runAsRoot: false type stuff
+#  - Develop mode should make use of syntheticDataset.json mount in /files dir
+#       while prod deployment should not.
 #
 
 images:
@@ -24,7 +27,7 @@ securityContext:
   enable: false 
 
 frontend:
-  create: true 
+  create: true
   name: ctmd-frontend
   # The ports are informational values and 
   # not used to change templates currently.
@@ -32,13 +35,16 @@ frontend:
     type: ClusterIP
     port: 3000
     name: http
+  env:
+    NODE_ENV: "development"
+    REACT_APP_IS_HEAL_SERVER: "false"
   resources:
-    requests:
-      cpu: 
-      memory: 
     limits:
-      cpu: 
-      memory:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
 
 api:
   create: true
@@ -84,13 +90,16 @@ postgres:
       memory: 300Mi
 # This will create a secret object that is used to populate 
 # environment variables with DSN information.
-  dsnSecrets:
+# This secret is also mounted in api, frontend, pipeline
+  secrets:
     create: true
     name: "db-dsn"
     database: "postgres" 
     user: "ctmd-user"
     password: "password123"
   persistence:
+    # create: true (Phase 2 work)
+    # name: mountName (Phase 2 work)
     # To use the default provisioner leave storageClass blank.
     storageClass: ""
     # To use default of 1Gi (dev mode) leave blank.
@@ -128,3 +137,38 @@ pipeline:
     requests:
       cpu: 200m
       memory: 300Mi
+  persistence:
+    storageClass: ""
+    size: "1Gi"
+  config:
+    # dataFile = DATA_INPUT_FILE_PATH env in the pipeline.
+    # The file being referenced is located in ctmd-dashboard/files/ 
+    syntheticDataFile: "syntheticDataset.json"
+    databaseMappingFile: "mapping.json"
+  env:
+    REDCAP_APPLICATION_TOKEN: "faketoken"
+    REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
+    POSTGRES_DUMP_PATH: "/backup"
+    AUXILIARY_PATH: "/auxiliary"
+    FILTER_PATH: "/filter"
+    BLOCK_PATH: "./block"
+    RELOAD_SCHEDULE: "0"
+    RELOAD_DATABASE: "0"
+    SCHEDULE_RUN_TIME: "00:00"
+    SERVER: "1"
+    REDIS_QUEUE_HOST: redis
+    REDIS_QUEUE_PORT: "6379"
+    REDIS_QUEUE_DB: "0"
+    REDIS_LOCK_HOST: "redis"
+    REDIS_LOCK_PORT: "6379"
+    REDIS_LOCK_DB: "1"
+    REDIS_LOCK_EXPIRE: "7200"
+    REDIS_LOCK_TIMEOUT: "7200"
+    TASK_TIME: "7200"
+    SPARK_EXECUTOR_MEMORY: "8g"
+    SPARK_DRIVER_MEMORY: "8g"
+    PAUSE: "0"
+    DOWNLOAD_REDCAP_DATA: "0"
+    CREATE_TABLES: "1"
+    GLOBAL_WRITE_PERMISSIONS: "none"
+    LOCAL_ENV: "true"

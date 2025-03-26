@@ -18,7 +18,7 @@ RUN apk add git
 COPY package*.json ./
 RUN npm install
 
-expose 3000
+EXPOSE 3000
 
 # start app
 CMD ["npm", "start"]

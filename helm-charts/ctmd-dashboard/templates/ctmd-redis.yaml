@@ -10,7 +10,6 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.redis.name }}
-  strategy: {}
   template:
     metadata:
       labels:
@@ -26,7 +25,7 @@ spec:
         ports:
         - containerPort: 6379
         resources: {}
-status: {}
+
 
 --- 
 apiVersion: v1
@@ -42,5 +41,3 @@ spec:
     targetPort: 6379
   selector:
     app: {{ .Values.redis.name }}
-status:
-  loadBalancer: {}

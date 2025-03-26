@@ -13,6 +13,7 @@ BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
 ## Kind Env
 KIND_CLUSTER := ctmd-dashboard
+KIND_IMAGE := kindest/node:v1.31.2@sha256:18fbefc20a7113353c7b75b5c869d7145a6abd6269154825872dc59c1329912e
 # ==============================================================================
 ## Computer Setup
 #
@@ -42,6 +43,7 @@ setup.windows:
 kind-up:
 	kind create cluster \
 		--name $(KIND_CLUSTER) \
+		--image $(KIND_IMAGE) \
 		--config k8s/kind/kind-config.yml
 	kubectl create ns ctmd
 	kubectl config set-context --current --namespace=ctmd
@@ -83,9 +85,8 @@ build-all: build-api build-ui
 FILE := ./helm-charts/ctmd-dashboard/values.yaml
 
 helm-up:
-	@echo "Processing file: $(FILE)"
+	@echo "Make is processing helm-values file: $(FILE)"
 	@if [ -f $(FILE) ]; then \
-		echo "File exists. Processing..."; \
 		helm install ctmd-dashboard ./helm-charts/ctmd-dashboard -f $(FILE); \
 	else \
 		echo "Error: File does not exist."; \
@@ -104,6 +105,7 @@ helm-down:
 ################################ LEGACY ################################
 ## DOCKER COMPOSE STUFF ###
 #
+# For active development this is not ideal. 
 # You can change the default config with `make cnf="config_special.env" build`
 # This is used with Docker-Compose only
 cnf ?= ./compose/config.env
@@ -112,12 +114,12 @@ include $(cnf)
 compose-up:
 	@echo "Starting services with Docker Compose..."
 	USER=$(shell id -u):$(shell id -g) 
-	@export $(cat $(cnf) | xargs) && docker-compose -f ./compose/docker-compose.yml --env-file $(cnf) up --build -V -d
+	@export $(cat $(cnf) | xargs) && docker compose -f ./compose/docker-compose.yml --env-file $(cnf) up --build -V -d
 
 compose-down:
 	@echo "Stopping services with Docker Compose..."
 	USER=$(shell id -u):$(shell id -g) 
-	@export $(cat $(cnf) | xargs) && docker-compose -f ./compose/docker-compose.yml --env-file $(cnf) down
+	@export $(cat $(cnf) | xargs) && docker compose -f ./compose/docker-compose.yml --env-file $(cnf) down
 
 ### ctmd.issues-script
 # Update CTMD Issues
