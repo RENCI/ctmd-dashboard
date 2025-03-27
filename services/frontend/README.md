@@ -49,9 +49,9 @@ export default props => {
 
 ### Global Store
 
-The above example illustrates something that would never actually have to be done because the proposals all live in a global store, which sits at the top node of the application tree, and any descendant has access to it. The gloabl store contains all the often-used primitive elements of this application---proposals, institutions, TICs and RICs, therapeutic areas, etc.
+The above example illustrates something that would never actually have to be done because the proposals all live in a global store, which sits at the top node of the application tree, and any descendant has access to it. The global store contains all the often-used primitive elements of this application---proposals, institutions, TICs and RICs, therapeutic areas, etc.
 
-Having this gloabl store eliminates the need to ever have to do soemthing like the above example to grab proposals, but it does work great for items or information that has no business living in the global store.
+Having this global store eliminates the need to ever have to do something like the above example to grab proposals, but it does work great for items or information that has no business living in the global store.
 
 The example below illustrates how, by having the global store, we can grab the proposals exactly as in the previous example.
 

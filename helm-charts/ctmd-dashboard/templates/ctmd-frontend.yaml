@@ -15,10 +15,12 @@ spec:
         app: {{ .Values.frontend.name }}
     spec:
       containers:
-      - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+      - image: containers.renci.org/ctmd/ctmd-frontend:helm-test
+      # - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+        # command: ['sh', '-c', "tail -f /dev/null"]
         name: {{ .Values.frontend.name }}
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         env:
         - name: NODE_ENV
           value: {{ .Values.frontend.env.NODE_ENV | quote }}
@@ -37,6 +39,6 @@ spec:
   ports:
   - port: 3000
     protocol: TCP
-    targetPort: 3000
+    targetPort: 80
   selector:
     app: {{ .Values.frontend.name }}

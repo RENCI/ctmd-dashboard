@@ -26,6 +26,9 @@ networkPolicies:
 securityContext:
   enable: false 
 
+# Indicate whether this is production or development context
+softwareContext: "develop" 
+
 frontend:
   create: true
   name: ctmd-frontend
@@ -140,6 +143,10 @@ pipeline:
   persistence:
     storageClass: ""
     size: "1Gi"
+  recurringBackup:
+    backupPath: "/backup" 
+    storageClass: "" 
+    size: "2Gi"
   config:
     # The file being referenced is located in ctmd-dashboard/files/ 
     syntheticDataFile: "syntheticDataset.json"

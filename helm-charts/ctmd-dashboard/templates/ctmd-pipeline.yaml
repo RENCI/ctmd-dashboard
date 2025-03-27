@@ -16,6 +16,9 @@ data:
   {{ .Values.pipeline.config.databaseMappingFile }}: |- 
 {{ .Files.Get ( printf "files/%s" .Values.pipeline.config.databaseMappingFile) | indent 4 }}
 ---
+# Backup location for postgres database
+# PVC
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:

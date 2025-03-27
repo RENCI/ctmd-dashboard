@@ -15,20 +15,14 @@ spec:
       labels:
         app: {{ .Values.api.name }}
     spec:
-      # Ensure postgres is up
+      # Ensure postgres is up, this is simplistic check for the service.
+      # There are possible where the service could be up but the db stalls
+      # "if" that becomes a problem change initContainer to something 
+      # more robust (if it occurs).
       initContainers:
       - name: wait-for-postgres
-        image: busybox:1.35.0-uclibc
-        command:
-          - "sh"
-          - "-c"
-          - |
-            echo "Waiting for PostgreSQL to be available..."
-            until nc -z -v -w30 {{ .Values.postgres.name }} {{ .Values.postgres.service.port }}; do
-              echo "Waiting for PostgreSQL at {{ .Values.postgres.name }}:{{ .Values.postgres.service.port }}..."
-              sleep 5
-            done
-            echo "PostgreSQL is up!"
+        image: busybox:1.28
+        command: ['sh', '-c', "until nslookup {{ .Values.postgres.name }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for db; sleep 2; done"]
       containers:
         - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
           name: {{ .Values.api.name }}

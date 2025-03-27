@@ -55,8 +55,10 @@ kind-down:
 kind-load-api:
 
 kind-load-frontend:
+	kind load docker-image containers.renci.org/ctmd/ctmd-frontend:latest --name $(KIND_CLUSTER)
 
 kind-load:
+
 # ==============================================================================
 ## Docker 
 #
@@ -71,7 +73,8 @@ build-ui:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/frontend/ui.Dockerfile \
+	--file ./services/frontend/uiProd.Dockerfile \
+	--tag containers.renci.org/ctmd/ctmd-frontend:latest \
 	./services/frontend/
 
 build-all: build-api build-ui
