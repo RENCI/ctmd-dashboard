@@ -9,7 +9,7 @@
 #  - postgres.persistence should support mounting existing pvc when deploying (currently does not).
 #  - Add further security considerations - runAsRoot: false type stuff
 #  - Develop mode should make use of syntheticDataset.json mount in /files dir
-#       while prod deployment should not.
+#       while prod deployment should not. Have an opinionated dev env
 #
 
 images:
@@ -141,7 +141,6 @@ pipeline:
     storageClass: ""
     size: "1Gi"
   config:
-    # dataFile = DATA_INPUT_FILE_PATH env in the pipeline.
     # The file being referenced is located in ctmd-dashboard/files/ 
     syntheticDataFile: "syntheticDataset.json"
     databaseMappingFile: "mapping.json"
@@ -156,10 +155,10 @@ pipeline:
     RELOAD_DATABASE: "0"
     SCHEDULE_RUN_TIME: "00:00"
     SERVER: "1"
-    REDIS_QUEUE_HOST: redis
+    REDIS_QUEUE_HOST: "ctmd-redis"
     REDIS_QUEUE_PORT: "6379"
     REDIS_QUEUE_DB: "0"
-    REDIS_LOCK_HOST: "redis"
+    REDIS_LOCK_HOST: "ctmd-redis"
     REDIS_LOCK_PORT: "6379"
     REDIS_LOCK_DB: "1"
     REDIS_LOCK_EXPIRE: "7200"

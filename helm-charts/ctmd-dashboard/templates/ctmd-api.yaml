@@ -15,7 +15,20 @@ spec:
       labels:
         app: {{ .Values.api.name }}
     spec:
-      # TODO: Add initContainer to ensure db is up.
+      # Ensure postgres is up
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.35.0-uclibc
+        command:
+          - "sh"
+          - "-c"
+          - |
+            echo "Waiting for PostgreSQL to be available..."
+            until nc -z -v -w30 {{ .Values.postgres.name }} {{ .Values.postgres.service.port }}; do
+              echo "Waiting for PostgreSQL at {{ .Values.postgres.name }}:{{ .Values.postgres.service.port }}..."
+              sleep 5
+            done
+            echo "PostgreSQL is up!"
       containers:
         - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
           name: {{ .Values.api.name }}

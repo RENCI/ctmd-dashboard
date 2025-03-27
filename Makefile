@@ -85,7 +85,7 @@ build-all: build-api build-ui
 FILE := ./helm-charts/ctmd-dashboard/values.yaml
 
 helm-up:
-	@echo "Make is processing helm-values file: $(FILE)"
+	@echo "Makefile is processing helm-values file: $(FILE)"
 	@if [ -f $(FILE) ]; then \
 		helm install ctmd-dashboard ./helm-charts/ctmd-dashboard -f $(FILE); \
 	else \
