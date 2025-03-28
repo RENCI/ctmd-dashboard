@@ -15,9 +15,7 @@ spec:
         app: {{ .Values.frontend.name }}
     spec:
       containers:
-      - image: containers.renci.org/ctmd/ctmd-frontend:helm-test
-      # - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
-        # command: ['sh', '-c', "tail -f /dev/null"]
+      - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
         name: {{ .Values.frontend.name }}
         ports:
         - containerPort: 80
