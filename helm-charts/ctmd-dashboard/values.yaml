@@ -14,7 +14,6 @@
 
 images:
   repository: containers.renci.org/ctmd
-  tag: "latest"
 
 serviceAccounts:
   create: false
@@ -26,12 +25,15 @@ networkPolicies:
 securityContext:
   enable: false 
 
-# Indicate whether this is production or development context
-softwareContext: "develop" 
+# Indicate whether this is [production || development] context
+# This value will affect the application configurations globally
+# for the appropriate settings.
+softwareContext: "development" 
 
 frontend:
   create: true
-  name: ctmd-frontend
+  name: "ctmd-frontend"
+  tag: "latest"
   # The ports are informational values and 
   # not used to change templates currently.
   service:
@@ -52,6 +54,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
+  tag: "latest"
   # The ports are informational values and 
   # not used to change templates currently.
   service:
@@ -67,7 +70,7 @@ api:
   # The below section will be environment vars in the application.
   env:
     # "development" or "production" same value as nodeEnvironment
-    authEnvironment: "development"
+    authEnvironment: "developments"
     nodeEnvironment: "development"
     dashboardURL: "http://localhost:3000"
     reactAppAPIRoot: http://localhost/api/
@@ -78,6 +81,8 @@ api:
 postgres:
   create: true
   name: ctmd-db
+  # Tag is used for both non-public and public versions of the image muy flexible.
+  tag: "latest"
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
   # The ports are informational values and 
@@ -112,6 +117,8 @@ postgres:
 redis:
   create: true
   name: ctmd-redis
+  # Tag is used for both non-public and public versions of the image for muy flexible.
+  tag: "latest"
   # Will use a public docker image of redis, otherwise uses images.repository/redis.name.
   publicRepository: true
   # The ports are informational values and 
@@ -129,6 +136,7 @@ redis:
 pipeline:
   create: true
   name: ctmd-pipeline
+  tag: "tx-utils-removal-3"
   # The ports are informational values and 
   # not used to change templates currently.
   service:

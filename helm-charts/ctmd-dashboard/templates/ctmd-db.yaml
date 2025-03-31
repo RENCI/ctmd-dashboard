@@ -36,9 +36,9 @@ spec:
       containers:
         - name: {{ .Values.postgres.name | quote }}
           {{- if .Values.postgres.publicRepository }}
-          image: postgres:latest
+          image: postgres:{{ .Values.postgres.tag }}
           {{- else }}
-          image: {{ .Values.images.repository }}/{{ .Values.postgres.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+          image: {{ .Values.images.repository }}/{{ .Values.postgres.name }}:{{ .Values.postgres.tag | default .Chart.AppVersion }}
           {{- end }}
           envFrom:
             - secretRef:

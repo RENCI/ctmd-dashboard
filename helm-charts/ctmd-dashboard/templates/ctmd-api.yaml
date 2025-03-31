@@ -24,7 +24,7 @@ spec:
         image: busybox:1.28
         command: ['sh', '-c', "until nslookup {{ .Values.postgres.name }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for db; sleep 2; done"]
       containers:
-        - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+        - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.api.tag | default .Chart.AppVersion }}"
           name: {{ .Values.api.name }}
           ports:
             - containerPort: 3030

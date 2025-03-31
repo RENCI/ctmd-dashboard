@@ -17,9 +17,9 @@ spec:
     spec:
       containers:
       {{- if .Values.redis.publicRepository }}
-      - image: redis:latest
+      - image: redis:{{ .Values.redis.tag }}
       {{- else }}
-      - image: {{ .Values.images.repository }}/{{ .Values.redis.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+      - image: {{ .Values.images.repository }}/{{ .Values.redis.name }}:{{ .Values.redis.tag | default .Chart.AppVersion }}
       {{- end }}
         name: {{ .Values.redis.name }}
         ports:

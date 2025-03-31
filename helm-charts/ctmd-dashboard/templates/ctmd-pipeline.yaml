@@ -46,7 +46,7 @@ spec:
         image: busybox:1.28
         command: ['sh', '-c', "until nslookup {{ .Values.postgres.name }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for db; sleep 2; done"]
       containers:
-      - image: "{{ .Values.images.repository }}/{{ .Values.pipeline.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+      - image: "{{ .Values.images.repository }}/{{ .Values.pipeline.name }}:{{ .Values.pipeline.tag | default .Chart.AppVersion }}"
         name: {{ .Values.pipeline.name }}
         ports:
         - containerPort: 5000
@@ -126,3 +126,19 @@ spec:
         - name: ctmd-database-mapping
           configMap:
             name: ctmd-database-mapping
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.pipeline.name }}
+  name: {{ .Values.pipeline.name }}
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: {{ .Values.pipeline.name }}
+

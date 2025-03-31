@@ -15,13 +15,18 @@ spec:
         app: {{ .Values.frontend.name }}
     spec:
       containers:
-      - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}"
+      - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.frontend.tag | default .Chart.AppVersion }}"
         name: {{ .Values.frontend.name }}
         ports:
         - containerPort: 80
         env:
+        {{- if lower .Values.softwareContext == "development" }}
         - name: NODE_ENV
           value: {{ .Values.frontend.env.NODE_ENV | quote }}
+        {{- else }}
+        - name: NODE_ENV
+          value: {{ .Values.frontend.env.NODE_ENV | quote }}
+        {{- end }}
         - name: REACT_APP_IS_HEAL_SERVER
           value: {{ .Values.frontend.env.REACT_APP_IS_HEAL_SERVER | quote }}
         resources: {}
