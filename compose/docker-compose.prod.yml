@@ -65,8 +65,8 @@ services:
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
-      - $MAPPING_LOCAL_PATH:/mapping.json
-    #  - ./syntheticDataset.json:$DATA_INPUT_FILE_PATH
+      - ../data/mapping.json:/mapping.json
+    #  - ../data/syntheticDataset.json:$DATA_INPUT_FILE_PATH
     depends_on:
       - db
       - redis
