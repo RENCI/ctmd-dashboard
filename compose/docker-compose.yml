@@ -44,7 +44,7 @@ services:
       SPARK_EXECUTOR_MEMORY: 8g
       SPARK_DRIVER_MEMORY: 8g
       PAUSE: $PAUSE
-      DATA_INPUT_FILE_PATH: $DATA_INPUT_FILE_PATH
+      DATA_INPUT_FILE_PATH: /syntheticDataset.json
       DOWNLOAD_REDCAP_DATA: $DOWNLOAD_REDCAP_DATA
       CREATE_TABLES: $CREATE_TABLES
       GLOBAL_WRITE_PERMISSIONS: $GLOBAL_WRITE_PERMISSIONS
@@ -54,8 +54,8 @@ services:
       - $AUXILIARY_PATH:/auxiliary
       - $FILTER_PATH:/filter
       - $BLOCK_PATH:/block
-      - $MAPPING_LOCAL_PATH:/mapping.json
-      - $DATA_INPUT_FILE_PATH:/syntheticDataset.json
+      - ../data/mapping.json:/mapping.json
+      - ../data/syntheticDataset.json:/syntheticDataset.json
       - ../data/redcap_data_dictionary_export.json:/redcap_data_dictionary_export.json  
     depends_on:
       - db
