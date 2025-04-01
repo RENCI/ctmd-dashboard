@@ -70,19 +70,19 @@ api:
   # The below section will be environment vars in the application.
   env:
     # "development" or "production" same value as nodeEnvironment
-    authEnvironment: "developments"
-    nodeEnvironment: "development"
-    dashboardURL: "http://localhost:3000"
-    reactAppAPIRoot: http://localhost/api/
-    fuseAuthAPIKey: "SECRET"
-    apiSessionSecret: "SECRET"
-    authURL: "https://some-auth-url.com"
+    AUTH_ENV: "development"
+    NODE_ENV: "development"
+    DASHBOARD_URL: "http://localhost:3000"
+    REACT_APP_API_ROOT: "http://localhost/api/"
+    FUSE_AUTH_API_KEY: "superlongsecret"
+    API_SESSION_SECRET: "something-secret"
+    AUTH_URL: "https://some-auth-url.com"
 
 postgres:
   create: true
   name: ctmd-db
   # Tag is used for both non-public and public versions of the image muy flexible.
-  tag: "latest"
+  tag: "11.22-alpine"
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
   # The ports are informational values and 
@@ -136,7 +136,7 @@ redis:
 pipeline:
   create: true
   name: ctmd-pipeline
-  tag: "tx-utils-removal-3"
+  tag: "latest"
   # The ports are informational values and 
   # not used to change templates currently.
   service:

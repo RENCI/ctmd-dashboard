@@ -20,7 +20,7 @@ spec:
         ports:
         - containerPort: 80
         env:
-        {{- if lower .Values.softwareContext == "development" }}
+        {{- if (eq (lower .Values.softwareContext) "development") }} 
         - name: NODE_ENV
           value: {{ .Values.frontend.env.NODE_ENV | quote }}
         {{- else }}

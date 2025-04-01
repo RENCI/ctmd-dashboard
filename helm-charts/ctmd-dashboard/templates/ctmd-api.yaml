@@ -32,20 +32,27 @@ spec:
             - containerPort: 4040
               name: graphics-api
           env:
+            {{- if (eq (lower .Values.softwareContext) "development") }} 
             - name: AUTH_ENV
-              value: {{ .Values.api.env.authEnvironment | quote }}
-            - name: FUSE_AUTH_API_KEY
-              value: {{ .Values.api.env.fuseAuthAPIKey | quote }}
-            - name: DASHBOARD_URL
-              value: {{ .Values.api.env.dashboardURL | quote }}
-            - name: REACT_APP_API_ROOT
-              value: {{ .Values.api.env.reactAppAPIRoot | quote }}
+              value: "development"
             - name: NODE_ENV
-              value: {{ .Values.api.env.nodeEnvironment | quote }}
-            - name: API_SESSION_SECRET  # Fixed environment variable name
-              value: {{ .Values.api.env.apiSessionSecret | quote }}
+              value: "development"
+            {{ else }}
+            - name: AUTH_ENV
+              value: "production"
+            - name: NODE_ENV
+              value: "production"
+            {{- end }}
+            - name: FUSE_AUTH_API_KEY
+              value: {{ .Values.api.env.FUSE_AUTH_API_KEY | quote }}
+            - name: DASHBOARD_URL
+              value: {{ .Values.api.env.DASHBOARD_URL | quote }}
+            - name: REACT_APP_API_ROOT
+              value: {{ .Values.api.env.REACT_APP_API_ROOT | quote }}
+            - name: API_SESSION_SECRET
+              value: {{ .Values.api.env.API_SESSION_SECRET | quote }}
             - name: AUTH_URL
-              value: {{ .Values.api.env.authURL | quote }}
+              value: {{ .Values.api.env.AUTH_URL | quote }}
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.secrets.name }}

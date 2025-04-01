@@ -1,3 +1,4 @@
+{{- if (eq (lower .Values.softwareContext) "development") }} 
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,6 +7,7 @@ data:
   # Retrieve the files from ctmd-dashboard/files dir
   {{ .Values.pipeline.config.syntheticDataFile }}: |-
 {{ .Files.Get (printf "files/%s" .Values.pipeline.config.syntheticDataFile) | indent 4 }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -104,24 +106,30 @@ spec:
           - name: LOCAL_ENV
             value: {{ .Values.pipeline.env.LOCAL_ENV | quote }}
           # ConfigMap mounted file - see volumeMounts - here we mount at the root currently.
+          {{- if (eq (lower .Values.softwareContext) "development") }} 
           - name: DATA_INPUT_FILE_PATH
             value: {{ printf "/%s" .Values.pipeline.config.syntheticDataFile | quote }}
+          {{- end }}
         envFrom:
         # Mounts the database connection secrets
           - secretRef:
               name: {{ .Values.postgres.secrets.name }}
         resources: {}
         volumeMounts:
+          {{- if (eq (lower .Values.softwareContext) "development") }} 
           - name: pipeline-synthetic-data
             mountPath: /{{ .Values.pipeline.config.syntheticDataFile }}  
             subPath: {{ .Values.pipeline.config.syntheticDataFile }}
+          {{- end }}
           - name: ctmd-database-mapping
             mountPath: /{{ .Values.pipeline.config.databaseMappingFile }}  
             subPath: {{ .Values.pipeline.config.databaseMappingFile }}  
       volumes:
+      {{- if (eq (lower .Values.softwareContext) "development") }} 
         - name: pipeline-synthetic-data
           configMap:
             name: pipeline-synthetic-data
+      {{- end }}
           # This volume uses the files/mapping.json file
         - name: ctmd-database-mapping
           configMap:

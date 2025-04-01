@@ -1,5 +1,5 @@
 version: "3"
-
+# Needs work since migrating over - some file paths broken
 services:
   auth:
     container_name: ctmd-auth
@@ -126,8 +126,8 @@ services:
         REACT_APP_API_ROOT: $REACT_APP_API_ROOT
         REACT_APP_DATA_API_ROOT: $REACT_APP_DATA_API_ROOT
         REACT_APP_IS_HEAL_SERVER: $IS_HEAL_SERVER
-      context: ./services/frontend/
-      dockerfile: Dockerfile-prod
+      context: ../services/frontend/
+      dockerfile: uiProd.Dockerfile
     volumes:
       - ./services/frontend:/usr/src/app
       - /usr/src/app/node_modules
