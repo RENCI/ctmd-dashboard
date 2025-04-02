@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 
 # Add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
-ENV REACT_APP_IS_HEAL_SERVER $REACT_APP_IS_HEAL_SERVER
+
 
 # Environment variables
 
@@ -17,6 +17,8 @@ ENV REACT_APP_IS_HEAL_SERVER $REACT_APP_IS_HEAL_SERVER
 RUN apk add git
 COPY package*.json ./
 RUN npm install
+
+COPY . /usr/src/app/
 
 EXPOSE 3000
 

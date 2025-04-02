@@ -3,7 +3,8 @@ import { Title, Paragraph } from '../../components/Typography'
 import { Card, CardHeader, CardContent, Button, List, ListItem } from '@material-ui/core'
 
 export const LoginPage = (props) => {
-  const redirectURL = process.env.NODE_ENV === 'production' ? `${window.location.origin}/api/auth` : 'http://localhost:3030/auth'
+  const redirectURL = process.env.NODE_ENV === 'production' ? `${window.location.origin}/api/auth` : `${process.env.REACT_APP_API_ROOT}/auth`
+  // const redirectURL = process.env.NODE_ENV === 'production' ? `${window.location.origin}/api/auth` : 'http://localhost:3030/auth'
   return (
     <Fragment>
       <Title>Access Denied</Title>

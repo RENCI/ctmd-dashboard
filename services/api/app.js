@@ -19,10 +19,11 @@ const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
 const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
 const AUTH_URL = process.env.AUTH_URL
 const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
+// The below should be able to refer to itself as localhost in k8s
 const REACT_APP_API_ROOT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
 
 // CORS
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
+app.use(cors({ origin: 'http://ctmd-frontend:3000', credentials: true }))
 
 // session
 app.use(

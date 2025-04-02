@@ -14,7 +14,8 @@ services:
 
   pipeline:
     container_name: ctmd-pipeline-dev
-    image: txscience/ctmd-pipeline-reload:v2.11
+    # image: txscience/ctmd-pipeline-reload:v2.11
+    image: containers.renci.org/ctmd/ctmd-pipeline:latest
     restart: always
     environment:
       POSTGRES_DATABASE_NAME: $POSTGRES_DB
@@ -51,9 +52,9 @@ services:
       LOCAL_ENV: 'true'
     volumes:
       - db_backups:/backup
-      - $AUXILIARY_PATH:/auxiliary
-      - $FILTER_PATH:/filter
-      - $BLOCK_PATH:/block
+      - aux_path:/auxiliary
+      - filter_path:/filter
+      - block_path:/block
       - ../data/mapping.json:/mapping.json
       - ../data/syntheticDataset.json:/syntheticDataset.json
       - ../data/redcap_data_dictionary_export.json:/redcap_data_dictionary_export.json  
@@ -87,9 +88,9 @@ services:
     build:
       context: ../services/api/
       dockerfile: api.Dockerfile
-    volumes:
-      - ../services/api:/usr/src/app
-      - /usr/src/app/node_modules/
+    # volumes:
+      # - ../services/api:/usr/src/app
+      # - api_node_modules
     ports:
       - $API_PORT:$API_PORT
     environment:
@@ -114,9 +115,9 @@ services:
     build:
       context: ../services/frontend/
       dockerfile: ui.Dockerfile
-    volumes:
-      - ../services/frontend:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+      # - ../services/frontend:/usr/src/app
+      # - frontend_node_modules
     environment:
       NODE_ENV: development
       REACT_APP_IS_HEAL_SERVER: $IS_HEAL_SERVER
@@ -133,4 +134,14 @@ volumes:
   db_data:
     external: false
   db_backups:
+    external: false
+  api_node_modules:
+    external: false
+  frontend_node_modules:
+    external: false
+  aux_path:
+    external: false
+  filter_path:
+    external: false 
+  block_path:
     external: false

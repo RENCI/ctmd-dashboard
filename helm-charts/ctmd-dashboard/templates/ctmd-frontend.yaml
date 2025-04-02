@@ -18,17 +18,16 @@ spec:
       - image: "{{ .Values.images.repository }}/{{ .Values.frontend.name }}:{{ .Values.frontend.tag | default .Chart.AppVersion }}"
         name: {{ .Values.frontend.name }}
         ports:
-        - containerPort: 80
-        env:
-        {{- if (eq (lower .Values.softwareContext) "development") }} 
+        - containerPort: {{ .Values.frontend.service.port }}
+        env: 
         - name: NODE_ENV
           value: {{ .Values.frontend.env.NODE_ENV | quote }}
-        {{- else }}
-        - name: NODE_ENV
-          value: {{ .Values.frontend.env.NODE_ENV | quote }}
-        {{- end }}
         - name: REACT_APP_IS_HEAL_SERVER
           value: {{ .Values.frontend.env.REACT_APP_IS_HEAL_SERVER | quote }}
+        - name: REACT_APP_API_ROOT
+          value: {{ .Values.frontend.env.REACT_APP_API_ROOT }}
+        - name: REACT_APP_DATA_API_ROOT
+          value: {{ .Values.frontend.env.REACT_APP_DATA_API_ROOT }}
         resources: {}
 
 ---
@@ -40,8 +39,8 @@ metadata:
   name: {{ .Values.frontend.name }}
 spec:
   ports:
-  - port: 3000
+  - port: {{ .Values.frontend.service.port }}
     protocol: TCP
-    targetPort: 80
+    targetPort: {{ .Values.frontend.service.port }}
   selector:
     app: {{ .Values.frontend.name }}

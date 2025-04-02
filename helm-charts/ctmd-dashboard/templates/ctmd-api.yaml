@@ -28,9 +28,9 @@ spec:
           name: {{ .Values.api.name }}
           ports:
             - containerPort: 3030
-              name: api
-            - containerPort: 4040
-              name: graphics-api
+              # name: api
+            # - containerPort: 4040
+            #   name: graphics-api
           env:
             {{- if (eq (lower .Values.softwareContext) "development") }} 
             - name: AUTH_ENV
@@ -66,14 +66,13 @@ metadata:
   name: {{ .Values.api.name }}
 spec:
   ports:
-    - port: 3030
-      protocol: TCP
-      targetPort: 3030
-      name: api
-    - port: 4040
-      protocol: TCP
-      targetPort: 4040
-      name: graphics-api
+  - port: {{ .Values.api.service.apiPort }}
+    protocol: TCP
+    targetPort: {{ .Values.api.service.apiPort }}
+    # - port: 4040
+    #   protocol: TCP
+    #   targetPort: 4040
+    #   name: graphics-api
   selector:
     app: {{ .Values.api.name }}
 

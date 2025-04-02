@@ -2,12 +2,10 @@
 ## Environment
 #
 API_BASE_IMAGE := ctmd-api
-API_VERSION := 2.16.0
-API_IMAGE_TAG := $(API_BASE_IMAGE):$(API_VERSION)
+API_TAG := dev-k8s
 
 UI_BASE_IMAGE := ctmd-frontend
-UI_VERSION := 2.16.0
-UI_IMAGE_TAG := $(UI_BASE_IMAGE):$(UI_VERSION)
+UI_TAG := dev-k8s
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
@@ -33,6 +31,27 @@ setup.windows:
 	choco install kustomize
 	choco install kubernetes-cli
 # ==============================================================================
+## Docker 
+#
+build-api:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/api/api.Dockerfile \
+	--tag containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
+	./services/api
+
+build-ui:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/frontend/ui.Dockerfile \
+	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
+	./services/frontend/
+
+build-all: build-api build-ui
+
+# ==============================================================================
 ## KiND Kubernetes 
 #
 # Create a new kind cluster
@@ -53,31 +72,16 @@ kind-down:
 	kind delete cluster --name $(KIND_CLUSTER)
 
 kind-load-api:
+		kind load docker-image \
+	  containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
+		--name $(KIND_CLUSTER)
 
 kind-load-frontend:
-	kind load docker-image containers.renci.org/ctmd/ctmd-frontend:latest --name $(KIND_CLUSTER)
+	kind load docker-image \
+	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
+		--name $(KIND_CLUSTER)
 
-kind-load:
-
-# ==============================================================================
-## Docker 
-#
-build-api:
-	docker buildx build \
-	--platform=linux/amd64 \
-	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/api/api.Dockerfile \
-	./services/api
-
-build-ui:
-	docker buildx build \
-	--platform=linux/amd64 \
-	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/frontend/uiProd.Dockerfile \
-	--tag containers.renci.org/ctmd/ctmd-frontend:latest \
-	./services/frontend/
-
-build-all: build-api build-ui
+kind-load: kind-load-frontend kind-load-api
 
 # =======================================================
 ## Helm
@@ -108,7 +112,7 @@ helm-down:
 ################################ LEGACY ################################
 ## DOCKER COMPOSE STUFF ###
 #
-# For active development this is not ideal. 
+# For active development this is not ideal and no guarantees for support. 
 # You can change the default config with `make cnf="config_special.env" build`
 # This is used with Docker-Compose only
 cnf ?= ./compose/config.env
