@@ -37,21 +37,18 @@ auth:
 
 
 frontend:
+# May need to template out nginx.conf for frontend
   create: true
   name: "ctmd-frontend"
   tag: "dev-k8s"
-  # The ports are informational values and 
-  # not used to change templates currently.
   service:
-    type: ClusterIP
     port: 3000
     name: http
   env:
     NODE_ENV: "development" # production || development
     REACT_APP_IS_HEAL_SERVER: "false"
-    # Production env values below, leave blank if softwareContext: development
-    REACT_APP_API_ROOT: "http://ctmd-api.svc.local:3030/" # specify the location of api endpoint service
-    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline.svc.local:5000/" # specify the location of the pipeline service
+    REACT_APP_API_ROOT: "http://ctmd-api:3030" # specify the location of api endpoint service
+    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline:5000" # specify the location of the pipeline service
   resources:
     limits:
       cpu: 500m
@@ -64,8 +61,6 @@ api:
   create: true
   name: ctmd-api
   tag: "dev-k8s"
-  # The ports are informational values and 
-  # not used to change templates currently.
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -78,11 +73,11 @@ api:
       memory: 300Mi
   # The below section will be environment vars in the application.
   env:
-    # "development" or "production" same value as nodeEnvironment
+    # "development" or "production" same values as NODE_ENV
     AUTH_ENV: "development"
     NODE_ENV: "development"
-    DASHBOARD_URL: "http://localhost:3000"
-    REACT_APP_API_ROOT: "http://localhost/api/"
+    DASHBOARD_URL: "http://ctmd-frontend:3000/"
+    REACT_APP_API_ROOT: "http://localhost:3030/api/"
     FUSE_AUTH_API_KEY: "superlongsecret"
     API_SESSION_SECRET: "something-secret"
     AUTH_URL: "https://some-auth-url.com"
@@ -94,8 +89,8 @@ postgres:
   tag: "11.22-alpine"
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
-  # The ports are informational values and 
-  # not used to change templates currently.
+  # The port is informational values and 
+  # not used to change template currently.
   service:
     port: 5432
   resources:
@@ -130,8 +125,8 @@ redis:
   tag: "latest"
   # Will use a public docker image of redis, otherwise uses images.repository/redis.name.
   publicRepository: true
-  # The ports are informational values and 
-  # not used to change templates currently.
+  # The port is informational value and 
+  # not used to change template currently.
   service:
     port: 6379
   resources:
@@ -146,8 +141,6 @@ pipeline:
   create: true
   name: ctmd-pipeline
   tag: "latest"
-  # The ports are informational values and 
-  # not used to change templates currently.
   service:
     port: 5000
   resources:

@@ -144,9 +144,9 @@ metadata:
   name: {{ .Values.pipeline.name }}
 spec:
   ports:
-  - port: 5000
+  - port: {{ .Values.pipeline.service.port }}
     protocol: TCP
-    targetPort: 5000
+    targetPort: {{ .Values.pipeline.service.port }}
   selector:
     app: {{ .Values.pipeline.name }}
 

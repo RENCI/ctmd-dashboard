@@ -51,6 +51,11 @@ build-ui:
 
 build-all: build-api build-ui
 
+push-ui:
+	docker push containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG)
+
+push-api:
+	docker push containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG)
 # ==============================================================================
 ## KiND Kubernetes 
 #
