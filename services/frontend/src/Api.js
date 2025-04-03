@@ -1,6 +1,6 @@
 const apiRoot = process.env.REACT_APP_API_ROOT
-const pipelineApiRoot = process.env.REACT_APP_API_ROOT
-// const apiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3000/'
+const pipelineApiRoot = process.env.REACT_APP_DATA_API_ROOT
+// const apiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
 // const pipelineApiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_DATA_API_ROOT : 'http://localhost:5000/'
 /*
     There are lots of endpoints we've created since development of this application began, and many are no longer used.

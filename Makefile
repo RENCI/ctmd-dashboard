@@ -113,6 +113,8 @@ helm-dev-down:
 helm-down:
 	helm uninstall ctmd-dashboard 
 
+expose-frontend:
+	kubectl port-forward svc/ctmd-frontend 3000:3000
 # ==============================================================================
 ################################ LEGACY ################################
 ## DOCKER COMPOSE STUFF ###

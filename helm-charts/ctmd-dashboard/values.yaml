@@ -47,8 +47,8 @@ frontend:
   env:
     NODE_ENV: "development" # production || development
     REACT_APP_IS_HEAL_SERVER: "false"
-    REACT_APP_API_ROOT: "http://ctmd-api:3030" # specify the location of api endpoint service
-    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline:5000" # specify the location of the pipeline service
+    REACT_APP_API_ROOT: "http://ctmd-api:3030/" # specify the location of api endpoint service
+    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline:5000/" # specify the location of the pipeline service
   resources:
     limits:
       cpu: 500m
@@ -77,10 +77,10 @@ api:
     AUTH_ENV: "development"
     NODE_ENV: "development"
     DASHBOARD_URL: "http://ctmd-frontend:3000/"
-    REACT_APP_API_ROOT: "http://localhost:3030/api/"
+    REACT_APP_API_ROOT: "http://ctmd-api:3030/"
     FUSE_AUTH_API_KEY: "superlongsecret"
     API_SESSION_SECRET: "something-secret"
-    AUTH_URL: "https://some-auth-url.com"
+    AUTH_URL: "https://some-auth-url.com" # production only
 
 postgres:
   create: true

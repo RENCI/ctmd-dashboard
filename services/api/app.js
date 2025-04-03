@@ -23,7 +23,8 @@ const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
 const REACT_APP_API_ROOT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
 
 // CORS
-app.use(cors({ origin: 'http://ctmd-frontend:3000', credentials: true }))
+// app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
+app.use(cors({ origin: '*', credentials: true }))
 
 // session
 app.use(
