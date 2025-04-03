@@ -1,22 +1,23 @@
-siteId,siteName
-99902,XYZ Jr. Children's Hospital
-99903,ABC Medical Center
-99904,DEF Hospital
-99905,John Doe Children's Hospital
-99906,Medical College of SGX
-99907,RTC Medical Center
-99908,Medical University of NKM
-99909,DZG Childrens Hospital Medical Center
-99910,University of HWB
-99911,The Children's Hospital WQN
-99912,Childrens Hospital of PTV
-99913,Childrens Hospital of CYB
-99914,MWR Children's Hospital
-99915,JQS Children's Hospital
-99916,University of UEN Health Science Center
-99917,Primary Children's Medical Center- University of FPZ
-99918,NRQM Children's Hospital
-99919,KCR Children's Hospital
-99920,LFX Medical Center
-99921,Childrens Hospital and Medical Center
-99922,GTB Children's Hospital
+Site ID,Site Name,CTSA ID
+siteId,siteName,ctsaId
+99902,XYZ Jr. Children's Hospital,1
+99903,ABC Medical Center,2
+99904,DEF Hospital,3
+99905,John Doe Children's Hospital,2
+99906,Medical College of SGX,3
+99907,RTC Medical Center,4
+99908,Medical University of NKM,3
+99909,DZG Childrens Hospital Medical Center,4
+99910,University of HWB,5
+99911,The Children's Hospital WQN,4
+99912,Childrens Hospital of PTV,5
+99913,Childrens Hospital of CYB,6
+99914,MWR Children's Hospital,5
+99915,JQS Children's Hospital,6
+99916,University of UEN Health Science Center,7
+99917,Primary Children's Medical Center- University of FPZ,6
+99918,NRQM Children's Hospital,7
+99919,KCR Children's Hospital,8
+99920,LFX Medical Center,7
+99921,Childrens Hospital and Medical Center,8
+99922,GTB Children's Hospital,9
