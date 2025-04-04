@@ -44,7 +44,13 @@ frontend:
   service:
     port: 3000
     name: http
+  loadbalancer: # for development
+    create: true 
+    targetPort: 3000
+  ingress: # for production
+    create: false
   env:
+    AUTH_ENV: "development" # production || development
     NODE_ENV: "development" # production || development
     REACT_APP_IS_HEAL_SERVER: "false"
     REACT_APP_API_ROOT: "http://ctmd-api:3030/" # specify the location of api endpoint service

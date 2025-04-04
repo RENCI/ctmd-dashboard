@@ -111,7 +111,11 @@ helm-dev-down:
 	kubectl delete pvc data-ctmd-db-0
 
 helm-down:
-	helm uninstall ctmd-dashboard 
+	helm uninstall ctmd-dashboard
+
+# For debugging charts when developing 
+helm-template-debug:
+	helm template helm-charts/ctmd-dashboard --debug
 
 expose-frontend:
 	kubectl port-forward svc/ctmd-frontend 3000:3000
