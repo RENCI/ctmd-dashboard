@@ -5,7 +5,7 @@ API_BASE_IMAGE := ctmd-api
 API_TAG := dev-k8s
 
 UI_BASE_IMAGE := ctmd-frontend
-UI_TAG := dev-k8s
+UI_TAG := dev-k8s-wds-proxy
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
