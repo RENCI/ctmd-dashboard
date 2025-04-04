@@ -38,6 +38,7 @@ build-api:
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
 	--file ./services/api/api.Dockerfile \
+	--tag $(API_BASE_IMAGE):$(API_TAG) \
 	--tag containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
 	./services/api
 
@@ -46,6 +47,7 @@ build-ui:
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
 	--file ./services/frontend/ui.Dockerfile \
+	--tag $(UI_BASE_IMAGE):$(UI_TAG) \
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 	./services/frontend/
 
@@ -78,12 +80,12 @@ kind-down:
 
 kind-load-api:
 		kind load docker-image \
-	  containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
+	  $(API_BASE_IMAGE):$(API_TAG) \
 		--name $(KIND_CLUSTER)
 
 kind-load-frontend:
 	kind load docker-image \
-	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
+	  $(UI_BASE_IMAGE):$(UI_TAG) \
 		--name $(KIND_CLUSTER)
 
 kind-load: kind-load-frontend kind-load-api
