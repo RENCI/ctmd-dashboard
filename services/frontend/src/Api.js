@@ -1,4 +1,4 @@
-const apiRoot = ''
+const apiRoot = '/'
 const pipelineApiRoot = process.env.REACT_APP_DATA_API_ROOT
 // const apiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
 // const pipelineApiRoot = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_DATA_API_ROOT : 'http://localhost:5000/'
