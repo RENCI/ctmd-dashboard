@@ -80,12 +80,12 @@ kind-down:
 
 kind-load-api:
 		kind load docker-image \
-	  $(API_BASE_IMAGE):$(API_TAG) \
+	  containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
 		--name $(KIND_CLUSTER)
 
 kind-load-frontend:
 	kind load docker-image \
-	  $(UI_BASE_IMAGE):$(UI_TAG) \
+	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 		--name $(KIND_CLUSTER)
 
 kind-load: kind-load-frontend kind-load-api
