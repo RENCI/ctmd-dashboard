@@ -28,10 +28,12 @@ RUN npm run build
 ########################
 FROM nginx:latest
 ARG BUILD_DATE
-ARG BUILD_REF 
+ARG BUILD_REF
+
 RUN apt-get update && apt-get install nano tree -y
-EXPOSE 80
+EXPOSE 3000
 COPY --from=builder /src/build /usr/share/nginx/html/
+
 CMD ["nginx", "-g", "daemon off;"]
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \

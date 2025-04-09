@@ -40,7 +40,7 @@ frontend:
 # May need to template out nginx.conf for frontend
   create: true
   name: "ctmd-frontend"
-  tag: "dev-k8s"
+  tag: "dev-k8s-prod"
   service:
     port: 3000
     name: http

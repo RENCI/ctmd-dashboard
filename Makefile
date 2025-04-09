@@ -1,11 +1,11 @@
 # ==============================================================================
 ## Environment
 #
+UI_BASE_IMAGE := ctmd-frontend
+UI_TAG := dev-k8s-prod
+
 API_BASE_IMAGE := ctmd-api
 API_TAG := dev-k8s
-
-UI_BASE_IMAGE := ctmd-frontend
-UI_TAG := dev-k8s
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
@@ -46,7 +46,7 @@ build-ui:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/frontend/ui.Dockerfile \
+	--file ./services/frontend/uiProd.Dockerfile \
 	--tag $(UI_BASE_IMAGE):$(UI_TAG) \
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 	./services/frontend/
@@ -80,12 +80,12 @@ kind-down:
 
 kind-load-api:
 		kind load docker-image \
-	  $(API_BASE_IMAGE):$(API_TAG) \
+	  containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
 		--name $(KIND_CLUSTER)
 
-kind-load-frontend:
+kind-load-ui:
 	kind load docker-image \
-	  $(UI_BASE_IMAGE):$(UI_TAG) \
+	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 		--name $(KIND_CLUSTER)
 
 kind-load: kind-load-frontend kind-load-api
@@ -119,7 +119,7 @@ helm-down:
 helm-template-debug:
 	helm template helm-charts/ctmd-dashboard --debug
 
-expose-frontend:
+port-forward-ui:
 	kubectl port-forward svc/ctmd-frontend 3000:3000
 # ==============================================================================
 ################################ LEGACY ################################
