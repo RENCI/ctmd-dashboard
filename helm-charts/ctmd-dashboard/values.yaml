@@ -34,6 +34,12 @@ softwareContext: "development"
 auth: 
   create: false
   name: "ctmd-auth"
+  service:
+    port: 8080
+  env:
+    PROVIDERS: '{"venderbilt":{"AUTH_URL":"https://redcap.vumc.org/plugins/TIN/sso/check_login"}}'
+    API_KEY: ""
+
 
 
 frontend:

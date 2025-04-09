@@ -70,10 +70,6 @@ data:
             proxy_redirect default;
         }
 
-        location /authenticate/ {
-            return 200 "Authentication bypassed in development\n";
-        }
-
         location / {
             root   /usr/share/nginx/html;
             index  index.html index.htm;
