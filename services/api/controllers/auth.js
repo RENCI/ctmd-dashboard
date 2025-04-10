@@ -8,6 +8,8 @@ const AGENT = new https.Agent({
   rejectUnauthorized: false,
 })
 
+console.log(JSON.stringify(process.env, null, 2))
+
 exports.auth = async (req, res) => {
   const code = req.body.code
   const urlRedirect = `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${DASHBOARD_URL}&code=${code}&redirect=true`
@@ -39,7 +41,7 @@ exports.auth = async (req, res) => {
       }
     } catch (err) {
       console.log(err)
-      res.status(400).send('error')
+      res.status(400).send(err.message)
     }
   } else {
     res.redirect(urlRedirect)

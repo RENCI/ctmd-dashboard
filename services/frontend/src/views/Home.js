@@ -6,7 +6,6 @@ import {
 } from '../components/Widgets'
 
 export const HomePage = (props) => {
-    console.log('process.env.REACT_APP_IS_HEAL_SERVER', process.env.REACT_APP_IS_HEAL_SERVER )
     return (
         <div>
             <Title>

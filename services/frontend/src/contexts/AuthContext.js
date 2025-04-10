@@ -48,18 +48,17 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
-    const data = response.data
-    if (response.status == 200) {
-      const isPLAdmin = typeof data.isHealUser === 'boolean' ? data.isHealUser : false
-      setUser(data)
-      setLocalStorageUser(data)
-      setAuthenticated(data.authenticated)
-      setIsPLAdmin(isPLAdmin)
+    if (response.status === 200) {
+      console.log('response.data:', response.data)
+      setIsPLAdmin(true)
+      setUser(response.data)
+      setLocalStorageUser(response.data)
+      setAuthenticated(response.data.authenticated)
     }
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user: user, authenticated: authenticated, isPLAdmin: isPLAdmin, logout: logout }}>
+    <AuthContext.Provider value={{ user, authenticated, isPLAdmin, logout }}>
       {children}
     </AuthContext.Provider>
   )
