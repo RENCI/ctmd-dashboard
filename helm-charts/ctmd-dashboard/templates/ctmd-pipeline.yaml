@@ -19,7 +19,20 @@ data:
 {{ .Files.Get ( printf "files/%s" .Values.pipeline.config.databaseMappingFile) | indent 4 }}
 ---
 # Backup location for postgres database
-# PVC
+# Ideally this would be managed by a cron in k8s at some point.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-backups-pvc
+  labels:
+    app: {{ .Values.pipeline.name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline.recurringBackup.size }}
+  storageClassName: {{ .Values.pipeline.recurringBackup.storageClass | default "standard" }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -57,8 +70,11 @@ spec:
             value: {{ .Values.pipeline.env.REDCAP_APPLICATION_TOKEN | quote }}
           - name: REDCAP_URL_BASE
             value: {{ .Values.pipeline.env.REDCAP_URL_BASE | quote }}
+            # Dumppath uses recurringBackup values not from env section of values
+            # this cooresponds with the pvc above which is mounted to volumesMounts
+            # in this application.
           - name: POSTGRES_DUMP_PATH
-            value: {{ .Values.pipeline.env.POSTGRES_DUMP_PATH | quote }}
+            value: {{ .Values.pipeline.recurringBackup.backupPath | quote }}
           - name: AUXILIARY_PATH
             value: {{ .Values.pipeline.env.AUXILIARY_PATH | quote }}
           - name: FILTER_PATH
@@ -123,7 +139,9 @@ spec:
           {{- end }}
           - name: ctmd-database-mapping
             mountPath: /{{ .Values.pipeline.config.databaseMappingFile }}  
-            subPath: {{ .Values.pipeline.config.databaseMappingFile }}  
+            subPath: {{ .Values.pipeline.config.databaseMappingFile }}
+          - name: db-backups-pvc
+            mountPath: {{ .Values.pipeline.recurringBackup.backupPath }}  
       volumes:
       {{- if (eq (lower .Values.softwareContext) "development") }} 
         - name: pipeline-synthetic-data
@@ -134,6 +152,9 @@ spec:
         - name: ctmd-database-mapping
           configMap:
             name: ctmd-database-mapping
+        - name: db-backups-pvc
+          persistentVolumeClaim:
+            claimName: db-backups-pvc
 
 --- 
 apiVersion: v1

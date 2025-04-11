@@ -1,15 +1,14 @@
 # Default values for ctmd-dashboard. This is the parent chart to launch
 # the full service. 
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+# Helm treats empty string as valid so to use defaults, leave completely blank.
+# Areas where defaults can be used will be explicitly commented.
 
 # TODO (Phase 2): 
 #  - postgres.persistence should support mounting existing pvc when deploying (currently does not).
 #  - Add further security considerations - runAsRoot: false type stuff
 #  - Develop mode should make use of syntheticDataset.json mount in /files dir
 #       while prod deployment should not. Have an opinionated dev env
+#  - Still trying to understand pipeline envs AUXILLARY_PATH, FILTER_PATH, BLOCK_PATH
 #
 
 images:
@@ -50,15 +49,9 @@ frontend:
   service:
     port: 3000
     name: http
-  loadbalancer: # for development
-    create: true 
-    targetPort: 3000
   ingress: # for production
     create: false
   env:
-    AUTH_ENV: "development" # production || development
-    NODE_ENV: "development" # production || development
-    REACT_APP_IS_HEAL_SERVER: "false"
     REACT_APP_API_ROOT: "http://ctmd-api:3030/" # specify the location of api endpoint service
     REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline:5000/" # specify the location of the pipeline service
   resources:
@@ -162,13 +155,13 @@ pipeline:
     requests:
       cpu: 200m
       memory: 300Mi
-  persistence:
-    storageClass: ""
-    size: "1Gi"
+  # persistence:
+  #   storageClass: 
+  #   size: "1Gi"
   recurringBackup:
-    backupPath: "/backup" 
-    storageClass: "" 
-    size: "2Gi"
+    backupPath: "/backups" 
+    storageClass:  # Leave blank for default "standard"
+    size: "1Gi"
   config:
     # The file being referenced is located in ctmd-dashboard/files/ 
     syntheticDataFile: "syntheticDataset.json"
@@ -176,7 +169,6 @@ pipeline:
   env:
     REDCAP_APPLICATION_TOKEN: "faketoken"
     REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
-    POSTGRES_DUMP_PATH: "/backup"
     AUXILIARY_PATH: "/auxiliary"
     FILTER_PATH: "/filter"
     BLOCK_PATH: "./block"
