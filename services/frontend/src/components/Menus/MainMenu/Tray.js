@@ -69,8 +69,7 @@ export const MenuTray = ({ children }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
 
-  const hasWriteAccess = process.env.REACT_APP_IS_HEAL_SERVER !== 'true' // not on heal server
-    || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin) // on heal server as a pladmin
+  const hasWriteAccess = isPLAdmin
 
   const handleToggleOpen = () => setOpen(!open)
   const handleClose = () => setOpen(false)

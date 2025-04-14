@@ -9,9 +9,10 @@ import { AuthContext } from '../../contexts'
 export const DownloadButton = ({ path, tooltip = 'Download' }) => {
   const { isPLAdmin } = useContext(AuthContext)
 
-  const shouldRender = process.env.NODE_ENV === 'development' || (process.env.REACT_APP_IS_HEAL_SERVER !== 'true' || isPLAdmin)
+  const shouldRender = isPLAdmin || process.env.NODE_ENV === 'development'
+
   if (!shouldRender) {
-    return null
+    return <span />
   }
 
   return (

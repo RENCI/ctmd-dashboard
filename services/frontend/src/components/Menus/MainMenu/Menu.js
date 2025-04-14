@@ -94,9 +94,7 @@ export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
 
-  const shouldRenderUploadsLink = (process.env.REACT_APP_IS_HEAL_SERVER === 'false') // not on heal server
-                               || (process.env.REACT_APP_IS_HEAL_SERVER === 'true' && isPLAdmin) // on heal server as a pladmin
-                               || (process.env.NODE_ENV === 'development')
+  const shouldRenderUploadsLink = isPLAdmin || process.env.NODE_ENV === 'development'
 
   let menuItems = [
     {}, // an empty object causes a Divider component to render in the menu
@@ -110,20 +108,6 @@ export const Menu = ({ expanded, clickHandler }) => {
     {}, // an empty object causes a Divider component to render in the menu
     { text: 'TIN Dashboard', path: 'https://redcap.vumc.org/plugins/TIN/', icon: TINLogoIcon },
   ]
-
-  if (process.env.REACT_APP_IS_HEAL_SERVER === 'true') {
-    menuItems.push({
-      text: 'CTMD',
-      path: 'https://ctmd.renci.org/',
-      icon: CTMDIcon,
-    })
-  } else {
-    menuItems.push({
-      text: 'HEAL CTMD',
-      path: 'https://heal-ctmd.renci.org/',
-      icon: HEALIcon,
-    })
-  }
 
   return (
     <nav className={classes.nav}>

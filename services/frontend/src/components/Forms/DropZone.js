@@ -36,7 +36,7 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
 
   // bail out here (don't render this component) if
   // we're a non-pladmin user on the heal server
-  const shouldRender = process.env.NODE_ENV === 'development' || (process.env.REACT_APP_IS_HEAL_SERVER !== 'true' || isPLAdmin)
+  const shouldRender = process.env.NODE_ENV === 'development' || isPLAdmin
   if (!shouldRender) {
     return null
   }
