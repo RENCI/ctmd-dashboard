@@ -56,16 +56,16 @@ spec:
         ports:
         - containerPort: {{ .Values.frontend.service.port }}
         env: 
-        - name: NODE_ENV
-          value: {{ .Values.frontend.env.NODE_ENV | quote }}
-        - name: AUTH_ENV
-          value: {{ .Values.frontend.env.AUTH_ENV | quote }}
-        - name: REACT_APP_IS_HEAL_SERVER
-          value: {{ .Values.frontend.env.REACT_APP_IS_HEAL_SERVER | quote }}
-        - name: REACT_APP_API_ROOT
-          value: {{ .Values.frontend.env.REACT_APP_API_ROOT }}
-        - name: REACT_APP_DATA_API_ROOT
-          value: {{ .Values.frontend.env.REACT_APP_DATA_API_ROOT }}
+        # - name: NODE_ENV
+        #   value: {{ .Values.frontend.env.NODE_ENV | quote }}
+        # - name: AUTH_ENV
+        #   value: {{ .Values.frontend.env.AUTH_ENV | quote }}
+        # - name: REACT_APP_IS_HEAL_SERVER
+        #   value: {{ .Values.frontend.env.REACT_APP_IS_HEAL_SERVER | quote }}
+        # - name: REACT_APP_API_ROOT
+        #   value: {{ .Values.frontend.env.REACT_APP_API_ROOT }}
+        # - name: REACT_APP_DATA_API_ROOT
+        #   value: {{ .Values.frontend.env.REACT_APP_DATA_API_ROOT }}
         resources: {}
         volumeMounts:
         - name: nginx-config

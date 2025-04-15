@@ -9,11 +9,6 @@ WORKDIR /src
 # Add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /src/node_modules/.bin:$PATH
 
-# Environment variable
-ARG REACT_APP_API_ROOT=$REACT_APP_API_ROOT
-ARG REACT_APP_DATA_API_ROOT=$REACT_APP_DATA_API_ROOT
-ARG REACT_APP_IS_HEAL_SERVER=$IS_HEAL_SERVER
-
 # Install and cache app dependencies
 RUN apk add git
 COPY package*.json /src/
