@@ -31,7 +31,6 @@ setup.windows:
 	choco install kustomize
 	choco install kubernetes-cli
 
-# For AMD64 / x86_64 currently, sorry ☹️
 # This expects sudo abilities
 setup.linuxAMD:
 	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v1.31.2/kind-linux-amd64
