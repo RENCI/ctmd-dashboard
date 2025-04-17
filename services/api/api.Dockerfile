@@ -1,7 +1,10 @@
 FROM node:18-bullseye
 
 ARG BUILD_DATE
-ARG BUILD_REF 
+ARG BUILD_REF
+# This can be used for sanity checking images
+# during development
+ENV BUILD_DATE=${BUILD_DATE}
 
 RUN apt update
 
@@ -11,12 +14,12 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Path to local installs
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 # Path to global installs
-ENV PATH /usr/local/node_modules/.bin:$PATH
+ENV PATH=/usr/local/node_modules/.bin:$PATH
 
-ENV NODE_ENV development
-ENV TZ America/New_York
+# ENV NODE_ENV=development
+ENV TZ=America/New_York
 
 # RUN npm install nodemon
 COPY ./package*.json ./

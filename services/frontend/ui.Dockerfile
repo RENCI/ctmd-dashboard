@@ -1,29 +1,38 @@
-# Base image
-FROM node:10.12.0-alpine
+# Build environment
+###################
+FROM node:10.24.1-alpine3.10 AS builder
 
-ARG BUILD_DATE
-ARG BUILD_REF 
 # Create and set working directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir /src
+WORKDIR /src
 
 # Add `/usr/src/app/node_modules/.bin` to $PATH
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-
-
-# Environment variables
+ENV PATH=/src/node_modules/.bin:$PATH
 
 # Install and cache app dependencies
 RUN apk add git
-COPY package*.json ./
+COPY package*.json /src/
 RUN npm install
+# Copy in source files
+COPY . /src
 
-COPY . /usr/src/app/
+# Build app
+RUN npm run build
 
+# Production environment
+########################
+FROM nginx:latest
+ARG BUILD_DATE
+ARG BUILD_REF
+# This can be used for sanity checking images
+# during development
+ENV BUILD_DATE=${BUILD_DATE}
+
+RUN apt-get update && apt-get install nano tree -y
 EXPOSE 3000
+COPY --from=builder /src/build /usr/share/nginx/html/
 
-# start app
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="ctmd-frontend" \

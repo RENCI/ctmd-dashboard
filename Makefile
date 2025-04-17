@@ -61,7 +61,7 @@ build-ui:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/frontend/uiProd.Dockerfile \
+	--file ./services/frontend/ui.Dockerfile \
 	--tag $(UI_BASE_IMAGE):$(UI_TAG) \
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 	./services/frontend/
