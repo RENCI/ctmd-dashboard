@@ -7,7 +7,7 @@ data:
   # Retrieve the files from ctmd-dashboard/files dir
   {{ .Values.pipeline.config.syntheticDataFile }}: |-
 {{ .Files.Get (printf "files/%s" .Values.pipeline.config.syntheticDataFile) | indent 4 }}
-
+--- 
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -161,7 +161,7 @@ spec:
             name: pipeline-synthetic-data
         - name: redcap-dictionary-data
           configMap:
-            name: pipeline-synthetic-data
+            name: redcap-dictionary-data
       {{- end }}
           # This volume uses the files/mapping.json file
         - name: ctmd-database-mapping
