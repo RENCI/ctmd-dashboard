@@ -175,6 +175,7 @@ pipeline:
     # The file being referenced is located in ctmd-dashboard/files/ 
     syntheticDataFile: "syntheticDataset.json"
     databaseMappingFile: "mapping.json"
+    redcapDataFile: "redcap_data_dictionary_export.json"
   env:
     REDCAP_APPLICATION_TOKEN: "faketoken"
     REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
