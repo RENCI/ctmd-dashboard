@@ -181,7 +181,7 @@ pipeline:
     REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
     AUXILIARY_PATH: "/auxiliary"
     FILTER_PATH: "/filter"
-    BLOCK_PATH: "./block"
+    BLOCK_PATH: "/block"
     RELOAD_SCHEDULE: "0"
     RELOAD_DATABASE: "0"
     SCHEDULE_RUN_TIME: "00:00"
