@@ -96,7 +96,7 @@ export const MenuTray = ({ children }) => {
         </Tooltip>
         <>
           {
-            (hasWriteAccess || process.env.NODE_ENV === 'development') && (
+            hasWriteAccess && (
               <Tooltip title="Data Manager" placement="right">
                 <IconButton component={NavLink} to={'/manage'} className={classes.trayButton} activeClassName={classes.activeTrayButton}>
                   <AdminIcon className={classes.trayIcon} />

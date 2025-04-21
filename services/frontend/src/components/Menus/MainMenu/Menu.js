@@ -94,7 +94,7 @@ export const Menu = ({ expanded, clickHandler }) => {
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
 
-  const shouldRenderUploadsLink = isPLAdmin || process.env.NODE_ENV === 'development'
+  const shouldRenderUploadsLink = isPLAdmin
 
   let menuItems = [
     {}, // an empty object causes a Divider component to render in the menu

@@ -4,7 +4,6 @@ import { Card, CardHeader, CardContent, Button, List, ListItem } from '@material
 
 export const LoginPage = (props) => {
   const redirectURL = `/api/auth`
-  // const redirectURL = process.env.NODE_ENV === 'production' ? `${window.location.origin}/api/auth` : 'http://localhost:3030/auth'
   return (
     <Fragment>
       <Title>Access Denied</Title>

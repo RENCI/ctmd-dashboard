@@ -28,18 +28,11 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
-  const { isPLAdmin, user } = useContext(AuthContext)
+  const { user } = useContext(AuthContext)
   const classes = useStyles()
   const fileInputRef = useRef()
   const [file, setFile] = useState(null)
   const addFlashMessage = useContext(FlashMessageContext)
-
-  // bail out here (don't render this component) if
-  // we're a non-pladmin user on the heal server
-  const shouldRender = process.env.NODE_ENV === 'development' || isPLAdmin
-  if (!shouldRender) {
-    return null
-  }
 
   const onFilesAdded = (event) => {
     try {
@@ -64,12 +57,6 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
       formdata.append('content-type', 'text/csv')
       formdata.append('json', '{}')
       formdata.append('has_comments', 'true')
-      headers = {
-        ...headers,
-        // TODO: Figure out if this is needed
-        // 'Access-Control-Allow-Origin': '*',
-        // 'content-type': 'multipart/form-data'
-      }
       axios({
         url: endpoint,
         method: method,
