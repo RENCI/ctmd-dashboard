@@ -154,7 +154,7 @@ redis:
 pipeline:
   create: true
   name: ctmd-pipeline
-  tag: "latest"
+  tag: "v2.13"
   service:
     port: 5000
   resources:
