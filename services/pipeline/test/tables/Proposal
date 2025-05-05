@@ -1,0 +1,2 @@
+ProposalID,dateSubmitted,proposalStatus,ShareThisInfo,FullTitle,ShortTitle,PhaseOfStudy,ShortDescription,ProtocolDesign,Objectives,Endpoints,StudyPopulation,MainEntryCriteria,PlannedSitesEnrollingParticipants,DescriptionOfStudyIntervention,StudyDuration,ParticipantDuration,DisclosureConflicts,optStatisticalPlan,optEnrollmentPlan
+0,01-01-2001,1,false,ipsum lorem,ipsum lorem,1,ipsum lorem,ipsum lorem,ipsum lorem,ipsum lorem,1,ipsum lorem,ipsum lorem,ipsum lorem,ipsum lorem,ipsum lorem,ipsum lorem,ipsum lorem,ipsum lorem
