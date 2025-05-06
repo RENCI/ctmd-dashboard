@@ -1,0 +1,18 @@
+name: Build-Pipeline
+on:
+    push:
+     branches-ignore:
+      - master
+      - main
+     paths:
+     - services/pipeline/**
+jobs:
+  build-push-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Build Pipeline
+      run: | 
+        make build-ui
