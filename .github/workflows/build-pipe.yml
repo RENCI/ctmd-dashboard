@@ -1,0 +1,43 @@
+name: Build-Pipeline
+on:
+    push:
+     branches-ignore:
+      - master
+      - main
+      - develop
+     paths:
+     - services/pipeline/**
+jobs:
+  build-push-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Docker Login Dockerhub (Redundancy)
+      run: | 
+        docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_TOKEN }}
+ 
+    - name: Build Pipeline
+      run: | 
+        make build-pipeline
+
+    - name: Push to DockerHub 
+      run: | 
+        make push-pipeline-dockerhub
+
+    - name: Logout Dockerhub 
+      run: | 
+        docker logout 
+
+    - name: Docker Login to Containers
+      run: |
+        docker login containers.renci.org --username ${{ secrets.CONTAINERHUB_USERNAME }} --password ${{ secrets.CONTAINERHUB_TOKEN }}
+    
+    - name: Push Pipeline to Containers
+      run: | 
+        make push-pipeline
+
+    - name: Logout of Containers
+      run: |
+        docker logout containers.renci.org
