@@ -3,7 +3,6 @@ import logging
 import os
 import requests
 
-# Test comment
 def getLogger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
