@@ -28,14 +28,28 @@ jobs:
         #       }
         #     }
 
-    - name: Docker Login Dockerhub (Redundancy)
-      run: | 
-        docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_TOKEN }}
+    # - name: Docker Login Dockerhub (Redundancy)
+    #   run: | 
+    #     docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Docker Login to Containers
-      run: |
-        docker login containers.renci.org --username ${{ secrets.CONTAINERHUB_USERNAME }} --password ${{ secrets.CONTAINERHUB_TOKEN }}
- 
+    # - name: Docker Login to Containers
+    #   run: |
+    #     docker login containers.renci.org --username ${{ secrets.CONTAINERHUB_USERNAME }} --password ${{ secrets.CONTAINERHUB_TOKEN }}
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        logout: true
+
+    - name: Login to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: containers.renci.org
+        username: ${{ secrets.CONTAINERHUB_USERNAME }}
+        password: ${{ secrets.CONTAINERHUB_TOKEN }}
+        logout: true
+
     - name: Build Pipeline
       run: | 
         make build-pipeline-cicd
