@@ -73,7 +73,7 @@ build-ui:
 	--cache-from type=registry,ref=$(UI_BASE_IMAGE):buildcache \
 	./services/frontend/
 
-build-pipeline:
+build-pipeline-cicd:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
@@ -82,6 +82,7 @@ build-pipeline:
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	--cache-to type=registry,ref=$(PIPELINE_BASE_IMAGE):buildcache,mode=max \
 	--cache-from type=registry,ref=$(PIPELINE_BASE_IMAGE):buildcache \
+	--push
 	./services/pipeline/
 
 build-all: build-api build-ui build-pipeline
