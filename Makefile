@@ -82,7 +82,7 @@ build-pipeline-cicd:
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	--cache-to type=registry,ref=$(PIPELINE_BASE_IMAGE):buildcache,mode=max \
 	--cache-from type=registry,ref=$(PIPELINE_BASE_IMAGE):buildcache \
-	--push
+	--push \
 	./services/pipeline/
 
 build-all: build-api build-ui build-pipeline
