@@ -19,8 +19,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
-        driver-opts: |
-          network=host
+        driver-opts: network=host
         daemon-config: |
             {
               "features": {
@@ -34,11 +33,7 @@ jobs:
  
     - name: Build Pipeline
       run: | 
-        make build-pipeline
-
-    - name: Push to DockerHub 
-      run: | 
-        make push-pipeline-dockerhub
+        make build-pipeline-cicd
 
     - name: Logout Dockerhub 
       run: | 
