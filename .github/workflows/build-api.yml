@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true 
 
 jobs:
-  build-push-release:
+  build-push-api:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
@@ -47,7 +47,7 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_OUTPUT
 
-    - name: Build Server Container for Appstore-Sockets
+    - name: Build Api
       uses: docker/build-push-action@v6
       with:
         context: ./services/api/

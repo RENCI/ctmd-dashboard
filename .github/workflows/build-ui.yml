@@ -12,7 +12,7 @@ concurrency:
   group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-buildfrontend
   cancel-in-progress: true   
 jobs:
-  build-push-release:
+  build-push-frontend:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
@@ -45,7 +45,7 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_OUTPUT
 
-    - name: Build Server Container for Appstore-Sockets
+    - name: Build Frontend
       uses: docker/build-push-action@v6
       with:
         context: ./services/frontend/

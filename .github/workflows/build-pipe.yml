@@ -13,7 +13,7 @@ concurrency:
   group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-buildpipe
   cancel-in-progress: true   
 jobs:
-  build-push-release:
+  build-push-pipeline:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
@@ -46,7 +46,7 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_OUTPUT
 
-    - name: Build Server Container for Appstore-Sockets
+    - name: Build Pipeline
       uses: docker/build-push-action@v6
       with:
         context: ./services/pipeline/
