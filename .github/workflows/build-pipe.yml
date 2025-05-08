@@ -7,8 +7,7 @@ on:
       - develop
      paths:
      - services/pipeline/**
-     - .github/**
-     - Makefile
+    workflow_dispatch:  
 jobs:
   build-push-release:
     runs-on: ubuntu-latest

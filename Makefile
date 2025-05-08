@@ -58,8 +58,6 @@ build-api:
 	--file ./services/api/api.Dockerfile \
 	--tag rencibuild/$(API_BASE_IMAGE):$(API_TAG) \
 	--tag containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
-	--cache-to type=registry,ref=$(API_BASE_IMAGE):buildcache,mode=max \
-	--cache-from type=registry,ref=$(API_BASE_IMAGE):buildcache \
 	./services/api
 
 build-ui:
@@ -69,8 +67,6 @@ build-ui:
 	--file ./services/frontend/ui.Dockerfile \
 	--tag rencibuild/$(UI_BASE_IMAGE):$(UI_TAG) \
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
-	--cache-to type=registry,ref=$(UI_BASE_IMAGE):buildcache,mode=max \
-	--cache-from type=registry,ref=$(UI_BASE_IMAGE):buildcache \
 	./services/frontend/
 
 build-pipeline:
@@ -80,18 +76,6 @@ build-pipeline:
 	--file ./services/pipeline/patch.Dockerfile \
 	--tag rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-	./services/pipeline/
-
-build-pipeline-cache:
-	docker buildx build \
-	--platform=linux/amd64 \
-	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/pipeline/patch.Dockerfile \
-	--tag rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-	--cache-to type=registry,ref=$(PIPELINE_BASE_IMAGE):buildcache,mode=max \
-	--cache-from type=registry,ref=$(PIPELINE_BASE_IMAGE):buildcache \
-	--push \
 	./services/pipeline/
 
 build-all: build-api build-ui build-pipeline
