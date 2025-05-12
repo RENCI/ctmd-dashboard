@@ -7,6 +7,7 @@ on:
       - develop
      paths:
      - services/pipeline/**
+     - .github/workflows/*
     workflow_dispatch:
 
 concurrency:
@@ -51,7 +52,7 @@ jobs:
       with:
         context: ./services/pipeline/
         file: ./services/pipeline/patch.Dockerfile
-        platforms: linux/amd64
+        # platforms: linux/amd64,linux/arm64
         push: true
         tags: |
           containers.renci.org/ctmd/ctmd-pipeline:test_${{ steps.branch.outputs.GHR }}
