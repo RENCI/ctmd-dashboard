@@ -7,7 +7,6 @@ on:
       - develop
      paths:
      - services/pipeline/**
-     - .github/workflows/*
     workflow_dispatch:
 
 concurrency:
