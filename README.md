@@ -6,13 +6,14 @@ The Clinical Trial Management Dashboard allows participants to upload and custom
 ## Project Structure
 [diagram]()
 At a high level, the project is structured around 3 core microservices found in the [services](https://github.com/RENCI/ctmd-dashboard/tree/main/services) directory. 
-- api
-- frontend
-- pipeline
+- [api](https://github.com/RENCI/ctmd-dashboard/tree/main/services/api)
+- [frontend](https://github.com/RENCI/ctmd-dashboard/tree/main/services/frontend)
+- [pipeline](https://github.com/RENCI/ctmd-dashboard/tree/main/services/pipeline)
+
 These services are supported by a relational database (postgres) and job caching service (redis).
 
 ## Development
-For local development, the [Makefile](https://github.com/RENCI/ctmd-dashboard/blob/main/Makefile) should be the driver for all local infrastructure setup, container builds, and deployments into local KiND cluster.
+For local development, the [Makefile](https://github.com/RENCI/ctmd-dashboard/blob/main/Makefile) should be the driver for all local infrastructure setup, container builds, and deployments into the local [KiND](https://kind.sigs.k8s.io/) cluster.
 
 #### Environment Assumptions
 We assume you already have docker installed 🐳.
@@ -22,6 +23,7 @@ Follow the `setup.mac`, `setup.windows`, `setup.linux` targets to install the ba
 
 #### Kubernetes in Docker ☸️
 `make kind-up` will start a local Kubernetes service in Docker called KiND. ⭐️ You must have the docker service running for this to work.
+
 `make kind-down` will delete the kubernetes service.
 
 #### Using Docker 
@@ -32,10 +34,14 @@ When deploying the applications into local KiND cluster `make kind-load-api` or 
 
 #### Deploying with helm
 `make helm-up` will deploy the full ctmd-dashboard into the KiND cluster. 
+
 `make helm-dev-down` will delete the ctmd-dashboard helm deployment and pvcs (database data), leaving only the KiND cluster up (for redeploying with changes). 
+
 `make helm-down` will uninstall the ctmd-dashboard deployment without removing the pvc (database data).
 
 ### CI/CD
+⚠️ Still actively being built ⚠️
+
 Automatic container builds occur when pushing to github through github actions. If updates are done to a specific service, only that service container will be built (this saves running costs in Github Actions). 
 
 For example if only the `services/api` code was updated, only that image will be built. The tag will be the branch name, prepended with `test_`. So if your branch name is `adding_pipeline` the resultant build will be tagged with `test_adding-pipeline`.
