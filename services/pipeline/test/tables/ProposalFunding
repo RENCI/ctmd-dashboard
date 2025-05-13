@@ -1,0 +1,2 @@
+ProposalID,submittedToNIH,currentFunding,newFundingStatus,numberFundingSource,fundingSource,fundingMechanism,instituteCenter,grantApplicationNumber,FOAnumber,planningGrant,largerThan500K,totalBudget,fundingPeriod,fundingStart,applicationToInstituteBusinessOfficeDate,discussWithPO,POsName,NewOrExistingNetwork,peerReviewDone
+0,false,1,1,0,1,1,1,ipsum lorem,ipsum lorem,false,false,ipsum lorem,ipsum lorem,2001-01-01,2001-01-01,false,ipsum lorem,false,1

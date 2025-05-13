@@ -1,0 +1,10 @@
+**/.git
+**/.gitignore
+**/*~
+**/venv
+**/.idea
+**/.ensime
+**/__pycache__
+**/target
+**/.ensime_cache
+**/metastore_db

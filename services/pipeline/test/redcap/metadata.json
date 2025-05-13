@@ -1,0 +1,722 @@
+[
+    {
+        "field_name": "proposal_id",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "info_share_question",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "proposal_title2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "short_name",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "pi",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "pi_firstname",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "pi_lastname",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "staff_status",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "submitters_contact_email",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "phone_number",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "review_discuss",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "pi_name",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "study_vumc_ric1ase",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "study_description",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "study_design_initial",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "objectives",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_42d",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_a20",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_054",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_110",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_5f5",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "study_duration_comments2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_35c",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_b32",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_b45",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_summary_describe2_a3f",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "theraputic_area",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "rare_disease",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "number_subjects",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "study_population",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "number_sites",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "non_us_sites",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "city_list",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "number_csta_sites",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "nih_funding",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "sources_1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding_source",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding_mechanism",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding_other",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "institute_center",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "grant_app_no",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding_opp_announcement",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "planning_grant",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "more_than_500000",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "anticipated_budget",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding_duration",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "bo_submission",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "funding_nih",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "po_name",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "partnership",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "scientific_review",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "site_active_date",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "planned_submission_date",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "conso_or_services",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "new_service_selection",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "fwa",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "consult_options",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "pi_name_2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "meeting_date",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "approved_serv_cons",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "services_approved",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "vote_comments1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "prop_submit",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "protocol_status",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "tic_ric_assign",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "ric_poc_2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "ncats_poc_2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "ncats_poc_3",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "dl_sent1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "intro_call",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "kick_off_scheduled",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "kick_off",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "wk_complete",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "wrap_up_sent",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "revewed_in_consult",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "summary_of_recomendatio",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "protocol_final_start",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "project_budget1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "tic_budget_changes",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "project_budget5",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "project_budget6",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "notes4",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "fund_assessmemt",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "review",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "discussed1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "recommendations1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "discussed2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "recommendations2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "discussed3",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "discussed4",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "discussed5",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "discussed7",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "other_comments",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "issues",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "header_8b",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "header_8d",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "header_8e",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "header_8f",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "recommendations",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "service_recommended",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "service1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "service2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "service3",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "meeting_date_2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "tic_ric_assign_v2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "ncats_poc_v2_2",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "ncats_poc_v2_3",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "satisfaction_sent",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "new_funding_source",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "amount_award",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "actual_date",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "project_funding_date",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "release_of_funds",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "pro_time_date_1",
+        "select_choices_or_calculations": "1, choice one | 2, choice 2 | 3, choice 3"
+    },
+    {
+        "field_name": "ctsa_133",
+        "field_label": "label_133"
+    },
+    {
+        "field_name": "ctsa_63",
+        "field_label": "label_63"
+    },
+    {
+        "field_name": "ctsa_51",
+        "field_label": "label_51"
+    },
+    {
+        "field_name": "ctsa_94",
+        "field_label": "label_94"
+    },
+    {
+        "field_name": "ctsa_1",
+        "field_label": "label_1"
+    },
+    {
+        "field_name": "ctsa_129",
+        "field_label": "label_129"
+    },
+    {
+        "field_name": "ctsa_2",
+        "field_label": "label_2"
+    },
+    {
+        "field_name": "ctsa_56",
+        "field_label": "label_56"
+    },
+    {
+        "field_name": "ctsa_95",
+        "field_label": "label_95"
+    },
+    {
+        "field_name": "ctsa_64",
+        "field_label": "label_64"
+    },
+    {
+        "field_name": "ctsa_65",
+        "field_label": "label_65"
+    },
+    {
+        "field_name": "ctsa_55",
+        "field_label": "label_55"
+    },
+    {
+        "field_name": "ctsa_3",
+        "field_label": "label_3"
+    },
+    {
+        "field_name": "ctsa_96",
+        "field_label": "label_96"
+    },
+    {
+        "field_name": "ctsa_76",
+        "field_label": "label_76"
+    },
+    {
+        "field_name": "ctsa_80",
+        "field_label": "label_80"
+    },
+    {
+        "field_name": "ctsa_81",
+        "field_label": "label_81"
+    },
+    {
+        "field_name": "ctsa_66",
+        "field_label": "label_66"
+    },
+    {
+        "field_name": "ctsa_4",
+        "field_label": "label_4"
+    },
+    {
+        "field_name": "ctsa_127",
+        "field_label": "label_127"
+    },
+    {
+        "field_name": "ctsa_5",
+        "field_label": "label_5"
+    },
+    {
+        "field_name": "ctsa_68",
+        "field_label": "label_68"
+    },
+    {
+        "field_name": "ctsa_69",
+        "field_label": "label_69"
+    },
+    {
+        "field_name": "ctsa_67",
+        "field_label": "label_67"
+    },
+    {
+        "field_name": "ctsa_70",
+        "field_label": "label_70"
+    },
+    {
+        "field_name": "ctsa_71",
+        "field_label": "label_71"
+    },
+    {
+        "field_name": "ctsa_82",
+        "field_label": "label_82"
+    },
+    {
+        "field_name": "ctsa_131",
+        "field_label": "label_131"
+    },
+    {
+        "field_name": "ctsa_126",
+        "field_label": "label_126"
+    },
+    {
+        "field_name": "ctsa_6",
+        "field_label": "label_6"
+    },
+    {
+        "field_name": "ctsa_97",
+        "field_label": "label_97"
+    },
+    {
+        "field_name": "ctsa_100",
+        "field_label": "label_100"
+    },
+    {
+        "field_name": "ctsa_7",
+        "field_label": "label_7"
+    },
+    {
+        "field_name": "ctsa_54",
+        "field_label": "label_54"
+    },
+    {
+        "field_name": "ctsa_77",
+        "field_label": "label_77"
+    },
+    {
+        "field_name": "ctsa_72",
+        "field_label": "label_72"
+    },
+    {
+        "field_name": "ctsa_83",
+        "field_label": "label_83"
+    },
+    {
+        "field_name": "ctsa_84",
+        "field_label": "label_84"
+    },
+    {
+        "field_name": "ctsa_48",
+        "field_label": "label_48"
+    },
+    {
+        "field_name": "ctsa_119",
+        "field_label": "label_119"
+    },
+    {
+        "field_name": "ctsa_122",
+        "field_label": "label_122"
+    },
+    {
+        "field_name": "ctsa_101",
+        "field_label": "label_101"
+    },
+    {
+        "field_name": "ctsa_128",
+        "field_label": "label_128"
+    },
+    {
+        "field_name": "ctsa_50",
+        "field_label": "label_50"
+    },
+    {
+        "field_name": "ctsa_121",
+        "field_label": "label_121"
+    },
+    {
+        "field_name": "ctsa_102",
+        "field_label": "label_102"
+    },
+    {
+        "field_name": "ctsa_132",
+        "field_label": "label_132"
+    },
+    {
+        "field_name": "ctsa_8",
+        "field_label": "label_8"
+    },
+    {
+        "field_name": "ctsa_9",
+        "field_label": "label_9"
+    },
+    {
+        "field_name": "ctsa_11",
+        "field_label": "label_11"
+    },
+    {
+        "field_name": "ctsa_103",
+        "field_label": "label_103"
+    },
+    {
+        "field_name": "ctsa_12",
+        "field_label": "label_12"
+    },
+    {
+        "field_name": "ctsa_74",
+        "field_label": "label_74"
+    },
+    {
+        "field_name": "ctsa_85",
+        "field_label": "label_85"
+    },
+    {
+        "field_name": "ctsa_49",
+        "field_label": "label_49"
+    },
+    {
+        "field_name": "ctsa_75",
+        "field_label": "label_75"
+    },
+    {
+        "field_name": "ctsa_58",
+        "field_label": "label_58"
+    },
+    {
+        "field_name": "ctsa_57",
+        "field_label": "label_57"
+    },
+    {
+        "field_name": "ctsa_47",
+        "field_label": "label_47"
+    },
+    {
+        "field_name": "ctsa_104",
+        "field_label": "label_104"
+    },
+    {
+        "field_name": "ctsa_130",
+        "field_label": "label_130"
+    },
+    {
+        "field_name": "ctsa_52",
+        "field_label": "label_52"
+    },
+    {
+        "field_name": "ctsa_53",
+        "field_label": "label_53"
+    },
+    {
+        "field_name": "ctsa_13",
+        "field_label": "label_13"
+    },
+    {
+        "field_name": "ctsa_500",
+        "field_label": "label_500"
+    }
+]

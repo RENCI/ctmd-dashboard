@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  redis:
+    container_name: pmd-pipeline-reload-test-redis-mock
+    build:
+      context: ./redis/
+      dockerfile: Dockerfile
+    image: pmd-pipeline-reload-test-redis-mock:0.2.31
+    environment: {}
+    ports:
+      - 6379
+    command: ["--appendonly", "yes"]
+    
+  pipeline:
+    container_name: pmd-pipeline-reload-test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["-s", "-x", "-vv"] # , "-k", "test_put_error_duplicate_column_upload"]
+    image: pmd-pipeline-reload-test:0.2.31
+    environment:
+      POSTGRES_DATABASE_NAME: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_PORT: $POSTGRES_PORT    
+      POSTGRES_HOST: db
+      REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
+      REDCAP_URL_BASE: "http://redcap:5000/api/"
+      POSTGRES_DUMP_PATH: $POSTGRES_DUMP_PATH
+      AUXILIARY_PATH: /auxiliary
+      FILTER_PATH: /filter
+      BLOCK_PATH: /block
+      RELOAD_SCHEDULE: $RELOAD_SCHEDULE
+      RELOAD_DATABASE: $RELOAD_DATABASE
+      SCHEDULE_RUN_TIME: $SCHEDULE_RUN_TIME
+      SERVER: 1
+      REDIS_QUEUE_HOST: redis
+      REDIS_QUEUE_PORT: 6379
+      REDIS_QUEUE_DB: 0
+      REDIS_LOCK_HOST: redis
+      REDIS_LOCK_PORT: 6379
+      REDIS_LOCK_DB: 1
+      REDIS_LOCK_EXPIRE: $TASK_TIME
+      REDIS_LOCK_TIMEOUT: $TASK_TIME
+      TASK_TIME: $TASK_TIME
+      SPARK_DRIVER_MEMORY: $SPARK_DRIVER_MEMORY
+      SPARK_EXECUTOR_MEMORY: $SPARK_EXECUTOR_MEMORY
+      PAUSE: $PAUSE
+      PRINT_REQUEST: $PRINT_REQUEST
+    volumes:
+      - ./mapping.json:/mapping.json
+    depends_on:
+      - db
+      - redcap
+      - redis
+          
+  db:
+    container_name: pmd-pipeline-reload-test-db-mock
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    image: pmd-pipeline-reload-test-db-mock:0.2.31
+    environment:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_PORT: $POSTGRES_PORT
+    ports:
+      - ${POSTGRES_PORT}
+
+  redcap:
+    container_name: pmd-pipeline-reload-test-redcap-mock
+    build:
+      context: ./redcap/
+      dockerfile: Dockerfile
+    image: pmd-pipeline-reload-test-redcap-mock:0.2.31
+    environment:
+      REDCAP_APPLICATION_TOKEN: $REDCAP_APPLICATION_TOKEN
+    ports:
+      - 5000
+
+

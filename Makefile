@@ -7,6 +7,9 @@ UI_TAG := dev-k8s-prod
 API_BASE_IMAGE := ctmd-api
 API_TAG := dev-k8s
 
+PIPELINE_BASE_IMAGE := ctmd-pipeline
+PIPELINE_TAG := dev-k8s
+
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
 ## Kind Env
@@ -53,7 +56,7 @@ build-api:
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
 	--file ./services/api/api.Dockerfile \
-	--tag $(API_BASE_IMAGE):$(API_TAG) \
+	--tag rencibuild/$(API_BASE_IMAGE):$(API_TAG) \
 	--tag containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
 	./services/api
 
@@ -62,17 +65,39 @@ build-ui:
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
 	--file ./services/frontend/ui.Dockerfile \
-	--tag $(UI_BASE_IMAGE):$(UI_TAG) \
+	--tag rencibuild/$(UI_BASE_IMAGE):$(UI_TAG) \
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 	./services/frontend/
 
-build-all: build-api build-ui
+build-pipeline:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/pipeline/patch.Dockerfile \
+	--tag rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
+	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
+	./services/pipeline/
+
+build-all: build-api build-ui build-pipeline
 
 push-ui:
 	docker push containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG)
 
 push-api:
 	docker push containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG)
+
+push-pipeline:
+	docker push containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
+
+# This is a redundancy used by ci/cd as disaster relief
+push-ui-dockerhub:
+	docker push rencibuild/$(UI_BASE_IMAGE):$(UI_TAG)
+
+push-api-dockerhub:
+	docker push rencibuild/$(API_BASE_IMAGE):$(API_TAG)
+
+push-pipeline-dockerhub:
+	dockerhub push rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
 # ==============================================================================
 ## KiND Kubernetes 
 #
