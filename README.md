@@ -4,7 +4,8 @@ This application is a component of the [Trial Innovation Network](https://triali
 The Clinical Trial Management Dashboard allows participants to upload and customize additional data atop Redcap data, view graphs, create reports and draw critical insight into areas that can be improved across various research processes and ongoing trials.
 
 ## Project Structure
-[diagram]()
+[](https://github.com/RENCI/ctmd-dashboard/tree/adding-pipeline/data/diagram/ctmd-dash-outline.png?raw=true)
+
 At a high level, the project is structured around 3 core microservices found in the [services](https://github.com/RENCI/ctmd-dashboard/tree/main/services) directory. 
 - [api](https://github.com/RENCI/ctmd-dashboard/tree/main/services/api)
 - [frontend](https://github.com/RENCI/ctmd-dashboard/tree/main/services/frontend)
