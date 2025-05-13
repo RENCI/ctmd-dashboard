@@ -40,6 +40,9 @@ When deploying the applications into local KiND cluster `make kind-load-api` or 
 
 `make helm-down` will uninstall the ctmd-dashboard deployment without removing the pvc (database data).
 
+#### Expose the frontend-Service
+`make port-forward-ui` will expose the frontend to your local development environment on port 3000. `localhost:3000/` will then be accessible from a browser.
+
 ### CI/CD
 ⚠️ Still actively being built ⚠️
 
