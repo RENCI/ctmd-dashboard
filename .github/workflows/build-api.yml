@@ -37,4 +37,4 @@ jobs:
         docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
         docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
         container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
-        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}

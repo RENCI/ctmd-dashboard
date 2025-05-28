@@ -71,7 +71,7 @@ jobs:
         docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
         docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
         container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
-        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
 
     - name: Build-Frontend
       uses: ./.github/actions/build-service
@@ -82,7 +82,7 @@ jobs:
         docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
         docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
         container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
-        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
 
     - name: Build-Pipeline
       uses: ./.github/actions/build-service
@@ -93,7 +93,7 @@ jobs:
         docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
         docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
         container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
-        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
 
 #==========================TAG & RELEASE W/ NOTES =========================
 
