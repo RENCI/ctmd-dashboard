@@ -29,7 +29,8 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_ENV
 
-    - uses: ./.github/workflows/build-service.yml
+    - name: Call Build-Service Workflow
+      uses: ctmd-dashboard/.github/workflows/build-service.yml@github_actions
       with:
         app-name: 'api'
         tag: 'test_${{ env.GHR }}'
