@@ -21,7 +21,7 @@ jobs:
   build-push-api:
     runs-on: ubuntu-latest
     steps:
-    
+    - uses: actions/checkout@v4
     # Obtain the branch being developed
     - name: Set branch name
       id: branch

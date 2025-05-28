@@ -21,7 +21,6 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-  
     - name: Fail build on High/Criticial Vulnerabilities in Filesystem
       uses: aquasecurity/trivy-action@master
       with:
