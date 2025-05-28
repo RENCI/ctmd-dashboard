@@ -68,6 +68,10 @@ jobs:
         app-name: 'api'
         tag: '${{ env.SHORT_SHA }}'
         release-tag: '${{ env.SEMVER }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
 
     - name: Build-Frontend
       uses: ./.github/workflows/build-service.yml
@@ -75,6 +79,10 @@ jobs:
         app-name: 'frontend'
         tag: '${{ env.SHORT_SHA }}'
         release-tag: '${{ env.SEMVER }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
 
     - name: Build-Pipeline
       uses: ./.github/workflows/build-service.yml
@@ -82,6 +90,10 @@ jobs:
         app-name: 'pipeline'
         tag: '${{ env.SHORT_SHA }}'
         release-tag: '${{ env.SEMVER }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
 
 #==========================TAG & RELEASE W/ NOTES =========================
 

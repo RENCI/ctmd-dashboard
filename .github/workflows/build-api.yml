@@ -34,3 +34,7 @@ jobs:
       with:
         app-name: 'api'
         tag: 'test_${{ env.GHR }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
