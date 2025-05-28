@@ -63,21 +63,21 @@ jobs:
         echo "Sanity Check for Semver: $SEMVER"
 
     - name: Build-Api
-      uses: ./.github/actions/build-service
+      uses: ./.github/workflows/build-service.yml
       with:
         app-name: 'api'
         tag: '${{ env.SHORT_SHA }}'
         release-tag: '${{ env.SEMVER }}'
 
     - name: Build-Frontend
-      uses: ./.github/actions/build-service
+      uses: ./.github/workflows/build-service.yml
       with:
         app-name: 'frontend'
         tag: '${{ env.SHORT_SHA }}'
         release-tag: '${{ env.SEMVER }}'
 
     - name: Build-Pipeline
-      uses: ./.github/actions/build-service
+      uses: ./.github/workflows/build-service.yml
       with:
         app-name: 'pipeline'
         tag: '${{ env.SHORT_SHA }}'
