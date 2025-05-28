@@ -9,6 +9,7 @@ on:
       - master
       paths:
       - services/api/**
+      - .github/**
       tags-ignore:
       - '*'
 
