@@ -1,19 +1,24 @@
+# Technically 
 name: Build-Service
-description: Build a service application of CTMD-Dashboard
-
-inputs:
-  app-name:
-    description: Name of application to build
-    required: true
-  tag:
-    description: Tag to use for build 
-    required: true
-  release-tag:
-    description: Tag for release 
-    required: false
-runs:
-  using: "composite"
-  steps:
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        description: Name of application to build
+        required: true
+        type: string
+      tag:
+        description: Tag to use for build 
+        required: true
+        type: string
+      release-tag:
+        description: Tag for release 
+        required: false
+        type: string
+jobs:
+  build-service:
+    runs-on: ubuntu-latest
+    steps:
     - name: Checkout Code
       uses: actions/checkout@v4
     
