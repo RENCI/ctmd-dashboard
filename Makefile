@@ -55,7 +55,7 @@ build-api:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/api/api.Dockerfile \
+	--file ./services/api/Dockerfile \
 	--tag rencibuild/$(API_BASE_IMAGE):$(API_TAG) \
 	--tag containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG) \
 	./services/api
@@ -64,7 +64,7 @@ build-ui:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/frontend/ui.Dockerfile \
+	--file ./services/frontend/Dockerfile \
 	--tag rencibuild/$(UI_BASE_IMAGE):$(UI_TAG) \
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 	./services/frontend/
@@ -73,7 +73,7 @@ build-pipeline:
 	docker buildx build \
 	--platform=linux/amd64 \
 	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/pipeline/patch.Dockerfile \
+	--file ./services/pipeline/Dockerfile \
 	--tag rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	./services/pipeline/
