@@ -37,14 +37,14 @@ runs:
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.docker-name }}
-        password: ${{ secrets.docker-token }}
+        password: ${{ inputs.docker-token }}
         logout: true
     - name: Login to Container Registry
       uses: docker/login-action@v3
       with:
         registry: containers.renci.org
-        username: ${{ secrets.container-name }}
-        password: ${{ secrets.container-token }}
+        username: ${{ inputs.container-name }}
+        password: ${{ inputs.container-token }}
         logout: true
     - name: Build Api
       uses: docker/build-push-action@v6
