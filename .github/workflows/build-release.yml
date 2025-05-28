@@ -63,7 +63,7 @@ jobs:
         echo "Sanity Check for Semver: $SEMVER"
 
     - name: Build-Api
-      uses: ./.github/workflows/build-service.yml
+      uses: ./.github/actions/build-service
       with:
         app-name: 'api'
         tag: '${{ env.SHORT_SHA }}'
@@ -74,7 +74,7 @@ jobs:
         container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
 
     - name: Build-Frontend
-      uses: ./.github/workflows/build-service.yml
+      uses: ./.github/actions/build-service
       with:
         app-name: 'frontend'
         tag: '${{ env.SHORT_SHA }}'
@@ -85,7 +85,7 @@ jobs:
         container-token: ${{ secrets.CONTANIERHUB_TOKEN }}
 
     - name: Build-Pipeline
-      uses: ./.github/workflows/build-service.yml
+      uses: ./.github/actions/build-service
       with:
         app-name: 'pipeline'
         tag: '${{ env.SHORT_SHA }}'

@@ -28,7 +28,7 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_ENV
 
-    - uses: ./.github/workflows/build-service.yml
+    - uses: ./.github/actions/build-service
       with:
         app-name: 'frontend'
         tag: 'test_${{ env.GHR }}'
