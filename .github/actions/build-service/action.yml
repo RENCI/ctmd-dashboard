@@ -10,6 +10,7 @@ inputs:
   release-tag:
     description: Tag for release 
     required: false
+    default: ''
   docker-name:
     description: Name for docker login 
     required: true 
@@ -46,14 +47,31 @@ runs:
         username: ${{ inputs.container-name }}
         password: ${{ inputs.container-token }}
         logout: true
-    - name: Build Api
+        
+    - name: Build Service Non-Release
+      if: ${{ inputs.release-tag == '' }}
       uses: docker/build-push-action@v6
       with:
         context: ./services/${{ inputs.app-name }}/
         file: ./services/${{ inputs.app-name }}/Dockerfile
         push: true
         tags: |
-          containers.renci.org/ctmd/ctmd-${{ inputs.app-name }}:{{ inputs.tag }}
+          containers.renci.org/ctmd/ctmd-${{ inputs.app-name }}:${{ inputs.tag }}
           rencibuild/ctmd-${{ inputs.app-name }}:${{ inputs.tag }}
+        cache-from: type=registry,ref=rencibuild/ctmd-${{ inputs.app-name }}:buildcache
+        cache-to: type=registry,ref=rencibuild/ctmd-${{ inputs.app-name }}:buildcache,mode=max
+
+    - name: Build Service Release
+      if: ${{ inputs.release-tag != '' }}
+      uses: docker/build-push-action@v6
+      with:
+        context: ./services/${{ inputs.app-name }}/
+        file: ./services/${{ inputs.app-name }}/Dockerfile
+        push: true
+        tags: |
+          containers.renci.org/ctmd/ctmd-${{ inputs.app-name }}:${{ inputs.tag }}
+          containers.renci.org/ctmd/ctmd-${{ inputs.app-name }}:${{ inputs.release-tag }}
+          rencibuild/ctmd-${{ inputs.app-name }}:${{ inputs.tag }}
+          rencibuild/ctmd-${{ inputs.app-name }}:${{ inputs.release-tag }}
         cache-from: type=registry,ref=rencibuild/ctmd-${{ inputs.app-name }}:buildcache
         cache-to: type=registry,ref=rencibuild/ctmd-${{ inputs.app-name }}:buildcache,mode=max
