@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true   
 
 jobs:
-  build-push-api:
+  build-push-pipeline:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
