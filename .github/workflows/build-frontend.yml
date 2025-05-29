@@ -1,18 +1,19 @@
-name: Build-Pipeline
+name: Build-Frontend
 on:
+
     push:
      branches-ignore:
       - master
       - main
       - develop
      paths:
-     - services/pipeline/**
+     - services/frontend/**
      tags-ignore:
-     - '*'
+       - '*'
     workflow_dispatch:
 
 concurrency:
-  group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-buildpipe
+  group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-buildfrontend
   cancel-in-progress: true   
 
 jobs:
@@ -29,7 +30,7 @@ jobs:
 
     - uses: ./.github/actions/build-service
       with:
-        app-name: 'pipeline'
+        app-name: 'frontend'
         tag: 'test_${{ env.GHR }}'
         docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
         docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
