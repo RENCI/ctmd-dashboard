@@ -5,6 +5,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker'
 import WebFont from 'webfontloader'
 
+console.log('workflow success!')
+
 WebFont.load({
     google: {
         families: [
