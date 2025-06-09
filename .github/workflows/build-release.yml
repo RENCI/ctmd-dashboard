@@ -59,7 +59,7 @@ jobs:
 
     - name: Set Semver in Github Env 
       run: |
-        echo "SEMVER=v${{ steps.version.outputs.version }}"
+        echo "SEMVER=v${{ steps.version.outputs.version }}" >> $GITHUB_ENV
         echo "Sanity Check for Semver: $SEMVER"
 
     - name: Build-Api

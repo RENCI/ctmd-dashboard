@@ -1,9 +1,9 @@
-# Reusable Workflow gets called by 
-# build-api, build-frontend, build-pipe, build-release
-# actions. 
+# Workflow to build a one off version or in case manual
+# intervention is needed. Build service expects app-name,
+# tag name to run and is triggered manually from Github Actions 
 name: Build-Service
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       app-name:
         description: Name of application to build
@@ -13,10 +13,10 @@ on:
         description: Tag to use for build 
         required: true
         type: string
-      release-tag:
-        description: Tag for release 
-        required: false
-        type: string
+      # release-tag:
+      #   description: Tag for release 
+      #   required: false
+      #   type: string
 jobs:
   build-service:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
         password: ${{ secrets.CONTAINERHUB_TOKEN }}
         logout: true
 
-    - name: Build Api
+    - name: Build Service Application
       uses: docker/build-push-action@v6
       with:
         context: ./services/${{ inputs.app-name }}/

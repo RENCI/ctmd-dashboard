@@ -10,7 +10,7 @@ on:
      - services/frontend/**
      tags-ignore:
        - '*'
-    workflow_dispatch:
+    # workflow_dispatch:
 
 concurrency:
   group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-buildfrontend

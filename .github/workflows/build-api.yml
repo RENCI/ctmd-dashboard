@@ -1,7 +1,7 @@
 name: Build-Api
 on:
     # On demand build of the application if necessary
-    workflow_dispatch:
+    # workflow_dispatch:
       
     push:
       branches-ignore:
