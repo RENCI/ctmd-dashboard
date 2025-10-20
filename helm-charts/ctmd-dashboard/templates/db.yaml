@@ -57,7 +57,7 @@ spec:
         resources:
           requests:
             storage: {{ .Values.postgres.persistence.size | default "1Gi" }}
-        storageClassName: {{ .Values.postgres.persistence.storageClass | default "standard" | quote }}
+        storageClassName: {{ .Values.postgres.persistence.storageClass | default "basic" | quote }}
 --- 
 apiVersion: v1
 kind: Service
