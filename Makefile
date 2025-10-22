@@ -10,6 +10,9 @@ API_TAG := dev-k8s
 PIPELINE_BASE_IMAGE := ctmd-pipeline
 PIPELINE_TAG := dev-k8s
 
+AUTH_BASE_IMAGE := ctmd-auth
+AUTH_TAG := dev-k8s
+
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
 ## Kind Env
@@ -78,7 +81,16 @@ build-pipeline:
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	./services/pipeline/
 
-build-all: build-api build-ui build-pipeline
+build-auth:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/auth/Dockerfile \
+	--tag rencibuild/$(AUTH_BASE_IMAGE):$(AUTH_TAG) \
+	--tag containers.renci.org/ctmd/$(AUTH_BASE_IMAGE):$(AUTH_TAG) \
+	./services/auth/
+
+build-all: build-api build-ui build-pipeline build-auth
 
 push-ui:
 	docker push containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG)
@@ -89,6 +101,9 @@ push-api:
 push-pipeline:
 	docker push containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
 
+push-auth:
+	docker push containers.renci.org/ctmd/$(AUTH_BASE_IMAGE):$(AUTH_TAG)
+
 # This is a redundancy used by ci/cd as disaster relief
 push-ui-dockerhub:
 	docker push rencibuild/$(UI_BASE_IMAGE):$(UI_TAG)
@@ -98,6 +113,9 @@ push-api-dockerhub:
 
 push-pipeline-dockerhub:
 	dockerhub push rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
+
+push-auth-dockerhub:
+	dockerhub push rencibuild/$(AUTH_BASE_IMAGE):$(AUTH_TAG)
 # ==============================================================================
 ## KiND Kubernetes 
 #
@@ -128,7 +146,17 @@ kind-load-ui:
 	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 		--name $(KIND_CLUSTER)
 
-kind-load: kind-load-frontend kind-load-api
+kind-load-auth:
+		kind load docker-image \
+	  containers.renci.org/ctmd/$(AUTH_BASE_IMAGE):$(AUTH_TAG) \
+		--name $(KIND_CLUSTER)
+
+kind-load-pipeline:
+		kind load docker-image \
+	  containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
+		--name $(KIND_CLUSTER)	
+
+kind-load: kind-load-frontend kind-load-api kind-load-auth kind-load-pipeline
 
 # =======================================================
 ## Helm

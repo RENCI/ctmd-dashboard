@@ -30,8 +30,8 @@ securityContext:
 softwareContext: "development"
 
 # When softwareContext is "production" enable this app
-auth: 
-  create: false
+auth:
+  create: true
   name: "ctmd-auth"
   tag: "1.1"
   service:
