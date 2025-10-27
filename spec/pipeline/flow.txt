@@ -1,0 +1,8 @@
+  1. Pipeline starts → checks DOWNLOAD_REDCAP_DATA flag (if not syntehticdataset.json is used)
+  2. If enabled → POST to REDCap API with token (REDCAP_APPLICATION_TOKEN)
+  3. REDCap validates token
+  4. REDCap returns JSON data
+  5. Pipeline saves to file (redcap_export.json)
+  6. Pipeline transforms data (ETL process)
+  7. Pipeline loads into Postgres database
+  8. Dashboard API/Frontend queries Postgres (not REDCap directly)

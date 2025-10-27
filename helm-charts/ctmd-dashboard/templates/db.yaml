@@ -22,6 +22,9 @@ metadata:
   name: {{ .Values.postgres.name }}-pvc
   labels:
     app: {{ .Values.postgres.name | quote }}
+  annotations:
+    # Keep PVC when helm uninstall is run to preserve database data
+    "helm.sh/resource-policy": keep
 spec:
   accessModes:
     - ReadWriteOnce

@@ -12,7 +12,7 @@ spec:
 {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:
-      - {{ .Values.ingress.dnsName | quote }}
+      - {{ .Values.ingress.domainName | quote }}
     secretName: {{ .Values.ingress.TLSSecret | quote }}
 {{- end}}
   rules:
@@ -25,5 +25,5 @@ spec:
           service:
             name: {{ .Values.frontend.name }}
             port:
-              number: {{ .Values.fronted.svc.port }}
+              number: {{ .Values.frontend.service.port }}
 {{- end }}

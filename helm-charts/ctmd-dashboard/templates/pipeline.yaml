@@ -41,7 +41,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.pipeline.recurringBackup.size }}
-  storageClassName: {{ .Values.pipeline.recurringBackup.storageClass | default "basic" }}
+  storageClassName: {{ .Values.pipeline.recurringBackup.storageClass | quote }}
 ---
 apiVersion: apps/v1
 kind: Deployment
