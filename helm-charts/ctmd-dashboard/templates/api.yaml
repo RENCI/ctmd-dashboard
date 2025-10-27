@@ -59,15 +59,11 @@ spec:
             # - containerPort: 4040
             #   name: graphics-api
           env:
-            {{- if (eq (lower .Values.softwareContext) "development") }} 
+            {{- if (eq (lower .Values.softwareContext) "development") }}
             - name: AUTH_ENV
               value: "development"
-            - name: NODE_ENV
-              value: "development"
-            {{ else }}
+            {{- else }}
             - name: AUTH_ENV
-              value: "production"
-            - name: NODE_ENV
               value: "production"
             {{- end }}
             - name: DASHBOARD_URL

@@ -10,8 +10,6 @@ API_TAG := dev-k8s
 PIPELINE_BASE_IMAGE := ctmd-pipeline
 PIPELINE_TAG := dev-k8s
 
-AUTH_BASE_IMAGE := ctmd-auth
-AUTH_TAG := dev-k8s
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
@@ -101,9 +99,6 @@ push-api:
 push-pipeline:
 	docker push containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
 
-push-auth:
-	docker push containers.renci.org/ctmd/$(AUTH_BASE_IMAGE):$(AUTH_TAG)
-
 # This is a redundancy used by ci/cd as disaster relief
 push-ui-dockerhub:
 	docker push rencibuild/$(UI_BASE_IMAGE):$(UI_TAG)
@@ -114,8 +109,7 @@ push-api-dockerhub:
 push-pipeline-dockerhub:
 	dockerhub push rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
 
-push-auth-dockerhub:
-	dockerhub push rencibuild/$(AUTH_BASE_IMAGE):$(AUTH_TAG)
+push-all: push-api push-ui push-pipeline
 # ==============================================================================
 ## KiND Kubernetes 
 #
@@ -146,17 +140,12 @@ kind-load-ui:
 	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 		--name $(KIND_CLUSTER)
 
-kind-load-auth:
-		kind load docker-image \
-	  containers.renci.org/ctmd/$(AUTH_BASE_IMAGE):$(AUTH_TAG) \
-		--name $(KIND_CLUSTER)
-
 kind-load-pipeline:
 		kind load docker-image \
 	  containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 		--name $(KIND_CLUSTER)	
 
-kind-load: kind-load-frontend kind-load-api kind-load-auth kind-load-pipeline
+kind-load: kind-load-frontend kind-load-api kind-load-pipeline
 
 # =======================================================
 ## Helm
@@ -178,7 +167,7 @@ helm-up:
 # Will ensure pvc's are deleted when uninstalled.
 helm-dev-down:
 	helm uninstall ctmd-dashboard
-	kubectl delete pvc data-ctmd-db-0
+
 
 helm-down:
 	helm uninstall ctmd-dashboard

@@ -27,22 +27,23 @@ securityContext:
 # Indicate whether this is [production || development] context
 # This value will affect the application configurations globally
 # for the appropriate settings.
-softwareContext: "development"
+softwareContext: "production"
 
 # Auth service has been removed - authentication now handled directly by API service
 # The API service connects directly to REDCap SSO (see api.env.REDCAP_AUTH_URL below)
 
 ingress: # for production
-  create: false
+  create: true
   name: "ctmd-ingress"
   # -- Set to use a specific ingress class other than the default.
   ingressClassName:
-  annotations: {}
-    # kubernetes.io/ingress.class: : ""
+  annotations: {
+    cert-manager.io/cluster-issuer: letsencrypt
+  }
   tls:
     enabled: true
-    TLSSecret:  # name of tls secret to use for domain name
-  domainName: "your.website.com"
+    TLSSecret: staging-ctmd.apps.renci.org-tls 
+  domainName: "staging-ctmd.apps.renci.org" 
 
 frontend:
 # May need to template out nginx.conf for frontend
@@ -87,11 +88,9 @@ api:
     # Use an existing secret instead of creating one (leave blank to create new)
     existingSecret: ""
   # The below section will be environment vars in the application.
+  # Note: AUTH_ENV is automatically set based on softwareContext (development/production)
   env:
-    # "development" or "production" same values as NODE_ENV
-    AUTH_ENV: "development"
-    NODE_ENV: "development"
-    DASHBOARD_URL: "http://ctmd-frontend:3000/" # Given to redcap for redirect after SSO login
+    DASHBOARD_URL: "http://staging-ctmd.apps.renci.org:3000/" # Given to redcap for redirect after SSO login
     # REDCap SSO endpoint for authentication
     # In development, set to actual REDCap URL for production testing
     REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
@@ -122,13 +121,15 @@ postgres:
     name: "db-dsn"
     database: "postgres" 
     user: "ctmd-user"
-    password: "password123"
+    password: "8675309JennyIgotyourpassword"
+  # The pvc which is created or mounted should be kept when helm uninstall is run.
+  # This is to preserve database data, achieved by helm annotation in db.yaml.
   persistence:
     # Set to true to create a new PVC, false to use existing PVC
     create: true
     # Name of existing PVC to use (only used if create is false)
     existingClaim: ""
-    # To use the default provisioner leave storageClass blank.
+    # To use the default provisioner leave storageClass blank. 
     storageClass: ""
     # To use default of 1Gi (dev mode) leave blank.
     size: "1Gi"
@@ -179,7 +180,7 @@ pipeline:
     databaseMappingFile: "mapping.json"
     redcapDataFile: "redcap_data_dictionary_export.json"
   env:
-    REDCAP_APPLICATION_TOKEN: "faketoken"
+    REDCAP_APPLICATION_TOKEN: "E0FC3EDE403D2D90B85A8C2BB8A822F5"
     REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
     AUXILIARY_PATH: "/auxiliary"
     FILTER_PATH: "/filter"
