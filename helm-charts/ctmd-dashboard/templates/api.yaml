@@ -1,3 +1,24 @@
+{{- if not .Values.api.sessionSecret.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.api.sessionSecret.name }}
+  labels:
+    app: {{ .Values.api.name }}
+  annotations:
+    # Keep secret across helm upgrades to preserve sessions
+    "helm.sh/resource-policy": keep
+type: Opaque
+data:
+  {{- if .Values.api.sessionSecret.value }}
+  # Use explicitly provided secret value
+  session-secret: {{ .Values.api.sessionSecret.value | b64enc | quote }}
+  {{- else }}
+  # Auto-generate a random 32-character secret on first install
+  session-secret: {{ randAlphaNum 32 | b64enc | quote }}
+  {{- end }}
+---
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,16 +70,15 @@ spec:
             - name: NODE_ENV
               value: "production"
             {{- end }}
-            - name: FUSE_AUTH_API_KEY
-              value: {{ .Values.api.env.FUSE_AUTH_API_KEY | quote }}
             - name: DASHBOARD_URL
               value: {{ .Values.api.env.DASHBOARD_URL | quote }}
-            - name: REACT_APP_API_ROOT
-              value: {{ .Values.api.env.REACT_APP_API_ROOT | quote }}
             - name: API_SESSION_SECRET
-              value: {{ .Values.api.env.API_SESSION_SECRET | quote }}
-            - name: AUTH_URL
-              value: {{ .Values.api.env.AUTH_URL | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.api.sessionSecret.existingSecret | default .Values.api.sessionSecret.name }}
+                  key: session-secret
+            - name: REDCAP_AUTH_URL
+              value: {{ .Values.api.env.REDCAP_AUTH_URL | quote }}
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.secrets.name }}

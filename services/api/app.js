@@ -17,11 +17,7 @@ const PORT = process.env.API_PORT || 3030
 const isHealServer = process.env.IS_HEAL_SERVER === 'true' || false
 const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
 const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
-const AUTH_URL = process.env.AUTH_URL
-const AUTH_API_KEY = process.env.FUSE_AUTH_API_KEY
-// The below should be able to refer to itself as localhost in k8s
-// const REACT_APP_API_ROOT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ROOT : 'http://localhost:3030/'
-const REACT_APP_API_ROOT = process.env.REACT_APP_API_ROOT
+const REDCAP_AUTH_URL = process.env.REDCAP_AUTH_URL
 // CORS
 // app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 app.use(cors({ origin: '*', credentials: true }))
@@ -38,28 +34,61 @@ app.use(
   })
 )
 
+/**
+ * Sanitize authorization code to prevent injection attacks
+ * @param {string} code - Authorization code from external provider
+ * @returns {boolean} - True if code is valid
+ */
+function isValidAuthCode(code) {
+  if (!code) return false
+  if (code.length > 512) return false
+  // Check for forbidden characters
+  if (/[\n\r\0]/.test(code)) return false
+  return true
+}
+
+// Authentication middleware
 app.use(async (req, res, next) => {
   const code = req.query.code
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
 
-  const url = `${AUTH_URL}/v1/authorize?apikey=${AUTH_API_KEY}&provider=venderbilt&return_url=${REACT_APP_API_ROOT}&code=${code}&redirect=false`
+  // Skip auth for non-protected routes or development mode
   if (NON_PROTECTED_ROUTES.includes(req.path) || process.env.AUTH_ENV === 'development') {
     next()
   } else {
+    // User already authenticated
     if (Object.keys(authInfo).length) {
       req.session.touch() // renew session
       next()
     } else if (code) {
+      // Validate code parameter
+      if (!isValidAuthCode(code)) {
+        return res.status(400).send('Invalid authorization code')
+      }
+
+      // Verify code with REDCap SSO
+      const redcapUrl = `${REDCAP_AUTH_URL}?code=${code}`
       try {
-        const response = await axios.get(url, { httpsAgent: AGENT })
+        const response = await axios.get(redcapUrl, {
+          httpsAgent: AGENT,
+          timeout: 10000 // 10 second timeout
+        })
+
         if (response.status === 200) {
           next()
         } else {
-          throw new Error('An authentication error occurred.')
+          res.status(response.status).send('Authentication failed')
         }
       } catch (err) {
-        console.log(err)
-        res.status(err.request.res.statusCode).send(err.request.res.statusMessage)
+        console.error('REDCap authentication error:', err.message)
+
+        if (err.code === 'ETIMEDOUT' || err.code === 'ECONNABORTED') {
+          res.status(504).send('Authentication provider timeout')
+        } else if (err.response) {
+          res.status(err.response.status).send('Authentication failed')
+        } else {
+          res.status(502).send('Failed to connect to authentication provider')
+        }
       }
     } else {
       res.status(401).send('Please login')

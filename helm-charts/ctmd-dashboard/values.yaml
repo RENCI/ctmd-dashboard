@@ -29,16 +29,8 @@ securityContext:
 # for the appropriate settings.
 softwareContext: "development"
 
-# When softwareContext is "production" enable this app
-auth:
-  create: true
-  name: "ctmd-auth"
-  tag: "1.1"
-  service:
-    port: 8080
-  env:
-    PROVIDERS: '{"venderbilt":{"AUTH_URL":"https://redcap.vumc.org/plugins/TIN/sso/check_login"}}'
-    API_KEY: ""
+# Auth service has been removed - authentication now handled directly by API service
+# The API service connects directly to REDCap SSO (see api.env.REDCAP_AUTH_URL below)
 
 ingress: # for production
   create: false
@@ -85,16 +77,24 @@ api:
     requests:
       cpu: 200m
       memory: 300Mi
+  # Session secret configuration
+  sessionSecret:
+    # Name of the secret to create
+    name: "api-session-secret"
+    # Set a specific value (leave blank to auto-generate)
+    # If blank, a random 32-character secret will be generated on first install
+    value: ""
+    # Use an existing secret instead of creating one (leave blank to create new)
+    existingSecret: ""
   # The below section will be environment vars in the application.
   env:
     # "development" or "production" same values as NODE_ENV
     AUTH_ENV: "development"
     NODE_ENV: "development"
-    DASHBOARD_URL: "http://ctmd-frontend:3000/"
-    REACT_APP_API_ROOT: "http://ctmd-api:3030/"
-    FUSE_AUTH_API_KEY: "superlongsecret"
-    API_SESSION_SECRET: "something-secret"
-    AUTH_URL: "https://some-auth-url.com" # production only
+    DASHBOARD_URL: "http://ctmd-frontend:3000/" # Given to redcap for redirect after SSO login
+    # REDCap SSO endpoint for authentication
+    # In development, set to actual REDCap URL for production testing
+    REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
 
 postgres:
   create: true
@@ -124,8 +124,10 @@ postgres:
     user: "ctmd-user"
     password: "password123"
   persistence:
-    # create: true (Phase 2 work)
-    # name: mountName (Phase 2 work)
+    # Set to true to create a new PVC, false to use existing PVC
+    create: true
+    # Name of existing PVC to use (only used if create is false)
+    existingClaim: ""
     # To use the default provisioner leave storageClass blank.
     storageClass: ""
     # To use default of 1Gi (dev mode) leave blank.
