@@ -79,16 +79,7 @@ build-pipeline:
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	./services/pipeline/
 
-build-auth:
-	docker buildx build \
-	--platform=linux/amd64 \
-	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/auth/Dockerfile \
-	--tag rencibuild/$(AUTH_BASE_IMAGE):$(AUTH_TAG) \
-	--tag containers.renci.org/ctmd/$(AUTH_BASE_IMAGE):$(AUTH_TAG) \
-	./services/auth/
-
-build-all: build-api build-ui build-pipeline build-auth
+build-all: build-api build-ui build-pipeline
 
 push-ui:
 	docker push containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG)

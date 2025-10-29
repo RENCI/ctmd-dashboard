@@ -1,6 +1,5 @@
 // Helper Functions
 ///////////////////
-const fs = require('fs')
 
 // Parse array-like string returned by Postgres into a real array
 exports.stringToArray = (str) =>
@@ -20,25 +19,3 @@ exports.camelCase = (str) => {
   return string.charAt(0).toLowerCase() + string.slice(1)
 }
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
-
-exports.getHealUsers = (filePath) => {
-  try {
-    const data = fs.readFileSync(filePath, 'utf8')
-    return data.split('\n')
-      .map(address => address.toLowerCase())
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-exports.checkIfIsHealUser = (req, healUsers) => {
-  if (!req.session.auth_info) {
-    return { statusCode: 403, data: { data: 'not authenticated' } }
-  } else {
-    const incomingEmail = req.session.auth_info.email.toLowerCase()
-    console.log('incomingEmail', incomingEmail)
-    const isHealUser = healUsers.includes(incomingEmail)
-    const statusCode = isHealUser ? 200 : 403
-    return { statusCode: statusCode, data: { isHealUser: isHealUser } }
-  }
-}

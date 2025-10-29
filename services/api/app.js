@@ -6,7 +6,6 @@ const db = require('./config/database')
 var multer = require('multer')
 const session = require('express-session')
 const axios = require('axios')
-const { getHealUsers, checkIfIsHealUser } = require('./utils/helpers')
 
 // Config
 const AGENT = new https.Agent({
@@ -14,9 +13,6 @@ const AGENT = new https.Agent({
 })
 const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout']
 const PORT = process.env.API_PORT || 3030
-const isHealServer = process.env.IS_HEAL_SERVER === 'true' || false
-const HEALUsersFilePath = process.env.HEAL_USERS_FILE_PATH || './heal-users.txt'
-const HEAL_USERS = isHealServer ? getHealUsers(HEALUsersFilePath) : []
 const REDCAP_AUTH_URL = process.env.REDCAP_AUTH_URL
 // CORS
 // app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
@@ -161,17 +157,7 @@ app.get('/auth_status', (req, res) => {
     }
   }
 
-  if (isHealServer) {
-    let healData = checkIfIsHealUser(req, HEAL_USERS)
-    data = { ...authInfo, ...healData.data }
-  }
-
   res.status(statusCode).send(data)
-})
-
-app.get('/is_heal_user', (req, res, next) => {
-  const data = checkIfIsHealUser(req, HEAL_USERS)
-  res.status(data.statusCode).send(data.data)
 })
 
 app.post('/logout', (req, res, next) => {
