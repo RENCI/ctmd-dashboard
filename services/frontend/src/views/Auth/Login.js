@@ -3,7 +3,7 @@ import { Title, Paragraph } from '../../components/Typography'
 import { Card, CardHeader, CardContent, Button, List, ListItem } from '@material-ui/core'
 
 export const LoginPage = (props) => {
-  const redirectURL = `/api/auth`
+  const redirectURL = `${window.location.origin}/api/auth`
   return (
     <Fragment>
       <Title>Access Denied</Title>
