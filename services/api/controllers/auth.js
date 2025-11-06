@@ -23,7 +23,7 @@ function isValidAuthCode(code) {
 }
 
 exports.auth = async (req, res) => {
-  const code = req.body.code
+  const code = req.query.code // req.body.code
 
   // Development mode bypass
   if (process.env.AUTH_ENV === 'development') {
