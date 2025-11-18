@@ -11,7 +11,7 @@ const axios = require('axios')
 const AGENT = new https.Agent({
   rejectUnauthorized: false,
 })
-const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout', '/authenticate/v1/authorize']
+const NON_PROTECTED_ROUTES = ['/auth_status', '/auth', '/logout']
 const PORT = process.env.API_PORT || 3030
 const REDCAP_AUTH_URL = process.env.REDCAP_AUTH_URL
 // CORS
@@ -146,11 +146,6 @@ app.use('/graphics', require('./routes/graphics'))
 
 // Auth
 app.use('/auth', require('./routes/auth'))
-
-// Legacy Authentication (for TIN integration)
-// NOTE 2025-01-05: This endpoint exists at /authenticate (not /api/authenticate) for
-// backwards compatibility with TIN's hardcoded URLs from when auth was a separate service
-app.use('/authenticate', require('./routes/authenticate'))
 
 app.get('/auth_status', (req, res) => {
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info

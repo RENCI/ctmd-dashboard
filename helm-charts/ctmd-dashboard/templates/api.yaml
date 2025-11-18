@@ -19,23 +19,6 @@ data:
   {{- end }}
 ---
 {{- end }}
-{{- if not .Values.api.authApiKey.existingSecret }}
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ .Values.api.authApiKey.name }}
-  labels:
-    app: {{ .Values.api.name }}
-  annotations:
-    # Keep secret across helm upgrades
-    "helm.sh/resource-policy": keep
-type: Opaque
-data:
-  # Auth API key must be set in values.yaml to match TIN's configuration
-  # If not set, this will fail validation - no default value for security
-  auth-api-key: {{ required "A valid .Values.api.authApiKey.value is required!" .Values.api.authApiKey.value | b64enc | quote }}
----
-{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -90,11 +73,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.api.sessionSecret.existingSecret | default .Values.api.sessionSecret.name }}
                   key: session-secret
-            - name: FUSE_AUTH_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.api.authApiKey.existingSecret | default .Values.api.authApiKey.name }}
-                  key: auth-api-key
             - name: REDCAP_AUTH_URL
               value: {{ .Values.api.env.REDCAP_AUTH_URL | quote }}
           envFrom:
