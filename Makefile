@@ -2,10 +2,10 @@
 ## Environment
 #
 UI_BASE_IMAGE := ctmd-frontend
-UI_TAG := dev-k8s-prod
+UI_TAG := staging
 
 API_BASE_IMAGE := ctmd-api
-API_TAG := dev-k8s
+API_TAG := staging
 
 PIPELINE_BASE_IMAGE := ctmd-pipeline
 PIPELINE_TAG := dev-k8s

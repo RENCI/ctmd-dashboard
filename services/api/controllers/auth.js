@@ -23,6 +23,8 @@ function isValidAuthCode(code) {
 }
 
 exports.auth = async (req, res) => {
+  // NOTE 2025-01-05: REDCap POSTs form data with the code, so read from body
+  // Production flow: REDCap form POST → /api/auth validates → creates session → redirects to dashboard
   const code = req.body.code
 
   // Development mode bypass
@@ -43,16 +45,20 @@ exports.auth = async (req, res) => {
 
   // Validate code parameter
   if (!isValidAuthCode(code)) {
+    console.error('Invalid authorization code received')
     return res.status(400).send('Invalid authorization code')
   }
 
   // Skip if already authenticated
   if (req.session.auth_info) {
+    console.log('User already authenticated, redirecting to dashboard')
     res.redirect(DASHBOARD_URL)
     return
   }
 
-  // Call REDCap SSO directly
+  // Validate code with REDCap SSO
+  // NOTE 2025-01-05: This is the critical security validation - we verify the code
+  // with REDCap to ensure it's legitimate before trusting any user information
   const redcapUrl = `${REDCAP_AUTH_URL}?code=${code}`
 
   try {
@@ -62,11 +68,17 @@ exports.auth = async (req, res) => {
     })
 
     if (response.status === 200) {
-      const data = response.data
-      data.authenticated = true
-      req.session.auth_info = data
+      // REDCap validated the code and returned user info
+      const userData = response.data
+      userData.authenticated = true
+      req.session.auth_info = userData
+
+      console.log(`User authenticated: ${userData.username || userData.email || 'unknown'}`)
+
+      // Redirect to dashboard - user is now logged in
       res.redirect(DASHBOARD_URL)
     } else {
+      console.error(`REDCap authentication failed with status: ${response.status}`)
       res.status(response.status).send('Authentication failed')
     }
   } catch (err) {

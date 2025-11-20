@@ -49,7 +49,7 @@ frontend:
 # May need to template out nginx.conf for frontend
   create: true
   name: "ctmd-frontend"
-  tag: "dev-k8s-prod"
+  tag: "staging"
   service:
     port: 3000
     name: http
@@ -67,7 +67,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "dev-k8s"
+  tag: "staging"
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -90,7 +90,7 @@ api:
   # The below section will be environment vars in the application.
   # Note: AUTH_ENV is automatically set based on softwareContext (development/production)
   env:
-    DASHBOARD_URL: "http://staging-ctmd.apps.renci.org:3000/" # Given to redcap for redirect after SSO login
+    DASHBOARD_URL: "https://staging-ctmd.apps.renci.org/" # Given to redcap for redirect after SSO login
     # REDCap SSO endpoint for authentication
     # In development, set to actual REDCap URL for production testing
     REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
@@ -121,7 +121,7 @@ postgres:
     name: "db-dsn"
     database: "postgres"
     user: "ctmd-user"
-    password: "changeme-use-secure-password"
+    password: "postgres-password"
   # The pvc which is created or mounted should be kept when helm uninstall is run.
   # This is to preserve database data, achieved by helm annotation in db.yaml.
   persistence:
@@ -180,7 +180,7 @@ pipeline:
     databaseMappingFile: "mapping.json"
     redcapDataFile: "redcap_data_dictionary_export.json"
   env:
-    REDCAP_APPLICATION_TOKEN: "your-redcap-token-here"
+    REDCAP_APPLICATION_TOKEN: ""
     REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
     AUXILIARY_PATH: "/auxiliary"
     FILTER_PATH: "/filter"

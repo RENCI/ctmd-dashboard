@@ -71,6 +71,13 @@ app.use(async (req, res, next) => {
         })
 
         if (response.status === 200) {
+          // NOTE 2025-01-05: Session creation commented out because production flow uses
+          // /authenticate/v1/authorize endpoint for session creation, not the middleware.
+          // The middleware only validates the code for server-to-server requests (e.g., graphics).
+          // Uncomment if TIN changes to create sessions during initial graphics request.
+          // const userData = response.data
+          // userData.authenticated = true
+          // req.session.auth_info = userData
           next()
         } else {
           res.status(response.status).send('Authentication failed')
