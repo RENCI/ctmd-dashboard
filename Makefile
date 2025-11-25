@@ -2,13 +2,13 @@
 ## Environment
 #
 UI_BASE_IMAGE := ctmd-frontend
-UI_TAG := staging
+UI_TAG := v3.0.0
 
 API_BASE_IMAGE := ctmd-api
-API_TAG := staging
+API_TAG := v3.0.0
 
 PIPELINE_BASE_IMAGE := ctmd-pipeline
-PIPELINE_TAG := dev-k8s
+PIPELINE_TAG := v3.0.0
 
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')

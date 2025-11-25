@@ -29,19 +29,26 @@ data:
 ---
 # Backup location for postgres database
 # Ideally this would be managed by a cron in k8s at some point.
+{{- if .Values.pipeline.recurringBackup.persistence.create }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: db-backups-pvc
   labels:
     app: {{ .Values.pipeline.name }}
+  annotations:
+    # Keep PVC across helm upgrades/uninstalls to preserve backups
+    "helm.sh/resource-policy": keep
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.pipeline.recurringBackup.size }}
+  {{- if .Values.pipeline.recurringBackup.storageClass }}
   storageClassName: {{ .Values.pipeline.recurringBackup.storageClass | quote }}
+  {{- end }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -175,7 +182,7 @@ spec:
             name: ctmd-database-mapping
         - name: db-backups-pvc
           persistentVolumeClaim:
-            claimName: db-backups-pvc
+            claimName: {{ .Values.pipeline.recurringBackup.persistence.existingClaim | default "db-backups-pvc" }}
 
 --- 
 apiVersion: v1

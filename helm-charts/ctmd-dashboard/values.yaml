@@ -38,12 +38,13 @@ ingress: # for production
   # -- Set to use a specific ingress class other than the default.
   ingressClassName:
   annotations: {
-    cert-manager.io/cluster-issuer: letsencrypt
+    cert-manager.io/cluster-issuer: zerossl,
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
   }
   tls:
     enabled: true
-    TLSSecret: staging-ctmd.apps.renci.org-tls 
-  domainName: "staging-ctmd.apps.renci.org" 
+    TLSSecret: ctmd.renci.org-tls 
+  domainName: "ctmd.renci.org"
 
 frontend:
 # May need to template out nginx.conf for frontend
@@ -67,7 +68,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "staging"
+  tag: "prod"
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -90,7 +91,7 @@ api:
   # The below section will be environment vars in the application.
   # Note: AUTH_ENV is automatically set based on softwareContext (development/production)
   env:
-    DASHBOARD_URL: "https://staging-ctmd.apps.renci.org/" # Given to redcap for redirect after SSO login
+    DASHBOARD_URL: "https://ctmd.renci.org/" # Given to redcap for redirect after SSO login
     # REDCap SSO endpoint for authentication
     # In development, set to actual REDCap URL for production testing
     REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
@@ -98,7 +99,7 @@ api:
 postgres:
   create: true
   name: ctmd-db
-  # Tag is used for both non-public and public versions of the image muy flexible.
+  # Tag is used for both non-public and public versions of the image, muy flexible.
   tag: "11.22-alpine"
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
@@ -121,18 +122,18 @@ postgres:
     name: "db-dsn"
     database: "postgres"
     user: "ctmd-user"
-    password: "postgres-password"
+    password: ""
   # The pvc which is created or mounted should be kept when helm uninstall is run.
   # This is to preserve database data, achieved by helm annotation in db.yaml.
   persistence:
     # Set to true to create a new PVC, false to use existing PVC
-    create: true
+    create: false
     # Name of existing PVC to use (only used if create is false)
-    existingClaim: ""
+    existingClaim: "ctmd-db-pvc"
     # To use the default provisioner leave storageClass blank. 
     storageClass: ""
     # To use default of 1Gi (dev mode) leave blank.
-    size: "1Gi"
+    size: "10Gi"
     
 
 redis:
@@ -167,13 +168,15 @@ pipeline:
     requests:
       cpu: 200m
       memory: 300Mi
-  # persistence:
-  #   storageClass: 
-  #   size: "1Gi"
   recurringBackup:
-    backupPath: "/backups" 
+    backupPath: "/backups"
     storageClass:  # Leave blank for default "standard"
-    size: "1Gi"
+    size: "5Gi"
+    persistence:
+      # Set to true to create a new PVC, false to use existing PVC
+      create: false
+      # Name of existing PVC to use (only used if create is false)
+      existingClaim: "db-backups-pvc"
   config:
     # The file being referenced is located in ctmd-dashboard/files/ 
     syntheticDataFile: "syntheticDataset.json"
@@ -185,8 +188,8 @@ pipeline:
     AUXILIARY_PATH: "/auxiliary"
     FILTER_PATH: "/filter"
     BLOCK_PATH: "/block"
-    RELOAD_SCHEDULE: "0"
-    RELOAD_DATABASE: "0"
+    RELOAD_SCHEDULE: "1"  # scheduled sync with redcap in production
+    RELOAD_DATABASE: "0"  # wipe or reload db on every new prod instance
     SCHEDULE_RUN_TIME: "00:00"
     SERVER: "1"
     REDIS_QUEUE_HOST: "ctmd-redis"
@@ -201,7 +204,7 @@ pipeline:
     SPARK_EXECUTOR_MEMORY: "8g"
     SPARK_DRIVER_MEMORY: "8g"
     PAUSE: "0"
-    DOWNLOAD_REDCAP_DATA: "0"
-    CREATE_TABLES: "1"
+    DOWNLOAD_REDCAP_DATA: "1" # use redcap data production and not synthetic
+    CREATE_TABLES: "0" # If deploying to existing db, set to 0
     GLOBAL_WRITE_PERMISSIONS: "none"
-    LOCAL_ENV: "true"
+    LOCAL_ENV: "false" # set to false for production
