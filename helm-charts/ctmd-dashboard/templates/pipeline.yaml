@@ -1,3 +1,4 @@
+{{- if .Values.pipeline.create }}
 {{- if (eq (lower .Values.softwareContext) "development") }} 
 apiVersion: v1
 kind: ConfigMap
@@ -198,4 +199,5 @@ spec:
     targetPort: {{ .Values.pipeline.service.port }}
   selector:
     app: {{ .Values.pipeline.name }}
+{{- end }}
 
