@@ -89,11 +89,20 @@ exports.proposalsByTic = (req, res) => {
       });
 
       // Group by tic and then status group
-      const tics = d3
-        .nest()
-        .key((d) => d.assignToInstitution)
-        .key((d) => d.proposalStatusGroup)
-        .entries(proposals);
+      // D3 v7: d3.nest() was removed, using d3.group() instead
+      const ticsMap = d3.group(proposals,
+        d => d.assignToInstitution,
+        d => d.proposalStatusGroup
+      );
+
+      // Convert Map to old nest() format for compatibility
+      const tics = Array.from(ticsMap, ([key, values]) => ({
+        key,
+        values: Array.from(values, ([key, values]) => ({
+          key,
+          values: Array.from(values)
+        }))
+      }));
 
       const width = 800;
       const height = 400;

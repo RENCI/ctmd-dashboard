@@ -68,7 +68,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "prod"
+  tag: "ctmd-73"
   service:
     apiPort: 3030
     graphicsApiPort: 4040
