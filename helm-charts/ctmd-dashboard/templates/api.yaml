@@ -75,6 +75,12 @@ spec:
                   key: session-secret
             - name: REDCAP_AUTH_URL
               value: {{ .Values.api.env.REDCAP_AUTH_URL | quote }}
+            - name: REDIS_HOST
+              value: {{ .Values.redis.name | quote }}
+            - name: REDIS_PORT
+              value: {{ .Values.redis.service.port | quote }}
+            - name: REDIS_SESSION_DB
+              value: "2"
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.secrets.name }}

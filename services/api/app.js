@@ -5,6 +5,8 @@ const cors = require('cors')
 const db = require('./config/database')
 var multer = require('multer')
 const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
+const redis = require('redis')
 const axios = require('axios')
 
 // Config
@@ -18,14 +20,37 @@ const REDCAP_AUTH_URL = process.env.REDCAP_AUTH_URL
 // app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 app.use(cors({ origin: '*', credentials: true }))
 
-// session
+// Redis client for session store
+const REDIS_HOST = process.env.REDIS_HOST || 'ctmd-redis'
+const REDIS_PORT = process.env.REDIS_PORT || 6379
+const REDIS_SESSION_DB = process.env.REDIS_SESSION_DB || 2 // Using DB 2 for sessions (pipeline uses 0 and 1)
+
+const redisClient = redis.createClient({
+  host: REDIS_HOST,
+  port: REDIS_PORT,
+  db: REDIS_SESSION_DB,
+  legacyMode: false
+})
+
+redisClient.on('error', (err) => {
+  console.error('Redis Client Error:', err)
+})
+
+redisClient.on('connect', () => {
+  console.log(`Redis session store connected: ${REDIS_HOST}:${REDIS_PORT} (DB ${REDIS_SESSION_DB})`)
+})
+
+// session with Redis store
 app.use(
   session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.API_SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false, // Changed to false - don't save empty sessions
     cookie: {
-      expires: 12 * 60 * 60 * 1000,
+      secure: false, // Set to true if using HTTPS
+      httpOnly: true,
+      maxAge: 12 * 60 * 60 * 1000, // 12 hours
     },
   })
 )
