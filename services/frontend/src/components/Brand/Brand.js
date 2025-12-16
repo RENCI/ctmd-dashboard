@@ -24,7 +24,7 @@ export const Brand = props => {
     
     return (
         <div className={ classes.brand }>
-            Duke/Vanderbilt&nbsp;TIC
+            TIC CTMD
         </div>
     )
 }
