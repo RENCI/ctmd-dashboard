@@ -2,6 +2,7 @@
 pgdata
 .env
 db/data
+.values.yaml
 
 #api
 node_modules

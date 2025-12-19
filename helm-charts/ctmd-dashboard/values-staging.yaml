@@ -1,0 +1,209 @@
+# Default values for ctmd-dashboard. This is the parent chart to launch
+# the full service. 
+# Helm treats empty string as valid so to use defaults, leave completely blank.
+# Areas where defaults can be used will be explicitly commented.
+
+# TODO (Phase 2): 
+#  - postgres.persistence should support mounting existing pvc when deploying (currently does not).
+#  - Add further security considerations - runAsRoot: false type stuff
+#  - Develop mode should make use of syntheticDataset.json mount in /files dir
+#       while prod deployment should not. Have an opinionated dev env
+#  - Still trying to understand pipeline envs AUXILLARY_PATH, FILTER_PATH, BLOCK_PATH
+#
+
+images:
+  repository: containers.renci.org/ctmd
+
+serviceAccounts:
+  create: false
+  annotations: {}
+  
+networkPolicies:
+  create: false 
+
+securityContext:
+  enable: false 
+
+# Indicate whether this is [production || development] context
+# This value will affect the application configurations globally
+# for the appropriate settings.
+softwareContext: "development"
+
+# Auth service has been removed - authentication now handled directly by API service
+# The API service connects directly to REDCap SSO (see api.env.REDCAP_AUTH_URL below)
+
+ingress: # for production
+  create: true
+  name: "ctmd-ingress"
+  # -- Set to use a specific ingress class other than the default.
+  ingressClassName:
+  annotations: {
+    cert-manager.io/cluster-issuer: letsencrypt,
+  }
+  tls:
+    enabled: true
+    TLSSecret: staging-ctmd.apps.renci.org-tls 
+  domainName: "staging-ctmd.apps.renci.org"
+
+frontend:
+# May need to template out nginx.conf for frontend
+  create: true
+  name: "ctmd-frontend"
+  tag: "v3.0.2"
+  service:
+    port: 3000
+    name: http
+  env:
+    REACT_APP_API_ROOT: "http://ctmd-api:3030/" # specify the location of api endpoint service
+    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline:5000/" # specify the location of the pipeline service
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+
+api:
+  create: true
+  name: ctmd-api
+  tag: "ctmd-73"
+  service:
+    apiPort: 3030
+    graphicsApiPort: 4040
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  # Session secret configuration
+  sessionSecret:
+    # Name of the secret to create
+    name: "api-session-secret"
+    # Set a specific value (leave blank to auto-generate)
+    # If blank, a random 32-character secret will be generated on first install
+    value: ""
+    # Use an existing secret instead of creating one (leave blank to create new)
+    existingSecret: ""
+  # The below section will be environment vars in the application.
+  # Note: AUTH_ENV is automatically set based on softwareContext (development/production)
+  env:
+    DASHBOARD_URL: "https://staging-ctmd.apps.renci.org/" # Given to redcap for redirect after SSO login
+    # REDCap SSO endpoint for authentication
+    # In development, set to actual REDCap URL for production testing
+    REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
+
+postgres:
+  create: true
+  name: ctmd-db
+  # Tag is used for both non-public and public versions of the image, muy flexible.
+  tag: "17-alpine"
+  # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
+  publicRepository: true
+  # The port is informational values and 
+  # not used to change template currently.
+  service:
+    port: 5432
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+# This will create a secret object that is used to populate 
+# environment variables with DSN information.
+# This secret is also mounted in api, frontend, pipeline
+  secrets:
+    create: true
+    name: "db-dsn"
+    database: "postgres"
+    user: "ctmd-user"
+    password: "password123CHANGEME"
+  # The pvc which is created or mounted should be kept when helm uninstall is run.
+  # This is to preserve database data, achieved by helm annotation in db.yaml.
+  persistence:
+    # Set to true to create a new PVC, false to use existing PVC
+    create: true
+    # Name of existing PVC to use (only used if create is false)
+    existingClaim: ""
+    # To use the default provisioner leave storageClass blank. 
+    storageClass: ""
+    # To use default of 1Gi (dev mode) leave blank.
+    size: "5Gi"
+    
+
+redis:
+  create: true
+  name: ctmd-redis
+  # Tag is used for both non-public and public versions of the image for muy flexible.
+  tag: "latest"
+  # Will use a public docker image of redis, otherwise uses images.repository/redis.name.
+  publicRepository: true
+  # The port is informational value and 
+  # not used to change template currently.
+  service:
+    port: 6379
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+
+pipeline:
+  create: true
+  name: ctmd-pipeline
+  tag: "v3.0.2"
+  service:
+    port: 5000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  recurringBackup:
+    backupPath: "/backups"
+    storageClass:  # Leave blank for default "standard"
+    size: "5Gi"
+    persistence:
+      # Set to true to create a new PVC, false to use existing PVC
+      create: true
+      # Name of existing PVC to use (only used if create is false)
+      existingClaim: ""
+  config:
+    # The file being referenced is located in ctmd-dashboard/files/ 
+    syntheticDataFile: "syntheticDataset.json"
+    databaseMappingFile: "mapping.json"
+    redcapDataFile: "redcap_data_dictionary_export.json"
+  env:
+    REDCAP_APPLICATION_TOKEN: ""
+    REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
+    AUXILIARY_PATH: "/auxiliary"
+    FILTER_PATH: "/filter"
+    BLOCK_PATH: "/block"
+    RELOAD_SCHEDULE: "0"  # scheduled sync with redcap in production
+    RELOAD_DATABASE: "0"  # wipe or reload db on every new prod instance
+    SCHEDULE_RUN_TIME: "00:00"
+    SERVER: "1"
+    REDIS_QUEUE_HOST: "ctmd-redis"
+    REDIS_QUEUE_PORT: "6379"
+    REDIS_QUEUE_DB: "0"
+    REDIS_LOCK_HOST: "ctmd-redis"
+    REDIS_LOCK_PORT: "6379"
+    REDIS_LOCK_DB: "1"
+    REDIS_LOCK_EXPIRE: "7200"
+    REDIS_LOCK_TIMEOUT: "7200"
+    TASK_TIME: "7200"
+    SPARK_EXECUTOR_MEMORY: "8g"
+    SPARK_DRIVER_MEMORY: "8g"
+    PAUSE: "0"
+    DOWNLOAD_REDCAP_DATA: "0" # use redcap data production and not synthetic
+    CREATE_TABLES: "1" # If deploying to existing db, set to 0
+    GLOBAL_WRITE_PERMISSIONS: "none"
+    LOCAL_ENV: "true" # set to false for production
