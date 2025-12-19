@@ -1,11 +1,12 @@
 # ==============================================================================
 ## Environment
 #
+# Check version tags when building these images on Github under release.
 UI_BASE_IMAGE := ctmd-frontend
 UI_TAG := v3.0.0
 
 API_BASE_IMAGE := ctmd-api
-API_TAG := v3.0.0
+API_TAG := ctmd-73
 
 PIPELINE_BASE_IMAGE := ctmd-pipeline
 PIPELINE_TAG := v3.0.0

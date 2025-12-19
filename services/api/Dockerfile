@@ -1,4 +1,4 @@
-FROM node:18-bullseye
+FROM node:24.11.1-bookworm-slim
 
 ARG BUILD_DATE
 ARG BUILD_REF
@@ -6,9 +6,9 @@ ARG BUILD_REF
 # during development
 ENV BUILD_DATE=${BUILD_DATE}
 
-RUN apt update
-
-RUN apt install tzdata
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

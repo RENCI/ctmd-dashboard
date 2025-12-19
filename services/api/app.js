@@ -5,7 +5,7 @@ const cors = require('cors')
 const db = require('./config/database')
 var multer = require('multer')
 const session = require('express-session')
-const RedisStore = require('connect-redis')(session)
+const RedisStore = require('connect-redis').default
 const redis = require('redis')
 const axios = require('axios')
 
@@ -25,11 +25,13 @@ const REDIS_HOST = process.env.REDIS_HOST || 'ctmd-redis'
 const REDIS_PORT = process.env.REDIS_PORT || 6379
 const REDIS_SESSION_DB = process.env.REDIS_SESSION_DB || 2 // Using DB 2 for sessions (pipeline uses 0 and 1)
 
+// Redis v4 client configuration
 const redisClient = redis.createClient({
-  host: REDIS_HOST,
-  port: REDIS_PORT,
-  db: REDIS_SESSION_DB,
-  legacyMode: false
+  socket: {
+    host: REDIS_HOST,
+    port: REDIS_PORT
+  },
+  database: REDIS_SESSION_DB
 })
 
 redisClient.on('error', (err) => {
@@ -39,6 +41,9 @@ redisClient.on('error', (err) => {
 redisClient.on('connect', () => {
   console.log(`Redis session store connected: ${REDIS_HOST}:${REDIS_PORT} (DB ${REDIS_SESSION_DB})`)
 })
+
+// Connect to Redis (v4 requires explicit connection)
+redisClient.connect().catch(console.error)
 
 // session with Redis store
 app.use(
