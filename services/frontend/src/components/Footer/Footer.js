@@ -15,7 +15,7 @@ export const Footer = props => {
     return (
         <footer className={ classes.root }>
             <Paragraph>
-                &copy; { new Date().getFullYear() }
+                This application is developed by <a href="https://renci.org/" target="_blank" rel="noopener noreferrer">Renaissance Computing Institute</a>.
             </Paragraph>
         </footer>
     )
