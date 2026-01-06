@@ -3,7 +3,7 @@
 #
 # Check version tags when building these images on Github under release.
 UI_BASE_IMAGE := ctmd-frontend
-UI_TAG := v3.0.0
+UI_TAG := v3.1.1
 
 API_BASE_IMAGE := ctmd-api
 API_TAG := ctmd-73
