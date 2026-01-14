@@ -4,7 +4,7 @@ import axios from 'axios'
 import { scaleLinear } from 'd3-scale'
 import api from '../../Api'
 import { convertEnrollmentData } from '../../utils/sites'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardHeader, CardContent, Input, InputLabel, Slider, Box } from '@material-ui/core'
 import { Title, Paragraph } from '../../components/Typography'
@@ -73,7 +73,8 @@ const StudyProfile = ({ profile }) => {
 }
 
 export const StudyReportPage = (props) => {
-  const proposalId = props.match.params.proposalID
+  const { proposalID } = useParams()
+  const proposalId = proposalID
   const [store] = useContext(StoreContext)
   const [study, setStudy] = useState(null)
   const [studyProfile, setStudyProfile] = useState(null)

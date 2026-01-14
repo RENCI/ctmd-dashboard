@@ -26,7 +26,6 @@ export const StudiesTable = ({ title, studies, paging }) => {
     return (
         <MaterialTable
             title={ title || null }
-            components={{ }}
             columns={ [
                 {
                     title: 'ID', field: 'proposalID',
@@ -92,7 +91,6 @@ export const StudiesTable = ({ title, studies, paging }) => {
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                paging: false,
                 // pageSize: settings.tables.pageSize,
                 // pageSizeOptions: [15, 25, 50, 100, 200],
                 exportFileName: title,
