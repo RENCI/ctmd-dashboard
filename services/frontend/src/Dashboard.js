@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { AuthContext } from './contexts'
-import { Switch, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { CssBaseline } from '@material-ui/core'
 import ScrollToTop from './utils/ScrollToTop'
@@ -70,27 +70,27 @@ const Dashboard = (props) => {
         <CssBaseline />
         <ScrollToTop>
           {authenticated && (
-            <Switch>
-              <Route exact path="/manage" component={ManagementPage} />
-              <Route exact path="/proposals/:id(\d+)" component={ProposalReportPage} />
-              <Route exact path="/proposals" component={ProposalsListPage} />
-              <Route path="/proposals/organization" component={ProposalsByOrganization} />
-              <Route path="/proposals/tic" component={ProposalsByTic} />
-              <Route path="/proposals/status" component={ProposalsByStatus} />
-              <Route path="/proposals/therapeutic-area" component={ProposalsByTherapeuticArea} />
-              <Route path="/proposals/date" component={ProposalsByDate} />
-              <Route path="/proposals/resources-requested" component={ProposalsByResourcesRequested} />
-              <Route path="/proposals/resources-approved" component={ProposalsByResourcesApproved} />
-              <Route path="/collaborations" component={CollaborationsPage} />
-              <Route exact path="/studies" component={StudiesListPage} />
-              <Route exact path="/studies/:proposalID" component={StudyReportPage} />
-              <Route path="/ctsas" component={CtsasPage} />
-              <Route path="/sites" component={SitesPage} />
-              <Route path="/uploads" component={UploadsPage} />
-              <Route path="/profile" component={ProfilePage} />
-              <Route path="/logout" component={ExitPage} />
-              <Route path="/" component={HomePage} />
-            </Switch>
+            <Routes>
+              <Route path="/manage" element={<ManagementPage />} />
+              <Route path="/proposals/:id" element={<ProposalReportPage />} />
+              <Route path="/proposals" element={<ProposalsListPage />} />
+              <Route path="/proposals/organization" element={<ProposalsByOrganization />} />
+              <Route path="/proposals/tic" element={<ProposalsByTic />} />
+              <Route path="/proposals/status" element={<ProposalsByStatus />} />
+              <Route path="/proposals/therapeutic-area" element={<ProposalsByTherapeuticArea />} />
+              <Route path="/proposals/date" element={<ProposalsByDate />} />
+              <Route path="/proposals/resources-requested" element={<ProposalsByResourcesRequested />} />
+              <Route path="/proposals/resources-approved" element={<ProposalsByResourcesApproved />} />
+              <Route path="/collaborations" element={<CollaborationsPage />} />
+              <Route path="/studies" element={<StudiesListPage />} />
+              <Route path="/studies/:proposalID" element={<StudyReportPage />} />
+              <Route path="/ctsas" element={<CtsasPage />} />
+              <Route path="/sites" element={<SitesPage />} />
+              <Route path="/uploads" element={<UploadsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/logout" element={<ExitPage />} />
+              <Route path="/" element={<HomePage />} />
+            </Routes>
           )}
           {!authenticated && <LoginPage />}
         </ScrollToTop>

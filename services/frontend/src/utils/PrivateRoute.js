@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { AuthConsumer } from '../contexts/AuthContext'
 
 export const privateRoute = ({ component: Component, ...rest }) => {
@@ -8,17 +8,9 @@ export const privateRoute = ({ component: Component, ...rest }) => {
             {
                 (context) => {
                     return (
-                        <Route { ...rest }
-                            render={
-                                (props) => {
-                                    return (
-                                        context.authenticated === true
-                                        ? <Component { ...props }/>
-                                        : <Redirect to="/login"/>
-                                    )
-                                }
-                            }
-                        />
+                        context.authenticated === true
+                        ? <Component { ...rest }/>
+                        : <Navigate to="/login" replace />
                     )
                 }
             }

@@ -55,7 +55,6 @@ export const SitesTable = props => {
     return (
         <MaterialTable
             title={ null }
-            components={{ }}
             columns={
                 [
                     { title: 'Protocol (Short Description)', field: 'shortDescription', hidden: true, },
@@ -100,7 +99,6 @@ export const SitesTable = props => {
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                paging: false,
                 // pageSize: 5,
                 // pageSizeOptions: [5, 10, 25],
                 exportFileName: title,
