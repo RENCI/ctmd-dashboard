@@ -27,16 +27,16 @@ securityContext:
 # Indicate whether this is [production || development] context
 # This value will affect the application configurations globally
 # for the appropriate settings.
-softwareContext: "production"
+softwareContext: "development"
 
 # Auth service has been removed - authentication now handled directly by API service
 # The API service connects directly to REDCap SSO (see api.env.REDCAP_AUTH_URL below)
 
 ingress: # for production
-  create: true
+  create: false
   name: "ctmd-ingress"
-  # -- Set to use a specific ingress class other than the default.
-  ingressClassName: ""
+  # -- Set to use a specific ingress class other than the default/otherwise leave null.
+  ingressClassName: null
   annotations: {
     cert-manager.io/cluster-issuer: zerossl,
     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
@@ -50,7 +50,7 @@ frontend:
 # May need to template out nginx.conf for frontend
   create: true
   name: "ctmd-frontend"
-  tag: "v4.0.0"
+  tag: "v3.1.2"
   service:
     port: 3000
     name: http
@@ -68,7 +68,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "v4.0.0"
+  tag: "v3.1.2"
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -158,7 +158,7 @@ redis:
 pipeline:
   create: true
   name: ctmd-pipeline
-  tag: "v4.0.0"
+  tag: "v3.1.2"
   service:
     port: 5000
   resources:
@@ -188,8 +188,8 @@ pipeline:
     AUXILIARY_PATH: "/auxiliary"
     FILTER_PATH: "/filter"
     BLOCK_PATH: "/block"
-    RELOAD_SCHEDULE: "1"  # scheduled sync with redcap in production
-    RELOAD_DATABASE: "0"  # wipe or reload db on every new prod instance
+    RELOAD_SCHEDULE: "0"  # scheduled sync with redcap in production
+    RELOAD_DATABASE: "0"  # wipe/reload db on every new prod instance
     SCHEDULE_RUN_TIME: "00:00"
     SERVER: "1"
     REDIS_QUEUE_HOST: "ctmd-redis"
@@ -204,7 +204,7 @@ pipeline:
     SPARK_EXECUTOR_MEMORY: "8g"
     SPARK_DRIVER_MEMORY: "8g"
     PAUSE: "0"
-    DOWNLOAD_REDCAP_DATA: "1" # use redcap data production and not synthetic
-    CREATE_TABLES: "0" # If deploying to existing db, set to 0
+    DOWNLOAD_REDCAP_DATA: "0" # use redcap data production and not synthetic
+    CREATE_TABLES: "1" # If deploying to existing db, set to 0
     GLOBAL_WRITE_PERMISSIONS: "none"
-    LOCAL_ENV: "false" # set to false for production
+    LOCAL_ENV: "true" # set to false for production
