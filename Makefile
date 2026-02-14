@@ -3,13 +3,13 @@
 #
 # Check version tags when building these images on Github under release.
 UI_BASE_IMAGE := ctmd-frontend
-UI_TAG := ctmd-74
+UI_TAG := v3.1.2
 
 API_BASE_IMAGE := ctmd-api
-API_TAG := ctmd-73
+API_TAG := v3.1.2
 
 PIPELINE_BASE_IMAGE := ctmd-pipeline
-PIPELINE_TAG := v3.0.0
+PIPELINE_TAG := v3.1.2
 
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
@@ -137,7 +137,7 @@ kind-load-pipeline:
 	  containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 		--name $(KIND_CLUSTER)	
 
-kind-load: kind-load-frontend kind-load-api kind-load-pipeline
+kind-load: kind-load-ui kind-load-api kind-load-pipeline
 
 # =======================================================
 ## Helm

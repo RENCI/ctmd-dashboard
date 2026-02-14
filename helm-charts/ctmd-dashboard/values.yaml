@@ -118,22 +118,22 @@ postgres:
 # environment variables with DSN information.
 # This secret is also mounted in api, frontend, pipeline
   secrets:
-    create: false
+    create: true
     name: "db-dsn"
     database: "postgres"
     user: "ctmd-user"
-    password: ""
+    password: "changeMeDevPassword"
   # The pvc which is created or mounted should be kept when helm uninstall is run.
   # This is to preserve database data, achieved by helm annotation in db.yaml.
   persistence:
     # Set to true to create a new PVC, false to use existing PVC
-    create: false
+    create: true
     # Name of existing PVC to use (only used if create is false)
     existingClaim: "ctmd-db-pvc"
     # To use the default provisioner leave storageClass blank. 
-    storageClass: ""
+    storageClass: 
     # To use default of 1Gi (dev mode) leave blank.
-    size: "10Gi"
+    size: "1Gi"
     
 
 redis:
@@ -171,10 +171,10 @@ pipeline:
   recurringBackup:
     backupPath: "/backups"
     storageClass:  # Leave blank for default "standard"
-    size: "5Gi"
+    size: "1Gi"
     persistence:
       # Set to true to create a new PVC, false to use existing PVC
-      create: false
+      create: true
       # Name of existing PVC to use (only used if create is false)
       existingClaim: "db-backups-pvc"
   config:
