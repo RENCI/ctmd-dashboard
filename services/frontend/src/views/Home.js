@@ -10,6 +10,7 @@ export const HomePage = (props) => {
         <div>
             <Title>
                 Clinical Trial Management Dashboard
+                { process.env.REACT_APP_IS_HEAL_SERVER === 'true' && <span> — HEAL</span> }
             </Title>
 
             <Grid container spacing={ 8 } alignItems="stretch">
