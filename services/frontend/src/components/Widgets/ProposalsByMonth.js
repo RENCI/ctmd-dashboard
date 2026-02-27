@@ -155,12 +155,12 @@ export const ProposalsByMonthChart = props => {
                 {
                     proposalGroupsLine && graphType === LINE && (
                         <ResponsiveLine
-                            data={ [{ data: proposalGroupsLine.slice(currentPosition, currentPosition + 12) }] }
+                            data={ [{ id: 'submissions', data: proposalGroupsLine.slice(currentPosition, currentPosition + 12) }] }
                             curve="linear"
                             isInteractive={ true }
                             margin={{ top: 0, left: 20, right: 20, bottom: 120 }}
                             xScale={{ type: 'point' }}
-                            yScale={{ type: 'linear', min: 0, max: 15, stacked: false, reverse: false }}
+                            yScale={{ type: 'linear', min: 0, max: 'auto', stacked: false, reverse: false }}
                             axisTop={ null }
                             axisRight={ null }
                             axisBottom={{
@@ -181,7 +181,7 @@ export const ProposalsByMonthChart = props => {
                             pointBorderColor="black"
                             pointColor={{ from: 'color', modifiers: [] }}
                             pointLabelOffset={ -12 }
-                            useMech={ true }
+                            useMesh={ true }
                             legends={ [] }
                         />
                     )
