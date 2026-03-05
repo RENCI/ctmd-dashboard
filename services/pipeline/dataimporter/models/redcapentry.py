@@ -1,0 +1,275 @@
+import datetime
+from dataclasses import dataclass, fields
+import inspect
+
+@dataclass
+class RedCapEntry:
+    actual_date: datetime.datetime
+    grant_re_submission_date: datetime.datetime
+    #add_service_post_outcome: str
+    amount_award: str
+    anticipated_budget: str
+    #anticipated_budget_int: float
+    #app_services_pat_outcome: str
+    bo_submission: datetime.datetime
+    cfs_2: str
+    city_list: str
+    conso_or_services: str
+    #consult_options: str
+    covid: bool
+    discussed1: bool
+    discussed2: bool
+    discussed3: bool
+    discussed4: bool
+    discussed5: bool
+    discussed6: bool
+    discussed7: bool
+    dl_sent2: datetime.datetime
+    pi_name: str
+    pi_name_2: str
+    #fund_assessmemt: str
+    funding: str
+    funding_duration: str
+    funding_mechanism: str
+    funding_mechanism_2: str
+    funding_mechanism_3: str
+    funding_nih: bool
+    funding_opp_announcement: str
+    funding_other: str
+    funding_other_2: str
+    funding_other_3: str
+    funding_source: str
+    funding_source_2: str
+    funding_source_3: str
+    funding_source_4: str
+    funding_source_5: str
+    fwa: str
+    grant_app_no: str
+    grant_sub_deadline: datetime.datetime
+    header_8b: str
+    header_8d: str
+    header_8e: str
+    header_8f: str
+    heal_study: bool
+    #ko_meeting: str
+    #ko_occured: str
+    meeting_date: datetime.datetime
+    nih_funding: bool
+    non_us_sites: int
+    number_csta_sites: int
+    number_sites: int
+    number_subjects: int
+    other_comments: str
+    other_funding: str
+    other_organization: str
+    partnership: bool
+    pi_firstname: str
+    pi_lastname: str
+    planned_submission_date: datetime.datetime
+    po_name: str
+    pro_time_date_4: datetime.datetime
+    pro_time_date_5: datetime.datetime
+    site_active_date: datetime.datetime
+    project_budget1: str
+    project_budget5: str
+    project_budget6: str
+    project_funding_date: datetime.datetime
+    projected_funding_date: datetime.datetime
+    prop_submit: datetime.datetime
+    prop_summary_describe2_054: str
+    prop_summary_describe2_110: str
+    prop_summary_describe2_35c: str
+    prop_summary_describe2_42d: str
+    prop_summary_describe2_5f5: str
+    prop_summary_describe2_a3f: str
+    prop_summary_describe2_b32: str
+    prop_summary_describe2_b45: str
+    proposal_id: int
+    proposal_title2: str
+    protocol_final_start: datetime.datetime
+    protocol_status: str
+    rare_disease: bool
+    recommendations: str
+    recommendations1: str
+    recommendations2: str
+    release_of_funds_2: datetime.datetime
+    #removed_services: str
+    revewed_in_consult: bool
+    review: bool
+    review_discuss: bool
+    ric_poc_2: str
+    ric_poc_v2_2: str
+    satisfaction_sent: datetime.datetime
+    scientific_review: str
+    #service_recommended: str
+    #services_approved: str
+    short_name: str
+    sources_1: int
+    staff_status: int
+    study_description: str
+    study_design_initial: str
+    study_duration_comments2: str
+    study_population: str
+    study_vumc_ric1ase: str
+    submitters_contact_email: str
+    summary_of_recomendatio: str
+    theraputic_area: str
+    tic_budget_changes: bool
+    tic_poc_2: str
+    tic_poc_v2_2: str
+    tic_ric_assign: str
+    tic_ric_assign_v2: str
+    updated_funding_status: str
+    new_funding_source: str
+    vote_comments: str
+    vote_comments_2: str
+    wk_complete: datetime.datetime
+    wrap_up_sent: datetime.datetime
+
+
+
+    @classmethod
+    def from_dict(cls, data_dict):
+        """Creates a dataclass instance from a dictionary, ignoring extra keys."""
+        expected_params = inspect.signature(cls.__init__).parameters
+        filtered_data = {k: v for k, v in data_dict.items() if k in expected_params}
+        return cls(**filtered_data)
+
+
+
+# List of fields from mapping file:
+
+# actual_date/grant_re_submission_date[date]
+# add_service_post_outcome[text]
+# amount_award[text]
+# anticipated_budget[text]
+# anticipated_budget_int[float]
+# app_services_pat_outcome[text]
+# bo_submission[date]
+# cfs_2[text]
+# city_list[text]
+# conso_or_services[text]
+# consult_options[text]
+# covid[boolean]
+# discussed1[boolean]
+# discussed2[boolean]
+# discussed3[boolean]
+# discussed4[boolean]
+# discussed5[boolean]
+# discussed6boolean[boolean]
+# discussed7[boolean]
+# dl_sent2[date]
+# extract_first_name(pi_name/pi_name_2)[text]
+# extract_last_name(pi_name/pi_name_2)[text]
+# fund_assessmemt[text]
+# funding[text]
+# funding_duration/fund_duration[text]
+# funding_mechanism[text]
+# funding_mechanism_2[text]
+# funding_mechanism_3[text]
+# funding_nih[boolean]
+# funding_opp_announcement[text]
+# funding_other[text]
+# funding_other_2[text]
+# funding_other_3[text]
+# funding_source_4[text]
+# funding_source_5[text]
+# funding_source/funding_source_2/funding_source_3[text]
+# fwa[text]
+# generate_ID(pi_firstname,pi_lastname)[int]
+# grant_app_no[text]
+# grant_sub_deadline[date]
+# grant_sub_deadline/tgs_date_2/actual_date/tgs_date_3/grant_re_submission_date[date]
+# header_8b[text]
+# header_8d[text]
+# header_8e[text]
+# header_8f[text]
+# heal_study[boolean]
+# if ko_meeting="1" then kick_off_scheduled else "N/A"[date]
+# if ko_occured="1" then kick_off else "N/A"[date]
+# if protocol_status="119" then "1" else "0"[boolean]
+# info_share_question/if funding="1" then "1" else "0"[boolean]
+# institute_center[text]
+# institute_center_2[text]
+# institute_center_3[text]
+# intro_call[date]
+# issues[text]
+# meeting_date_2/meeting_date[date]
+# more_than_500000[boolean]
+# n/a[text]
+# ncats_poc_2/ncats_poc_3/ncats_poc_v2_2/ncats_poc_v2_3[text]
+# new_funding_source[text]
+# new_service_selection[text]
+# nih_funding[boolean]
+# non_us_sites[int]
+# notes4[text]
+# number_csta_sites[int]
+# number_sites[int]
+# number_subjects[int]
+# objectives[text]
+# org_name[text]
+# other_comments[text]
+# other_funding_4[text]
+# other_funding_5[text]
+# other_funding/other_funding_2/other_funding_3[text]
+# other_organization[text]
+# partnership[boolean]
+# pat_funds_diff[int]
+# phone_number[text]
+# pi[boolean]
+# pi_firstname[text]
+# pi_lastname[text]
+# planned_submission_date[date]
+# po_name[text]
+# pro_time_date_4[date]
+# pro_time_date_5/site_active_date[date]
+# project_budget1[text]
+# project_budget5[text]
+# project_budget6[text]
+# project_funding_date/projected_funding_date[date]
+# projected_funding_date/project_funding_date[date]
+# prop_submit[date]
+# prop_summary_describe2_054[text]
+# prop_summary_describe2_110[text]
+# prop_summary_describe2_35c[text]
+# prop_summary_describe2_42d[text]
+# prop_summary_describe2_5f5[text]
+# prop_summary_describe2_a3f[text]
+# prop_summary_describe2_b32[text]
+# prop_summary_describe2_b45[text]
+# proposal_id[int]
+# proposal_title2[text]
+# protocol_final_start[date]
+# protocol_status[text]
+# rare_disease[boolean]
+# recommendations[text]
+# recommendations1[text]
+# recommendations2[text]
+# release_of_funds_2[date]
+# removed_services[text]
+# revewed_in_consult[boolean]
+# review[boolean]
+# review_discuss[boolean]
+# ric_poc_v2_2/ric_poc_2[text]
+# satisfaction_sent[date]
+# scientific_review[text]
+# service_recommended[text]
+# services_approved[text]
+# short_name[text]
+# sources_1[int]
+# staff_status[int]
+# study_description[text]
+# study_design_initial[text]
+# study_duration_comments2[text]
+# study_population[text]
+# study_vumc_ric1ase[text]
+# submitters_contact_email[text]
+# summary_of_recomendatio[text]
+# theraputic_area[text]
+# tic_budget_changes[boolean]
+# tic_poc_v2_2/tic_poc_2[text]
+# tic_ric_assign_v2/tic_ric_assign[text]
+# updated_funding_status/new_funding_source/funding[text]
+# vote_comments/vote_comments_2[text]
+# wk_complete[date]
+# wrap_up_sent[date]
