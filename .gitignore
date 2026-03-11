@@ -20,4 +20,4 @@ filter/
 block/
 
 # Mac
-.DS_Store
+.DS_Storeservices/pipeline2/**/__pycache__
