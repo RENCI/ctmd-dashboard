@@ -92,6 +92,12 @@ build-pipeline2:
 	--tag containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
 	./services/pipeline2/
 
+test-pipeline2:
+	docker run --rm \
+	-v $(PWD)/data/mapping.json:/data/mapping.json:ro \
+	containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
+	python -m pytest tests/ -v
+
 build-all: build-api build-ui build-pipeline
 
 push-ui:
