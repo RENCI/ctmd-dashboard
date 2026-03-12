@@ -7,76 +7,76 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 ## Target Directory Layout
 
 ```
-services/pipeline/
-├── application.py              # Entry point
-├── config.py                   # Environment-based configuration
-├── worker.py                   # RQ worker + scheduler + sync orchestration
-├── server.py                   # Flask REST API (existing routes preserved)
+services/pipeline2/
+├── main.py                     # Entry point: orchestrates download → transform → load
+├── requirements.txt            # Python dependencies
+├── Dockerfile                  # Single-stage Python image (python:3.12-slim)
+│
+├── redcap_importer/
+│   ├── __init__.py
+│   ├── mapping.py              # Parse mapping.json → list of 149 REDCap field names
+│   └── downloader.py           # REDCap API client: targeted batch fetch
 │
 ├── schema/
 │   ├── __init__.py
-│   ├── models.py               # Pydantic models for mapping.json fields
-│   ├── generator.py            # SQL generation from models
-│   └── migrator.py             # Numbered-file migration runner
-│
-├── redcap/
-│   ├── __init__.py
-│   ├── client.py               # REDCap API client (targeted field extraction)
-│   └── manifest.py             # Field manifest builder from mapping.json
-│
-├── etl/
-│   ├── __init__.py
-│   ├── pipeline.py             # Orchestrates full ETL flow
-│   ├── transforms.py           # Field transformation functions
-│   ├── nameparser.py           # PI name parser (port from Scala)
-│   ├── filters.py              # Data filters (non-repeating, test data, aux, block)
-│   ├── unpivot.py              # Checkbox wide-to-long conversion
-│   └── auxiliary.py            # name table + reviewer_organization generation
-│
-├── database/
-│   ├── __init__.py
-│   ├── connection.py           # psycopg2 connection management
-│   ├── loader.py               # Bulk COPY + atomic transactions
-│   ├── validation.py           # Pre-load data validation
-│   └── backup.py               # pg_dump / psql backup and restore
+│   └── generator.py            # One-time tool: mapping.json → CREATE TABLE SQL
 │
 ├── migrations/
-│   ├── 001_initial_schema.sql  # Generated from mapping.json
-│   └── 002_add_constraints.sql # FK + NOT NULL (deferred)
+│   └── 001_initial_schema.sql  # Committed static SQL (run this, don't regenerate)
 │
-├── tests/
-│   ├── conftest.py
-│   ├── fixtures/
-│   │   ├── mapping_sample.json
-│   │   ├── synthetic_records.json
-│   │   └── data_dictionary.json
-│   ├── test_schema.py
-│   ├── test_transforms.py
-│   ├── test_nameparser.py
-│   ├── test_filters.py
-│   ├── test_unpivot.py
-│   ├── test_auxiliary.py
-│   ├── test_redcap_client.py
-│   ├── test_loader.py
-│   ├── test_validation.py
-│   ├── test_api.py
-│   ├── test_equivalence.py
-│   └── test_integration.py
+├── transformer/
+│   ├── __init__.py
+│   └── transforms.py           # Direct REDCap JSON → per-table row dicts
 │
-├── Dockerfile                  # Single-stage Python image
-├── pyproject.toml              # Dependencies
-└── README.md
+├── loader/
+│   ├── __init__.py
+│   └── loader.py               # PostgreSQL COPY, transaction-wrapped, UTF-8
+│
+└── tests/
+    ├── __init__.py
+    ├── test_mapping.py          # 21 tests: field manifest extraction
+    ├── test_schema_generator.py # 19 tests: SQL generation from mapping.json
+    ├── test_transforms.py       # Field transformation functions
+    └── test_loader.py           # Bulk load and transaction safety
 ```
 
 ---
 
-## Deleted from Current Structure
+## What Goes Where
+
+### `redcap_importer/`
+Everything to do with fetching data from REDCap. `mapping.py` derives the field
+list used by the downloader. Neither file is called at runtime except by the
+pipeline entry point.
+
+### `schema/`
+One-time generation tool only. Run `python -m schema.generator` to regenerate
+`migrations/001_initial_schema.sql` if `mapping.json` ever changes. Do not import
+`schema/` from the runtime pipeline.
+
+### `migrations/`
+Static SQL files committed to git. Applied by `loader.py` at startup when
+`CREATE_TABLES=1`. Add new numbered files for schema changes (e.g.,
+`002_add_constraints.sql`).
+
+### `transformer/`
+Explicit Python mapping from REDCap record dicts to per-table row dicts. One
+function per table (or group of related tables). No dynamic expression parsing —
+just clear, readable Python.
+
+### `loader/`
+All database interaction: migration runner, COPY-based bulk load, transaction
+management. Uses `psycopg2.sql.Identifier()` for all table/column names.
+
+---
+
+## Deleted from Old Structure
 
 ```
 services/pipeline/
-├── map-pipeline/               ← DELETE (Scala/Spark)
-├── map-pipeline-schema/        ← DELETE (Haskell)
-├── reload4j-1.2.26.jar        ← DELETE (Spark log4j replacement)
-├── reload.py                   ← Split into worker.py, database/, schema/
-└── utils.py                    ← Replaced by redcap/client.py, config.py
+├── map-pipeline/               ← DELETE (Scala/Spark ETL)
+├── map-pipeline-schema/        ← DELETE (Haskell schema generator)
+├── reload4j-1.2.26.jar        ← DELETE (Spark log4j)
+├── reload.py                   ← REPLACE with transformer/ + loader/
+└── utils.py                    ← REPLACE with redcap_importer/
 ```
