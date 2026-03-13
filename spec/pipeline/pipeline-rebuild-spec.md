@@ -5,705 +5,288 @@
 | Date | Author | Description |
 |------|--------|-------------|
 | 2026-02-14 | J. Seals / Claude | Initial specification |
+| 2026-03-12 | J. Seals / Claude | Simplified: remove DSL/dynamic parsing approach |
+| 2026-03-13 | J. Seals / Claude | Add CSV upload path (two independent data paths) |
 
 ## 1. Background & Motivation
 
-The CTMD pipeline currently spans 3 languages (Python, Haskell, Scala) and 3 build systems (pip, Stack, SBT). The original plan was a full Python rewrite of all pipeline functionality. After review, **two key simplifications** change the approach:
+The CTMD pipeline currently spans 3 languages (Python, Haskell, Scala) and 3 build systems (pip, Stack, SBT). The goal is a **full Python rewrite** that eliminates all Haskell, Scala, and Spark dependencies and simplifies everything possible.
 
-1. **Dynamic schema generation is unnecessary.** The Haskell service regenerates the database schema from `mapping.json` on every deployment, but the schema rarely changes. A static, versioned schema derived from `mapping.json` replaces this entirely.
+**Two key simplifications drive the approach:**
 
-2. **The full Scala/Spark ETL is overkill.** The Spark pipeline downloads ALL REDCap fields, then a complex DSL parser maps ~354 fields. Instead, a focused Python module will extract only the desired REDCap fields and use CRUD operations for database consistency, eliminating the delete-all/reload-all pattern.
+1. **Static schema, not dynamic generation.** The Haskell service regenerated the DB schema from `mapping.json` on every deployment. We generate a static SQL migration file once and commit it. The pipeline never parses `mapping.json` at runtime.
 
-### 1.1 Current Architecture
+2. **No DSL parser.** The Scala pipeline used a combinator DSL to dynamically evaluate field expressions. The Python pipeline uses explicit, direct field mappings — simple, readable Python instead of an expression evaluator.
+
+### 1.1 Current Architecture (To Be Replaced)
+
+The pipeline has two independent data paths that must both be rewritten:
 
 ```
+PATH A — REDCap Sync (automated, scheduled)
+─────────────────────────────────────────────────────────────
 REDCap API
     │
     ▼
 [Python: utils.py] ─── Download ALL records (every field) as JSON
     │
     ▼
-[Scala/Spark: map-pipeline] ─── DSL parser, name parser, filters,
-    │                            unpivot checkboxes → CSV per table
-    ▼
-[Haskell: map-pipeline-schema] ─── Parse mapping.json → CREATE TABLE SQL
-    │                                (runs every deployment)
-    ▼
-[Python: reload.py] ─── csvsql row-by-row INSERT
-                         (DELETE all → INSERT all, no transactions)
+[Scala/Spark: map-pipeline] ─── DSL parser, name parser, filters → CSV per table
     │
     ▼
-PostgreSQL ◄──── [Node.js API: pg-promise raw SQL] ──── React Frontend
+[Haskell: map-pipeline-schema] ─── Parse mapping.json → CREATE TABLE SQL at runtime
+    │
+    ▼
+[Python: reload.py] ─── csvsql row-by-row INSERT (DELETE all → INSERT all, no transactions)
+    │
+    ▼
+PostgreSQL (18 tables populated from REDCap)
+
+PATH B — CSV Upload API (user-driven)
+─────────────────────────────────────────────────────────────
+Dashboard User
+    │  (CSV or JSON file upload)
+    ▼
+[Python: server.py Flask API]
+    PUT /table/<name>  → csvsql DELETE + INSERT (latin-1, no transactions)
+    POST /table/<name> → csvsql INSERT (append, latin-1)
+    ▼
+PostgreSQL (~19 tables populated by user uploads)
+
+Both paths share:
+    PostgreSQL ◄──── [Node.js API: pg-promise raw SQL] ──── React Frontend
 ```
 
-### 1.2 Problems Addressed
+**The two paths are independent:** REDCap sync never writes to CSV-managed tables.
+CSV uploads never conflict with the sync. This is preserved in the rewrite.
 
-| Problem | Impact | Section |
-|---------|--------|---------|
-| 3 languages, 3 build systems | Maintenance burden, onboarding cost | All epics |
-| Spark startup overhead (30s) for <100K rows | Unnecessary latency | Epic 2 |
-| Schema regenerated on every deploy | Unnecessary complexity | Epic 1 |
-| Delete-all/reload-all with no transactions | Data loss risk on failure | Epic 3 |
-| csvsql row-by-row INSERT | 100x slower than COPY | Epic 3 |
-| Downloads ALL REDCap fields | Unnecessary network/processing | Epic 2 |
-| No PK/FK/NOT NULL constraints | No referential integrity | Epic 1 |
-| SQL injection in reload.py | Security vulnerability | Epic 3 |
-| latin-1 encoding throughout | Data corruption for non-ASCII | Epic 3 |
-| Boolean parsing bug (Haskell) | "FALSE" parsed as True | Epic 1 |
+### 1.2 Problems Being Fixed
+
+| Problem | Affects | Fix |
+|---------|---------|-----|
+| 3 languages, 3 build systems | Both paths | Single Python service |
+| Downloads ALL REDCap fields | Path A | Request only the 149 fields in `mapping.json` |
+| Dynamic schema generation on every deploy | Path A | Static SQL migration committed to git |
+| DSL expression evaluator | Path A | Explicit Python field assignments per table |
+| csvsql row-by-row INSERT (~100 rows/sec) | Both paths | PostgreSQL COPY (~100,000 rows/sec) |
+| DELETE all → INSERT all with no transactions | Path A | Transaction-wrapped sync (database never empty on failure) |
+| latin-1 encoding throughout | Both paths | UTF-8 throughout |
+| SQL injection via string concatenation | Both paths | `psycopg2.sql.Identifier()` for all identifiers |
+| Spark startup overhead (30s) for <100K rows | Path A | Eliminated entirely |
+| 8GB memory requirement for Spark | Path A | ~1GB for pure Python |
 
 ---
 
-## 2. Downstream Dependency Analysis
-
-The Node.js API service (`services/api/`) is the sole consumer of the pipeline's database output. It uses **pg-promise with raw SQL queries** (no ORM). Any schema change directly affects the API.
-
-### 2.1 Tables Referenced by API Service
-
-The API service queries **19 tables** via raw SQL:
-
-**Core Tables (queried directly):**
-- `Proposal` — ProposalID, ShortTitle, FullTitle, ShortDescription, covidStudy, dateSubmitted, proposalStatus, StudyPopulation, PhaseOfStudy
-- `Submitter` — ProposalID, submitterFirstName, submitterLastName, submitterInstitution
-- `ProposalDetails` — ProposalID, therapeuticArea, numberCTSAprogHubSites, numberSites
-- `ProposalFunding` — ProposalID, amountAward, fundingPeriod, fundingStart, totalBudget, currentFunding, newFundingStatus, fundingSource, instituteCenter, instituteCenter2, instituteCenter3, newFundingSource, fundingSourceConfirmation
-- `AssignProposal` — ProposalID, assignToInstitution
-- `PATMeeting` — ProposalID, meetingDate
-- `ProtocolTimelines_estimated` — ProposalID, estimatedStartDateOfFunding, plannedGrantSubmissionDate, actualGrantSubmissionDate, actualProtocolFinalDate, actualGrantAwardDate, approvalReleaseDiff
-- `InitialConsultationDates` — ProposalID, FirstContact, kickOffDateOccurs
-- `StudyProfile` — ProposalID, SELECT * (all columns)
-- `StudySites` — ProposalID, siteId, ctsaId, plus ~15 site-specific columns
-- `Sites` — siteId, siteName
-- `CTSAs` — ctsaId, ctsaName
-- `EnrollmentInformation` — ProposalID, date, revisedProjectedSites, actualSites, actualEnrollment, targetEnrollment
-
-**Junction Tables (many-to-many, from checkbox unpivot):**
-- `Proposal_NewServiceSelection` — ProposalID, serviceSelection
-- `Proposal_ServicesApproved` — ProposalID, servicesApproved
-- `Proposal_ServicesPatOutcome` — ProposalID, servicesPatOutcome
-- `Proposal_ServicesPostOutcome` — ProposalID, servicesPostOutcome
-- `Proposal_RemovedServices` — ProposalID, removedServices
-
-**Lookup Table (universal):**
-- `name` — table, column, index, id, description
-
-### 2.2 The `name` Table Is Critical
-
-The `name` table is a universal lookup/dictionary used by **nearly every API endpoint**. It maps coded values to human-readable descriptions for: proposalStatus, assignToInstitution, submitterInstitution, therapeuticArea, currentFunding, newFundingStatus, fundingSource, instituteCenter, serviceSelection, servicesApproved, servicesPatOutcome, servicesPostOutcome, removedServices, StudyPopulation, PhaseOfStudy.
-
-**Source:** Generated by the Scala pipeline from the REDCap **data dictionary** (field metadata), not from record data. This means the data dictionary export must be preserved in the new pipeline even though we're simplifying record extraction.
-
-### 2.3 Constraint: Schema Backward Compatibility
-
-**Adding constraints (PK, FK, NOT NULL) must not break the API service.** The API only performs SELECT queries, so constraints won't break reads. However:
-
-- Adding NOT NULL requires that the ETL never produces NULL for those columns (must verify against real data before enabling)
-- Adding FK constraints requires that referenced tables are populated before referencing tables (load order matters)
-- The API uses CAST operations (e.g., `CAST(ProposalID AS INT)`) suggesting columns may currently store mixed types — this must be validated
-
-**Recommendation:** Add constraints incrementally. Start with PK only, validate, then add FK, then NOT NULL. Do NOT add all constraints in the initial migration.
-
----
-
-## 3. Revised Architecture
+## 2. Target Architecture
 
 ```
-                    ┌─────────────────────────────────────┐
-                    │  Python Pipeline Service             │
-                    │                                      │
-                    │  ┌──────────────┐  ┌──────────────┐ │
-REDCap API ────────►│  │ redcap/      │  │ schema/      │ │
-  (records +        │  │  client.py   │  │  migration   │ │
-   data dict)       │  │  extractor.py│  │  runner.py   │ │
-                    │  └──────┬───────┘  └──────┬───────┘ │
-                    │         │                  │         │
-                    │  ┌──────▼───────┐          │         │
-                    │  │ etl/         │          │         │
-                    │  │  transform.py│          │         │
-                    │  │  filters.py  │          │         │
-                    │  │  unpivot.py  │          │         │
-                    │  │  names.py    │          │         │
-                    │  └──────┬───────┘          │         │
-                    │         │                  │         │
-                    │  ┌──────▼──────────────────▼───────┐ │
-                    │  │ database/                        │ │
-                    │  │  operations.py (COPY, txn safety)│ │
-                    │  │  validation.py                   │ │
-                    │  └──────┬──────────────────────────┘ │
-                    │         │                            │
-                    │  ┌──────▼───────┐  ┌──────────────┐ │
-                    │  │ Flask API    │  │ RQ Worker +   │ │
-                    │  │ (server.py)  │  │ Scheduler     │ │
-                    │  └──────────────┘  └──────────────┘ │
-                    └─────────┬───────────────────────────┘
-                              │
-                              ▼
-                         PostgreSQL
-                              ▲
-                              │
-                    Node.js API (read-only)
-                              ▲
-                              │
-                    React Frontend
+PATH A — REDCap Sync (automated, scheduled)
+───────────────────────────────────────────────────────────────────
+REDCap API
+    │
+    ▼
+[Python: redcap_importer/downloader.py]
+    Batch fetch — 149 targeted fields only
+    │
+    ▼
+[Python: transformer/transforms.py]
+    Direct field mapping: REDCap JSON → per-table row dicts
+    │
+    ▼
+[Python: loader/loader.py]
+    Transaction: TRUNCATE REDCap-sourced tables → COPY all → commit
+    │
+    ▼
+PostgreSQL (18 REDCap-sourced tables)
+
+PATH B — CSV Upload API (user-driven)
+───────────────────────────────────────────────────────────────────
+Dashboard User (CSV or JSON file upload)
+    │
+    ▼
+[Python: server.py — Flask REST API]
+    PUT /table/<name>       → replace table via COPY (DELETE + COPY)
+    POST /table/<name>      → append to table via COPY
+    POST /table/<name>/column/<col> → partial column update
+    POST /sync              → enqueue manual REDCap sync (Path A)
+    POST/GET /backup        → pg_dump backup
+    POST /restore/<ts>      → pg_dump restore
+    GET/DELETE /task/<id>   → RQ task status
+    │  (long-running ops enqueued via Redis/RQ)
+    ▼
+PostgreSQL (~19 CSV-managed tables)
+
+Shared infrastructure:
+    PostgreSQL ◄──── [Node.js API — unchanged] ──── React Frontend
+    Redis ◄──── RQ Worker (task queue for both paths)
+    Sherlock (distributed lock — prevents concurrent syncs)
 ```
 
-### 3.1 Key Design Decisions
+### 2.1 Key Design Decisions
 
 | Decision | Rationale |
 |----------|-----------|
-| **Static schema migrations, not dynamic generation** | Schema changes are infrequent; version-controlled SQL is simpler and auditable |
-| **Targeted REDCap field extraction** | Reduce payload size; only request fields referenced by mapping.json |
-| **Batch sync remains the primary mode** | The API service is read-only; incremental CRUD is a future enhancement, not MVP |
-| **PostgreSQL COPY for bulk loading** | 10-100x faster than csvsql row-by-row INSERT |
-| **Transaction-wrapped sync** | Eliminates the empty-database-on-failure risk |
-| **Preserve `name` table generation from data dictionary** | Critical dependency for every API endpoint |
-| **Constraints added incrementally** | PK first, then FK, then NOT NULL — each validated against real data |
-| **No intermediate CSV files** | Data flows directly: REDCap JSON → Python DataFrames → PostgreSQL COPY |
+| Static schema migrations | Schema rarely changes; version-controlled SQL is simpler and auditable |
+| Targeted REDCap field extraction | Only the 149 fields needed; eliminates 8,800+ unnecessary fields |
+| Explicit field mapping (no DSL) | Readable, debuggable, no parser complexity |
+| PostgreSQL COPY for bulk loading | 100-1000x faster than csvsql row-by-row INSERT (both paths) |
+| Transaction-wrapped sync (Path A only) | Database never left empty on failure |
+| Two independent write paths preserved | REDCap sync and CSV uploads never interfere with each other |
+| CSV upload COPY replaces csvsql | Same performance improvement for user uploads |
+| UTF-8 throughout | Correct handling of non-ASCII names and values (both paths) |
+| `psycopg2.sql.Identifier()` | Prevents SQL injection on table/column names (both paths) |
+| Single-stage Python image | Remove JVM, Spark, Haskell, csvkit, SBT, Stack |
 
 ---
 
-## 4. Epics
+## 3. Module Breakdown
 
-### Epic 1: Static Schema from mapping.json
+### 3.1 `redcap_importer/` — REDCap Extraction (Done)
 
-**Goal:** Replace the Haskell dynamic schema generator with a one-time Python script that produces versioned SQL migration files from `mapping.json`. Schema changes become git-tracked migrations, not runtime code.
+**`mapping.py`** — Parse `mapping.json` at dev-time to extract the list of REDCap fields needed. Returns 149 sorted field names. Used by the downloader and by `schema/generator.py` — **not called at pipeline runtime**.
 
-**Out of scope:** Full constraint enforcement (FK/NOT NULL added incrementally in Epic 1b).
+**`downloader.py`** — REDCap API client. Uses the field list from `mapping.py` to request only needed fields. Batched by proposal ID (configurable batch size via `REDCAP_BATCH_SIZE` env var).
 
-#### Stories
+### 3.2 `schema/` — Schema Generation (Done)
 
-**1.1 — Parse mapping.json into validated Python models**
+**`generator.py`** — One-time script: reads `mapping.json`, produces `migrations/001_initial_schema.sql`. Run once, commit the output. Never called at runtime.
 
-Parse all 354 field definitions. Use Pydantic models for type safety. Handle known data quality issues:
-- "text " trailing-space variant (8 fields) — normalize to "text"
-- Boolean "FALSE" → correctly parse as False (fix Haskell bug)
-- Validate all `Table_CTMD` values match expected table list from API analysis (Section 2.1)
+**`migrations/001_initial_schema.sql`** — Committed static SQL. Applied by the migration runner at pipeline startup.
 
-Acceptance criteria:
-- All 354 fields parsed without error
-- 5 data types mapped correctly (int→bigint, float→double precision, boolean→boolean, date→date, text→varchar)
-- Pydantic validation catches malformed entries
-- Unit tests cover all type mappings and edge cases
+### 3.3 `transformer/` — ETL Transformation
 
-**1.2 — Generate initial migration SQL**
+Direct Python mapping from REDCap record JSON to per-table row dicts. No dynamic expression evaluation. Each table has a clear, explicit transformation function.
 
-Group fields by `Table_CTMD`. Emit `CREATE TABLE` statements with PRIMARY KEY constraints only (FK and NOT NULL deferred). Include the 2 auxiliary tables (`reviewer_organization`, `name`). Write to `migrations/001_initial_schema.sql`.
+Handles the expression patterns found in `mapping.json`:
 
-Acceptance criteria:
-- Generated SQL creates all 19+ tables referenced by API service
-- PRIMARY KEY on appropriate columns (ProposalID for most tables)
-- Auxiliary tables included
-- SQL executes cleanly against empty PostgreSQL
-- Diff against current Haskell output documented (expected differences: PK constraints added)
+| Pattern | Python Implementation |
+|---------|----------------------|
+| `"field_name"` | `record.get("field_name")` |
+| `"field1/field2"` | `record.get("field1") or record.get("field2")` (coalesce) |
+| `"extract_first_name(pi_name/pi_name_2)"` | `nameparser` library with fallback |
+| `"extract_last_name(pi_name/pi_name_2)"` | `nameparser` library with fallback |
+| `"generate_ID(pi_firstname,pi_lastname)"` | deterministic hash of field combination |
+| `"if x="1" then a else b"` | explicit `if/else` per conditional |
+| checkbox `field___1`, `field___2` | collect checked values → junction table rows |
 
-**1.3 — Implement migration runner**
+### 3.4 `loader/` — Database Loading
 
-Simple numbered-file migration runner (NOT Alembic — too heavy for this use case). Tracks applied migrations in a `schema_migrations` table. Supports: `apply` (run pending), `status` (show applied), `generate` (create new empty migration file).
+**`loader.py`** — Two responsibilities:
 
-Acceptance criteria:
-- Migrations applied in order
-- Already-applied migrations skipped
-- Failed migration aborts with clear error
-- `schema_migrations` table tracks version, applied_at, filename
+**Migration runner:** reads `migrations/*.sql` in order, tracks applied files in a
+`schema_migrations` table, skips already-applied. Runs at startup when `CREATE_TABLES=1`.
 
-**1.4 — Wire migration runner into pipeline startup**
+**Atomic sync (Path A — REDCap-sourced tables only):**
+1. Connect to PostgreSQL (psycopg2, UTF-8)
+2. In a single transaction: TRUNCATE the 18 REDCap-sourced tables (FK-safe order) → COPY all data
+3. Commit or rollback on failure — **CSV-managed tables are never touched by this operation**
 
-Replace the `_createTables()` function in `reload.py` (which calls `stack exec map-pipeline-schema-exe`) with the migration runner. `CREATE_TABLES=1` triggers migration apply.
+Uses `psycopg2.sql.Identifier()` for all table/column names.
 
-Acceptance criteria:
-- Pipeline starts and applies pending migrations
-- Existing `CREATE_TABLES` env var still works
-- No Haskell/Stack dependency at runtime
+### 3.5 `server.py` — Flask CSV Upload API (Path B)
 
-**1.5 — (Deferred) Migration: add FK and NOT NULL constraints**
+Preserves all existing endpoints with improved internals. Handles user-uploaded CSV and
+JSON files for the ~19 tables not populated by REDCap sync.
 
-Create `migrations/002_add_constraints.sql` after Epic 2 is complete and real data has been loaded successfully. Validate every NOT NULL column actually has no NULLs in production data before enabling.
+| Endpoint | Method | Action |
+|----------|--------|--------|
+| `/table/<name>` | GET | Read all rows |
+| `/table/<name>` | PUT | Replace table (DELETE + COPY from upload) |
+| `/table/<name>` | POST | Append to table (COPY from upload) |
+| `/table/<name>/column/<col>` | POST | Partial column update |
+| `/backup` | GET / POST | List backups / trigger pg_dump |
+| `/backup/<ts>` | DELETE | Delete backup |
+| `/restore/<ts>` | POST | Restore from backup |
+| `/sync` | POST | Enqueue manual REDCap sync |
+| `/task` | GET | List RQ task queue status |
+| `/task/<id>` | GET / DELETE | Get status / cancel task |
 
-Acceptance criteria:
-- FK constraints match `Foreign`/`FK_tablename` from mapping.json
-- NOT NULL only applied where production data confirms no NULLs
-- Migration tested against a production-like database backup
-- Rollback migration (`002_rollback.sql`) provided
+Changes from current `server.py`:
+- Replace `csvsql` subprocess with `psycopg2` COPY
+- Replace `latin-1` with UTF-8
+- Replace `checkId()` string check with `sql.Identifier()`
+- Accept CSV and JSON uploads (same behavior as current)
+- Keep RQ enqueue pattern for long-running operations (backup, restore, sync, table writes)
 
-**Rollback plan:** Keep Haskell code in repo (deleted in Epic 4). If migration runner fails, fall back to `stack exec` path via env var flag.
+### 3.6 `main.py` — Orchestration
 
----
-
-### Epic 2: Python REDCap Extraction & Transformation
-
-**Goal:** Replace the Scala/Spark ETL and the current "download everything" approach with a focused Python module that extracts needed fields from REDCap, applies transformations, and produces DataFrames ready for database loading.
-
-**Key insight:** The extraction and transformation are tightly coupled — the `Fieldname_redcap` column in mapping.json defines both what to extract AND how to transform. These must be analyzed together.
-
-#### Stories
-
-**2.1 — Analyze mapping.json to build REDCap field manifest**
-
-Parse every `Fieldname_redcap` expression to extract the complete set of REDCap source fields needed. Handle:
-- Simple field references: `"pi"` → need field `pi`
-- Coalesce: `"pi_name/pi_name_2"` → need fields `pi_name`, `pi_name_2`
-- Functions: `"extract_first_name(pi_name)"` → need field `pi_name`
-- Nested: `"extract_first_name(pi_name/pi_name_2)"` → need `pi_name`, `pi_name_2`
-- Generate ID: `"generate_ID(pi_firstname,pi_lastname)"` → need `pi_firstname`, `pi_lastname`
-- Checkbox patterns: `"field___1"`, `"field___2"` → need all `field___*` variants
-
-Also include system fields always required: `proposal_id`, `redcap_repeat_instrument`, `redcap_repeat_instance`.
-
-Acceptance criteria:
-- Complete, deduplicated list of REDCap fields needed
-- Categorized by extraction type (direct, parsed, computed, checkbox)
-- Validated against REDCap data dictionary export to confirm fields exist
-- Documented in a manifest file for operational reference
-
-**2.2 — Build REDCap API client with targeted extraction**
-
-New `RedcapClient` class. Uses REDCap API's `fields` parameter to request only the manifest fields from 2.1. Preserve existing batched retrieval pattern (chunk by proposal_id ranges). Add:
-- Retry logic with exponential backoff
-- Request timeout configuration
-- UTF-8 encoding throughout (replace latin-1)
-- Data dictionary download (needed for `name` table generation)
-- Response validation (check for API error responses)
-
-Acceptance criteria:
-- Fetches only required fields (verified by inspecting API request payload)
-- Handles API errors, timeouts, and retries gracefully
-- Downloads both records and data dictionary
-- Batch size configurable via env var (existing `BATCH_SIZE`)
-- Unit tests with mocked REDCap responses
-
-**2.3 — Implement field transformation functions**
-
-Replace the Scala DSL parser with direct Python functions. Each transformation type gets a clear, testable function:
-
-| Expression Pattern | Python Implementation |
-|---|---|
-| `"field_name"` | Direct column reference |
-| `"field1/field2"` | `Series.fillna()` (coalesce) |
-| `"extract_first_name(field)"` | Port NameParser logic (see 2.4) |
-| `"extract_last_name(field)"` | Port NameParser logic (see 2.4) |
-| `"generate_ID(f1,f2)"` | `groupby().ngroup()` |
-| `"if cond then a else b"` | `numpy.where()` |
-
-No generic DSL parser. Each pattern is a discrete function. A dispatcher reads the `Fieldname_redcap` string and routes to the correct function.
-
-Acceptance criteria:
-- All expression patterns in current mapping.json handled
-- Dispatcher covers every `Fieldname_redcap` value (no unhandled expressions)
-- Output matches Scala pipeline output for synthetic test dataset
-- Unit tests for each transformation function
-
-**2.4 — Port name parser**
-
-The Scala NameParser (DSL.scala:25-151) handles PI name parsing with many edge cases: "First Last", "Last, First", "Dr. prefix", title suffixes (MD, PhD, MPH), hyphenated names. Port to Python. Consider using the `nameparser` library as a base with custom overrides for the CTMD-specific patterns.
-
-Acceptance criteria:
-- Handles all name formats documented in Scala NameParser
-- Returns `[firstName, lastName]` consistent with Scala output
-- Returns `[None, input]` for unparseable names (matching Scala fallback)
-- Property-based tests for edge cases
-
-**2.5 — Implement data filters**
-
-Port from Scala (Transform.scala:54-153):
-- **Non-repeating instrument filter:** Keep rows where `redcap_repeat_instrument == ""` and `redcap_repeat_instance` is null
-- **Test data filter:** Exclude records with missing titles, titles without spaces, malformed PI names
-- **Auxiliary data join:** Left join CSV files from `AUXILIARY_PATH` directory
-- **Filter data join:** Inner join CSV files from `FILTER_PATH` directory
-- **Blocklist exclusion:** Exclude records matching CSVs from `BLOCK_PATH` directory
-
-Acceptance criteria:
-- Each filter produces identical output to Scala for same input
-- Auxiliary/filter/block CSV directories configurable via env vars
-- Graceful handling of empty or missing directories
-- Integration test with test fixtures from `services/pipeline/test/`
-
-**2.6 — Implement checkbox unpivot**
-
-Port wide-to-long conversion (Transform.scala:411-494). Checkboxes in REDCap export as `field___1`, `field___2`, etc. (1=checked, 0=unchecked). Convert to long format rows for junction tables.
-
-Acceptance criteria:
-- Correctly unpivots all junction tables: `Proposal_NewServiceSelection`, `Proposal_ServicesApproved`, `Proposal_ServicesPatOutcome`, `Proposal_ServicesPostOutcome`, `Proposal_RemovedServices`
-- Only rows with value "1" or 1 included
-- Output matches Scala for synthetic dataset
-
-**2.7 — Implement `name` table generation from data dictionary**
-
-Port from Transform.scala:550-587. Parses REDCap data dictionary to extract dropdown/checkbox option metadata. Also handles CTSA fields matching `ctsa_[0-9]*` pattern.
-
-**This is critical** — the `name` table is used by nearly every API endpoint for human-readable labels.
-
-Acceptance criteria:
-- `name` table has columns: table, column, index, id, description
-- All 15+ column categories referenced by API are populated
-- Output matches current `name` table content
-- CTSA organization names extracted correctly
-
-**2.8 — Implement `reviewer_organization` table generation**
-
-Port from Transform.scala:538-549. Extract reviewer names from columns matching `reviewer_name_*` pattern.
-
-Acceptance criteria:
-- Table has columns: reviewer, organization
-- Output matches Scala for same input data
-
-**Rollback plan:** Keep Scala JAR in Docker image behind an env var flag (`USE_SPARK_ETL=1`). If Python ETL produces incorrect output, switch back.
+Top-level entrypoint:
+1. Read env vars (REDCAP_URL_BASE, REDCAP_APPLICATION_TOKEN, DATABASE_URL, etc.)
+2. Run migrations
+3. Download REDCap data
+4. Transform
+5. Load to PostgreSQL
+6. Log row counts per table
 
 ---
 
-### Epic 3: Database Operations & Consistency
-
-**Goal:** Replace csvsql with PostgreSQL COPY, wrap sync in transactions, fix SQL injection, standardize on UTF-8. The primary mode remains **batch sync** (full refresh). Incremental CRUD is a future enhancement.
-
-#### Stories
-
-**3.1 — Implement bulk load with PostgreSQL COPY**
-
-Replace all `csvsql` subprocess calls with `psycopg2.copy_expert()`. Use `psycopg2.sql` module for identifier quoting (fix SQL injection vulnerability in `reload.py:308`).
-
-Acceptance criteria:
-- All tables loaded via COPY (no csvsql dependency)
-- Table/column names use `sql.Identifier()` — never string concatenation
-- UTF-8 encoding for all file and database operations
-- 10x+ faster than current csvsql approach (benchmark)
-
-**3.2 — Implement atomic sync with transactions**
-
-Wrap the full sync (truncate all tables + bulk load all tables) in a single PostgreSQL transaction. If any table fails, entire sync rolls back. **The database is never left empty.**
-
-Load order must respect future FK constraints:
-1. Lookup tables first (`name`, `reviewer_organization`, `Sites`, `CTSAs`)
-2. Core tables (`Proposal`)
-3. Dependent tables (`Submitter`, `ProposalDetails`, etc.)
-4. Junction tables (`Proposal_NewServiceSelection`, etc.)
-
-Acceptance criteria:
-- Sync is all-or-nothing (verified: kill process mid-sync, confirm data intact)
-- Load order documented and enforced
-- Logging shows each table's row count after load
-- Total sync time <60 seconds for production-sized dataset
-
-**3.3 — Update existing Flask REST API endpoints**
-
-Update `server.py` endpoints to use new database operations:
-- `PUT /table/<name>` — uses COPY instead of csvsql
-- `POST /table/<name>` — uses COPY instead of csvsql
-- `POST /table/<name>/column/<column>` — uses parameterized queries
-- `GET /table/<name>` — no change needed (already uses psycopg2)
-- Backup/restore endpoints — no change needed (already uses pg_dump/psql)
-
-Acceptance criteria:
-- All existing endpoints work with new backend
-- Response format unchanged (API consumers unaffected)
-- Error responses improved (return specific error, not generic 500)
-
-**3.4 — Implement pre-load data validation**
-
-Validate DataFrames before database write:
-- Column names match schema
-- Data types are compatible (dates parseable, booleans valid, integers in range)
-- Required columns present
-- Date parsing: prefer ISO 8601 (`YYYY-MM-DD`), support legacy `MM/DD/YYYY` and `MM-DD-YYYY`
-
-Acceptance criteria:
-- Invalid data rejected with clear error message identifying the problematic field/row
-- Validation runs before COPY (not after database error)
-- Date parsing handles all formats found in current production data
-
-**Rollback plan:** Keep csvsql available in Docker image. Env var `USE_CSVSQL=1` falls back to old path.
-
----
-
-### Epic 4: Pipeline Integration & Cleanup
-
-**Goal:** Wire epics 1-3 together, simplify the Docker build, remove dead code.
-
-**Prerequisite:** Epics 1-3 complete and individually validated.
-
-#### Stories
-
-**4.1 — Rewrite pipeline orchestration**
-
-Update `application.py` and `reload.py` entrypoint to use:
-- Migration runner (Epic 1) instead of `stack exec`
-- Python extractor (Epic 2) instead of `spark-submit`
-- COPY-based loader (Epic 3) instead of csvsql
-
-Preserve: RQ worker, Sherlock locking, schedule library, multiprocessing architecture.
-
-Acceptance criteria:
-- Full pipeline runs end-to-end: startup → migration → REDCap extract → transform → load
-- Scheduled sync works on configured interval
-- Manual sync via `POST /sync` works
-- Locking prevents concurrent syncs
-
-**4.2 — Simplify Dockerfile**
-
-Remove multi-stage build. Single-stage Python image:
-- Base: `python:3.12-slim`
-- Install: psycopg2-binary, pandas, redis, rq, flask, flask-cors, pydantic, requests, schedule, sherlock, nameparser
-- No: Java, Spark, SBT, Haskell, Stack, csvkit
-
-Acceptance criteria:
-- Image builds successfully
-- Image size reduced (current includes JVM + Spark + Haskell runtime)
-- All pipeline functionality works from new image
-
-**4.3 — Update Helm chart and environment variables**
-
-Remove from `values.yaml`:
-- `SPARK_DRIVER_MEMORY`, `SPARK_EXECUTOR_MEMORY`
-
-Add/update:
-- `USE_SPARK_ETL` (default: "0", set to "1" for rollback)
-- `USE_CSVSQL` (default: "0", set to "1" for rollback)
-
-Reduce pipeline resource requests (no longer needs 8GB for Spark):
-- CPU: 500m → 200m
-- Memory: 8Gi → 1Gi (rough estimate, benchmark to confirm)
-
-Acceptance criteria:
-- Helm deployment works on KiND cluster
-- Pipeline runs with reduced resource allocation
-- Old env vars don't cause errors if present (ignored gracefully)
-
-**4.4 — Remove dead code**
-
-Delete:
-- `services/pipeline/map-pipeline/` (Scala/Spark — entire directory)
-- `services/pipeline/map-pipeline-schema/` (Haskell — entire directory)
-- `services/pipeline/reload4j-1.2.26.jar` (log4j replacement for Spark)
-- `services/pipeline/map-pipeline/src/main/python/` (Spark wrapper scripts)
-
-Update:
-- `Makefile` build targets for simplified pipeline
-
-Acceptance criteria:
-- No Haskell or Scala code remains in repository
-- `make build-pipeline` produces working image
-- CI/CD pipeline (if any) updated
-
-**4.5 — Update Makefile**
-
-Simplify `build-pipeline` target. Remove any references to Spark JAR assembly or Haskell stack build.
-
-Acceptance criteria:
-- `make build-pipeline` works
-- `make build-all` works
-- Image tags updated appropriately
-
----
-
-### Epic 5: Testing & Validation
-
-**Goal:** Verify the new pipeline produces equivalent output and handles failure gracefully.
-
-#### Stories
-
-**5.1 — Unit tests: schema generation**
-
-Test Python schema generator against known mapping.json subsets. Verify type mapping, PK constraint generation, auxiliary table creation.
-
-Acceptance criteria:
-- >90% line coverage on schema module
-- Tests for all 5 type mappings
-- Tests for edge cases (trailing space in type, empty table name)
-
-**5.2 — Unit tests: field transformations**
-
-Test every transformation type: coalesce, name parsing, ID generation, conditionals. Use `syntheticDataset.json` as input.
-
-Acceptance criteria:
-- Every `Fieldname_redcap` expression pattern tested
-- Name parser edge cases covered (hyphenated, comma-separated, with titles)
-- ID generation produces stable, unique IDs
-
-**5.3 — Output equivalence test (Spark vs. Python)**
-
-Run current Spark pipeline and new Python pipeline on identical input. Diff every output table.
-
-Acceptance criteria:
-- Row counts match for all tables
-- Column names match for all tables
-- Values match (order-independent comparison)
-- Any intentional differences documented with rationale
-
-**5.4 — End-to-end integration test**
-
-Full pipeline: REDCap API → Python extract → transform → load → verify via API service queries.
-
-Acceptance criteria:
-- Dashboard displays correct data when powered by Python-only pipeline
-- All API endpoints return valid data
-- `name` table lookups resolve correctly for all 15+ categories
-
-**5.5 — Performance benchmarks**
-
-Measure and compare:
-
-| Operation | Current Baseline | Target |
-|-----------|-----------------|--------|
-| Schema generation | ~5s (Haskell) | <1s |
-| REDCap download | ~30s | ~15s (fewer fields) |
-| ETL processing | ~40s (30s Spark startup + 10s) | <10s |
-| Database load | ~180s (csvsql) | <15s (COPY) |
-| **Total sync** | **~5 minutes** | **<1 minute** |
-
-Acceptance criteria:
-- Total sync under 1 minute for production-sized dataset
-- Each component measured independently
-- Results documented
-
-**5.6 — Failure and recovery testing**
-
-Test failure modes:
-- Sync killed mid-load → database still has previous data (transaction rollback)
-- REDCap API timeout → retry with backoff, clear error message
-- Invalid data in CSV upload → rejected with field-level error
-- Concurrent sync requests → Sherlock lock prevents overlap
-- Migration failure → partial migration not applied
-
-Acceptance criteria:
-- No data loss in any failure scenario
-- Error messages are actionable
-- Locking works correctly under concurrent requests
-
----
-
-## 5. Epic Dependency Graph
-
-```
-Epic 1: Static Schema ─────────┐
-  (1.1-1.4 first,               │
-   1.5 after Epic 2)            │
-                                ├──► Epic 4: Integration ──► Epic 5: Testing
-Epic 2: REDCap Extraction ─────┤
-  (2.1 can start immediately,  │
-   informs Epic 1 field list)   │
-                                │
-Epic 3: Database Operations ───┘
-  (3.1-3.2 can start with
-   Epic 1 schema)
-```
-
-**Parallelization opportunities:**
-- Story 2.1 (field manifest analysis) can start immediately — it informs both Epic 1 and Epic 2
-- Epic 1 (stories 1.1-1.4) and Epic 3 (stories 3.1-3.2) can proceed in parallel
-- Epic 2 (stories 2.2+) depends on 2.1 but not on Epic 1
-- Epic 1 story 1.5 (FK/NOT NULL constraints) must wait until Epic 2 produces real data
-
----
-
-## 6. What Is Removed vs. Kept vs. Added
+## 4. What Is Removed vs. Kept vs. Added
 
 | Removed | Kept | Added |
 |---------|------|-------|
-| Haskell (map-pipeline-schema) | Flask REST API (server.py) | Schema migration runner |
+| Haskell (map-pipeline-schema) | Flask REST API (server.py) | Static SQL migrations |
 | Scala/Spark (map-pipeline) | Redis/RQ task queue | Targeted REDCap extraction |
 | Java runtime, 8GB Spark memory | Sherlock distributed locking | PostgreSQL COPY bulk loading |
 | SBT, Stack build systems | PostgreSQL database | Transaction-safe sync |
-| csvsql (csvkit) | `mapping.json` as source of truth | Data validation layer |
-| Dynamic schema generation | Backup/restore (pg_dump/psql) | Incremental migration support |
-| DSL parser combinators | Scheduling (schedule library) | PK constraints |
-| Multi-stage Docker build | Docker/Kubernetes deployment | Pre-load validation |
-| latin-1 encoding | All API endpoints | UTF-8 throughout |
+| csvsql (csvkit) | `mapping.json` (read-only reference) | UTF-8 throughout |
+| Dynamic schema generation | Backup/restore (pg_dump/psql) | `psycopg2.sql` identifier safety |
+| DSL expression evaluator | Scheduling (schedule library) | Simple explicit field mapping |
+| Multi-stage Docker build | Docker/Kubernetes deployment | Single-stage Python image |
+| latin-1 encoding | All API endpoints | |
 
 ---
 
-## 7. Risks and Mitigations
+## 5. Rollback Strategy
 
-### Risk 1: Transformation Logic Divergence
+Until the Python pipeline is validated against production data, keep the old pipeline available via env var flags:
 
-**Risk:** Python transformations produce subtly different output than Scala.
+- `USE_SPARK_ETL=1` → falls back to `spark-submit` path
+- `USE_CSVSQL=1` → falls back to csvsql loading
 
-**Likelihood:** Medium — the Scala DSL has edge cases in name parsing and null handling.
-
-**Impact:** High — incorrect data in dashboard.
-
-**Mitigation:**
-- Story 5.3 (output equivalence test) is mandatory before cutover
-- Run both pipelines in parallel for 1-2 sync cycles against production data
-- Diff every table, every column, flag any differences for review
-- Name parser gets dedicated property-based testing (story 2.4)
-
-### Risk 2: `name` Table Regression
-
-**Risk:** The `name` lookup table is incomplete or has different values, breaking all API endpoints.
-
-**Likelihood:** Medium — this table has complex generation logic involving data dictionary parsing and CTSA field detection.
-
-**Impact:** Critical — every API endpoint uses it.
-
-**Mitigation:**
-- Dedicated story (2.7) with explicit validation against current `name` table contents
-- Integration test (5.4) verifies API endpoints return valid lookup values
-- Side-by-side comparison of `name` table rows before cutover
-
-### Risk 3: NOT NULL Constraints Break Data Loading
-
-**Risk:** Adding NOT NULL to columns that have NULLs in production data.
-
-**Likelihood:** High — current schema has no NOT NULL, data quality is unknown.
-
-**Impact:** Medium — sync would fail.
-
-**Mitigation:**
-- NOT NULL constraints are deferred to story 1.5 (after real data validated)
-- Query production data for NULL counts per column before applying
-- Rollback migration provided
-
-### Risk 4: REDCap Field List Incomplete
-
-**Risk:** The targeted field extraction misses a field needed by a transformation or filter.
-
-**Likelihood:** Low-medium — checkbox fields are dynamically named.
-
-**Impact:** Medium — missing data in specific columns.
-
-**Mitigation:**
-- Story 2.1 systematically parses every `Fieldname_redcap` expression
-- Validate field manifest against data dictionary (confirms fields exist)
-- Integration test catches missing columns as empty values
-- Fallback: remove `fields` parameter from API request to fetch all (like current behavior)
-
-### Risk 5: API Service Compatibility
-
-**Risk:** Schema changes (new constraints, type changes) break API queries.
-
-**Impact:** High — dashboard goes down.
-
-**Mitigation:**
-- Section 2 documents every table/column the API depends on
-- Schema generation (Epic 1) validates output against this inventory
-- No column renames or type changes in MVP — only additive constraints
-- Integration test (5.4) exercises all API endpoints against new schema
+Once output equivalence is confirmed (see Section 6), remove the old code paths.
 
 ---
 
-## 8. Out of Scope (Future Work)
-
-These items are explicitly **not** in the MVP rebuild:
-
-| Item | Rationale |
-|------|-----------|
-| Incremental CRUD / upsert operations | Batch sync is the current mode; incremental is a new feature |
-| FastAPI migration (replace Flask) | Flask works; migration adds risk for no immediate value |
-| API service modifications | API is read-only and out of scope for pipeline rebuild |
-| mapping.json schema redesign | Use existing mapping.json as-is; improved types (NUMERIC, TIMESTAMP) are future work |
-| PostgreSQL array/JSONB for checkboxes | Would require API query changes; keep unpivot pattern |
-| Monitoring/observability (Prometheus, etc.) | Existing logging is sufficient for MVP |
-| CI/CD pipeline updates | Depends on org's CI/CD setup; out of scope for this spec |
-
----
-
-## 9. Definition of Done
+## 6. Definition of Done
 
 The pipeline rebuild is complete when:
 
-1. Pipeline starts, applies migrations, extracts from REDCap, transforms, and loads into PostgreSQL — entirely in Python
+**Path A — REDCap Sync:**
+1. Pipeline starts, applies migrations, downloads from REDCap (targeted fields only), transforms, and loads — entirely in Python
 2. No Haskell, Scala, Java, or Spark dependencies at runtime
-3. All 19 tables populated with correct data (verified by output equivalence test)
-4. All API endpoints return correct data (verified by integration test)
-5. Total sync time under 1 minute
-6. Failed sync does not leave database empty (transaction safety verified)
-7. Docker image builds as single-stage Python image
-8. Helm deployment works on KiND cluster
-9. Rollback to previous pipeline possible via env var flags
+3. All 18 REDCap-sourced tables populated with correct data
+4. Total sync time under 1 minute (vs. current ~5 minutes)
+5. Failed sync does not leave database empty (transaction rollback verified)
+6. Output equivalence test passes: Python pipeline row counts match Spark pipeline for same input
+
+**Path B — CSV Upload API:**
+7. All existing Flask endpoints (`/table`, `/backup`, `/restore`, `/sync`, `/task`) return the same response format as current `server.py`
+8. CSV and JSON uploads write correctly via COPY (not csvsql)
+9. UTF-8 data (non-ASCII names, international characters) stored without corruption
+
+**Infrastructure:**
+10. Docker image builds as single-stage Python image
+11. Helm deployment works on KiND cluster
+12. `name` table lookups resolve correctly for all 15+ categories used by the Node.js API
+
+---
+
+## 7. Environment Variables
+
+| Variable | Required | Used By | Description |
+|----------|----------|---------|-------------|
+| `REDCAP_URL_BASE` | Yes | Path A | REDCap API base URL |
+| `REDCAP_APPLICATION_TOKEN` | Yes | Path A | REDCap API token |
+| `REDCAP_BATCH_SIZE` | No | Path A | Records per API request (default: 50) |
+| `DATABASE_URL` | Yes | Both | PostgreSQL connection string |
+| `MAPPING_PATH` | No | Path A | Path to mapping.json (default: `/data/mapping.json`) |
+| `CREATE_TABLES` | No | Both | Set to `1` to apply migrations on startup |
+| `SYNC_INTERVAL_HOURS` | No | Path A | Hours between scheduled syncs (default: 24) |
+| `REDIS_QUEUE_HOST` | Yes | Both | Redis hostname for RQ task queue |
+| `REDIS_QUEUE_PORT` | Yes | Both | Redis port (default: 6379) |
+| `REDIS_QUEUE_DB` | Yes | Both | Redis DB index |
+| `TASK_TIME` | No | Both | Max RQ job timeout in seconds |
+| `LOCAL_ENV` | No | Path B | Set to `true` to enable CORS (local development) |
+| `BACKUP_DIR` | No | Path B | Directory for pg_dump backup files |
+| `USE_SPARK_ETL` | No | Path A | Set to `1` to fall back to old Spark pipeline |
+| `USE_CSVSQL` | No | Both | Set to `1` to fall back to csvsql loading |

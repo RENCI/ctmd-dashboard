@@ -11,6 +11,9 @@ API_TAG := v3.1.2
 PIPELINE_BASE_IMAGE := ctmd-pipeline
 PIPELINE_TAG := v3.1.2
 
+PIPELINE2_BASE_IMAGE := ctmd-pipeline2
+PIPELINE2_TAG := v0.1.0
+
 
 BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%S')
 
@@ -80,6 +83,21 @@ build-pipeline:
 	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
 	./services/pipeline/
 
+build-pipeline2:
+	docker buildx build \
+	--platform=linux/amd64 \
+	--build-arg=BUILD_DATE=$(BUILD_DATE) \
+	--file ./services/pipeline2/Dockerfile \
+	--tag rencibuild/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
+	--tag containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
+	./services/pipeline2/
+
+test-pipeline2:
+	docker run --rm \
+	-v $(PWD)/data/mapping.json:/data/mapping.json:ro \
+	containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
+	python -m pytest tests/ -v
+
 build-all: build-api build-ui build-pipeline
 
 push-ui:
@@ -90,6 +108,9 @@ push-api:
 
 push-pipeline:
 	docker push containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
+
+push-pipeline2:
+	docker push containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG)
 
 # This is a redundancy used by ci/cd as disaster relief
 push-ui-dockerhub:
