@@ -20,4 +20,8 @@ filter/
 block/
 
 # Mac
-.DS_Storeservices/pipeline2/**/__pycache__
+.DS_Store
+
+# Python
+**/__pycache__
+**/*.pyc
