@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [localStorageUser, setLocalStorageUser] = useLocalStorage('ctmd-user-v2')
   const [authenticated, setAuthenticated] = useState(false)
   const [isPLAdmin, setIsPLAdmin] = useState(false)
+  const [isHealServer, setIsHealServer] = useState()
   // const validReferrer = document.referrer.includes('redcap.vumc.org') || process.env.NODE_ENV === 'development'
 
   const logout = async () => {
@@ -50,7 +51,9 @@ export const AuthProvider = ({ children }) => {
     const response = await axios.get(api.authStatus, { withCredentials: true })
     if (response.status === 200) {
       console.log('response.data:', response.data)
-      setIsPLAdmin(true)
+      const isPLAdmin = typeof data.isHealUser === 'boolean' ? data.isHealUser : true
+      const isHealServer = typeof data.isHealServer === 'boolean' ? data.isHealServer : false
+      setIsPLAdmin(isPLAdmin)
       setUser(response.data)
       setLocalStorageUser(response.data)
       setAuthenticated(response.data.authenticated)
@@ -58,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, authenticated, isPLAdmin, logout }}>
+    <AuthContext.Provider value={{ user, authenticated, isPLAdmin, isHealServer, logout }}>
       {children}
     </AuthContext.Provider>
   )

@@ -7,10 +7,10 @@ import { CSVIcon } from '../Icons/Csv'
 import { AuthContext } from '../../contexts'
 
 export const DownloadButton = ({ path, tooltip = 'Download' }) => {
-  const { isPLAdmin } = useContext(AuthContext)
+  const { isPLAdmin, isHealServer } = useContext(AuthContext)
 
   // Render if non-HEAL server or if pladmin on HEAL server
-  const shouldRender = process.env.REACT_APP_IS_HEAL_SERVER !== 'true' || isPLAdmin
+  const shouldRender = !isHealServer || isPLAdmin
   if (!shouldRender) {
     return null
   }

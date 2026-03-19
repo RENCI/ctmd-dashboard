@@ -125,7 +125,6 @@ services:
         NODE_ENV: production
         REACT_APP_API_ROOT: $REACT_APP_API_ROOT
         REACT_APP_DATA_API_ROOT: $REACT_APP_DATA_API_ROOT
-        REACT_APP_IS_HEAL_SERVER: $IS_HEAL_SERVER
       context: ../services/frontend/
       dockerfile: uiProd.Dockerfile
     volumes:

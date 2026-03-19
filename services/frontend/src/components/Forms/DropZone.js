@@ -28,14 +28,14 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
-  const { user, isPLAdmin } = useContext(AuthContext)
+  const { user, isPLAdmin, isHealServer } = useContext(AuthContext)
   const classes = useStyles()
   const fileInputRef = useRef()
   const [file, setFile] = useState(null)
   const addFlashMessage = useContext(FlashMessageContext)
 
   // Render if non-HEAL server or if pladmin on HEAL server
-  const shouldRender = process.env.REACT_APP_IS_HEAL_SERVER !== 'true' || isPLAdmin
+  const shouldRender = !isHealServer || isPLAdmin
   if (!shouldRender) {
     return null
   }

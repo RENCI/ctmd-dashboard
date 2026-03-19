@@ -1,16 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Grid } from '@material-ui/core'
 import { Title } from '../components/Typography'
 import {
     ProposalsByTicBarChart, ProposalsByMonthChart, ProposalsCalendar, DayStats, Counts, ResourceMetrics
 } from '../components/Widgets'
+import { AuthContext } from '../contexts'
 
 export const HomePage = (props) => {
+    const { isHealServer } = useContext(AuthContext)
+    
     return (
         <div>
             <Title>
                 Clinical Trial Management Dashboard
-                { process.env.REACT_APP_IS_HEAL_SERVER === 'true' && <span> — HEAL</span> }
+                { isHealServer && <span> — HEAL</span> }
             </Title>
 
             <Grid container spacing={ 8 } alignItems="stretch">
