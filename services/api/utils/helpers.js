@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 // Helper Functions
 ///////////////////
 
