@@ -1,20 +1,21 @@
-"""Tests for loader/loader.py migration runner.
+"""Tests for loader/loader.py — migration runner and bulk sync.
 
-Uses an in-memory SQLite-compatible approach via a real PostgreSQL connection
-is not available in the container test environment. Migration runner logic is
-tested by mocking the psycopg2 connection with a lightweight stub that records
-executed SQL.
+Uses a lightweight connection/cursor stub that records executed SQL and
+copy_expert calls. No real PostgreSQL connection required.
 """
 
 import os
 import tempfile
 import pytest
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import patch
 
 from loader.loader import (
     _ensure_migrations_table,
     _get_applied_migrations,
     apply_migrations,
+    _copy_rows,
+    sync_redcap_tables,
+    REDCAP_TABLES,
 )
 
 
@@ -23,19 +24,40 @@ from loader.loader import (
 # ---------------------------------------------------------------------------
 
 class FakeCursor:
-    """Records execute calls and returns configurable fetchall results."""
+    """Records execute and copy_expert calls; returns configurable fetchall results."""
 
     def __init__(self):
         self.executed = []
         self._fetchall_result = []
+        self.copy_expert_calls = []
+
+    @staticmethod
+    def _sql_to_str(sql_obj):
+        """Convert a psycopg2 sql object to a string for test assertions.
+
+        sql.Identifier.as_string() requires a real connection context; for
+        composed statements that include identifiers we fall back to repr(),
+        which gives a stable, readable form like:
+            Composed([SQL('TRUNCATE TABLE '), Identifier('Proposal'), SQL(' CASCADE')])
+        """
+        if isinstance(sql_obj, str):
+            return sql_obj
+        if hasattr(sql_obj, "as_string"):
+            try:
+                return sql_obj.as_string(None)
+            except TypeError:
+                return str(sql_obj)
+        return str(sql_obj)
 
     def execute(self, sql, params=None):
-        # psycopg2 sql.SQL objects — normalise to string for assertions
-        stmt = sql.as_string(None) if hasattr(sql, "as_string") else str(sql)
-        self.executed.append((stmt, params))
+        self.executed.append((self._sql_to_str(sql), params))
 
     def fetchall(self):
         return self._fetchall_result
+
+    def copy_expert(self, sql, buf):
+        content = buf.read()
+        self.copy_expert_calls.append((self._sql_to_str(sql), content))
 
     def __enter__(self):
         return self
@@ -154,18 +176,8 @@ class TestApplyMigrations:
             "002_second.sql": "SELECT 2;",
         })
 
-        applied_order = []
-
-        def fake_get_applied(conn):
-            return set()
-
-        def fake_ensure(conn):
-            pass
-
-        original_open = open
-
-        with patch("loader.loader._ensure_migrations_table", side_effect=fake_ensure), \
-             patch("loader.loader._get_applied_migrations", side_effect=fake_get_applied):
+        with patch("loader.loader._ensure_migrations_table"), \
+             patch("loader.loader._get_applied_migrations", return_value=set()):
             applied = apply_migrations(FakeConn(), tmpdir)
 
         assert applied == ["001_first.sql", "002_second.sql", "003_third.sql"]
@@ -190,3 +202,134 @@ class TestApplyMigrations:
             apply_migrations(conn, tmpdir)
 
         assert conn.committed
+
+
+# ---------------------------------------------------------------------------
+# _copy_rows
+# ---------------------------------------------------------------------------
+
+class TestCopyRows:
+    def test_returns_zero_for_empty_rows(self):
+        conn = FakeConn()
+        result = _copy_rows(conn.cursor_obj, "MyTable", [])
+        assert result == 0
+        assert len(conn.cursor_obj.copy_expert_calls) == 0
+
+    def test_returns_correct_row_count(self):
+        conn = FakeConn()
+        rows = [{"col": "a"}, {"col": "b"}, {"col": "c"}]
+        result = _copy_rows(conn.cursor_obj, "MyTable", rows)
+        assert result == 3
+
+    def test_calls_copy_expert_once(self):
+        conn = FakeConn()
+        _copy_rows(conn.cursor_obj, "MyTable", [{"col": "val"}])
+        assert len(conn.cursor_obj.copy_expert_calls) == 1
+
+    def test_csv_contains_row_values(self):
+        conn = FakeConn()
+        rows = [{"name": "Alice", "score": "42"}]
+        _copy_rows(conn.cursor_obj, "MyTable", rows)
+        _, csv_data = conn.cursor_obj.copy_expert_calls[0]
+        assert "Alice" in csv_data
+        assert "42" in csv_data
+
+    def test_all_columns_written(self):
+        conn = FakeConn()
+        rows = [{"col_a": "x", "col_b": "y", "col_c": "z"}]
+        _copy_rows(conn.cursor_obj, "MyTable", rows)
+        _, csv_data = conn.cursor_obj.copy_expert_calls[0]
+        assert "x" in csv_data
+        assert "y" in csv_data
+        assert "z" in csv_data
+
+    def test_copy_sql_references_table_name(self):
+        conn = FakeConn()
+        _copy_rows(conn.cursor_obj, "TargetTable", [{"col": "val"}])
+        copy_stmt, _ = conn.cursor_obj.copy_expert_calls[0]
+        assert "TargetTable" in copy_stmt
+
+    def test_multiple_rows_all_written(self):
+        conn = FakeConn()
+        rows = [{"id": "1", "val": "a"}, {"id": "2", "val": "b"}]
+        _copy_rows(conn.cursor_obj, "MyTable", rows)
+        _, csv_data = conn.cursor_obj.copy_expert_calls[0]
+        assert "1" in csv_data
+        assert "2" in csv_data
+
+
+# ---------------------------------------------------------------------------
+# sync_redcap_tables
+# ---------------------------------------------------------------------------
+
+class TestSyncRedcapTables:
+    def test_commits_on_success(self):
+        conn = FakeConn()
+        sync_redcap_tables(conn, {})
+        assert conn.committed
+
+    def test_rollback_on_exception(self):
+        conn = FakeConn()
+        table_data = {"Proposal": [{"ProposalID": 1}]}
+        with patch("loader.loader._copy_rows", side_effect=Exception("DB error")):
+            with pytest.raises(Exception, match="DB error"):
+                sync_redcap_tables(conn, table_data)
+        assert conn.rolled_back
+
+    def test_exception_reraised_after_rollback(self):
+        conn = FakeConn()
+        table_data = {"Proposal": [{"ProposalID": 1}]}
+        with patch("loader.loader._copy_rows", side_effect=RuntimeError("boom")):
+            with pytest.raises(RuntimeError, match="boom"):
+                sync_redcap_tables(conn, table_data)
+
+    def test_no_commit_on_failure(self):
+        conn = FakeConn()
+        table_data = {"Proposal": [{"ProposalID": 1}]}
+        with patch("loader.loader._copy_rows", side_effect=Exception("fail")):
+            with pytest.raises(Exception):
+                sync_redcap_tables(conn, table_data)
+        assert not conn.committed
+
+    def test_truncates_all_redcap_tables(self):
+        # Empty table_data: _copy_rows never called; only TRUNCATEs in executed
+        conn = FakeConn()
+        sync_redcap_tables(conn, {})
+        truncate_stmts = [s for s, _ in conn.cursor_obj.executed if "TRUNCATE" in s.upper()]
+        assert len(truncate_stmts) == len(REDCAP_TABLES)
+
+    def test_truncates_in_reverse_order(self):
+        # Last table in REDCAP_TABLES should be truncated first (FK-safe reversal).
+        # Match Identifier('TableName') from the repr to avoid substring false
+        # positives (e.g. "Proposal" inside "Proposal_ConsultOptions").
+        conn = FakeConn()
+        sync_redcap_tables(conn, {})
+        truncate_stmts = [s for s, _ in conn.cursor_obj.executed if "TRUNCATE" in s.upper()]
+        assert f"Identifier('{REDCAP_TABLES[-1]}')" in truncate_stmts[0]
+        assert f"Identifier('{REDCAP_TABLES[0]}')" in truncate_stmts[-1]
+
+    def test_returns_row_counts(self):
+        conn = FakeConn()
+        table_data = {"Proposal": [{"ProposalID": 1}, {"ProposalID": 2}]}
+        with patch("loader.loader._copy_rows", side_effect=lambda cur, tbl, rows: len(rows)):
+            counts = sync_redcap_tables(conn, table_data)
+        assert counts["Proposal"] == 2
+
+    def test_empty_tables_counted_as_zero(self):
+        conn = FakeConn()
+        counts = sync_redcap_tables(conn, {})
+        for table in REDCAP_TABLES:
+            assert counts[table] == 0
+
+    def test_copy_not_called_for_empty_tables(self):
+        conn = FakeConn()
+        with patch("loader.loader._copy_rows") as mock_copy:
+            sync_redcap_tables(conn, {})
+        mock_copy.assert_not_called()
+
+    def test_copy_called_for_nonempty_table(self):
+        conn = FakeConn()
+        table_data = {"Proposal": [{"ProposalID": 1}]}
+        with patch("loader.loader._copy_rows", return_value=1) as mock_copy:
+            sync_redcap_tables(conn, table_data)
+        mock_copy.assert_called_once()
