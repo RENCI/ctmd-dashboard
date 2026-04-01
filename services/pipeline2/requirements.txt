@@ -1,4 +1,10 @@
 requests>=2.32.0
-nameparser>=1.1
 psycopg2-binary>=2.9
-pytest>=8.0.0
+flask>=3.0
+flask-cors>=4.0
+redis>=5.0
+rq>=1.16
+sherlock>=0.4
+schedule>=1.2
+nameparser>=1.1
+pytest>=8.0
