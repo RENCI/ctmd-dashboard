@@ -5,10 +5,10 @@ import { ResponsiveLine } from '@nivo/line'
 import { Button, Tooltip } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon, BarChart as BarGraphIcon, ShowChart as LineGraphIcon } from '@material-ui/icons'
-import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
 import { ChartTooltip } from '../Tooltip'
+import { useProposals } from '../../hooks'
 
 let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const thisMonth = (new Date()).getMonth() + 1
@@ -21,7 +21,7 @@ const commonChartAttributes = {
 }
 
 export const ProposalsByMonthChart = props => {
-    const [store, ] = useContext(StoreContext)
+    const proposals = useProposals()
     const [proposalGroupsBar, setProposalGroupsBar] = useState([])
     const [proposalGroupsLine, setProposalGroupsLine] = useState([])
     const [currentPosition, setCurrentPosition] = useState(-1)
@@ -32,8 +32,8 @@ export const ProposalsByMonthChart = props => {
 
     useEffect(() => {
         let timeline = []
-        if (store.proposals && store.proposals.length > 0) {
-            const earliestDate = store.proposals.filter(proposal => proposal.dateSubmitted !== null).map(proposal => proposal.dateSubmitted).sort()[0]
+        if (proposals && proposals.length > 0) {
+            const earliestDate = proposals.filter(proposal => proposal.dateSubmitted !== null).map(proposal => proposal.dateSubmitted).sort()[0]
             if (earliestDate) {
                 let [earliestYear, earliestMonth] = earliestDate.split('-')
                 earliestYear = parseInt(earliestYear)
@@ -54,7 +54,7 @@ export const ProposalsByMonthChart = props => {
                         }(date),
                         count: 0 })
                 }
-                store.proposals.forEach(({ dateSubmitted }) => {
+                proposals.forEach(({ dateSubmitted }) => {
                     if (dateSubmitted) {
                         const shortDate = dateSubmitted.slice(0, 7)
                         const index = timeline.findIndex(time => time.date === shortDate)
@@ -66,7 +66,7 @@ export const ProposalsByMonthChart = props => {
         const lineData = timeline.map(({ label, count }) => ({ x:label, y: count }))
         setProposalGroupsBar(timeline)
         setProposalGroupsLine(lineData)
-    }, [store])
+    }, [proposals])
 
     useEffect(() => {
         setCurrentPosition(proposalGroupsBar.length - 12)

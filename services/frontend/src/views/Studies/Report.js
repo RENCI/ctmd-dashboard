@@ -6,6 +6,7 @@ import api from '../../Api'
 import { convertEnrollmentData } from '../../utils/sites'
 import { NavLink, useParams } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
+import { useProposals } from '../../hooks'
 import { Grid, Card, CardHeader, CardContent, Input, InputLabel, Slider, Box } from '@material-ui/core'
 import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -75,7 +76,7 @@ const StudyProfile = ({ profile }) => {
 export const StudyReportPage = (props) => {
   const { proposalID } = useParams()
   const proposalId = proposalID
-  const [store] = useContext(StoreContext)
+  const proposals = useProposals()
   const [study, setStudy] = useState(null)
   const [studyProfile, setStudyProfile] = useState(null)
   const [studySites, setStudySites] = useState(null)
@@ -87,15 +88,15 @@ export const StudyReportPage = (props) => {
   const { isPLAdmin } = useContext(AuthContext)
 
   useEffect(() => {
-    if (store.proposals) {
+    if (proposals) {
       try {
-        const studyFromRoute = store.proposals.find((proposal) => proposal.proposalID == proposalId)
+        const studyFromRoute = proposals.find((proposal) => proposal.proposalID == proposalId)
         setStudy(studyFromRoute)
       } catch (error) {
         console.log(`Could not load study #${proposalId}`, error)
       }
     }
-  }, [store.proposals])
+  }, [proposals])
 
   useEffect(() => {
     const fetchStudyData = async (proposalID) => {

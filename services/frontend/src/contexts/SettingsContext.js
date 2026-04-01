@@ -3,6 +3,9 @@ import React, { useState } from 'react'
 export const SettingsContext = React.createContext({})
 
 export const defaultSettings = {
+  filters: {
+    healOnly: false,
+  },
   tables: {
     visibleColumns: {
       proposalID: true,
@@ -37,6 +40,7 @@ export const defaultSettings = {
       actualGrantAwardDate: false,
       approvalReleaseDiff: false,
       covidStudy: false,
+      healStudy: false,
     },
     pageSize: 50,
   },

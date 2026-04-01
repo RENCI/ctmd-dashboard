@@ -7,9 +7,11 @@ import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
 import { ProposalsTable } from '../Tables/ProposalsTable'
+import { useProposals } from '../../hooks'
 
 export const ResourceMetrics = props => {
     const [store, ] = useContext(StoreContext)
+    const allProposals = useProposals()
     const [resources, setResources] = useState(null)
     const [proposals, setProposals] = useState(null)
     const [requestedMetrics, setRequestedMetrics] = useState(null)
@@ -98,8 +100,8 @@ export const ResourceMetrics = props => {
     })
 
     useEffect(() => {
-        setProposals(store.proposals)
-    }, [store])
+        setProposals(allProposals)
+    }, [allProposals])
 
     useEffect(() => {
         if (resources && proposals) {
