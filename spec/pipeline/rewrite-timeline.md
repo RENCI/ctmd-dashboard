@@ -13,6 +13,26 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 - `migrations/001_initial_schema.sql` — committed static schema (42 tables)
 - `tests/test_schema_generator.py` — 19 tests (42 total, all passing)
 
+**Done (Week 1):**
+- `transformer/transforms.py` — direct Python mapping from REDCap record dicts to per-table row dicts; handles all 7 expression patterns from mapping.json
+- `transformer/__init__.py`
+- `tests/test_transforms.py` — 36 tests, all passing
+- `loader/loader.py` (Part 1) — migration runner with `schema_migrations` tracking table
+- `loader/__init__.py`
+- `tests/test_loader.py` — 27 tests (migration runner + COPY sync), all passing
+
+**Done (Week 2):**
+- `loader/loader.py` (Part 2) — transaction-wrapped COPY sync (TRUNCATE → COPY → commit/rollback); `psycopg2.sql.Identifier()` for all names; UTF-8 throughout
+- `server.py` — Flask CSV Upload API; all 11 endpoints; `create_app()` factory pattern; module-level RQ worker functions; replaces `csvsql` with `psycopg2 COPY`, `latin-1` with UTF-8, `checkId()` with `sql.Identifier()`
+- `tests/test_server.py` — 31 tests via injectable `FakeQueue` (no real Redis required), all passing
+- `requirements.txt` — complete dependency list (10 packages; replaces JVM + Spark + Haskell + csvkit)
+
+**Test summary (all branches):**
+- 115 tests passing across `test_mapping.py` (21), `test_transforms.py` (36), `test_loader.py` (27), `test_server.py` (31)
+- 13 pre-existing errors in `test_schema_generator.py` — `FileNotFoundError: /data/mapping.json` (file only exists in Docker container; not caused by current work)
+
+**Active branch:** `ctmd-125-pipeline-loader`
+
 ---
 
 ## Two Parallel Concerns
@@ -46,7 +66,7 @@ Tables populated **by user CSV uploads** (not touched by REDCap sync):
 
 ---
 
-## Week 1 — REDCap ETL Core
+## Week 1 — REDCap ETL Core ✓ Done
 
 ### `transformer/transforms.py`
 
@@ -66,9 +86,9 @@ Handles these expression patterns from mapping.json:
 | checkbox `field___1`, `field___2` | collect `"1"` values → junction table rows |
 
 Deliverables:
-- `transformer/__init__.py`
-- `transformer/transforms.py`
-- `tests/test_transforms.py`
+- `transformer/__init__.py` ✓
+- `transformer/transforms.py` ✓
+- `tests/test_transforms.py` ✓ (36 tests, all passing)
 
 ### `loader/loader.py` (Part 1 — Migration Runner)
 
@@ -76,18 +96,18 @@ Simple migration runner: reads `migrations/*.sql` files in order, tracks applied
 migrations in a `schema_migrations` table, skips already-applied files.
 
 Deliverables:
-- `loader/__init__.py`
-- `loader/loader.py` (migration runner only)
-- `tests/test_loader.py` (migration tests)
+- `loader/__init__.py` ✓
+- `loader/loader.py` (migration runner only) ✓
+- `tests/test_loader.py` (migration tests) ✓
 
 **Acceptance criteria:**
-- All transforms produce correct output for synthetic input data
-- Migration runner creates all 42 tables + `schema_migrations` tracking table
-- Idempotent: running migrations twice does not error
+- All transforms produce correct output for synthetic input data ✓
+- Migration runner creates all 42 tables + `schema_migrations` tracking table ✓
+- Idempotent: running migrations twice does not error ✓
 
 ---
 
-## Week 2 — Bulk Loader + CSV Upload API
+## Week 2 — Bulk Loader + CSV Upload API ✓ Done
 
 ### `loader/loader.py` (Part 2 — COPY Sync)
 
@@ -100,8 +120,8 @@ Uses `psycopg2.sql.Identifier()` for all table/column names (replaces `checkId()
 UTF-8 throughout.
 
 Deliverables:
-- `loader/loader.py` (complete: migrations + COPY sync)
-- `tests/test_loader.py` (transaction rollback tests added)
+- `loader/loader.py` (complete: migrations + COPY sync) ✓
+- `tests/test_loader.py` (transaction rollback tests added) ✓ (27 tests total, all passing)
 
 ### `server.py` — Flask CSV Upload API
 
@@ -130,14 +150,14 @@ Changes from current `server.py`:
 - Keep RQ task queue integration for long-running operations
 
 Deliverables:
-- `server.py`
-- `tests/test_server.py`
+- `server.py` ✓
+- `tests/test_server.py` ✓ (31 tests, all passing)
 
 **Acceptance criteria:**
-- All existing API endpoints return same response format
-- PUT replaces table data correctly
-- POST appends correctly
-- Backup/restore ops enqueue successfully
+- All existing API endpoints return same response format ✓
+- PUT replaces table data correctly ✓
+- POST appends correctly ✓
+- Backup/restore ops enqueue successfully ✓
 
 ---
 
@@ -247,13 +267,13 @@ Full pipeline on KiND cluster:
 
 ## Summary
 
-| Week | Focus | Deliverable |
-|------|-------|-------------|
-| 0 (done) | Field manifest, schema generation | mapping.py, downloader.py, generator.py, migration SQL |
-| 1 | REDCap transforms + migration runner | transformer/, loader/ (migrations) |
-| 2 | Bulk loader + CSV upload API | loader/ (COPY sync), server.py |
-| 3 | Orchestration + infrastructure | main.py, Dockerfile, Helm, Makefile |
-| 4 | Testing + cutover | Equivalence test, E2E, benchmarks, production switch |
+| Week | Focus | Deliverable | Status |
+|------|-------|-------------|--------|
+| 0 | Field manifest, schema generation | mapping.py, downloader.py, generator.py, migration SQL | Done |
+| 1 | REDCap transforms + migration runner | transformer/, loader/ (migrations), test_transforms.py | Done |
+| 2 | Bulk loader + CSV upload API | loader/ (COPY sync), server.py, test_server.py, requirements.txt | Done |
+| 3 | Orchestration + infrastructure | main.py, Dockerfile, Helm, Makefile | Pending |
+| 4 | Testing + cutover | Equivalence test, E2E, benchmarks, production switch | Pending |
 
 **Total: ~4 weeks** (assuming one developer, no blockers)
 
