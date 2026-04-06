@@ -98,7 +98,7 @@ test-pipeline2:
 	containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
 	python -m pytest tests/ -v
 
-build-all: build-api build-ui build-pipeline
+build-all: build-api build-ui build-pipeline build-pipeline2
 
 push-ui:
 	docker push containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG)
@@ -122,7 +122,7 @@ push-api-dockerhub:
 push-pipeline-dockerhub:
 	dockerhub push rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
 
-push-all: push-api push-ui push-pipeline
+push-all: push-api push-ui push-pipeline push-pipeline2
 # ==============================================================================
 ## KiND Kubernetes 
 #
@@ -156,9 +156,14 @@ kind-load-ui:
 kind-load-pipeline:
 		kind load docker-image \
 	  containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-		--name $(KIND_CLUSTER)	
+		--name $(KIND_CLUSTER)
 
-kind-load: kind-load-ui kind-load-api kind-load-pipeline
+kind-load-pipeline2:
+	kind load docker-image \
+	  containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
+		--name $(KIND_CLUSTER)
+
+kind-load: kind-load-ui kind-load-api kind-load-pipeline kind-load-pipeline2
 
 # =======================================================
 ## Helm
