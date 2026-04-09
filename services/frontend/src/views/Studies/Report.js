@@ -75,7 +75,9 @@ const StudyProfile = ({ profile }) => {
 export const StudyReportPage = (props) => {
   const { proposalID } = useParams()
   const proposalId = proposalID
+  // Use unfiltered proposals - user navigating to /studies/123 should always see it regardless of HEAL filter
   const [store] = useContext(StoreContext)
+  const proposals = store.proposals
   const [study, setStudy] = useState(null)
   const [studyProfile, setStudyProfile] = useState(null)
   const [studySites, setStudySites] = useState(null)
@@ -87,15 +89,15 @@ export const StudyReportPage = (props) => {
   const { isPLAdmin } = useContext(AuthContext)
 
   useEffect(() => {
-    if (store.proposals) {
+    if (proposals) {
       try {
-        const studyFromRoute = store.proposals.find((proposal) => proposal.proposalID == proposalId)
+        const studyFromRoute = proposals.find((proposal) => proposal.proposalID == proposalId)
         setStudy(studyFromRoute)
       } catch (error) {
         console.log(`Could not load study #${proposalId}`, error)
       }
     }
-  }, [store.proposals])
+  }, [proposals])
 
   useEffect(() => {
     const fetchStudyData = async (proposalID) => {

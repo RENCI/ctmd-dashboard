@@ -7,6 +7,7 @@ exports.getOne = (req, res) => {
             "Proposal"."FullTitle" as "longTitle",
             "Proposal"."ShortDescription" AS "shortDescription",
             "Proposal"."covidStudy",
+            "Proposal"."HEALnetwork" AS "healStudy",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
             name.description AS "proposalStatus",
@@ -33,7 +34,7 @@ exports.getOne = (req, res) => {
             CAST("ProtocolTimelines_estimated"."actualProtocolFinalDate" AS VARCHAR) AS "actualProtocolFinalDate",
             CAST("ProtocolTimelines_estimated"."actualGrantAwardDate" AS VARCHAR) AS "actualGrantAwardDate",
             CAST("ProtocolTimelines_estimated"."approvalReleaseDiff" AS VARCHAR) AS "approvalReleaseDiff",
-            
+
             "ProposalDetails"."numberCTSAprogHubSites",
             "ProposalDetails"."numberSites"
         FROM "Proposal"
@@ -73,6 +74,7 @@ const proposalsQuery = `SELECT CAST("Proposal"."ProposalID" AS INT) as "proposal
             "Proposal"."FullTitle" as "longTitle",
             "Proposal"."ShortDescription" AS "shortDescription",
             "Proposal"."covidStudy",
+            "Proposal"."HEALnetwork" AS "healStudy",
             CAST("Proposal"."dateSubmitted" AS VARCHAR),
             TRIM(CONCAT("Submitter"."submitterFirstName", ' ', "Submitter"."submitterLastName")) AS "piName",
             name.description AS "proposalStatus",
@@ -228,6 +230,7 @@ const getProposals = () =>
           proposal.requestedServices = []
           proposal.approvedServices = []
           proposal.covidStudy = proposal.covidStudy === true ? 'YES' : ''
+          proposal.healStudy = proposal.healStudy === true ? 'YES' : ''
         })
         const profiles = await t.any(`SELECT * FROM "StudyProfile";`)
         const requestedServices = await t.any(requestedServicesQuery)

@@ -3,9 +3,9 @@ import { useTheme } from '@material-ui/styles'
 import { Button, Menu, MenuItem } from '@material-ui/core'
 import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { ResponsiveCalendar } from '@nivo/calendar'
-import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
+import { useProposals } from '../../hooks'
 
 const tooltip = (event) => {
     const { day, value } = event
@@ -18,7 +18,7 @@ const tooltip = (event) => {
 }
 
 export const ProposalsCalendar = props => {
-    const [store, ] = useContext(StoreContext)
+    const proposals = useProposals()
     const [calendarData, setCalendarData] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null)
     const thisYear = (new Date()).getFullYear()
@@ -40,9 +40,9 @@ export const ProposalsCalendar = props => {
     }
 
     useEffect(() => {
-        if (store.proposals) {
+        if (proposals) {
             let data = [] // [ { day: 'YYYY-MM-DD', value: N }, ...]
-            store.proposals.forEach(proposal => {
+            proposals.forEach(proposal => {
                 const dateIndex = data.findIndex(({ day }) => day === proposal.dateSubmitted)
                 if (dateIndex >= 0) {
                     data[dateIndex].value += 1
@@ -53,7 +53,7 @@ export const ProposalsCalendar = props => {
             setCalendarData(data)
             setCount(data.filter(({ day }) => day && day.includes(year)).reduce((sum, { value }) => sum + value, 0))
         }
-    }, [store])
+    }, [proposals])
 
     useEffect(() => {
         if (calendarData) {

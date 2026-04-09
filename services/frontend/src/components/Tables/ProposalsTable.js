@@ -227,6 +227,11 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     field: 'covidStudy',
                     hidden: !settings.tables.visibleColumns.covidStudy,
                 },
+                {
+                    title: headerWithTooltip('HEAL Study', 'Is this a HEAL network study?'),
+                    field: 'healStudy',
+                    hidden: !settings.tables.visibleColumns.healStudy,
+                },
             ].concat(services.map(
                 resource => ({
                         title: `Resource: ${ resource }`,
