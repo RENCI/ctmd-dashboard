@@ -6,7 +6,6 @@ import api from '../../Api'
 import { convertEnrollmentData } from '../../utils/sites'
 import { NavLink, useParams } from 'react-router-dom'
 import { StoreContext } from '../../contexts/StoreContext'
-import { useProposals } from '../../hooks'
 import { Grid, Card, CardHeader, CardContent, Input, InputLabel, Slider, Box } from '@material-ui/core'
 import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
@@ -76,7 +75,9 @@ const StudyProfile = ({ profile }) => {
 export const StudyReportPage = (props) => {
   const { proposalID } = useParams()
   const proposalId = proposalID
-  const proposals = useProposals()
+  // Use unfiltered proposals - user navigating to /studies/123 should always see it regardless of HEAL filter
+  const [store] = useContext(StoreContext)
+  const proposals = store.proposals
   const [study, setStudy] = useState(null)
   const [studyProfile, setStudyProfile] = useState(null)
   const [studySites, setStudySites] = useState(null)

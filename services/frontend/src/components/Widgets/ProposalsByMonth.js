@@ -69,13 +69,15 @@ export const ProposalsByMonthChart = props => {
     }, [proposals])
 
     useEffect(() => {
-        setCurrentPosition(proposalGroupsBar.length - 12)
+        // Guard against negative position when there are fewer than 12 months of data
+        setCurrentPosition(Math.max(0, proposalGroupsBar.length - 12))
     }, [proposalGroupsBar])
 
     useEffect(() => {
-        if (proposalGroupsBar && currentPosition >= 0) {
+        if (proposalGroupsBar && currentPosition >= 0 && proposalGroupsBar.length > 0) {
+            const endIndex = Math.min(currentPosition + 11, proposalGroupsBar.length - 1)
             setStartLabel(proposalGroupsBar[currentPosition].label)
-            setEndLabel(proposalGroupsBar[currentPosition + 11].label)
+            setEndLabel(proposalGroupsBar[endIndex].label)
         }
     }, [currentPosition])
 

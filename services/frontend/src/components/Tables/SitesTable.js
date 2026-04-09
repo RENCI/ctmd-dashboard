@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import MaterialTable from 'material-table'
 import { SiteDetailPanel } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 import { computeMetrics } from '../../utils/sites'
-import { useProposals } from '../../hooks'
+import { StoreContext } from '../../contexts'
 
 export const SitesTable = props => {
     let { title, sites } = props
-    const proposals = useProposals()
+    // Use unfiltered proposals for lookup - sites need protocol info regardless of HEAL filter
+    const [store] = useContext(StoreContext)
+    const proposals = store.proposals
     if (title) title += ` (${ sites.length } Sites)`
 
     useEffect(() => {
@@ -18,7 +20,8 @@ export const SitesTable = props => {
                     site.protocol = protocols[site.proposalId]
                 } else {
                      const shortTitle  = proposals.find(proposal => proposal.proposalID == site.ProposalID)
-                     site.protocol = shortTitle
+                     // Guard against missing proposal (site might reference deleted/non-HEAL proposal)
+                     site.protocol = shortTitle || { shortDescription: 'Unknown' }
                 }
 
                 computeMetrics(site)
