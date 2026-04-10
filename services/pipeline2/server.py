@@ -252,19 +252,38 @@ def _update_column(database_url: str, table: str, column: str, tmpfile: str) -> 
 
 
 def _run_sync(database_url: str, mapping_path: str) -> bool:
-    """Download from REDCap, transform, and bulk-load all REDCap-sourced tables."""
+    """Download from REDCap, transform, and bulk-load all REDCap-sourced tables.
+
+    Acquires a Sherlock Redis distributed lock so only one sync runs at a
+    time, whether triggered by the scheduler in main.py or by POST /sync.
+    """
+    import redis as redis_lib
+    from sherlock import RedisLock
     from redcap_importer.downloader import RedcapDownloader
     from transformer.transforms import transform_all
     from loader.loader import connect, sync_redcap_tables
 
+    lock_client = redis_lib.StrictRedis(
+        host=os.environ.get("REDIS_LOCK_HOST", os.environ.get("REDIS_QUEUE_HOST", "localhost")),
+        port=int(os.environ.get("REDIS_LOCK_PORT", os.environ.get("REDIS_QUEUE_PORT", "6379"))),
+        db=int(os.environ.get("REDIS_LOCK_DB", 1)),
+    )
+    lock = RedisLock(
+        "ctmd-sync",
+        client=lock_client,
+        expire=int(os.environ.get("REDIS_LOCK_EXPIRE", 7200)),
+        timeout=int(os.environ.get("REDIS_LOCK_TIMEOUT", 7200)),
+    )
+
     try:
-        records = RedcapDownloader(mapping_path).download_all()
-        table_data = transform_all(records)
-        conn = connect(database_url)
-        counts = sync_redcap_tables(conn, table_data)
-        conn.close()
-        logger.info("sync complete: %s", counts)
-        return True
+        with lock:
+            records = RedcapDownloader(mapping_path).download_all()
+            table_data = transform_all(records)
+            conn = connect(database_url)
+            counts = sync_redcap_tables(conn, table_data)
+            conn.close()
+            logger.info("sync complete: %s", counts)
+            return True
     except Exception as e:
         logger.exception("sync failed: %s", e)
         return False
