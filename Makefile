@@ -98,6 +98,24 @@ test-pipeline2:
 	containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
 	python -m pytest tests/ -v
 
+# Week 4 — Testing & Cutover
+# Override defaults with: make compare-tables OLD_DB=... NEW_DB=...
+OLD_DB ?= postgresql://ctmd-user:changeMeDevPassword@localhost:5432/postgres
+NEW_DB ?= postgresql://ctmd-user:changeMeDevPassword@localhost:5432/postgres
+PIPELINE2_URL ?= http://localhost:5000
+
+compare-tables:
+	python services/pipeline2/scripts/compare_tables.py $(OLD_DB) $(NEW_DB)
+
+compare-tables-csv:
+	python services/pipeline2/scripts/compare_tables.py $(OLD_DB) $(NEW_DB) --csv equivalence-report.csv
+
+e2e-check:
+	python services/pipeline2/scripts/e2e_check.py $(PIPELINE2_URL)
+
+benchmark:
+	python services/pipeline2/scripts/benchmark.py $(PIPELINE2_URL)
+
 build-all: build-api build-ui build-pipeline build-pipeline2
 
 push-ui:
