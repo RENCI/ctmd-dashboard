@@ -13,6 +13,8 @@ data:
   POSTGRES_PASSWORD: {{ .Values.postgres.secrets.password | b64enc | quote }}
   POSTGRES_PORT: {{ .Values.postgres.service.port | toString | b64enc | quote }}
   POSTGRES_USER: {{ .Values.postgres.secrets.user | b64enc | quote }}
+  # Full DSN for pipeline2 (psycopg2 DATABASE_URL format)
+  DATABASE_URL: {{ printf "postgresql://%s:%s@%s:%d/%s" .Values.postgres.secrets.user .Values.postgres.secrets.password .Values.postgres.name (.Values.postgres.service.port | int) .Values.postgres.secrets.database | b64enc | quote }}
 {{ end }}
 ---
 {{- if and .Values.postgres.create .Values.postgres.persistence.create }}
