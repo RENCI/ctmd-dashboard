@@ -7,10 +7,12 @@ import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { ProposalsTable } from '../../components/Tables'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { useProposals } from '../../hooks'
 
 export const ProposalsByResourcesApproved = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
+    const proposals = useProposals()
     const [proposalsByApprovedServices, setProposalsByApprovedServices] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
@@ -20,9 +22,9 @@ export const ProposalsByResourcesApproved = props => {
     const tableRef = useRef(null)
     
     useEffect(() => {
-        if (store.proposals && store.services) {
+        if (proposals && store.services) {
             let services = store.services.map(service => ({ name: service, proposals: [] }))
-            store.proposals.forEach(proposal => {
+            proposals.forEach(proposal => {
                 proposal.approvedServices.forEach(service => {
                     const index = services.findIndex(({ name }) => service === name)
                     if (index >= 0) {
@@ -33,7 +35,7 @@ export const ProposalsByResourcesApproved = props => {
             if (hideEmptyGroups) services = services.filter(service => service.proposals.length > 0)
             setProposalsByApprovedServices(services)
         }
-    }, [store, hideEmptyGroups])
+    }, [proposals, store.services, hideEmptyGroups])
 
     const selectProposals = ({ id }) => {
         const index = proposalsByApprovedServices.findIndex(service => service.name === id)

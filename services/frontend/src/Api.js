@@ -62,7 +62,6 @@ endpoints = {
   // sitesUpload: apiRoot + `sites`, // POST to send json file containing site metrics for a study (indicated in file)
   // ctsasUpload: apiRoot + `ctsas`, // POST to send json file containing CTSAs
   authStatus: apiRoot + 'auth_status',
-  isHealUser: apiRoot + 'is_heal_user',
 }
 
 // Pipeline

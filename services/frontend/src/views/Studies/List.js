@@ -1,22 +1,22 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { StoreContext } from '../../contexts/StoreContext'
 import api from '../../Api'
 import { Title, Subsubheading, Paragraph } from '../../components/Typography'
 import { StudiesTable } from '../../components/Tables'
 import { Grid, List, ListItem, ListItemText } from '@material-ui/core'
 import { DropZone, DownloadButton as TemplateDownload, StudiesDownloadForm, SiteMetricsDownload } from '../../components/Forms'
 import { DataUploadHelper } from '../../components/Helper'
+import { useProposals } from '../../hooks'
 
 export const StudiesListPage = (props) => {
-  const [store] = useContext(StoreContext)
+  const proposals = useProposals()
   const [studies, setStudies] = useState([])
 
   useEffect(() => {
-    if (store.proposals) {
-      const proposalsWithProfiles = store.proposals.filter((proposal) => proposal.profile && true)
+    if (proposals) {
+      const proposalsWithProfiles = proposals.filter((proposal) => proposal.profile && true)
       setStudies(proposalsWithProfiles)
     }
-  }, [store.proposals])
+  }, [proposals])
 
   return (
     <div>

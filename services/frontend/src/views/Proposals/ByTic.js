@@ -7,10 +7,12 @@ import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { ProposalsTable } from '../../components/Tables'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { useProposals } from '../../hooks'
 
 export const ProposalsByTic = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
+    const proposals = useProposals()
     const [proposalsByTic, setProposalsByTic] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
@@ -20,10 +22,10 @@ export const ProposalsByTic = props => {
     const tableRef = useRef(null)
     
     useEffect(() => {
-        if (store.proposals && store.tics) {
+        if (proposals && store.tics) {
             const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: 'Unassigned', proposals: [] })
             const unassignedTicsIndex = tics.findIndex(({ name }) => name === 'Unassigned')
-            store.proposals.forEach(proposal => {
+            proposals.forEach(proposal => {
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
                 if (index >= 0) {
                     tics[index].proposals.push(proposal)
@@ -33,7 +35,7 @@ export const ProposalsByTic = props => {
             })
             setProposalsByTic(tics)
         }
-    }, [store])
+    }, [proposals, store.tics])
 
     const selectProposals = (props) => {
         if (props.data) props = props.data  // Patch for issue #23

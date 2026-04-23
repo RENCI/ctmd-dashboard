@@ -6,6 +6,7 @@ import { Title } from '../components/Typography'
 import { CircularLoader } from '../components/Progress/Progress'
 import { SitesEnrollmentTable } from '../components/Tables/SitesEnrollmentTable'
 import { StoreContext } from '../contexts/StoreContext'
+import { useProposals } from '../hooks'
 import { Grid } from '@material-ui/core'
 import { DropZone } from '../components/Forms/DropZone'
 import { DownloadButton } from '../components/Forms'
@@ -13,6 +14,7 @@ import { DataUploadHelper } from '../components/Helper'
 
 export const SitesPage = (props) => {
   const [store] = useContext(StoreContext)
+  const proposals = useProposals()
   const [sites, setSites] = useState([])
   const [studySites, setStudySites] = useState(null)
   const [tableData, setTableData] = useState(null)
@@ -27,10 +29,8 @@ export const SitesPage = (props) => {
     }
 
     const getProposalNames = () => {
-        const proposals = store.proposals.filter((proposal) => proposal.profile && true)
-
         const names = {}
-        proposals.forEach((study) => {
+        proposals.filter((proposal) => proposal.profile && true).forEach((study) => {
             names[study.proposalID] = study.shortTitle
         })
 
@@ -38,7 +38,7 @@ export const SitesPage = (props) => {
     }
 
     const fetchStudySites = () => {
-        if (store.proposals) {
+        if (proposals) {
             const getStudySites = async () => {
                 await axios.get(api.studySites(), {withCredentials: true})
                     .then(response => {
@@ -108,7 +108,7 @@ export const SitesPage = (props) => {
 
     useEffect(() => {
         fetchStudySites()
-    }, [store.proposals])
+    }, [proposals])
 
     useEffect(() => {
         setData()

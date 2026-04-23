@@ -5,6 +5,7 @@ import Controls from './ProposalsNetworkControls';
 import Visualizations from './ProposalsNetworkVisualizations';
 import { CircularLoader } from '../Progress/Progress';
 import { StoreContext } from '../../contexts/StoreContext';
+import { useProposals } from '../../hooks';
 
 function createNodeData(data) {
     // Filter any proposals without a TIC
@@ -140,18 +141,18 @@ function createNodeData(data) {
 }
 
 const ProposalsNetworkContainer = props => {
-    const [store, ] = useContext(StoreContext)
+    const allProposals = useProposals()
     const [proposals, setProposals] = useState([]);
     const [nodeData, setNodeData] = useState({ nodes: [], nodeTypes: [] });
     const [selectedNodes, selectedNodesDispatcher] = useReducer(updateSelectedNodes, []);
     const theme = useTheme();
 
     useEffect(() => {
-        if (store.proposals) {
-            setProposals(store.proposals);
-            setNodeData(createNodeData(store.proposals));
+        if (allProposals) {
+            setProposals(allProposals);
+            setNodeData(createNodeData(allProposals));
         }
-    }, [store])
+    }, [allProposals])
 
     function getProposals(nodes) {
         if (nodes.length === 0) return [];

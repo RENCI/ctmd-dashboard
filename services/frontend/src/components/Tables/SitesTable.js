@@ -1,31 +1,34 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import MaterialTable from 'material-table'
-import { StoreContext } from '../../contexts/StoreContext'
 import { SiteDetailPanel } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 import { computeMetrics } from '../../utils/sites'
+import { StoreContext } from '../../contexts'
 
 export const SitesTable = props => {
     let { title, sites } = props
-    const [store, ] = useContext(StoreContext)
+    // Use unfiltered proposals for lookup - sites need protocol info regardless of HEAL filter
+    const [store] = useContext(StoreContext)
+    const proposals = store.proposals
     if (title) title += ` (${ sites.length } Sites)`
 
     useEffect(() => {
-        if (sites && store.proposals) {
+        if (sites && proposals) {
             let protocols = {}
             for (const site of sites) {
                 if (protocols.hasOwnProperty(site.proposalId)) {
                     site.protocol = protocols[site.proposalId]
                 } else {
-                     const shortTitle  = store.proposals.find(proposal => proposal.proposalID == site.ProposalID)
-                     site.protocol = shortTitle
+                     const shortTitle  = proposals.find(proposal => proposal.proposalID == site.ProposalID)
+                     // Guard against missing proposal (site might reference deleted/non-HEAL proposal)
+                     site.protocol = shortTitle || { shortDescription: 'Unknown' }
                 }
 
-                computeMetrics(site)                
+                computeMetrics(site)
                 site.shortDescription = site.protocol.shortDescription
             }
         }
-    }, [sites, store.proposals])
+    }, [sites, proposals])
 
     const barHeight = 18
     const barWidth = 200
