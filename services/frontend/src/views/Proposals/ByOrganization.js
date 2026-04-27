@@ -7,10 +7,12 @@ import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { ProposalsTable } from '../../components/Tables'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { useProposals } from '../../hooks'
 
 export const ProposalsByOrganization = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
+    const proposals = useProposals()
     const [proposalsByOrganization, setProposalsByOrganization] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
@@ -20,16 +22,16 @@ export const ProposalsByOrganization = props => {
     const tableRef = useRef(null)
     
     useEffect(() => {
-        if (store.proposals && store.organizations) {
+        if (proposals && store.organizations) {
             let orgs = store.organizations.map(({ description }) => ({ name: description, proposals: [] }))
-            store.proposals.forEach(proposal => {
+            proposals.forEach(proposal => {
                 const index = orgs.findIndex(({ name }) => name === proposal.submitterInstitution)
                 if (index >= 0) orgs[index].proposals.push(proposal)
             })
             if (hideEmptyGroups) orgs = orgs.filter(org => org.proposals.length > 0)
             setProposalsByOrganization(orgs)
         }
-    }, [store, hideEmptyGroups])
+    }, [proposals, store.organizations, hideEmptyGroups])
 
     const selectProposals = (props) => {
         if (props.data) props = props.data  // Patch for issue #23

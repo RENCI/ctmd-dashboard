@@ -17,3 +17,5 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.source="https://github.com/renci/ctmd-dashboard" \
       org.opencontainers.image.revision="${BUILD_REF}" \
       org.opencontainers.image.vendor="RENCI - Renaissance Computing Institute"
+
+CMD ["python", "main.py"]

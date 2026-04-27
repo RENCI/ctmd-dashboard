@@ -155,6 +155,51 @@ redis:
       cpu: 200m
       memory: 300Mi
 
+pipeline2:
+  create: false  # Set to true to deploy pipeline2 alongside pipeline (cutover mode)
+  name: ctmd-pipeline2
+  tag: "v0.1.0"
+  service:
+    port: 5000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  recurringBackup:
+    backupPath: "/backups"
+    storageClass:  # Leave blank for default "standard"
+    size: "1Gi"
+    persistence:
+      create: true
+      existingClaim: "db-backups-pvc"
+  env:
+    # REDCap connection
+    REDCAP_APPLICATION_TOKEN: ""
+    REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
+    # Database — constructed from db-dsn secret in the Helm template
+    DATABASE_URL: ""
+    MAPPING_PATH: "/data/mapping.json"
+    BACKUP_DIR: "/backups"
+    # Startup behaviour
+    CREATE_TABLES: "1"           # apply SQL migrations on startup
+    SYNC_INTERVAL_HOURS: "24"    # scheduled REDCap sync interval (0 = disabled)
+    # Redis task queue
+    REDIS_QUEUE_HOST: "ctmd-redis"
+    REDIS_QUEUE_PORT: "6379"
+    REDIS_QUEUE_DB: "0"
+    # Redis distributed lock (Sherlock) — prevents concurrent syncs
+    REDIS_LOCK_HOST: "ctmd-redis"
+    REDIS_LOCK_PORT: "6379"
+    REDIS_LOCK_DB: "1"
+    REDIS_LOCK_EXPIRE: "7200"
+    REDIS_LOCK_TIMEOUT: "7200"
+    TASK_TIME: "7200"
+    LOCAL_ENV: "true"            # set to false for production (disables CORS)
+    USE_SPARK_ETL: "0"           # rollback flag; 0 = use Python pipeline
+
 pipeline:
   create: true
   name: ctmd-pipeline

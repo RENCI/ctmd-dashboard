@@ -6,8 +6,9 @@ import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowRight as ExpandIcon, AccountCircle as UserIcon, Lock as AdminIcon } from '@material-ui/icons'
 import { Menu } from './Menu'
 import { Brand } from '../../Brand'
+import { HEALIcon } from '../../Icons/Heal'
 import { useWindowSize } from '../../../hooks'
-import { AuthContext } from '../../../contexts'
+import { AuthContext, SettingsContext } from '../../../contexts'
 
 const useStyles = makeStyles((theme) => ({
   tray: {
@@ -61,6 +62,12 @@ const useStyles = makeStyles((theme) => ({
     transform: 'scale(1)',
     transition: 'color 250ms, transform 500ms ease-out',
   },
+  healFilterActive: {
+    backgroundColor: theme.palette.extended.eno,
+    '& $trayIcon': {
+      color: theme.palette.common.white,
+    },
+  },
 }))
 
 export const MenuTray = ({ children }) => {
@@ -68,11 +75,19 @@ export const MenuTray = ({ children }) => {
   const { height } = useWindowSize()
   const classes = useStyles()
   const { isPLAdmin } = useContext(AuthContext)
+  const [settings, setSettings] = useContext(SettingsContext)
 
   const hasWriteAccess = isPLAdmin
 
   const handleToggleOpen = () => setOpen(!open)
   const handleClose = () => setOpen(false)
+
+  const handleToggleHealFilter = () => {
+    setSettings((prev) => ({
+      ...prev,
+      filters: { ...prev.filters, healOnly: !prev.filters.healOnly },
+    }))
+  }
 
   return (
     <ClickAwayListener onClickAway={open ? handleClose : () => {}}>
@@ -88,6 +103,15 @@ export const MenuTray = ({ children }) => {
         {height > 800 && <Brand />}
 
         <div className={classes.flexer} style={{ pointerEvents: 'none' }} />
+
+        <Tooltip title={settings.filters.healOnly ? 'Showing HEAL studies only' : 'Show HEAL studies only'} placement="right">
+          <IconButton
+            className={classnames(classes.trayButton, settings.filters.healOnly && classes.healFilterActive)}
+            onClick={handleToggleHealFilter}
+          >
+            <HEALIcon className={classes.trayIcon} />
+          </IconButton>
+        </Tooltip>
 
         <Tooltip title="User Profile & Settings" placement="right">
           <IconButton component={NavLink} to={'/profile'} className={classes.trayButton} activeClassName={classes.activeTrayButton}>

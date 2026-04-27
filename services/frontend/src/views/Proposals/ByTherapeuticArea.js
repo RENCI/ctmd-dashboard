@@ -7,10 +7,12 @@ import { ProposalsPieChart, ProposalsBarChart } from '../../components/Charts'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { ProposalsTable } from '../../components/Tables'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { useProposals } from '../../hooks'
 
 export const ProposalsByTherapeuticArea = props => {
     const [store, ] = useContext(StoreContext)
     const [settings] = useContext(SettingsContext)
+    const proposals = useProposals()
     const [proposalsByTherapeuticArea, setProposalsByTherapeuticArea] = useState()
     const [displayedProposals, setDisplayedProposals] = useState()
     const [tableTitle, setTableTitle] = useState('')
@@ -20,16 +22,16 @@ export const ProposalsByTherapeuticArea = props => {
     const tableRef = useRef(null)
     
     useEffect(() => {
-        if (store.proposals && store.therapeuticAreas) {
+        if (proposals && store.therapeuticAreas) {
             let areas = store.therapeuticAreas.map(({ description }) => ({ name: description, proposals: [] }))
-            store.proposals.forEach(proposal => {
+            proposals.forEach(proposal => {
                 const index = areas.findIndex(({ name }) => name === proposal.therapeuticArea)
                 if (index >= 0) areas[index].proposals.push(proposal)
             })
             if (hideEmptyGroups) areas = areas.filter(area => area.proposals.length > 0)
             setProposalsByTherapeuticArea(areas)
         }
-    }, [store, hideEmptyGroups])
+    }, [proposals, store.therapeuticAreas, hideEmptyGroups])
 
     const selectProposals = (props) => {
         if (props.data) props = props.data  // Patch for issue #23

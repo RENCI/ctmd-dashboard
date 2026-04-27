@@ -1,12 +1,12 @@
-import React, { useContext } from 'react'
-import { StoreContext } from '../../contexts/StoreContext'
+import React from 'react'
 import { Grid } from '@material-ui/core'
 import { Title } from '../../components/Typography'
 import { ProposalsTable } from '../../components/Tables'
 import { BrowseMenu } from '../../components/Menus'
+import { useProposals } from '../../hooks'
 
 export const ProposalsListPage = (props) => {
-    const [store, ] = useContext(StoreContext)
+    const proposals = useProposals()
 
     return (
         <div>
@@ -20,8 +20,8 @@ export const ProposalsListPage = (props) => {
                     </Grid>
                 </Grid>
             </Title>
-            
-            <ProposalsTable proposals={ store.proposals } paging={ true } />
+
+            <ProposalsTable proposals={ proposals } paging={ true } />
         </div>
     )
 }
