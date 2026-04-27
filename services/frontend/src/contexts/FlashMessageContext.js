@@ -12,23 +12,22 @@ export const useFlashMessaging = () => {
 }
 
 export const FlashMessageProvider = ({ children }) => {
+  // queue model: all active messages are rendered together in the
+  // FlashMessageContainer. success/info auto-dismiss; warning/error
+  // persist until the user closes them. messages are removed by id.
   const [messages, setMessages] = React.useState([])
 
-  // add message
   const addFlashMessage = React.useCallback((msg) => {
-    const id = Date.now() + Math.random()
-
     setMessages(prev => [
       ...prev,
       {
-        id,
+        id: Date.now() + Math.random(),
         messageType: msg.type || 'info',
         messageText: msg.text || '',
       },
     ])
   }, [])
 
-  // remove message
   const removeFlashMessage = React.useCallback((id) => {
     setMessages(prev => prev.filter(m => m.id !== id))
   }, [])
@@ -36,11 +35,9 @@ export const FlashMessageProvider = ({ children }) => {
   return (
     <FlashMessageContext.Provider value={addFlashMessage}>
       {children}
-
       <FlashMessageContainer
         messages={messages}
         onClose={removeFlashMessage}
-        disableAutoHide={false} // set to `true` while developing/debugging
       />
     </FlashMessageContext.Provider>
   )

@@ -15,26 +15,36 @@ import {
 } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
+  // pinned to the bottom-right; full-width on small screens,
+  // fixed 500px width on sm-and-up so it doesn't dominate large viewports.
+  // column-reverse stacks newest at the bottom; scroll if too many to fit.
   container: {
     position: 'fixed',
     bottom: 0,
-    left: 0,
     right: 0,
-    marginLeft: '74px',
-    marginRight: '12px',
+    left: '74px', // offset from sidebar on mobile (full-width mode)
+    zIndex: 1400,
+    padding: theme.spacing(2),
+    pointerEvents: 'none', // let clicks pass through empty padding area
     display: 'flex',
     flexDirection: 'column-reverse',
     gap: theme.spacing(2),
-    zIndex: 1400,
     maxHeight: '50vh',
     overflowY: 'auto',
-    backgroundColor: '#0001',
-    padding: theme.spacing(2),
+    [theme.breakpoints.up('md')]: {
+      left: 'auto',
+      width: 500,
+    },
   },
   snackbar: {
     position: 'relative',
-    marginTop: theme.spacing(1),
-    maxWidth: '100vw',
+    left: 'auto',
+    right: 'auto',
+    bottom: 'auto',
+    transform: 'none',
+    width: '100%',
+    maxWidth: '100%',
+    pointerEvents: 'auto',
   },
   flashMessage: {
     borderRadius: theme.spacing(1),
@@ -42,6 +52,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'flex-start',
     width: '100%',
+    maxWidth: 'unset',
     border: '2px solid',
     color: '#222',
   },
@@ -61,19 +72,19 @@ const useStyles = makeStyles(theme => ({
   // variants
   success: {
     borderColor: theme.palette.flashMessage.success,
-    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.success} 25%, #fff 75%)`,
+    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.success} 50%, #fff 75%)`,
   },
   info: {
     borderColor: theme.palette.flashMessage.info,
-    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.info} 25%, #fff 75%)`,
+    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.info} 50%, #fff 75%)`,
   },
   warning: {
     borderColor: theme.palette.flashMessage.warning,
-    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.warning} 25%, #fff 75%)`,
+    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.warning} 50%, #fff 75%)`,
   },
   error: {
     borderColor: theme.palette.flashMessage.error,
-    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.error} 25%, #fff 75%)`,
+    backgroundColor: `color-mix(in hsl, ${theme.palette.flashMessage.error} 50%, #fff 75%)`,
   },
 }))
 
@@ -91,35 +102,12 @@ const AUTO_HIDE = {
   error: null,
 }
 
-export const FlashMessageContainer = ({
-  messages = [],
-  onClose,
-  disableAutoHide = false,
-}) => {
-  const classes = useStyles()
-
-  return (
-    <div className={classes.container}>
-      {messages.map(msg => (
-        <FlashMessage
-          key={msg.id}
-          {...msg}
-          open={true}
-          onClose={onClose}
-          disableAutoHide={disableAutoHide}
-        />
-      ))}
-    </div>
-  )
-}
-
 export const FlashMessage = ({
   id,
   messageType = 'info',
   messageText,
   open,
   onClose,
-  disableAutoHide = false,
 }) => {
   const classes = useStyles()
   const Icon = ICONS[messageType] || InfoIcon
@@ -134,10 +122,8 @@ export const FlashMessage = ({
       className={classes.snackbar}
       open={open}
       onClose={handleClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      autoHideDuration={
-        disableAutoHide ? null : AUTO_HIDE[messageType]
-      }
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      autoHideDuration={AUTO_HIDE[messageType]}
     >
       <SnackbarContent
         role='alert'
@@ -164,5 +150,21 @@ export const FlashMessage = ({
         }
       />
     </Snackbar>
+  )
+}
+
+export const FlashMessageContainer = ({ messages, onClose }) => {
+  const classes = useStyles()
+  return (
+    <div className={classes.container}>
+      {messages.map(msg => (
+        <FlashMessage
+          key={msg.id}
+          {...msg}
+          open={true}
+          onClose={onClose}
+        />
+      ))}
+    </div>
   )
 }
