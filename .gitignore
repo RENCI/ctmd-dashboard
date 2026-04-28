@@ -3,6 +3,7 @@ pgdata
 .env
 db/data
 .values.yaml
+.values-stage.yaml
 
 #api
 node_modules

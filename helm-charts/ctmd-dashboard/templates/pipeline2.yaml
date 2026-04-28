@@ -1,4 +1,24 @@
 {{- if .Values.pipeline2.create }}
+{{- if .Values.pipeline2.recurringBackup.persistence.create }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default (printf "%s-backups-pvc" .Values.pipeline2.name) }}
+  labels:
+    app: {{ .Values.pipeline2.name }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline2.recurringBackup.size | default "5Gi" }}
+  {{- if .Values.pipeline2.recurringBackup.storageClass }}
+  storageClassName: {{ .Values.pipeline2.recurringBackup.storageClass | quote }}
+  {{- end }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,10 +43,17 @@ spec:
           - 'sh'
           - '-c'
           - |
+            {{- if .Values.pipeline2.postgres.create }}
+            until nc -z {{ .Values.pipeline2.postgres.name }} {{ .Values.pipeline2.postgres.service.port | default 5432 }}; do
+              echo "Waiting for postgres at {{ .Values.pipeline2.postgres.name }}:{{ .Values.pipeline2.postgres.service.port | default 5432 }}..."
+              sleep 2
+            done
+            {{- else }}
             until nc -z {{ .Values.postgres.name }} {{ .Values.postgres.service.port | default 5432 }}; do
               echo "Waiting for postgres at {{ .Values.postgres.name }}:{{ .Values.postgres.service.port | default 5432 }}..."
               sleep 2
             done
+            {{- end }}
             echo "PostgreSQL is ready!"
       containers:
       - image: "{{ .Values.images.repository }}/{{ .Values.pipeline2.name }}:{{ .Values.pipeline2.tag }}"
@@ -68,11 +95,16 @@ spec:
             value: {{ .Values.pipeline2.env.LOCAL_ENV | quote }}
           - name: USE_SPARK_ETL
             value: {{ .Values.pipeline2.env.USE_SPARK_ETL | quote }}
-          # DATABASE_URL is injected from the db-dsn secret
+          # DATABASE_URL: use pipeline2's own DB secret when postgres.create=true (blue/green),
+          # otherwise fall back to the shared db-dsn secret (shared-DB / staging mode).
           - name: DATABASE_URL
             valueFrom:
               secretKeyRef:
+                {{- if .Values.pipeline2.postgres.create }}
+                name: {{ .Values.pipeline2.postgres.secrets.name }}
+                {{- else }}
                 name: {{ .Values.postgres.secrets.name }}
+                {{- end }}
                 key: DATABASE_URL
         resources:
           limits:

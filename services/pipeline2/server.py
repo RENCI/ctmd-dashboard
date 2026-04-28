@@ -254,14 +254,17 @@ def _update_column(database_url: str, table: str, column: str, tmpfile: str) -> 
 def _run_sync(database_url: str, mapping_path: str) -> bool:
     """Download from REDCap, transform, and bulk-load all REDCap-sourced tables.
 
+    Also regenerates the `name` lookup table from the REDCap data dictionary.
     Acquires a Sherlock Redis distributed lock so only one sync runs at a
     time, whether triggered by the scheduler in main.py or by POST /sync.
     """
     import redis as redis_lib
     from sherlock import RedisLock
     from redcap_importer.downloader import RedcapDownloader
+    from redcap_importer.mapping import load as load_mapping
     from transformer.transforms import transform_all
-    from loader.loader import connect, sync_redcap_tables
+    from transformer.name_table import generate_name_table
+    from loader.loader import connect, sync_redcap_tables, sync_name_table
 
     lock_client = redis_lib.StrictRedis(
         host=os.environ.get("REDIS_LOCK_HOST", os.environ.get("REDIS_QUEUE_HOST", "localhost")),
@@ -277,11 +280,15 @@ def _run_sync(database_url: str, mapping_path: str) -> bool:
 
     try:
         with lock:
+            mapping_entries = load_mapping(mapping_path)
             records = RedcapDownloader(mapping_path).download_all()
             table_data = transform_all(records)
+            name_rows = generate_name_table(mapping_entries)
             conn = connect(database_url)
             counts = sync_redcap_tables(conn, table_data)
+            name_count = sync_name_table(conn, name_rows)
             conn.close()
+            counts["name"] = name_count
             logger.info("sync complete: %s", counts)
             return True
     except Exception as e:
@@ -428,7 +435,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
             port=int(os.environ["REDIS_QUEUE_PORT"]),
             db=int(os.environ["REDIS_QUEUE_DB"]),
         )
-        q = Queue(connection=redis_conn)
+        q = Queue('pipeline2', connection=redis_conn)
     else:
         redis_conn = getattr(queue, "connection", None)
         q = queue
