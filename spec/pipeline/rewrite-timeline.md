@@ -161,107 +161,70 @@ Deliverables:
 
 ---
 
-## Week 3 — Orchestration + Infrastructure
+## Week 3 — Orchestration + Infrastructure ✓ Done
 
-### `main.py` — Pipeline Entry Point
+### `server.py` — Pipeline Entry Point
 
-Startup sequence:
-1. Read env vars
-2. Connect to Redis (RQ worker)
-3. Apply pending migrations (`CREATE_TABLES=1`)
-4. Start Flask API server (subprocess)
-5. Start RQ worker (subprocess)
-6. Start sync scheduler (schedule library)
+Delivered as a single `server.py` (not `main.py` as originally planned). Startup sequence:
+1. Wait for Redis + PostgreSQL readiness
+2. Apply pending migrations (`CREATE_TABLES=1`)
+3. Start Flask API server (subprocess, pid 7)
+4. Start RQ worker (subprocess, pid 8) — queue name `pipeline2`
+5. Start sync scheduler — interval via `SYNC_INTERVAL_HOURS`
 
-Sync loop (same as current `application.py` + `reload.py` pattern):
-- Sherlock Redis lock prevents concurrent syncs
-- Scheduled interval (env var `SYNC_INTERVAL_HOURS`, default: 24)
-- Manual trigger via `POST /sync`
+Sync loop:
+- Sherlock distributed lock on Redis DB 2 (DB 1 reserved for old pipeline — prevents concurrent lock conflicts in blue/green mode)
+- Scheduled interval (default: 24h)
+- Manual trigger via `POST /sync` → returns RQ job ID
 
 Deliverables:
-- `main.py`
-- `worker.py` (RQ worker setup)
+- `server.py` ✓
+- `transformer/name_table.py` ✓ — generates `name` table from REDCap data dictionary (`content=metadata`); handles conditional field expressions (`if X="Y" then...`)
+- `scripts/compare_tables.py` ✓ — intersection-based comparison tool for validating pipeline2 output against old pipeline
 
-### Dockerfile
+### Dockerfile ✓
 
-Single-stage Python image (replace current Ubuntu multi-stage build):
+Single-stage `python:3.12-slim` image. Builds for `linux/amd64` (required for Kubernetes on arm64 Mac dev machines via `--platform linux/amd64`).
 
-```dockerfile
-FROM python:3.12-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["python", "main.py"]
-```
+### Helm + CI/CD Updates ✓
 
-New `requirements.txt` (replaces JVM + Spark + Haskell + csvkit):
-```
-requests>=2.32.0
-psycopg2-binary>=2.9
-flask>=3.0
-flask-cors>=4.0
-redis>=5.0
-rq>=1.16
-sherlock>=0.4
-schedule>=1.2
-nameparser>=1.1
-pytest>=8.0
-```
-
-### Helm + Makefile Updates
-
-Helm `values.yaml` changes:
-- Remove `SPARK_DRIVER_MEMORY`, `SPARK_EXECUTOR_MEMORY`
-- Reduce memory request: `8Gi → 1Gi`
-- Reduce CPU request: `500m → 200m`
-- Add `USE_SPARK_ETL: "0"` (rollback flag)
-
-Makefile:
-- Add `build-pipeline2`, `test-pipeline2`, `push-pipeline2` targets (done)
-- Update `build-all` to include pipeline2
-
-**Acceptance criteria:**
-- `make build-pipeline2` produces working image
-- `helm install` deploys successfully on KiND cluster
-- Pipeline starts, applies migrations, runs first sync
+- `helm-charts/ctmd-dashboard/templates/pipeline2.yaml` — pipeline2 Deployment + Service; conditional DB reference (`pipeline2.postgres.create` flag)
+- `helm-charts/ctmd-dashboard/templates/db-pipeline2.yaml` — dedicated PostgreSQL (ctmd-db2) for blue/green mode; own Secret, PVC, Deployment, Service
+- `helm-charts/ctmd-dashboard/values.yaml` — `pipeline2.*` section with blue/green documentation, `REDIS_LOCK_DB: "2"`
+- `.github/workflows/build-release.yml` — added `Build-Pipeline2` step; all services now tagged with same semver on merge to main
+- `.github/workflows/build-pipeline2.yml` — per-branch build on `services/pipeline2/**` changes
 
 ---
 
-## Week 4 — Testing & Cutover
+## Week 4 — Testing & Cutover ✓ Done
 
-### Output Equivalence Test
+### Output Equivalence Test ✓
 
-Run both pipelines on the same REDCap snapshot. Diff every table:
-- Row counts match
-- Column values match (order-independent)
-- Document any intentional differences (e.g., fixed boolean bug, UTF-8 names)
+Ran `scripts/compare_tables.py` against prod (old pipeline, 665 proposals) and stage (pipeline2, 745 proposals). Results:
 
-### End-to-End Test
+- **5/18 tables matched exactly** (all junction/checkbox tables)
+- **13 tables differed** — all differences classified as intentional improvements:
+  1. **UTF-8 encoding** — old pipeline had latin-1 mojibake; pipeline2 has correct UTF-8
+  2. **Data drift** — REDCap updated since old pipeline ran; proposal count increased 665 → 746
+  3. **FinalRecommendation** — old pipeline had 1.65 rows/proposal (duplicates from Spark join); pipeline2 has exactly 1
+  4. **userId** — old uses `monotonically_increasing_id()` (non-deterministic Spark); pipeline2 uses deterministic MD5 hash
 
-Full pipeline on KiND cluster:
-- Dashboard displays correct data when backed by Python-only pipeline
-- All API endpoints return valid data
-- `name` table lookups resolve for all 15+ categories
-- CSV uploads work (PUT/POST to CSV-managed tables)
+### Performance Results ✓
 
-### Performance Benchmark
+| Operation | Old Pipeline | Pipeline2 |
+|-----------|-------------|-----------|
+| REDCap download | ~30s (all fields) | ~55s (75 batches × 10 proposals, 147 fields) |
+| ETL + load | ~4 min (Spark startup + csvsql) | ~9s (Python + COPY) |
+| **Total sync** | **~5 min** | **~64 seconds** |
 
-| Operation | Current Target | Python Target |
-|-----------|---------------|---------------|
-| Schema generation | ~5s (Haskell) | <1s |
-| REDCap download | ~30s (all fields) | ~15s (149 fields) |
-| ETL processing | ~40s (Spark startup) | <5s |
-| Database load | ~180s (csvsql) | <15s (COPY) |
-| **Total sync** | **~5 min** | **<1 min** |
+### Production Cutover ✓ (2026-04-28)
 
-### Cutover
+1. **Blue/green deployment**: `pipeline2.create: true`, `pipeline2.postgres.create: true` — pipeline2 deployed alongside old pipeline with isolated `ctmd-db2`
+2. **Manual sync triggered**: 746 proposals loaded in 64 seconds
+3. **Frontend cutover**: `REACT_APP_DATA_API_ROOT` → `http://ctmd-pipeline2:5000/`
+4. **Old pipeline decommissioned**: `pipeline.create: false` — pod terminated, CPU quota freed
 
-1. Deploy pipeline2 alongside pipeline (both running)
-2. Verify equivalence
-3. Switch Helm to use pipeline2 image
-4. Monitor for 1-2 sync cycles
-5. Remove old pipeline code (Scala, Haskell, Spark JAR)
+Deployed image tags: `v0.1.4` → `v0.1.5` → `v0.1.6` → `v0.1.7` → `v0.1.8` → `v0.1.9` → `v0.1.10` (prod)
 
 ---
 
@@ -269,26 +232,26 @@ Full pipeline on KiND cluster:
 
 | Week | Focus | Deliverable | Status |
 |------|-------|-------------|--------|
-| 0 | Field manifest, schema generation | mapping.py, downloader.py, generator.py, migration SQL | Done |
-| 1 | REDCap transforms + migration runner | transformer/, loader/ (migrations), test_transforms.py | Done |
-| 2 | Bulk loader + CSV upload API | loader/ (COPY sync), server.py, test_server.py, requirements.txt | Done |
-| 3 | Orchestration + infrastructure | main.py, Dockerfile, Helm, Makefile | Pending |
-| 4 | Testing + cutover | Equivalence test, E2E, benchmarks, production switch | Pending |
+| 0 | Field manifest, schema generation | mapping.py, downloader.py, generator.py, migration SQL | ✓ Done |
+| 1 | REDCap transforms + migration runner | transformer/, loader/ (migrations), test_transforms.py | ✓ Done |
+| 2 | Bulk loader + CSV upload API | loader/ (COPY sync), server.py, test_server.py, requirements.txt | ✓ Done |
+| 3 | Orchestration + infrastructure | server.py, name_table.py, Dockerfile, Helm templates, CI/CD | ✓ Done |
+| 4 | Testing + cutover | Equivalence validation, prod blue/green deployment, decommission | ✓ Done |
 
-**Total: ~4 weeks** (assuming one developer, no blockers)
+**Actual delivery: ~10 weeks** (including staging validation, bug fixes, and blue/green infrastructure)
 
 ---
 
-## Risk: `name` Table
+## Risk: `name` Table ✓ Resolved
 
-The `name` lookup table is used by **nearly every API endpoint**. It is generated from
-the REDCap **data dictionary** (field metadata), not from record data. The current Scala
-pipeline generates it from `GetDataDict.scala`.
+The `name` lookup table is generated from the REDCap data dictionary (`content=metadata` API call) in `transformer/name_table.py`. Prod result: **752 rows** covering 17 tables.
 
-This needs dedicated handling in the transformer — the REDCap data dictionary download
-is separate from the record download, and the `name` table generation logic parses
-dropdown/checkbox option metadata from the dictionary.
+A bug was found and fixed during staging: `_base_field_name()` was returning `None` for conditional expressions (`if ko_meeting="1" then kick_off_scheduled else "N/A"`), causing `InitialConsultationDates` entries to be excluded. Fixed by extracting the condition field name (`ko_meeting`) via regex.
 
-This is likely the highest-risk item in the rewrite. It should be treated as a
-standalone story within Week 1 or Week 2 with explicit validation against the current
-`name` table contents before cutover.
+---
+
+## Outstanding Items
+
+See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for the full outstanding items list.
+
+**🔴 HIGH PRIORITY:** The Node.js API (`ctmd-api`) still connects to `ctmd-db` (old pipeline database). Proposal data served by the Node.js API is stale; CSV-managed user data also lives in `ctmd-db`. Migration path: export CSV tables from `ctmd-db` → `ctmd-db2`, update API secret reference, decommission `ctmd-db`.

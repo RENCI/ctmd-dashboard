@@ -4,40 +4,47 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 
 ---
 
-## Target Directory Layout
+## Delivered Directory Layout (as of v0.1.10)
 
 ```
 services/pipeline2/
-├── main.py                     # Entry point: orchestrates download → transform → load
-├── requirements.txt            # Python dependencies
-├── Dockerfile                  # Single-stage Python image (python:3.12-slim)
+├── server.py                   # Entry point: Flask API + RQ worker + scheduler
+├── requirements.txt            # Python dependencies (10 packages)
+├── Dockerfile                  # Single-stage Python image (python:3.12-slim, linux/amd64)
 │
 ├── redcap_importer/
 │   ├── __init__.py
-│   ├── mapping.py              # Parse mapping.json → list of 149 REDCap field names
-│   └── downloader.py           # REDCap API client: targeted batch fetch
+│   ├── mapping.py              # Parse mapping.json → list of REDCap field names
+│   └── downloader.py           # REDCap API client: targeted batch fetch; validates
+│                               # fields against REDCap data dictionary on init
 │
 ├── schema/
 │   ├── __init__.py
 │   └── generator.py            # One-time tool: mapping.json → CREATE TABLE SQL
 │
 ├── migrations/
-│   └── 001_initial_schema.sql  # Committed static SQL (run this, don't regenerate)
+│   ├── 001_initial_schema.sql  # Committed static SQL schema (all tables)
+│   └── 002_add_notable_risk.sql # ALTER TABLE ProposalDetails ADD COLUMN IF NOT EXISTS
 │
 ├── transformer/
 │   ├── __init__.py
-│   └── transforms.py           # Direct REDCap JSON → per-table row dicts
+│   ├── transforms.py           # Direct REDCap JSON → per-table row dicts (18 tables)
+│   └── name_table.py           # Generates name lookup table from REDCap data dictionary
 │
 ├── loader/
 │   ├── __init__.py
-│   └── loader.py               # PostgreSQL COPY, transaction-wrapped, UTF-8
+│   └── loader.py               # Migration runner + TRUNCATE+COPY bulk sync (UTF-8)
+│
+├── scripts/
+│   └── compare_tables.py       # Intersection-based comparison vs old pipeline output
 │
 └── tests/
     ├── __init__.py
     ├── test_mapping.py          # 21 tests: field manifest extraction
     ├── test_schema_generator.py # 19 tests: SQL generation from mapping.json
-    ├── test_transforms.py       # Field transformation functions
-    └── test_loader.py           # Bulk load and transaction safety
+    ├── test_transforms.py       # 36 tests: field transformation functions
+    ├── test_loader.py           # 27 tests: bulk load and transaction safety
+    └── test_server.py           # 31 tests: Flask API endpoints (injectable FakeQueue)
 ```
 
 ---

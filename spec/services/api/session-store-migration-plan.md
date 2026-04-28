@@ -1,5 +1,20 @@
 # Session Store Migration Plan
 
+> **🔴 HIGH PRIORITY** (as of 2026-04-28)
+>
+> This migration is now urgent due to a related issue: the Node.js API (`ctmd-api`) still
+> connects to `ctmd-db` (old Spark pipeline database) for all data queries. Until the API
+> is migrated to `ctmd-db2` (pipeline2's database), proposal data served by the Node.js
+> API is stale and `ctmd-db` cannot be decommissioned.
+>
+> **The recommended sequence is:**
+> 1. Migrate sessions from MemoryStore → Redis (this document)
+> 2. Migrate API data connection from `ctmd-db` → `ctmd-db2` (includes exporting CSV-managed
+>    user tables: StudyProfile, SiteInformation, StudySites, etc.)
+> 3. Decommission `ctmd-db` (`postgres.create: false` in `.values.yaml`)
+>
+> See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for full context.
+
 ## Problem Statement
 
 The API currently uses the default `MemoryStore` for express-session, which is displaying the following warning:
