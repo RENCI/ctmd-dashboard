@@ -1,0 +1,37 @@
+name: Build-Pipeline2
+on:
+    push:
+     branches-ignore:
+      - master
+      - main
+      - develop
+     paths:
+     - services/pipeline2/**
+     tags-ignore:
+     - '*'
+    workflow_dispatch:
+
+concurrency:
+  group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-buildpipeline2
+  cancel-in-progress: true
+
+jobs:
+  build-push-pipeline2:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    # Obtain the branch being developed
+    - name: Set branch name
+      id: branch
+      run: |
+        REF=${{ github.ref_name }}
+        echo "GHR=${REF%/*}" >> $GITHUB_ENV
+
+    - uses: ./.github/actions/build-service
+      with:
+        app-name: 'pipeline2'
+        tag: 'test_${{ env.GHR }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
