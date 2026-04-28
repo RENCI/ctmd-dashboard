@@ -5,10 +5,11 @@ import { ResponsiveLine } from '@nivo/line'
 import { Button, Tooltip } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import { KeyboardArrowLeft as LeftIcon, KeyboardArrowRight as RightIcon, BarChart as BarGraphIcon, ShowChart as LineGraphIcon } from '@material-ui/icons'
-import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
 import { Widget } from './Widget'
 import { ChartTooltip } from '../Tooltip'
+import { useProposals } from '../../hooks'
+import { SettingsContext } from '../../contexts'
 
 let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const thisMonth = (new Date()).getMonth() + 1
@@ -21,7 +22,8 @@ const commonChartAttributes = {
 }
 
 export const ProposalsByMonthChart = props => {
-    const [store, ] = useContext(StoreContext)
+    const proposals = useProposals()
+    const [settings] = useContext(SettingsContext)
     const [proposalGroupsBar, setProposalGroupsBar] = useState([])
     const [proposalGroupsLine, setProposalGroupsLine] = useState([])
     const [currentPosition, setCurrentPosition] = useState(-1)
@@ -32,8 +34,8 @@ export const ProposalsByMonthChart = props => {
 
     useEffect(() => {
         let timeline = []
-        if (store.proposals && store.proposals.length > 0) {
-            const earliestDate = store.proposals.filter(proposal => proposal.dateSubmitted !== null).map(proposal => proposal.dateSubmitted).sort()[0]
+        if (proposals && proposals.length > 0) {
+            const earliestDate = proposals.filter(proposal => proposal.dateSubmitted !== null).map(proposal => proposal.dateSubmitted).sort()[0]
             if (earliestDate) {
                 let [earliestYear, earliestMonth] = earliestDate.split('-')
                 earliestYear = parseInt(earliestYear)
@@ -54,7 +56,7 @@ export const ProposalsByMonthChart = props => {
                         }(date),
                         count: 0 })
                 }
-                store.proposals.forEach(({ dateSubmitted }) => {
+                proposals.forEach(({ dateSubmitted }) => {
                     if (dateSubmitted) {
                         const shortDate = dateSubmitted.slice(0, 7)
                         const index = timeline.findIndex(time => time.date === shortDate)
@@ -66,18 +68,23 @@ export const ProposalsByMonthChart = props => {
         const lineData = timeline.map(({ label, count }) => ({ x:label, y: count }))
         setProposalGroupsBar(timeline)
         setProposalGroupsLine(lineData)
-    }, [store])
+    }, [proposals])
 
     useEffect(() => {
-        setCurrentPosition(proposalGroupsBar.length - 12)
+        // Guard against negative position when there are fewer than 12 months of data
+        setCurrentPosition(Math.max(0, proposalGroupsBar.length - 12))
     }, [proposalGroupsBar])
 
     useEffect(() => {
-        if (proposalGroupsBar && currentPosition >= 0) {
+        if (proposalGroupsBar && currentPosition >= 0 && proposalGroupsBar.length > 0) {
+            const endIndex = Math.min(currentPosition + 11, proposalGroupsBar.length - 1)
             setStartLabel(proposalGroupsBar[currentPosition].label)
-            setEndLabel(proposalGroupsBar[currentPosition + 11].label)
+            setEndLabel(proposalGroupsBar[endIndex].label)
+        } else {
+            setStartLabel('...')
+            setEndLabel('...')
         }
-    }, [currentPosition])
+    }, [currentPosition, proposalGroupsBar])
 
     const handlePositionChange = delta => event => {
         if (currentPosition + delta >= 0 && currentPosition + delta <= proposalGroupsBar.length) {
@@ -112,8 +119,9 @@ export const ProposalsByMonthChart = props => {
         >
             <div style={{ height: '236px' }}>
                 {
-                    proposalGroupsBar && graphType === BAR && (
+                    proposalGroupsBar && proposalGroupsBar.length > 0 && graphType === BAR && (
                         <ResponsiveBar
+                            key={ `bar-${ settings.filters.healOnly ? 'heal' : 'all' }` }
                             data={ proposalGroupsBar.slice(currentPosition, currentPosition + 12) }
                             keys={ ['count'] }
                             indexBy="label"
@@ -153,37 +161,63 @@ export const ProposalsByMonthChart = props => {
                     )
                 }
                 {
-                    proposalGroupsLine && graphType === LINE && (
-                        <ResponsiveLine
-                            data={ [{ id: 'submissions', data: proposalGroupsLine.slice(currentPosition, currentPosition + 12) }] }
-                            curve="linear"
-                            isInteractive={ true }
-                            margin={{ top: 0, left: 20, right: 20, bottom: 120 }}
-                            xScale={{ type: 'point' }}
-                            yScale={{ type: 'linear', min: 0, max: 'auto', stacked: false, reverse: false }}
-                            axisTop={ null }
-                            axisRight={ null }
-                            axisBottom={{
-                                orient: 'bottom',
-                                tickSize: 5,
-                                tickPadding: 5,
-                                tickRotation: -90,
-                                legend: '',
-                                legendPosition: 'middle',
-                                legendOffset: 0,
-                            }}
-                            axisLeft={ null }
-                            height={ 236 }
-                            colors={ theme.palette.chartColors }
-                            pointSize={ 10 }
-                            pointLabel="y"
-                            pointBorderWidth={ 2 }
-                            pointBorderColor="black"
-                            pointColor={{ from: 'color', modifiers: [] }}
-                            pointLabelOffset={ -12 }
-                            useMesh={ true }
-                            legends={ [] }
-                        />
+                    proposalGroupsLine && proposalGroupsLine.length > 0 && graphType === LINE && (() => {
+                        const lineSlice = proposalGroupsLine.slice(currentPosition, currentPosition + 12)
+                        if (lineSlice.length === 0) {
+                            return (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888' }}>
+                                    No data available for the selected filters.
+                                </div>
+                            )
+                        }
+                        return (
+                            <ResponsiveLine
+                                key={ `line-${ settings.filters.healOnly ? 'heal' : 'all' }` }
+                                data={ [{ id: 'submissions', data: lineSlice }] }
+                                curve="linear"
+                                isInteractive={ true }
+                                margin={{ top: 0, left: 20, right: 20, bottom: 120 }}
+                                xScale={{ type: 'point' }}
+                                yScale={{ type: 'linear', min: 0, max: 'auto', stacked: false, reverse: false }}
+                                axisTop={ null }
+                                axisRight={ null }
+                                axisBottom={{
+                                    orient: 'bottom',
+                                    tickSize: 5,
+                                    tickPadding: 5,
+                                    tickRotation: -90,
+                                    legend: '',
+                                    legendPosition: 'middle',
+                                    legendOffset: 0,
+                                }}
+                                axisLeft={ null }
+                                height={ 236 }
+                                colors={ theme.palette.chartColors }
+                                pointSize={ 10 }
+                                pointLabel="y"
+                                pointBorderWidth={ 2 }
+                                pointBorderColor="black"
+                                pointColor={{ from: 'color', modifiers: [] }}
+                                pointLabelOffset={ -12 }
+                                useMesh={ lineSlice.length > 1 }
+                                animate={ false }
+                                legends={ [] }
+                            />
+                        )
+                    })()
+                }
+                {
+                    (!proposalGroupsLine || proposalGroupsLine.length === 0) && graphType === LINE && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888' }}>
+                            No submissions data available for the selected filters.
+                        </div>
+                    )
+                }
+                {
+                    (!proposalGroupsBar || proposalGroupsBar.length === 0) && graphType === BAR && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888' }}>
+                            No submissions data available for the selected filters.
+                        </div>
                     )
                 }
                 { !proposalGroupsBar && <CircularLoader /> }

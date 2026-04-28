@@ -5,7 +5,7 @@ import { ChartTooltip } from '../Tooltip'
 import { CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
-import { useWindowSize } from '../../hooks'
+import { useWindowSize, useProposals } from '../../hooks'
 import { Widget } from './Widget'
 
 const statusMap = [
@@ -91,14 +91,15 @@ Array.prototype.countBy = function(prop) {
 
 export const ProposalsByTicBarChart = props => {
     const [store, ] = useContext(StoreContext)
+    const proposals = useProposals()
     const [proposalGroups, setProposalGroups] = useState()
     const { width } = useWindowSize()
     const theme = useTheme()
 
     useEffect(() => {
-        if (store.proposals && store.tics) {
+        if (proposals && store.tics) {
             const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: null, proposals: [] })
-            store.proposals.forEach(proposal => {
+            proposals.forEach(proposal => {
                 proposal.proposalStatus = getDisplayName(proposal.proposalStatus)
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
                 if (index >= 0) {
@@ -107,8 +108,8 @@ export const ProposalsByTicBarChart = props => {
             })
             setProposalGroups(tics.map(tic => ({ name: tic.name || 'Unassigned', ...tic.proposals.countBy('proposalStatus') })))
         }
-    }, [store])
-    
+    }, [proposals, store.tics])
+
     const chartLegends = [{
         enableLabel: false,
         dataFrom: 'keys',

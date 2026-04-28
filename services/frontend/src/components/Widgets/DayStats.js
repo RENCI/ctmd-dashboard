@@ -7,6 +7,7 @@ import { KeyboardArrowDown as MoreIcon } from '@material-ui/icons'
 import { StoreContext } from '../../contexts/StoreContext'
 import { ChartTooltip } from '../Tooltip'
 import { Widget } from './Widget'
+import { useProposals } from '../../hooks'
 
 // Filter proposals submitted on or after August 22, 2017, as per https://github.com/RENCI/ctmd/issues/524
 const filterDate = new Date('08/22/2017')
@@ -15,6 +16,7 @@ const formatDate = date => date.toLocaleDateString().replaceAll('/', '-')
 
 export const DayStats = props => {
     const [store, ] = useContext(StoreContext)
+    const allProposals = useProposals()
     const [proposals, setProposals] = useState(null)
     const [anchorEl, setAnchorEl] = React.useState(null)
     const [tic, setTic] = useState('')
@@ -106,16 +108,16 @@ export const DayStats = props => {
     }
     
     useEffect(() => {
-        setProposals(filterProposals(store.proposals))
-    }, [store])
+        setProposals(filterProposals(allProposals))
+    }, [allProposals])
 
     useEffect(() => {
         if (tic !== '') {
-            setProposals(filterProposals(store.proposals.filter(proposal => proposal.assignToInstitution === tic)))
+            setProposals(filterProposals(allProposals.filter(proposal => proposal.assignToInstitution === tic)))
         } else {
-            setProposals(filterProposals(store.proposals))
+            setProposals(filterProposals(allProposals))
         }
-    }, [tic])
+    }, [tic, allProposals])
     
     useEffect(() => {
         if (proposals) {

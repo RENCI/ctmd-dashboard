@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/styles'
-import { StoreContext } from '../../contexts/StoreContext'
 import { Grid, Card, CardContent, TextField, Button, Menu, MenuItem } from '@material-ui/core'
 import { Title } from '../../components/Typography'
 import { BrowseMenu } from '../../components/Menus'
 import { ProposalsTable } from '../../components/Tables'
+import { useProposals } from '../../hooks'
 
 const useStyles = makeStyles(theme => ({
     page: { },
@@ -76,7 +76,7 @@ const PresetSelector = (props) => {
 
 export const ProposalsByDate = (props) => {
     const classes = useStyles()
-    const [store, ] = useContext(StoreContext)
+    const proposals = useProposals()
     const [displayedProposals, setDisplayedProposals] = useState([])
     const [dates, setDates] = useState({
         start: '2016-01-01',
@@ -85,11 +85,11 @@ export const ProposalsByDate = (props) => {
     const [tableTitle, setTableTitle] = useState(`From ${ dates.start } to ${ dates.end }`)
 
     useEffect(() => {
-        setDisplayedProposals(store.proposals)
-    }, [store.proposals])
-    
+        setDisplayedProposals(proposals)
+    }, [proposals])
+
     const selectProposals = () => {
-        const filteredProposals = store.proposals.filter(proposal => {
+        const filteredProposals = proposals.filter(proposal => {
             const proposalDate = new Date(proposal.dateSubmitted)
             return (new Date(dates.start) <= proposalDate && proposalDate <= new Date(dates.end))
         })
