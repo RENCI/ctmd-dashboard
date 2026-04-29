@@ -35,6 +35,32 @@ def _coalesce(record: dict, *fields: str):
     return None
 
 
+def _to_bool(val):
+    """
+    Convert a REDCap field value to a Python bool for boolean DB columns.
+    REDCap boolean fields use "1" (True) and "0" (False). Any other value
+    (including "2" for radio buttons, "", or None) maps to NULL.
+    """
+    if val == "1":
+        return True
+    if val == "0":
+        return False
+    return None
+
+
+def _to_int(val):
+    """
+    Convert a REDCap field value to an integer for bigint/integer DB columns.
+    Non-numeric values (e.g. "3-4" ranges, free text) map to NULL.
+    """
+    if val is None or val == "":
+        return None
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return None
+
+
 def _parse_name(record: dict, *fields: str) -> tuple:
     """
     Parse a PI name from the first non-empty field using nameparser.
@@ -65,14 +91,14 @@ def _checkbox_rows(record: dict, proposal_id, base_field: str, col_name: str) ->
     """
     REDCap exports checkbox fields as base_field___N where N is the option code
     and the value is "1" (checked) or "0" (unchecked).
-    Returns one row dict per checked option.
+    Returns one row dict per checked option, storing the full REDCap field name
+    (e.g. "consult_options___2") to match the legacy pipeline's output format.
     """
     rows = []
     prefix = f"{base_field}___"
     for key, val in record.items():
         if key.startswith(prefix) and str(val) == "1":
-            option = key[len(prefix):]
-            rows.append({"ProposalID": proposal_id, col_name: option})
+            rows.append({"ProposalID": proposal_id, col_name: key})
     return rows
 
 
@@ -90,11 +116,13 @@ def _transform_proposal(record: dict):
         "ProposalID": pid,
         "dateSubmitted": record.get("prop_submit"),
         "proposalStatus": record.get("protocol_status"),
-        "HEALnetwork": record.get("heal_study"),
-        "covidStudy": record.get("covid"),
+        "HEALnetwork": _to_bool(record.get("heal_study")),
+        "covidStudy": _to_bool(record.get("covid")),
         # coalesce: info_share_question first, else evaluate conditional on funding
-        "ShareThisInfo": _coalesce(record, "info_share_question") or (
-            "1" if record.get("funding") == "1" else "0"
+        "ShareThisInfo": _to_bool(
+            _coalesce(record, "info_share_question") or (
+                "1" if record.get("funding") == "1" else "0"
+            )
         ),
         "FullTitle": record.get("proposal_title2"),
         "ShortTitle": record.get("short_name"),
@@ -139,12 +167,13 @@ def _transform_proposal_details(record: dict):
     return {
         "ProposalID": pid,
         "therapeuticArea": record.get("theraputic_area"),
-        "rareDisease": record.get("rare_disease"),
-        "numberSubjects": record.get("number_subjects"),
-        "numberSites": record.get("number_sites"),
-        "numberNonUSsites": record.get("non_us_sites"),
+        "rareDisease": _to_bool(record.get("rare_disease")),
+        "numberSubjects": _to_int(record.get("number_subjects")),
+        "numberSites": _to_int(record.get("number_sites")),
+        "numberNonUSsites": _to_int(record.get("non_us_sites")),
         "listCountries": record.get("city_list"),
-        "numberCTSAprogHubSites": record.get("number_csta_sites"),
+        "numberCTSAprogHubSites": _to_int(record.get("number_csta_sites")),
+        "notableRisk": None,
     }
 
 
@@ -155,12 +184,12 @@ def _transform_proposal_funding(record: dict):
     return {
         "ProposalID": pid,
         "newFundingSource": record.get("new_funding_source"),
-        "submittedToNIH": record.get("nih_funding"),
+        "submittedToNIH": _to_bool(record.get("nih_funding")),
         "currentFunding": record.get("funding"),
         "newFundingStatus": _coalesce(
             record, "updated_funding_status", "new_funding_source", "funding"
         ),
-        "numberFundingSource": record.get("sources_1"),
+        "numberFundingSource": _to_int(record.get("sources_1")),
         "fundingSource": _coalesce(
             record, "funding_source", "funding_source_2", "funding_source_3"
         ),
@@ -182,17 +211,17 @@ def _transform_proposal_funding(record: dict):
         "instituteCenter3": record.get("institute_center_3"),
         "grantApplicationNumber": record.get("grant_app_no"),
         "FOAnumber": record.get("funding_opp_announcement"),
-        "planningGrant": "1" if record.get("protocol_status") == "119" else "0",
-        "largerThan500K": record.get("more_than_500000"),
+        "planningGrant": record.get("protocol_status") == "119",
+        "largerThan500K": _to_bool(record.get("more_than_500000")),
         "amountAward": record.get("amount_award"),
         "totalBudget": record.get("anticipated_budget"),
         "totalBudgetInt": record.get("anticipated_budget_int"),
         "fundingPeriod": _coalesce(record, "funding_duration", "fund_duration"),
         "fundingStart": record.get("release_of_funds_2"),
         "applicationToInstituteBusinessOfficeDate": record.get("bo_submission"),
-        "discussWithPO": record.get("funding_nih"),
+        "discussWithPO": _to_bool(record.get("funding_nih")),
         "POsName": record.get("po_name"),
-        "NewOrExistingNetwork": record.get("partnership"),
+        "NewOrExistingNetwork": _to_bool(record.get("partnership")),
         "peerReviewDone": record.get("scientific_review"),
         "fundingSourceConfirmation": record.get("cfs_2"),
     }
@@ -221,16 +250,16 @@ def _transform_initial_consultation_summary(record: dict):
         return None
     return {
         "ProposalID": pid,
-        "protocolReviewed": record.get("revewed_in_consult"),
-        "budgetReviewed": record.get("review"),
-        "fundingReviewed": record.get("review"),
-        "CIRBdiscussed": record.get("discussed1"),
-        "SAdiscussed": record.get("discussed2"),
-        "EHRdiscussed": record.get("discussed3"),
-        "CommunityEngagementDiscuss": record.get("discussed4"),
-        "RecruitmentPlanDiscussed": record.get("discussed5"),
-        "recruitmentMaterialsDiscussed": record.get("discussed6boolean"),
-        "FeasibilityAssessmentDiscussed": record.get("discussed7"),
+        "protocolReviewed": _to_bool(record.get("revewed_in_consult")),
+        "budgetReviewed": _to_bool(record.get("review")),
+        "fundingReviewed": _to_bool(record.get("review")),
+        "CIRBdiscussed": _to_bool(record.get("discussed1")),
+        "SAdiscussed": _to_bool(record.get("discussed2")),
+        "EHRdiscussed": _to_bool(record.get("discussed3")),
+        "CommunityEngagementDiscuss": _to_bool(record.get("discussed4")),
+        "RecruitmentPlanDiscussed": _to_bool(record.get("discussed5")),
+        "recruitmentMaterialsDiscussed": _to_bool(record.get("discussed6boolean")),
+        "FeasibilityAssessmentDiscussed": _to_bool(record.get("discussed7")),
         "OtherComments": record.get("other_comments"),
     }
 
@@ -266,7 +295,7 @@ def _transform_protocol_timelines(record: dict):
             record, "project_funding_date", "projected_funding_date"
         ),
         "actualProtocolFinalDate": record.get("pro_time_date_4"),
-        "approvalReleaseDiff": record.get("pat_funds_diff"),
+        "approvalReleaseDiff": _to_int(record.get("pat_funds_diff")),
     }
 
 
@@ -290,7 +319,7 @@ def _transform_recommendations_for_pi(record: dict):
     return {
         "ProposalID": pid,
         "protocolRecommendation": record.get("summary_of_recomendatio"),
-        "budgetRecommendation": record.get("tic_budget_changes"),
+        "budgetRecommendation": _to_bool(record.get("tic_budget_changes")),
         "fundingAssessment": record.get("fund_assessmemt"),
         "CIRBrecommendation": record.get("recommendations1"),
         "SArecommendation": record.get("recommendations2"),
@@ -301,10 +330,15 @@ def _transform_final_recommendation(record: dict):
     pid = record.get("proposal_id")
     if not pid:
         return None
+    recommendation = record.get("recommendations")
+    service_recommended = record.get("service_recommended")
+    # Match old pipeline: skip row if all meaningful fields are empty
+    if not recommendation and not service_recommended:
+        return None
     return {
         "ProposalID": pid,
-        "recommendation": record.get("recommendations"),
-        "serviceRecommended": record.get("service_recommended"),
+        "recommendation": recommendation,
+        "serviceRecommended": service_recommended,
     }
 
 
@@ -317,7 +351,7 @@ def _transform_ctsa(record: dict):
         "ProposalID": pid,
         "CTSAhubPIFirstName": first,
         "CTSAhubPILastName": last,
-        "approvalfromCTSA": record.get("review_discuss"),
+        "approvalfromCTSA": _to_bool(record.get("review_discuss")),
     }
 
 
@@ -325,9 +359,16 @@ def _transform_study_pi(record: dict):
     pid = record.get("proposal_id")
     if not pid:
         return None
+    are_you_pi = _to_bool(record.get("pi"))
+    user_id = _generate_id(record, "pi_firstname", "pi_lastname") if (
+        record.get("pi_firstname") or record.get("pi_lastname")
+    ) else None
+    # Match old pipeline: skip row if all meaningful fields are empty
+    if are_you_pi is None and user_id is None:
+        return None
     return {
-        "AreYouStudyPI": record.get("pi"),
-        "userId": _generate_id(record, "pi_firstname", "pi_lastname"),
+        "AreYouStudyPI": are_you_pi,
+        "userId": user_id,
     }
 
 

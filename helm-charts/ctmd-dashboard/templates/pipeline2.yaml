@@ -1,0 +1,156 @@
+{{- if .Values.pipeline2.create }}
+{{- if .Values.pipeline2.recurringBackup.persistence.create }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default (printf "%s-backups-pvc" .Values.pipeline2.name) }}
+  labels:
+    app: {{ .Values.pipeline2.name }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline2.recurringBackup.size | default "5Gi" }}
+  {{- if .Values.pipeline2.recurringBackup.storageClass }}
+  storageClassName: {{ .Values.pipeline2.recurringBackup.storageClass | quote }}
+  {{- end }}
+{{- end }}
+{{- if not .Values.pipeline.create }}
+---
+# When the old pipeline is disabled it no longer creates ctmd-database-mapping.
+# Pipeline2 owns the ConfigMap in that case.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ctmd-database-mapping
+data:
+  {{ .Values.pipeline.config.databaseMappingFile | default "mapping.json" }}: |-
+{{ .Files.Get (printf "files/%s" (.Values.pipeline.config.databaseMappingFile | default "mapping.json")) | indent 4 }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.pipeline2.name }}
+  name: {{ .Values.pipeline2.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pipeline2.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.pipeline2.name }}
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.36
+        command:
+          - 'sh'
+          - '-c'
+          - |
+            {{- if .Values.pipeline2.postgres.create }}
+            until nc -z {{ .Values.pipeline2.postgres.name }} {{ .Values.pipeline2.postgres.service.port | default 5432 }}; do
+              echo "Waiting for postgres at {{ .Values.pipeline2.postgres.name }}:{{ .Values.pipeline2.postgres.service.port | default 5432 }}..."
+              sleep 2
+            done
+            {{- else }}
+            until nc -z {{ .Values.postgres.name }} {{ .Values.postgres.service.port | default 5432 }}; do
+              echo "Waiting for postgres at {{ .Values.postgres.name }}:{{ .Values.postgres.service.port | default 5432 }}..."
+              sleep 2
+            done
+            {{- end }}
+            echo "PostgreSQL is ready!"
+      containers:
+      - image: "{{ .Values.images.repository }}/{{ .Values.pipeline2.name }}:{{ .Values.pipeline2.tag }}"
+        name: {{ .Values.pipeline2.name }}
+        ports:
+        - containerPort: 5000
+        env:
+          - name: REDCAP_APPLICATION_TOKEN
+            value: {{ .Values.pipeline2.env.REDCAP_APPLICATION_TOKEN | quote }}
+          - name: REDCAP_URL_BASE
+            value: {{ .Values.pipeline2.env.REDCAP_URL_BASE | quote }}
+          - name: MAPPING_PATH
+            value: {{ .Values.pipeline2.env.MAPPING_PATH | quote }}
+          - name: BACKUP_DIR
+            value: {{ .Values.pipeline2.recurringBackup.backupPath | quote }}
+          - name: SYNC_INTERVAL_HOURS
+            value: {{ .Values.pipeline2.env.SYNC_INTERVAL_HOURS | quote }}
+          - name: CREATE_TABLES
+            value: {{ .Values.pipeline2.env.CREATE_TABLES | quote }}
+          - name: REDIS_QUEUE_HOST
+            value: {{ .Values.pipeline2.env.REDIS_QUEUE_HOST | quote }}
+          - name: REDIS_QUEUE_PORT
+            value: {{ .Values.pipeline2.env.REDIS_QUEUE_PORT | quote }}
+          - name: REDIS_QUEUE_DB
+            value: {{ .Values.pipeline2.env.REDIS_QUEUE_DB | quote }}
+          - name: REDIS_LOCK_HOST
+            value: {{ .Values.pipeline2.env.REDIS_LOCK_HOST | quote }}
+          - name: REDIS_LOCK_PORT
+            value: {{ .Values.pipeline2.env.REDIS_LOCK_PORT | quote }}
+          - name: REDIS_LOCK_DB
+            value: {{ .Values.pipeline2.env.REDIS_LOCK_DB | quote }}
+          - name: REDIS_LOCK_EXPIRE
+            value: {{ .Values.pipeline2.env.REDIS_LOCK_EXPIRE | quote }}
+          - name: REDIS_LOCK_TIMEOUT
+            value: {{ .Values.pipeline2.env.REDIS_LOCK_TIMEOUT | quote }}
+          - name: TASK_TIME
+            value: {{ .Values.pipeline2.env.TASK_TIME | quote }}
+          - name: LOCAL_ENV
+            value: {{ .Values.pipeline2.env.LOCAL_ENV | quote }}
+          - name: USE_SPARK_ETL
+            value: {{ .Values.pipeline2.env.USE_SPARK_ETL | quote }}
+          # DATABASE_URL: use pipeline2's own DB secret when postgres.create=true (blue/green),
+          # otherwise fall back to the shared db-dsn secret (shared-DB / staging mode).
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.pipeline2.postgres.create }}
+                name: {{ .Values.pipeline2.postgres.secrets.name }}
+                {{- else }}
+                name: {{ .Values.postgres.secrets.name }}
+                {{- end }}
+                key: DATABASE_URL
+        resources:
+          limits:
+            cpu: {{ .Values.pipeline2.resources.limits.cpu }}
+            memory: {{ .Values.pipeline2.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.pipeline2.resources.requests.cpu }}
+            memory: {{ .Values.pipeline2.resources.requests.memory }}
+        volumeMounts:
+          # mapping.json is created as a ConfigMap by pipeline.yaml (or pipeline2.yaml if pipeline is disabled)
+          - name: ctmd-database-mapping
+            mountPath: /data/mapping.json
+            subPath: {{ .Values.pipeline2.env.MAPPING_PATH | base | default "mapping.json" }}
+          - name: db-backups-pvc
+            mountPath: {{ .Values.pipeline2.recurringBackup.backupPath }}
+      volumes:
+        - name: ctmd-database-mapping
+          configMap:
+            name: ctmd-database-mapping
+        - name: db-backups-pvc
+          persistentVolumeClaim:
+            claimName: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default "db-backups-pvc" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.pipeline2.name }}
+  name: {{ .Values.pipeline2.name }}
+spec:
+  ports:
+  - port: {{ .Values.pipeline2.service.port }}
+    protocol: TCP
+    targetPort: {{ .Values.pipeline2.service.port }}
+  selector:
+    app: {{ .Values.pipeline2.name }}
+{{- end }}

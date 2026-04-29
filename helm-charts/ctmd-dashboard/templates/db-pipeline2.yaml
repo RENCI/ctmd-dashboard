@@ -1,0 +1,93 @@
+{{- if and .Values.pipeline2.create .Values.pipeline2.postgres.create }}
+{{- if .Values.pipeline2.postgres.secrets.create }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.pipeline2.postgres.secrets.name | quote }}
+data:
+  POSTGRES_DB: {{ .Values.pipeline2.postgres.secrets.database | b64enc | quote }}
+  POSTGRES_DATABASE_NAME: {{ .Values.pipeline2.postgres.secrets.database | b64enc | quote }}
+  POSTGRES_HOST: {{ .Values.pipeline2.postgres.name | b64enc | quote }}
+  POSTGRES_PASSWORD: {{ .Values.pipeline2.postgres.secrets.password | b64enc | quote }}
+  POSTGRES_PORT: {{ .Values.pipeline2.postgres.service.port | toString | b64enc | quote }}
+  POSTGRES_USER: {{ .Values.pipeline2.postgres.secrets.user | b64enc | quote }}
+  DATABASE_URL: {{ printf "postgresql://%s:%s@%s:%d/%s" .Values.pipeline2.postgres.secrets.user .Values.pipeline2.postgres.secrets.password .Values.pipeline2.postgres.name (.Values.pipeline2.postgres.service.port | int) .Values.pipeline2.postgres.secrets.database | b64enc | quote }}
+{{ end }}
+---
+{{- if .Values.pipeline2.postgres.persistence.create }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pipeline2.postgres.name }}-pvc
+  labels:
+    app: {{ .Values.pipeline2.postgres.name | quote }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline2.postgres.persistence.size | default "1Gi" }}
+  {{- if .Values.pipeline2.postgres.persistence.storageClass }}
+  storageClassName: {{ .Values.pipeline2.postgres.persistence.storageClass | quote }}
+  {{- end }}
+---
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.pipeline2.postgres.name | quote }}
+  name: {{ .Values.pipeline2.postgres.name | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pipeline2.postgres.name | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.pipeline2.postgres.name | quote }}
+    spec:
+      containers:
+        - name: {{ .Values.pipeline2.postgres.name | quote }}
+          {{- if .Values.pipeline2.postgres.publicRepository }}
+          image: postgres:{{ .Values.pipeline2.postgres.tag }}
+          {{- else }}
+          image: {{ .Values.images.repository }}/{{ .Values.pipeline2.postgres.name }}:{{ .Values.pipeline2.postgres.tag | default .Chart.AppVersion }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.pipeline2.postgres.secrets.name | quote }}
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: "/var/lib/postgresql/data"
+          resources:
+            limits:
+              cpu: {{ .Values.pipeline2.postgres.resources.limits.cpu }}
+              memory: {{ .Values.pipeline2.postgres.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.pipeline2.postgres.resources.requests.cpu }}
+              memory: {{ .Values.pipeline2.postgres.resources.requests.memory }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.pipeline2.postgres.persistence.existingClaim | default (printf "%s-pvc" .Values.pipeline2.postgres.name) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.pipeline2.postgres.name | quote }}
+  name: {{ .Values.pipeline2.postgres.name | quote }}
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: {{ .Values.pipeline2.postgres.name | quote }}
+{{- end }}

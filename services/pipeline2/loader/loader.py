@@ -174,6 +174,32 @@ def sync_redcap_tables(conn, table_data: dict) -> dict:
         raise
 
 
+def sync_name_table(conn, name_rows: list) -> int:
+    """
+    Atomically replace the `name` lookup table with fresh data from the
+    REDCap data dictionary.
+
+    The `name` table is not part of REDCAP_TABLES (it's populated from the
+    data dictionary, not from records), so it's handled separately.
+
+    Returns the number of rows loaded.
+    """
+    if not name_rows:
+        logger.warning("name table: no rows generated — skipping")
+        return 0
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql.SQL("TRUNCATE TABLE {}").format(sql.Identifier("name")))
+            count = _copy_rows(cur, "name", name_rows)
+            logger.info("loaded name: %d rows", count)
+        conn.commit()
+        return count
+    except Exception:
+        conn.rollback()
+        logger.exception("name table sync failed, rolled back")
+        raise
+
+
 def _copy_rows(cur, table: str, rows: list) -> int:
     """
     Bulk-load rows into a table using PostgreSQL COPY FROM STDIN.

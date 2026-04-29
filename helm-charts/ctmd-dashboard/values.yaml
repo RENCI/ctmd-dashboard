@@ -156,7 +156,7 @@ redis:
       memory: 300Mi
 
 pipeline2:
-  create: false  # Set to true to deploy pipeline2 alongside pipeline (cutover mode)
+  create: false  # Set to true to deploy pipeline2 alongside pipeline (blue/green mode)
   name: ctmd-pipeline2
   tag: "v0.1.0"
   service:
@@ -171,15 +171,49 @@ pipeline2:
   recurringBackup:
     backupPath: "/backups"
     storageClass:  # Leave blank for default "standard"
-    size: "1Gi"
+    size: "5Gi"
     persistence:
       create: true
-      existingClaim: "db-backups-pvc"
+      existingClaim: "db-backups-pipeline2-pvc"
+  # Blue/green dedicated database for pipeline2.
+  # Set postgres.create: true to give pipeline2 its own PostgreSQL instance,
+  # independent of the shared ctmd-db. Recommended for zero-downtime cutover:
+  #   1. Deploy with postgres.create: true — pipeline2 gets fresh isolated DB
+  #   2. Verify sync completes and data looks correct
+  #   3. Switch frontend REACT_APP_DATA_API_ROOT to http://ctmd-pipeline2:5000/
+  #   4. Decommission old pipeline (pipeline.create: false)
+  # Set postgres.create: false to share the existing ctmd-db (staging / shared-DB mode).
+  postgres:
+    create: false
+    name: ctmd-db2
+    tag: "17-alpine"
+    publicRepository: true
+    service:
+      port: 5432
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi       # headroom for sync writes; actual ~25-50Mi at rest
+      requests:
+        cpu: 200m         # guaranteed slice on the node
+        memory: 256Mi
+    secrets:
+      create: true
+      name: db-dsn-pipeline2
+      database: postgres
+      user: ctmd-user
+      password: "changeMeDevPassword"
+    persistence:
+      create: true
+      existingClaim: ""
+      storageClass:
+      size: "10Gi"        # matches ctmd-db; 128Gi storage quota with only 15Gi used
   env:
     # REDCap connection
     REDCAP_APPLICATION_TOKEN: ""
     REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
-    # Database — constructed from db-dsn secret in the Helm template
+    # Database — constructed from db-dsn-pipeline2 secret when postgres.create=true,
+    # otherwise falls back to the shared db-dsn secret. See pipeline2.yaml template.
     DATABASE_URL: ""
     MAPPING_PATH: "/data/mapping.json"
     BACKUP_DIR: "/backups"
@@ -190,10 +224,12 @@ pipeline2:
     REDIS_QUEUE_HOST: "ctmd-redis"
     REDIS_QUEUE_PORT: "6379"
     REDIS_QUEUE_DB: "0"
-    # Redis distributed lock (Sherlock) — prevents concurrent syncs
+    # Redis distributed lock (Sherlock) — prevents concurrent syncs within pipeline2.
+    # Uses DB 2 (not DB 1) to avoid conflicting with the old pipeline's lock when
+    # both are running simultaneously in blue/green mode.
     REDIS_LOCK_HOST: "ctmd-redis"
     REDIS_LOCK_PORT: "6379"
-    REDIS_LOCK_DB: "1"
+    REDIS_LOCK_DB: "2"
     REDIS_LOCK_EXPIRE: "7200"
     REDIS_LOCK_TIMEOUT: "7200"
     TASK_TIME: "7200"

@@ -53,8 +53,9 @@ logger = logging.getLogger(__name__)
 # Worker functions — module-level so RQ can serialize (pickle) them
 # ---------------------------------------------------------------------------
 
-def _backup_database(database_url: str, backup_dir: str, ts: str) -> bool:
+def _backup_database(backup_dir: str, ts: str) -> bool:
     """pg_dump the database to backup_dir/ts."""
+    database_url = os.environ["DATABASE_URL"]
     os.makedirs(backup_dir, exist_ok=True)
     path = os.path.join(backup_dir, ts)
     cp = subprocess.run(
@@ -78,8 +79,9 @@ def _delete_backup(backup_dir: str, ts: str) -> bool:
         return False
 
 
-def _restore_database(database_url: str, backup_dir: str, ts: str) -> bool:
+def _restore_database(backup_dir: str, ts: str) -> bool:
     """Drop and recreate the public schema, then restore from pg_dump file."""
+    database_url = os.environ["DATABASE_URL"]
     path = os.path.join(backup_dir, ts)
     try:
         conn = psycopg2.connect(database_url)
@@ -103,8 +105,9 @@ def _restore_database(database_url: str, backup_dir: str, ts: str) -> bool:
     return True
 
 
-def _replace_table(database_url: str, table: str, tmpfile: str) -> bool:
+def _replace_table(table: str, tmpfile: str) -> bool:
     """DELETE all rows then COPY from tmpfile. Atomic transaction."""
+    database_url = os.environ["DATABASE_URL"]
     try:
         conn = psycopg2.connect(database_url, options="-c client_encoding=UTF8")
         conn.autocommit = False
@@ -135,8 +138,9 @@ def _replace_table(database_url: str, table: str, tmpfile: str) -> bool:
         _unlink(tmpfile)
 
 
-def _append_table(database_url: str, table: str, tmpfile: str) -> bool:
+def _append_table(table: str, tmpfile: str) -> bool:
     """COPY rows from tmpfile into the table (append)."""
+    database_url = os.environ["DATABASE_URL"]
     try:
         conn = psycopg2.connect(database_url, options="-c client_encoding=UTF8")
         conn.autocommit = False
@@ -166,7 +170,7 @@ def _append_table(database_url: str, table: str, tmpfile: str) -> bool:
         _unlink(tmpfile)
 
 
-def _update_column(database_url: str, table: str, column: str, tmpfile: str) -> bool:
+def _update_column(table: str, column: str, tmpfile: str) -> bool:
     """
     Partial column update: for each unique value of `column` in the upload,
     DELETE existing rows with that value then INSERT the new rows.
@@ -190,6 +194,7 @@ def _update_column(database_url: str, table: str, column: str, tmpfile: str) -> 
         )
         pair_col = "ProposalID" if column == "siteId" else "siteId"
 
+        database_url = os.environ["DATABASE_URL"]
         conn = psycopg2.connect(database_url, options="-c client_encoding=UTF8")
         conn.autocommit = False
         deleted = set()
@@ -251,18 +256,22 @@ def _update_column(database_url: str, table: str, column: str, tmpfile: str) -> 
         _unlink(tmpfile)
 
 
-def _run_sync(database_url: str, mapping_path: str) -> bool:
+def _run_sync(mapping_path: str) -> bool:
     """Download from REDCap, transform, and bulk-load all REDCap-sourced tables.
 
+    Also regenerates the `name` lookup table from the REDCap data dictionary.
     Acquires a Sherlock Redis distributed lock so only one sync runs at a
     time, whether triggered by the scheduler in main.py or by POST /sync.
     """
     import redis as redis_lib
     from sherlock import RedisLock
     from redcap_importer.downloader import RedcapDownloader
+    from redcap_importer.mapping import load as load_mapping
     from transformer.transforms import transform_all
-    from loader.loader import connect, sync_redcap_tables
+    from transformer.name_table import generate_name_table
+    from loader.loader import connect, sync_redcap_tables, sync_name_table
 
+    database_url = os.environ["DATABASE_URL"]
     lock_client = redis_lib.StrictRedis(
         host=os.environ.get("REDIS_LOCK_HOST", os.environ.get("REDIS_QUEUE_HOST", "localhost")),
         port=int(os.environ.get("REDIS_LOCK_PORT", os.environ.get("REDIS_QUEUE_PORT", "6379"))),
@@ -277,11 +286,15 @@ def _run_sync(database_url: str, mapping_path: str) -> bool:
 
     try:
         with lock:
+            mapping_entries = load_mapping(mapping_path)
             records = RedcapDownloader(mapping_path).download_all()
             table_data = transform_all(records)
+            name_rows = generate_name_table(mapping_entries)
             conn = connect(database_url)
             counts = sync_redcap_tables(conn, table_data)
+            name_count = sync_name_table(conn, name_rows)
             conn.close()
+            counts["name"] = name_count
             logger.info("sync complete: %s", counts)
             return True
     except Exception as e:
@@ -428,7 +441,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
             port=int(os.environ["REDIS_QUEUE_PORT"]),
             db=int(os.environ["REDIS_QUEUE_DB"]),
         )
-        q = Queue(connection=redis_conn)
+        q = Queue('pipeline2', connection=redis_conn)
     else:
         redis_conn = getattr(queue, "connection", None)
         q = queue
@@ -453,7 +466,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
             return json.dumps(entries)
 
         ts = str(datetime.datetime.now())
-        job = q.enqueue(_backup_database, db_url, bk_dir, ts, job_timeout=t_time)
+        job = q.enqueue(_backup_database, bk_dir, ts, job_timeout=t_time)
         return json.dumps(job.id)
 
     @app.route("/backup/<string:ts>", methods=["DELETE"])
@@ -463,7 +476,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
 
     @app.route("/restore/<string:ts>", methods=["POST"])
     def restore(ts):
-        job = q.enqueue(_restore_database, db_url, bk_dir, ts, job_timeout=t_time)
+        job = q.enqueue(_restore_database, bk_dir, ts, job_timeout=t_time)
         return json.dumps(job.id)
 
     # ------------------------------------------------------------------ #
@@ -472,7 +485,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
 
     @app.route("/sync", methods=["POST"])
     def sync():
-        job = q.enqueue(_run_sync, db_url, mapping_path, job_timeout=t_time)
+        job = q.enqueue(_run_sync, mapping_path, job_timeout=t_time)
         return json.dumps(job.id)
 
     # ------------------------------------------------------------------ #
@@ -509,7 +522,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
 
         tmpfile = _write_tmpfile(columns, rows)
         worker = _replace_table if request.method == "PUT" else _append_table
-        job = q.enqueue(worker, db_url, tablename, tmpfile, job_timeout=t_time)
+        job = q.enqueue(worker, tablename, tmpfile, job_timeout=t_time)
         return json.dumps(job.id)
 
     @app.route("/table/<string:tablename>/column/<string:columnname>", methods=["POST"])
@@ -524,7 +537,7 @@ def create_app(database_url: str = None, backup_dir: str = None,
             return json.dumps(errors), 400
 
         tmpfile = _write_tmpfile(columns, rows)
-        job = q.enqueue(_update_column, db_url, tablename, columnname, tmpfile,
+        job = q.enqueue(_update_column, tablename, columnname, tmpfile,
                         job_timeout=t_time)
         return json.dumps(job.id)
 

@@ -100,7 +100,7 @@ def _run_worker() -> None:
         port=int(os.environ.get("REDIS_QUEUE_PORT", 6379)),
         db=int(os.environ.get("REDIS_QUEUE_DB", 0)),
     )
-    q = RQQueue(connection=r)
+    q = RQQueue('pipeline2', connection=r)
     worker = Worker([q], connection=r)
     worker.work()
 
@@ -161,7 +161,7 @@ def main() -> None:
     log.info("RQ worker started (pid=%d)", worker_proc.pid)
 
     # 5. Schedule periodic sync
-    queue = Queue(connection=r)
+    queue = Queue('pipeline2', connection=r)
     if sync_interval_hours > 0:
         schedule.every(sync_interval_hours).hours.do(_enqueue_sync, queue)
         log.info("Sync scheduled every %d hour(s)", sync_interval_hours)

@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS "CTSA" (
     "CTSAhubPIFirstName" VARCHAR,
     "CTSAhubPILastName" VARCHAR,
     "ProposalID" BIGINT,
-    "approvalfromCTSA" BOOLEAN,
-    PRIMARY KEY ("ProposalID")
+    "approvalfromCTSA" BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS "ProposalDetails" (
@@ -22,7 +21,8 @@ CREATE TABLE IF NOT EXISTS "ProposalDetails" (
     "numberSites" BIGINT,
     "numberNonUSsites" BIGINT,
     "listCountries" VARCHAR,
-    "numberCTSAprogHubSites" BIGINT
+    "numberCTSAprogHubSites" BIGINT,
+    "notableRisk" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "Submitter" (
@@ -75,8 +75,7 @@ CREATE TABLE IF NOT EXISTS "Proposal" (
     "ParticipantDuration" VARCHAR,
     "DisclosureConflicts" VARCHAR,
     "optStatisticalPlan" VARCHAR,
-    "optEnrollmentPlan" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "optEnrollmentPlan" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "ProposalFunding" (
@@ -146,8 +145,7 @@ CREATE TABLE IF NOT EXISTS "AssignProposal" (
     "assignToInstitution" VARCHAR,
     "ticPOC" VARCHAR,
     "ricPOC" VARCHAR,
-    "ncatsPOC" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "ncatsPOC" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "TIChealPOCs" (
@@ -198,38 +196,33 @@ CREATE TABLE IF NOT EXISTS "InitialConsultationSummary" (
     "RecruitmentPlanDiscussed" BOOLEAN,
     "recruitmentMaterialsDiscussed" BOOLEAN,
     "FeasibilityAssessmentDiscussed" BOOLEAN,
-    "OtherComments" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "OtherComments" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "LettersAndSurvey" (
     "ProposalID" BIGINT,
     "decisionLetterSent" DATE,
     "satisfactionSurveySent" DATE,
-    "LetterOfSupport" DATE,
-    PRIMARY KEY ("ProposalID")
+    "LetterOfSupport" DATE
 );
 
 CREATE TABLE IF NOT EXISTS "PATMeeting" (
     "ProposalID" BIGINT,
     "meetingDate" DATE,
     "meetingNumber" BIGINT,
-    "comments" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "comments" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "Voter" (
     "userId" VARCHAR,
     "ProposalID" BIGINT,
-    "Role" VARCHAR,
-    PRIMARY KEY ("userId")
+    "Role" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "PATReviewForVote" (
     "ProposalID" BIGINT,
     "requireVote" BOOLEAN,
-    "vote" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "vote" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "BudgetBreakOut" (
@@ -256,15 +249,13 @@ CREATE TABLE IF NOT EXISTS "TIC_RICAssessment" (
     "TICcapacity" BOOLEAN,
     "undertakeAtCurrentState" VARCHAR,
     "opportunityToCollaborate" VARCHAR,
-    "operationHypothesis" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "operationHypothesis" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "FinalRecommendation" (
     "ProposalID" BIGINT,
     "recommendation" VARCHAR,
-    "serviceRecommended" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "serviceRecommended" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "SiteInformation" (
@@ -325,8 +316,7 @@ CREATE TABLE IF NOT EXISTS "StudyInformation" (
     "noOfUnresolvedQueries" BIGINT,
     "noOfSignificantProtocolDeviations" BIGINT,
     "noOfSAEs" BIGINT,
-    "mostRecentPatientEnrolled" DATE,
-    PRIMARY KEY ("ProposalID")
+    "mostRecentPatientEnrolled" DATE
 );
 
 CREATE TABLE IF NOT EXISTS "SuggestedChanges" (
@@ -373,38 +363,32 @@ CREATE TABLE IF NOT EXISTS "UtahRecommendation" (
     "finalPlannedNumberOfSites" BIGINT,
     "enrollmentGoal" VARCHAR,
     "initialProjectedEnrollmentDuration" BIGINT,
-    "actualEnrollment" BIGINT,
-    PRIMARY KEY ("ProposalID")
+    "actualEnrollment" BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS "Proposal_NewServiceSelection" (
     "ProposalID" BIGINT,
-    "serviceSelection" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "serviceSelection" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "Proposal_ServicesApproved" (
     "ProposalID" BIGINT,
-    "servicesApproved" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "servicesApproved" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "Proposal_ServicesPatOutcome" (
     "ProposalID" BIGINT,
-    "servicesPatOutcome" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "servicesPatOutcome" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "Proposal_ServicesPostOutcome" (
     "ProposalID" BIGINT,
-    "servicesPostOutcome" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "servicesPostOutcome" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "Proposal_RemovedServices" (
     "ProposalID" BIGINT,
-    "removedServices" VARCHAR,
-    PRIMARY KEY ("ProposalID")
+    "removedServices" VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS "EnrollmentInformation" (
@@ -417,8 +401,7 @@ CREATE TABLE IF NOT EXISTS "EnrollmentInformation" (
     "actualSites" BIGINT,
     "actualEnrollment" BIGINT,
     "activationSurplusDeficit" BIGINT,
-    "enrollmentSurplusDeficit" BIGINT,
-    PRIMARY KEY ("ProposalID")
+    "enrollmentSurplusDeficit" BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS "Sites" (
@@ -450,8 +433,7 @@ CREATE TABLE IF NOT EXISTS "StudySites" (
     "patientsWithdrawnCount" BIGINT,
     "patientsExpectedCount" BIGINT,
     "queriesCount" BIGINT,
-    "protocolDeviationsCount" BIGINT,
-    PRIMARY KEY ("ProposalID")
+    "protocolDeviationsCount" BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS "CTSAs" (
@@ -497,8 +479,7 @@ CREATE TABLE IF NOT EXISTS "StudyProfile" (
     "fieldsPerCasebook" BIGINT,
     "comments" VARCHAR,
     "projectStatus" VARCHAR,
-    "dateLastUpdated" DATE,
-    PRIMARY KEY ("ProposalID")
+    "dateLastUpdated" DATE
 );
 
 -- Auxiliary tables (generated from REDCap data dictionary, not mapping.json)

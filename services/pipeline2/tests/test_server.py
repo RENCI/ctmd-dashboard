@@ -239,9 +239,9 @@ class TestTableColumn:
         func, args, _ = fake_queue.enqueued[0]
         from server import _update_column
         assert func is _update_column
-        # args: (db_url, table, column, tmpfile)
-        assert args[1] == "StudySites"
-        assert args[2] == "siteId"
+        # args: (table, column, tmpfile)
+        assert args[0] == "StudySites"
+        assert args[1] == "siteId"
 
     def test_returns_400_on_validation_error(self, client):
         data = _csv_upload([["nonexistent_col"], ["val"]])
