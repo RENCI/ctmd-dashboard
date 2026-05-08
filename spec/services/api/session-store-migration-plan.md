@@ -1,17 +1,14 @@
 # Session Store Migration Plan
 
-> **🔴 HIGH PRIORITY** (as of 2026-04-28)
+> **✅ Session store migration DONE** (2026-04-28)
 >
-> This migration is now urgent due to a related issue: the Node.js API (`ctmd-api`) still
-> connects to `ctmd-db` (old Spark pipeline database) for all data queries. Until the API
-> is migrated to `ctmd-db2` (pipeline2's database), proposal data served by the Node.js
-> API is stale and `ctmd-db` cannot be decommissioned.
+> `app.js` uses `connect-redis` v7 with `REDIS_SESSION_DB=2`. `api.yaml` sets
+> `REDIS_HOST`, `REDIS_PORT`, `REDIS_SESSION_DB`. No further session store changes needed.
 >
-> **The recommended sequence is:**
-> 1. Migrate sessions from MemoryStore → Redis (this document)
-> 2. Migrate API data connection from `ctmd-db` → `ctmd-db2` (includes exporting CSV-managed
->    user tables: StudyProfile, SiteInformation, StudySites, etc.)
-> 3. Decommission `ctmd-db` (`postgres.create: false` in `.values.yaml`)
+> **API database migration status (branch: `ctmd-138-update-api-session-store`):**
+> - `migrate_csv_tables.py` created — copies 22 CSV-managed tables from `ctmd-db` → `ctmd-db2`
+> - `api.yaml` updated — `envFrom` now references `db-dsn-pipeline2`; init container waits for `ctmd-db2`
+> - **Pending cutover:** run migration script after hours, then `helm upgrade`
 >
 > See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for full context.
 

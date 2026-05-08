@@ -313,22 +313,22 @@ Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed to the `ctmd` namespac
 
 ## 9. Outstanding Items
 
-### 🔴 HIGH PRIORITY: API Still Connected to Old Database (`ctmd-db`)
+### API Database Migration to `ctmd-db2` (branch: `ctmd-138-update-api-session-store`)
 
-**Problem:** The Node.js API (`ctmd-api`) connects to `ctmd-db` via the `db-dsn` secret. This database was populated by the old Scala/Spark pipeline and is now stale. Pipeline2 writes to `ctmd-db2` — a completely separate database.
+**Background:** The Node.js API (`ctmd-api`) connected to `ctmd-db` via the `db-dsn` secret. This database was populated by the old Scala/Spark pipeline (stale). Pipeline2 writes to `ctmd-db2`.
 
-**Consequences:**
-1. The Node.js API serves **stale proposal data** from the old pipeline to the frontend via `http://ctmd-api:3030/`. Only the pipeline Flask API (`http://ctmd-pipeline2:5000/`) serves fresh data.
-2. **`ctmd-db` cannot be decommissioned** until the API is migrated.
-3. CSV-managed table data uploaded by users (StudyProfile, SiteInformation, etc.) lives in `ctmd-db` and would be lost if `ctmd-db` were removed without migration.
+**Work completed (2026-05-08):**
+1. ✅ `services/pipeline2/scripts/migrate_csv_tables.py` — copies 22 CSV-managed tables from `ctmd-db` → `ctmd-db2`; `--dry-run` flag; TRUNCATE+INSERT per table with per-table commit/rollback
+2. ✅ `helm-charts/ctmd-dashboard/templates/api.yaml` — `envFrom` switched from `db-dsn` → `db-dsn-pipeline2`; init container now waits for `ctmd-db2` (via `pipeline2.postgres.name/service.port`)
+3. ✅ Redis session store already implemented (`connect-redis` v7, `REDIS_SESSION_DB=2`)
 
-**Resolution path:**
-1. Export all CSV-managed tables from `ctmd-db` → import into `ctmd-db2`
-2. Update `ctmd-api` helm template to reference `db-dsn-pipeline2` secret instead of `db-dsn`
-3. Verify all API endpoints function correctly against `ctmd-db2`
+**Remaining cutover steps (after-hours):**
+1. Port-forward both DBs and run `scripts/migrate_csv_tables.py` (dry-run first, then live)
+2. `helm upgrade` to deploy updated `api.yaml` → API connects to `ctmd-db2`
+3. Verify all API endpoints against `ctmd-db2`
 4. Decommission `ctmd-db` (set `postgres.create: false` in `.values.yaml`)
 
-See also: `spec/services/api/session-store-migration-plan.md` for the related API session store migration (currently using MemoryStore — should move to Redis before scaling).
+See `spec/services/api/session-store-migration-plan.md` for session store context (Redis migration already completed).
 
 ---
 
