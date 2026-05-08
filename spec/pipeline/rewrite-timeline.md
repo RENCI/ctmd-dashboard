@@ -224,7 +224,37 @@ Ran `scripts/compare_tables.py` against prod (old pipeline, 665 proposals) and s
 3. **Frontend cutover**: `REACT_APP_DATA_API_ROOT` → `http://ctmd-pipeline2:5000/`
 4. **Old pipeline decommissioned**: `pipeline.create: false` — pod terminated, CPU quota freed
 
-Deployed image tags: `v0.1.4` → `v0.1.5` → `v0.1.6` → `v0.1.7` → `v0.1.8` → `v0.1.9` → `v0.1.10` (prod)
+Deployed image tags: `v0.1.4` → `v0.1.5` → `v0.1.6` → `v0.1.7` → `v0.1.8` → `v0.1.9` → `v0.1.10` → `v0.1.11` (prod)
+
+### Post-Cutover Fixes (v0.1.11, 2026-04-29) ✓
+
+Three bugs found after the initial prod deployment were fixed and deployed in v0.1.11:
+
+1. **`pg_dump` not found** — `python:3.12-slim` has no PostgreSQL client tools; fixed by adding `postgresql-client` to Dockerfile
+2. **Password logged by RQ** — `database_url` was a positional arg to all worker functions; RQ logs all job args including the full DATABASE_URL with password; fixed by removing the parameter and reading `os.environ["DATABASE_URL"]` inside each worker
+3. **`ctmd-database-mapping` ConfigMap missing** — the ConfigMap was owned by `pipeline.yaml` and deleted when `pipeline.create: false`; fixed by adding conditional creation to `pipeline2.yaml` (`{{- if not .Values.pipeline.create }}`)
+
+**End-to-end validation (2026-04-29):** sync (70s, 746 proposals), backup (448ms), restore (1.05s) all confirmed working via frontend with clean logs.
+
+---
+
+## Week 5 — API Migration + Full Decommission ✓ Done (2026-05-08)
+
+### API Database Migration
+
+The Node.js API (`ctmd-api`) was migrated from `ctmd-db` (old Spark pipeline database) to `ctmd-db2` (pipeline2's database). All services now share a single database.
+
+Deliverables:
+- `migrations/003_nullable_csv_pks.sql` ✓ — drops PK constraints on `ConsultationRequest` and `SuggestedChanges` (columns never populated; source data all-NULL)
+- `scripts/migrate_csv_tables.py` ✓ — copies 19 CSV-managed tables from `ctmd-db` → `ctmd-db2`; `--dry-run` support
+- `api.yaml` (helm) ✓ — `envFrom` → `db-dsn-pipeline2`; init container waits for `ctmd-db2`
+- Deployed as helm REVISION 17; confirmed via pod logs: `POSTGRES_HOST=ctmd-db2`
+
+### Old Pipeline Fully Decommissioned
+
+- `ctmd-pipeline` (Scala/Spark ETL): `pipeline.create: false` — pod terminated
+- `ctmd-db`: no services connected; running as fallback only
+- All new data flows exclusively through `pipeline2` → `ctmd-db2`
 
 ---
 
@@ -237,8 +267,9 @@ Deployed image tags: `v0.1.4` → `v0.1.5` → `v0.1.6` → `v0.1.7` → `v0.1.8
 | 2 | Bulk loader + CSV upload API | loader/ (COPY sync), server.py, test_server.py, requirements.txt | ✓ Done |
 | 3 | Orchestration + infrastructure | server.py, name_table.py, Dockerfile, Helm templates, CI/CD | ✓ Done |
 | 4 | Testing + cutover | Equivalence validation, prod blue/green deployment, decommission | ✓ Done |
+| 5 | API migration + full decommission | migrate_csv_tables.py, 003 migration, api.yaml update, REVISION 17 | ✓ Done |
 
-**Actual delivery: ~10 weeks** (including staging validation, bug fixes, and blue/green infrastructure)
+**Actual delivery: ~11 weeks** (including staging validation, bug fixes, blue/green infrastructure, and API migration)
 
 ---
 
@@ -252,6 +283,6 @@ A bug was found and fixed during staging: `_base_field_name()` was returning `No
 
 ## Outstanding Items
 
-See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for the full outstanding items list.
+**✅ All items resolved as of 2026-05-08.** See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for full migration details.
 
-**🔴 HIGH PRIORITY:** The Node.js API (`ctmd-api`) still connects to `ctmd-db` (old pipeline database). Proposal data served by the Node.js API is stale; CSV-managed user data also lives in `ctmd-db`. Migration path: export CSV tables from `ctmd-db` → `ctmd-db2`, update API secret reference, decommission `ctmd-db`.
+The only remaining optional step is decommissioning `ctmd-db` entirely (`postgres.create: false` in `.values.yaml`). It is currently retained as a fallback — no services are connected to it.

@@ -8,6 +8,8 @@
 | 2026-03-12 | J. Seals / Claude | Simplified: remove DSL/dynamic parsing approach |
 | 2026-03-13 | J. Seals / Claude | Add CSV upload path (two independent data paths) |
 | 2026-04-28 | J. Seals / Claude | Pipeline2 deployed to prod; cutover complete; outstanding items added |
+| 2026-04-29 | J. Seals / Claude | v0.1.11 deployed; backup/restore/sync validated end-to-end |
+| 2026-05-08 | J. Seals / Claude | API migrated to ctmd-db2; old pipeline fully decommissioned |
 
 ## 1. Background & Motivation
 
@@ -118,9 +120,11 @@ Dashboard User (CSV or JSON file upload)
 PostgreSQL (~19 CSV-managed tables)
 
 Shared infrastructure:
-    PostgreSQL ◄──── [Node.js API — unchanged] ──── React Frontend
-    Redis ◄──── RQ Worker (task queue for both paths)
-    Sherlock (distributed lock — prevents concurrent syncs)
+    ctmd-db2 (PostgreSQL 17) ◄──── [Node.js API: ctmd-api] ──── React Frontend
+                             ◄──── [pipeline2 Flask API]
+    ctmd-redis ◄──── RQ Worker (task queue for both paths)
+               ◄──── Redis session store (ctmd-api, DB 2)
+    Sherlock (distributed lock on Redis DB 2 — prevents concurrent syncs)
 ```
 
 ### 2.1 Key Design Decisions
@@ -272,25 +276,30 @@ The pipeline rebuild is complete when:
 
 ---
 
-## 8. Deployment Status (as of 2026-04-28)
+## 8. Deployment Status (as of 2026-05-08)
 
 ### Production Deployment
 
-Pipeline2 (`ctmd-pipeline2`, `v0.1.10`) is fully deployed to the `ctmd` namespace and is the active data pipeline for the CTMD dashboard.
+Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed and is the sole active data pipeline for the CTMD dashboard. The old Scala/Spark pipeline is completely decommissioned. All services now use `ctmd-db2`.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| `ctmd-pipeline2` | Running | v0.1.10, syncing every 24h |
-| `ctmd-db2` | Running | Dedicated PostgreSQL 17 for pipeline2; 10Gi PVC |
-| `ctmd-pipeline` (old) | Decommissioned | `pipeline.create: false`; `db-backups-pvc` retained |
-| `ctmd-db` (old) | Still running | Required by `ctmd-api` — see Outstanding Items |
-| Frontend | Cutover complete | `REACT_APP_DATA_API_ROOT` → `http://ctmd-pipeline2:5000/` |
+| `ctmd-pipeline2` | Running | v0.1.11, syncing every 24h |
+| `ctmd-db2` | Running | Primary database (PostgreSQL 17); all services connected |
+| `ctmd-api` | Running | v3.1.14; connected to `ctmd-db2` via `db-dsn-pipeline2` secret |
+| Frontend | Running | `REACT_APP_DATA_API_ROOT` → `http://ctmd-pipeline2:5000/` |
+| `ctmd-pipeline` (old) | **Decommissioned** | `pipeline.create: false`; pod terminated |
+| `ctmd-db` (old) | Running (fallback only) | No services write to it; retained as safety net |
 
 **First prod sync results:** 746 proposals across 18 tables, 752 name rows, completed in 64 seconds.
 
+**Backup/restore validated (2026-04-29):** manual backup (448ms), restore from backup (1.05s), and sync all tested end-to-end via the frontend with no errors and no credential leakage in logs.
+
+**API database migration (2026-05-08):** 19 CSV-managed tables copied from `ctmd-db` → `ctmd-db2` via `scripts/migrate_csv_tables.py`. `ctmd-api` now connects to `ctmd-db2`. Confirmed via pod logs: `POSTGRES_HOST=ctmd-db2`, `Redis session store connected: ctmd-redis:6379 (DB 2)`.
+
 **All PVCs protected** with `helm.sh/resource-policy: keep`:
-- `ctmd-db-pvc` — old pipeline database (retained, required by API)
-- `ctmd-db2-pvc` — pipeline2 database (10Gi)
+- `ctmd-db-pvc` — old pipeline database (retained as fallback)
+- `ctmd-db2-pvc` — pipeline2 database (10Gi, primary)
 - `db-backups-pipeline2-pvc` — pipeline2 backup storage (5Gi)
 - `db-backups-pvc` — old pipeline backups (retained)
 
@@ -302,27 +311,39 @@ Pipeline2 (`ctmd-pipeline2`, `v0.1.10`) is fully deployed to the `ctmd` namespac
 | `name` table missing `InitialConsultationDates` entries | `_base_field_name()` now extracts condition field from `if X="Y" then...` expressions |
 | `notableRisk` column missing from existing prod `ProposalDetails` | `002_add_notable_risk.sql` migration adds it safely via `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` |
 | pipeline2 and old pipeline sharing a RWO `db-backups-pvc` (multi-attach conflict) | pipeline2 now creates its own `db-backups-pipeline2-pvc`; separate PVC creation block added to `pipeline2.yaml` helm template |
+| `pg_dump` not found in container (`python:3.12-slim` has no PostgreSQL client tools) | Added `postgresql-client` apt package to Dockerfile (v0.1.11) |
+| RQ worker logging DATABASE_URL (including password) in job arguments | Removed `database_url` param from all 6 worker functions; each reads `os.environ["DATABASE_URL"]` internally (v0.1.11) |
+| `ctmd-database-mapping` ConfigMap deleted when `pipeline.create: false` | pipeline2.yaml now creates the ConfigMap when `not .Values.pipeline.create`; ownership transfers cleanly on cutover (v0.1.11) |
 
 ---
 
-## 9. Outstanding Items
+## 9. Completed Migration: API to `ctmd-db2` (2026-05-08)
 
-### 🔴 HIGH PRIORITY: API Still Connected to Old Database (`ctmd-db`)
+All services are now fully migrated to `ctmd-db2`. The old pipeline and its database are no longer in the active data path.
 
-**Problem:** The Node.js API (`ctmd-api`) connects to `ctmd-db` via the `db-dsn` secret. This database was populated by the old Scala/Spark pipeline and is now stale. Pipeline2 writes to `ctmd-db2` — a completely separate database.
+### What Was Done
 
-**Consequences:**
-1. The Node.js API serves **stale proposal data** from the old pipeline to the frontend via `http://ctmd-api:3030/`. Only the pipeline Flask API (`http://ctmd-pipeline2:5000/`) serves fresh data.
-2. **`ctmd-db` cannot be decommissioned** until the API is migrated.
-3. CSV-managed table data uploaded by users (StudyProfile, SiteInformation, etc.) lives in `ctmd-db` and would be lost if `ctmd-db` were removed without migration.
+1. **`migrations/003_nullable_csv_pks.sql`** — Dropped PK constraints on `ConsultationRequest.consultationRequestID` and `SuggestedChanges.changeID`. These columns were never populated by CSV uploads (source data was all-NULL); the legacy `ctmd-db` schema was nullable. Applied directly to `ctmd-db2` and committed for future deployments.
 
-**Resolution path:**
-1. Export all CSV-managed tables from `ctmd-db` → import into `ctmd-db2`
-2. Update `ctmd-api` helm template to reference `db-dsn-pipeline2` secret instead of `db-dsn`
-3. Verify all API endpoints function correctly against `ctmd-db2`
-4. Decommission `ctmd-db` (set `postgres.create: false` in `.values.yaml`)
+2. **`scripts/migrate_csv_tables.py`** — One-time migration of 19 CSV-managed tables from `ctmd-db` → `ctmd-db2`. 3 tables were empty (skipped). 0 errors. Run with `--dry-run` first to verify row counts.
 
-See also: `spec/services/api/session-store-migration-plan.md` for the related API session store migration (currently using MemoryStore — should move to Redis before scaling).
+3. **`api.yaml` helm template** — `envFrom` switched from `db-dsn` → `db-dsn-pipeline2`; init container now waits for `ctmd-db2`. Deployed as helm REVISION 17.
+
+4. **Redis session store** — Already implemented (`connect-redis` v7, `REDIS_SESSION_DB=2`). No changes required.
+
+### Current State
+
+| Service | Database | Notes |
+|---------|----------|-------|
+| `ctmd-pipeline2` | `ctmd-db2` | REDCap sync + CSV upload API |
+| `ctmd-api` | `ctmd-db2` | All data queries |
+| `ctmd-db` (old) | — | No services connected; retained as fallback |
+
+### If `ctmd-db` Needs to Be Decommissioned
+
+Set `postgres.create: false` in `.values.yaml` and run `helm upgrade`. The `ctmd-db-pvc` is protected by `helm.sh/resource-policy: keep` and will not be deleted. Confirm no services reference `db-dsn` before proceeding.
+
+See `spec/services/api/session-store-migration-plan.md` for session store context.
 
 ---
 

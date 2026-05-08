@@ -45,8 +45,8 @@ spec:
           - 'sh'
           - '-c'
           - |
-            until nc -z {{ .Values.postgres.name }} {{ .Values.postgres.port | default 5432 }}; do
-              echo "Waiting for postgres at {{ .Values.postgres.name }}:{{ .Values.postgres.port | default 5432 }}..."
+            until nc -z {{ .Values.pipeline2.postgres.name }} {{ .Values.pipeline2.postgres.service.port | default 5432 }}; do
+              echo "Waiting for postgres at {{ .Values.pipeline2.postgres.name }}:{{ .Values.pipeline2.postgres.service.port | default 5432 }}..."
               sleep 2
             done
             echo "PostgreSQL is ready!"
@@ -83,7 +83,7 @@ spec:
               value: "2"
           envFrom:
             - secretRef:
-                name: {{ .Values.postgres.secrets.name }}
+                name: {{ .Values.pipeline2.postgres.secrets.name }}
           resources: {} 
 ---
 apiVersion: v1
