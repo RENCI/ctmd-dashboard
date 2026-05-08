@@ -4,7 +4,7 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 
 ---
 
-## Delivered Directory Layout (as of v0.1.10)
+## Delivered Directory Layout (as of v0.1.11)
 
 ```
 services/pipeline2/

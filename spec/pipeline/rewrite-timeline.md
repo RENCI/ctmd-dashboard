@@ -224,7 +224,17 @@ Ran `scripts/compare_tables.py` against prod (old pipeline, 665 proposals) and s
 3. **Frontend cutover**: `REACT_APP_DATA_API_ROOT` → `http://ctmd-pipeline2:5000/`
 4. **Old pipeline decommissioned**: `pipeline.create: false` — pod terminated, CPU quota freed
 
-Deployed image tags: `v0.1.4` → `v0.1.5` → `v0.1.6` → `v0.1.7` → `v0.1.8` → `v0.1.9` → `v0.1.10` (prod)
+Deployed image tags: `v0.1.4` → `v0.1.5` → `v0.1.6` → `v0.1.7` → `v0.1.8` → `v0.1.9` → `v0.1.10` → `v0.1.11` (prod)
+
+### Post-Cutover Fixes (v0.1.11, 2026-04-29) ✓
+
+Three bugs found after the initial prod deployment were fixed and deployed in v0.1.11:
+
+1. **`pg_dump` not found** — `python:3.12-slim` has no PostgreSQL client tools; fixed by adding `postgresql-client` to Dockerfile
+2. **Password logged by RQ** — `database_url` was a positional arg to all worker functions; RQ logs all job args including the full DATABASE_URL with password; fixed by removing the parameter and reading `os.environ["DATABASE_URL"]` inside each worker
+3. **`ctmd-database-mapping` ConfigMap missing** — the ConfigMap was owned by `pipeline.yaml` and deleted when `pipeline.create: false`; fixed by adding conditional creation to `pipeline2.yaml` (`{{- if not .Values.pipeline.create }}`)
+
+**End-to-end validation (2026-04-29):** sync (70s, 746 proposals), backup (448ms), restore (1.05s) all confirmed working via frontend with clean logs.
 
 ---
 

@@ -8,6 +8,7 @@
 | 2026-03-12 | J. Seals / Claude | Simplified: remove DSL/dynamic parsing approach |
 | 2026-03-13 | J. Seals / Claude | Add CSV upload path (two independent data paths) |
 | 2026-04-28 | J. Seals / Claude | Pipeline2 deployed to prod; cutover complete; outstanding items added |
+| 2026-04-29 | J. Seals / Claude | v0.1.11 deployed; backup/restore/sync validated end-to-end |
 
 ## 1. Background & Motivation
 
@@ -276,17 +277,19 @@ The pipeline rebuild is complete when:
 
 ### Production Deployment
 
-Pipeline2 (`ctmd-pipeline2`, `v0.1.10`) is fully deployed to the `ctmd` namespace and is the active data pipeline for the CTMD dashboard.
+Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed to the `ctmd` namespace and is the active data pipeline for the CTMD dashboard.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| `ctmd-pipeline2` | Running | v0.1.10, syncing every 24h |
+| `ctmd-pipeline2` | Running | v0.1.11, syncing every 24h |
 | `ctmd-db2` | Running | Dedicated PostgreSQL 17 for pipeline2; 10Gi PVC |
 | `ctmd-pipeline` (old) | Decommissioned | `pipeline.create: false`; `db-backups-pvc` retained |
 | `ctmd-db` (old) | Still running | Required by `ctmd-api` — see Outstanding Items |
 | Frontend | Cutover complete | `REACT_APP_DATA_API_ROOT` → `http://ctmd-pipeline2:5000/` |
 
 **First prod sync results:** 746 proposals across 18 tables, 752 name rows, completed in 64 seconds.
+
+**Backup/restore validated (2026-04-29):** manual backup (448ms), restore from backup (1.05s), and sync all tested end-to-end via the frontend with no errors and no credential leakage in logs.
 
 **All PVCs protected** with `helm.sh/resource-policy: keep`:
 - `ctmd-db-pvc` — old pipeline database (retained, required by API)
@@ -302,6 +305,9 @@ Pipeline2 (`ctmd-pipeline2`, `v0.1.10`) is fully deployed to the `ctmd` namespac
 | `name` table missing `InitialConsultationDates` entries | `_base_field_name()` now extracts condition field from `if X="Y" then...` expressions |
 | `notableRisk` column missing from existing prod `ProposalDetails` | `002_add_notable_risk.sql` migration adds it safely via `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` |
 | pipeline2 and old pipeline sharing a RWO `db-backups-pvc` (multi-attach conflict) | pipeline2 now creates its own `db-backups-pipeline2-pvc`; separate PVC creation block added to `pipeline2.yaml` helm template |
+| `pg_dump` not found in container (`python:3.12-slim` has no PostgreSQL client tools) | Added `postgresql-client` apt package to Dockerfile (v0.1.11) |
+| RQ worker logging DATABASE_URL (including password) in job arguments | Removed `database_url` param from all 6 worker functions; each reads `os.environ["DATABASE_URL"]` internally (v0.1.11) |
+| `ctmd-database-mapping` ConfigMap deleted when `pipeline.create: false` | pipeline2.yaml now creates the ConfigMap when `not .Values.pipeline.create`; ownership transfers cleanly on cutover (v0.1.11) |
 
 ---
 
