@@ -238,6 +238,26 @@ Three bugs found after the initial prod deployment were fixed and deployed in v0
 
 ---
 
+## Week 5 — API Migration + Full Decommission ✓ Done (2026-05-08)
+
+### API Database Migration
+
+The Node.js API (`ctmd-api`) was migrated from `ctmd-db` (old Spark pipeline database) to `ctmd-db2` (pipeline2's database). All services now share a single database.
+
+Deliverables:
+- `migrations/003_nullable_csv_pks.sql` ✓ — drops PK constraints on `ConsultationRequest` and `SuggestedChanges` (columns never populated; source data all-NULL)
+- `scripts/migrate_csv_tables.py` ✓ — copies 19 CSV-managed tables from `ctmd-db` → `ctmd-db2`; `--dry-run` support
+- `api.yaml` (helm) ✓ — `envFrom` → `db-dsn-pipeline2`; init container waits for `ctmd-db2`
+- Deployed as helm REVISION 17; confirmed via pod logs: `POSTGRES_HOST=ctmd-db2`
+
+### Old Pipeline Fully Decommissioned
+
+- `ctmd-pipeline` (Scala/Spark ETL): `pipeline.create: false` — pod terminated
+- `ctmd-db`: no services connected; running as fallback only
+- All new data flows exclusively through `pipeline2` → `ctmd-db2`
+
+---
+
 ## Summary
 
 | Week | Focus | Deliverable | Status |
@@ -247,8 +267,9 @@ Three bugs found after the initial prod deployment were fixed and deployed in v0
 | 2 | Bulk loader + CSV upload API | loader/ (COPY sync), server.py, test_server.py, requirements.txt | ✓ Done |
 | 3 | Orchestration + infrastructure | server.py, name_table.py, Dockerfile, Helm templates, CI/CD | ✓ Done |
 | 4 | Testing + cutover | Equivalence validation, prod blue/green deployment, decommission | ✓ Done |
+| 5 | API migration + full decommission | migrate_csv_tables.py, 003 migration, api.yaml update, REVISION 17 | ✓ Done |
 
-**Actual delivery: ~10 weeks** (including staging validation, bug fixes, and blue/green infrastructure)
+**Actual delivery: ~11 weeks** (including staging validation, bug fixes, blue/green infrastructure, and API migration)
 
 ---
 
@@ -262,6 +283,6 @@ A bug was found and fixed during staging: `_base_field_name()` was returning `No
 
 ## Outstanding Items
 
-See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for the full outstanding items list.
+**✅ All items resolved as of 2026-05-08.** See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for full migration details.
 
-**🔴 HIGH PRIORITY:** The Node.js API (`ctmd-api`) still connects to `ctmd-db` (old pipeline database). Proposal data served by the Node.js API is stale; CSV-managed user data also lives in `ctmd-db`. Migration path: export CSV tables from `ctmd-db` → `ctmd-db2`, update API secret reference, decommission `ctmd-db`.
+The only remaining optional step is decommissioning `ctmd-db` entirely (`postgres.create: false` in `.values.yaml`). It is currently retained as a fallback — no services are connected to it.

@@ -4,7 +4,7 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 
 ---
 
-## Delivered Directory Layout (as of v0.1.11)
+## Delivered Directory Layout (as of 2026-05-08, REVISION 17)
 
 ```
 services/pipeline2/
@@ -24,7 +24,9 @@ services/pipeline2/
 │
 ├── migrations/
 │   ├── 001_initial_schema.sql  # Committed static SQL schema (all tables)
-│   └── 002_add_notable_risk.sql # ALTER TABLE ProposalDetails ADD COLUMN IF NOT EXISTS
+│   ├── 002_add_notable_risk.sql # ALTER TABLE ProposalDetails ADD COLUMN IF NOT EXISTS
+│   └── 003_nullable_csv_pks.sql # DROP PK constraints on ConsultationRequest + SuggestedChanges
+│                               # (source data has all-NULL PKs; matches legacy ctmd-db schema)
 │
 ├── transformer/
 │   ├── __init__.py
@@ -36,7 +38,9 @@ services/pipeline2/
 │   └── loader.py               # Migration runner + TRUNCATE+COPY bulk sync (UTF-8)
 │
 ├── scripts/
-│   └── compare_tables.py       # Intersection-based comparison vs old pipeline output
+│   ├── compare_tables.py       # Intersection-based comparison vs old pipeline output
+│   └── migrate_csv_tables.py   # One-time migration: copies CSV-managed tables from
+│                               # ctmd-db → ctmd-db2; --dry-run support
 │
 └── tests/
     ├── __init__.py
@@ -64,7 +68,8 @@ One-time generation tool only. Run `python -m schema.generator` to regenerate
 ### `migrations/`
 Static SQL files committed to git. Applied by `loader.py` at startup when
 `CREATE_TABLES=1`. Add new numbered files for schema changes (e.g.,
-`002_add_constraints.sql`).
+`004_add_column.sql`). Currently three migrations: initial schema, notable risk
+column addition, and nullable PK fix for CSV-only tables.
 
 ### `transformer/`
 Explicit Python mapping from REDCap record dicts to per-table row dicts. One
@@ -77,13 +82,17 @@ management. Uses `psycopg2.sql.Identifier()` for all table/column names.
 
 ---
 
-## Deleted from Old Structure
+## Decommissioned: Old Pipeline
+
+The old `services/pipeline/` (Scala/Spark ETL) is fully decommissioned as of 2026-04-28:
 
 ```
 services/pipeline/
-├── map-pipeline/               ← DELETE (Scala/Spark ETL)
-├── map-pipeline-schema/        ← DELETE (Haskell schema generator)
-├── reload4j-1.2.26.jar        ← DELETE (Spark log4j)
-├── reload.py                   ← REPLACE with transformer/ + loader/
-└── utils.py                    ← REPLACE with redcap_importer/
+├── map-pipeline/               ← Decommissioned (Scala/Spark ETL)
+├── map-pipeline-schema/        ← Decommissioned (Haskell schema generator)
+├── reload4j-1.2.26.jar        ← Decommissioned (Spark log4j)
+├── reload.py                   ← Replaced by transformer/ + loader/
+└── utils.py                    ← Replaced by redcap_importer/
 ```
+
+Helm: `pipeline.create: false` — pod terminated, CPU quota freed. The old database (`ctmd-db`) is still running as a fallback but has no active service connections. All data now lives in `ctmd-db2`.
