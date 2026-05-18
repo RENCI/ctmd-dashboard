@@ -40,8 +40,30 @@ When deploying the applications into local KiND cluster `make kind-load-api` or 
 
 `make helm-down` will uninstall the ctmd-dashboard deployment without removing the pvc (database data).
 
-#### Expose the frontend-Service
-`make port-forward-ui` will expose the frontend to your local development environment on port 3000. `localhost:3000/` will then be accessible from a browser.
+#### Expose the Frontend Service (Kubernetes pod)
+`make port-forward-ui` will expose the frontend pod to your local environment on port 3000.
+
+#### Frontend Hot-Reload Development (recommended for UI changes)
+
+Instead of rebuilding the image on every change, run the CRA dev server locally. Changes are visible in the browser in **under a second** via hot module replacement.
+
+**Terminal 1** — port-forward the backend services from your cluster:
+```bash
+make dev-services
+# forwards ctmd-api → localhost:3030 and ctmd-pipeline2 → localhost:5000
+```
+
+**Terminal 2** — start the dev server:
+```bash
+make dev-ui
+# CRA dev server at http://localhost:3000 with HMR + proxy
+```
+
+The dev server (`src/setupProxy.js`) mirrors the nginx proxy rules from the helm chart:
+- `/api/*` → `http://localhost:3030` (ctmd-api)
+- `/data/*` → `http://localhost:5000` (ctmd-pipeline2)
+
+No image rebuild, no pod restart, no port-forwarding the UI — just edit and save.
 
 ### CI/CD
 ⚠️ Still actively being built ⚠️

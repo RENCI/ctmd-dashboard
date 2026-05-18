@@ -214,6 +214,26 @@ helm-template-debug:
 
 port-forward-ui:
 	kubectl port-forward svc/ctmd-frontend 3000:3000
+
+# ==============================================================================
+## Frontend Hot-Reload Development
+#
+# Instead of rebuilding the image on every change, run the CRA dev server
+# locally and proxy API calls to the real backend services via port-forwarding.
+#
+# Step 1 — forward backend services (runs in background, kills on Ctrl-C):
+dev-services:
+	@echo "Port-forwarding ctmd-api → :3030 and ctmd-pipeline2 → :5000"
+	@echo "Press Ctrl-C to stop both."
+	kubectl port-forward svc/ctmd-api       -n ctmd 3030:3030 & \
+	kubectl port-forward svc/ctmd-pipeline2 -n ctmd 5000:5000 & \
+	wait
+
+# Step 2 — start the CRA dev server with hot-reload (in a separate terminal):
+dev-ui:
+	@echo "Starting CRA dev server at http://localhost:3000"
+	@echo "Proxying /api → localhost:3030  /data → localhost:5000"
+	cd services/frontend && npm start
 # ==============================================================================
 ################################ LEGACY ################################
 ## DOCKER COMPOSE STUFF ###
