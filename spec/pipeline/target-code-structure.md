@@ -4,7 +4,7 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 
 ---
 
-## Delivered Directory Layout (as of v0.1.10)
+## Delivered Directory Layout (as of 2026-05-18)
 
 ```
 services/pipeline2/
@@ -24,7 +24,9 @@ services/pipeline2/
 │
 ├── migrations/
 │   ├── 001_initial_schema.sql  # Committed static SQL schema (all tables)
-│   └── 002_add_notable_risk.sql # ALTER TABLE ProposalDetails ADD COLUMN IF NOT EXISTS
+│   ├── 002_add_notable_risk.sql # ALTER TABLE ProposalDetails ADD COLUMN IF NOT EXISTS
+│   └── 003_nullable_csv_pks.sql # DROP PK constraints on ConsultationRequest +
+│                               # SuggestedChanges (source data has all-NULL PKs)
 │
 ├── transformer/
 │   ├── __init__.py
@@ -36,7 +38,8 @@ services/pipeline2/
 │   └── loader.py               # Migration runner + TRUNCATE+COPY bulk sync (UTF-8)
 │
 ├── scripts/
-│   └── compare_tables.py       # Intersection-based comparison vs old pipeline output
+│   ├── compare_tables.py       # Intersection-based comparison vs old pipeline output
+│   └── migrate_csv_tables.py   # One-time migration: CSV-managed tables ctmd-db → ctmd-db2
 │
 └── tests/
     ├── __init__.py
@@ -45,6 +48,15 @@ services/pipeline2/
     ├── test_transforms.py       # 36 tests: field transformation functions
     ├── test_loader.py           # 27 tests: bulk load and transaction safety
     └── test_server.py           # 31 tests: Flask API endpoints (injectable FakeQueue)
+
+services/frontend/
+└── src/
+    └── setupProxy.js            # CRA dev-server proxy: /api → :3030, /data → :5000
+                                 # Mirrors nginx rules; enables hot-reload dev workflow
+
+helm-charts/ctmd-dashboard/templates/
+└── api.yaml                     # Init container + envFrom conditional on
+                                 # pipeline2.postgres.create (fixes local KiND dev)
 ```
 
 ---
@@ -64,7 +76,8 @@ One-time generation tool only. Run `python -m schema.generator` to regenerate
 ### `migrations/`
 Static SQL files committed to git. Applied by `loader.py` at startup when
 `CREATE_TABLES=1`. Add new numbered files for schema changes (e.g.,
-`002_add_constraints.sql`).
+`004_add_column.sql`). Currently three migrations: initial schema, notable risk
+column addition, and nullable PK fix for CSV-only tables.
 
 ### `transformer/`
 Explicit Python mapping from REDCap record dicts to per-table row dicts. One
@@ -75,15 +88,32 @@ just clear, readable Python.
 All database interaction: migration runner, COPY-based bulk load, transaction
 management. Uses `psycopg2.sql.Identifier()` for all table/column names.
 
+### `scripts/`
+Ops and maintenance utilities. Not part of the runtime pipeline.
+
+- `compare_tables.py` — validates pipeline2 output against old pipeline
+- `migrate_csv_tables.py` — one-time pre-cutover data migration (run once; already done in prod)
+
+### `frontend/src/setupProxy.js`
+CRA dev-server configuration. Automatically loaded by `react-scripts start` — no
+import needed. Proxies `/api/*` and `/data/*` to locally port-forwarded backends,
+enabling hot-reload development without rebuilding the Docker image.
+
 ---
 
-## Deleted from Old Structure
+## Decommissioned: Old Pipeline
+
+The old `services/pipeline/` (Scala/Spark ETL) is fully decommissioned as of 2026-04-28:
 
 ```
 services/pipeline/
-├── map-pipeline/               ← DELETE (Scala/Spark ETL)
-├── map-pipeline-schema/        ← DELETE (Haskell schema generator)
-├── reload4j-1.2.26.jar        ← DELETE (Spark log4j)
-├── reload.py                   ← REPLACE with transformer/ + loader/
-└── utils.py                    ← REPLACE with redcap_importer/
+├── map-pipeline/               ← Decommissioned (Scala/Spark ETL)
+├── map-pipeline-schema/        ← Decommissioned (Haskell schema generator)
+├── reload4j-1.2.26.jar        ← Decommissioned (Spark log4j)
+├── reload.py                   ← Replaced by transformer/ + loader/
+└── utils.py                    ← Replaced by redcap_importer/
 ```
+
+Helm: `pipeline.create: false` — pod terminated, CPU quota freed. The old database
+(`ctmd-db`) is retained as a fallback but has no active service connections. All
+data now lives in `ctmd-db2`.
