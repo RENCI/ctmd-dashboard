@@ -214,6 +214,52 @@ helm-template-debug:
 
 port-forward-ui:
 	kubectl port-forward svc/ctmd-frontend 3000:3000
+
+# ==============================================================================
+## Frontend Hot-Reload Development
+#
+# Run the CRA dev server locally so UI changes hot-reload in < 1 second.
+# The dev server proxies /api and /data to real backend services.
+#
+# Requires KUBECONFIG to be set before running port-forward targets:
+#   export KUBECONFIG=/path/to/your/kubeconfig
+#
+# ── Option A: forward both services from the prod/stage cluster ──────────────
+# ctmd-pipeline2 is only deployed in prod/stage (pipeline2.create: true),
+# NOT in a default local KiND cluster.  Requires KUBECONFIG=<prod kubeconfig>.
+dev-services:
+	@echo "Port-forwarding ctmd-api → :3030 and ctmd-pipeline2 → :5000"
+	@echo "Requires KUBECONFIG pointing at a cluster where both services exist."
+	@echo "Press Ctrl-C to stop both."
+	kubectl port-forward svc/ctmd-api       -n ctmd 3030:3030 & \
+	kubectl port-forward svc/ctmd-pipeline2 -n ctmd 5000:5000 & \
+	wait
+
+# ── Option B: forward only the API (works with local KiND) ───────────────────
+# Use when ctmd-pipeline2 is not deployed locally.
+# Set DATA_PROXY_TARGET to point /data/* at a running pipeline2 instance.
+#   export DATA_PROXY_TARGET=http://localhost:5000  (after a separate port-forward)
+dev-api:
+	@echo "Port-forwarding ctmd-api → :3030"
+	kubectl port-forward svc/ctmd-api -n ctmd 3030:3030
+
+# Forward pipeline2 separately (prod cluster or any namespace):
+# make dev-pipeline2 NAMESPACE=ctmd-stage
+NAMESPACE ?= ctmd
+dev-pipeline2:
+	@echo "Port-forwarding ctmd-pipeline2 → :5000 from namespace $(NAMESPACE)"
+	@echo "⚠️  This forwards a PRODUCTION/STAGE service — treat data as read-only."
+	kubectl port-forward svc/ctmd-pipeline2 -n $(NAMESPACE) 5000:5000
+
+# ── Start the dev server (always Terminal 2) ──────────────────────────────────
+# Override proxy targets with env vars if needed:
+#   API_PROXY_TARGET=http://localhost:3030 (default)
+#   DATA_PROXY_TARGET=http://localhost:5000 (default)
+dev-ui:
+	@echo "Starting CRA dev server at http://localhost:3000"
+	@echo "Proxying /api → $${API_PROXY_TARGET:-http://localhost:3030}"
+	@echo "Proxying /data → $${DATA_PROXY_TARGET:-http://localhost:5000}"
+	cd services/frontend && npm start
 # ==============================================================================
 ################################ LEGACY ################################
 ## DOCKER COMPOSE STUFF ###

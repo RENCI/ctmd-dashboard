@@ -10,6 +10,7 @@
 | 2026-04-28 | J. Seals / Claude | Pipeline2 deployed to prod; cutover complete; outstanding items added |
 | 2026-04-29 | J. Seals / Claude | v0.1.11 deployed; backup/restore/sync validated end-to-end |
 | 2026-05-08 | J. Seals / Claude | API migrated to ctmd-db2; old pipeline fully decommissioned |
+| 2026-05-18 | J. Seals / Claude | api.yaml init container made conditional; frontend hot-reload dev workflow added |
 
 ## 1. Background & Motivation
 
@@ -276,11 +277,11 @@ The pipeline rebuild is complete when:
 
 ---
 
-## 8. Deployment Status (as of 2026-05-08)
+## 8. Deployment Status (as of 2026-05-18)
 
 ### Production Deployment
 
-Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed and is the sole active data pipeline for the CTMD dashboard. The old Scala/Spark pipeline is completely decommissioned. All services now use `ctmd-db2`.
+Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed and is the sole active data pipeline. The old Scala/Spark pipeline is completely decommissioned. All services now use `ctmd-db2`.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -293,7 +294,7 @@ Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed and is the sole active
 
 **First prod sync results:** 746 proposals across 18 tables, 752 name rows, completed in 64 seconds.
 
-**Backup/restore validated (2026-04-29):** manual backup (448ms), restore from backup (1.05s), and sync all tested end-to-end via the frontend with no errors and no credential leakage in logs.
+**Backup/restore validated (2026-04-29):** manual backup (448ms), restore (1.05s), and sync all confirmed working end-to-end via frontend with clean logs.
 
 **API database migration (2026-05-08):** 19 CSV-managed tables copied from `ctmd-db` → `ctmd-db2` via `scripts/migrate_csv_tables.py`. `ctmd-api` now connects to `ctmd-db2`. Confirmed via pod logs: `POSTGRES_HOST=ctmd-db2`, `Redis session store connected: ctmd-redis:6379 (DB 2)`.
 
@@ -311,25 +312,26 @@ Pipeline2 (`ctmd-pipeline2`, `v0.1.11`) is fully deployed and is the sole active
 | `name` table missing `InitialConsultationDates` entries | `_base_field_name()` now extracts condition field from `if X="Y" then...` expressions |
 | `notableRisk` column missing from existing prod `ProposalDetails` | `002_add_notable_risk.sql` migration adds it safely via `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` |
 | pipeline2 and old pipeline sharing a RWO `db-backups-pvc` (multi-attach conflict) | pipeline2 now creates its own `db-backups-pipeline2-pvc`; separate PVC creation block added to `pipeline2.yaml` helm template |
-| `pg_dump` not found in container (`python:3.12-slim` has no PostgreSQL client tools) | Added `postgresql-client` apt package to Dockerfile (v0.1.11) |
-| RQ worker logging DATABASE_URL (including password) in job arguments | Removed `database_url` param from all 6 worker functions; each reads `os.environ["DATABASE_URL"]` internally (v0.1.11) |
-| `ctmd-database-mapping` ConfigMap deleted when `pipeline.create: false` | pipeline2.yaml now creates the ConfigMap when `not .Values.pipeline.create`; ownership transfers cleanly on cutover (v0.1.11) |
+| `pg_dump` not found in container | Added `postgresql-client` apt package to Dockerfile (v0.1.11) |
+| RQ worker logging `DATABASE_URL` (including password) | Removed `database_url` param from all worker functions; each reads `os.environ["DATABASE_URL"]` internally (v0.1.11) |
+| `ctmd-database-mapping` ConfigMap deleted when `pipeline.create: false` | `pipeline2.yaml` now creates ConfigMap when `not .Values.pipeline.create` (v0.1.11) |
+| API pod stuck in `Init:0/1` on local KiND (`ctmd-db2` doesn't exist locally) | `api.yaml` init container and `envFrom` are now conditional: `pipeline2.postgres.create: true` → use `ctmd-db2`; otherwise → use `ctmd-db` |
 
 ---
 
-## 9. Completed Migration: API to `ctmd-db2` (2026-05-08)
+## 9. Completed Migrations (2026-05-08)
 
-All services are now fully migrated to `ctmd-db2`. The old pipeline and its database are no longer in the active data path.
+All services are fully migrated to `ctmd-db2`. The old pipeline is no longer in the active data path.
 
-### What Was Done
+### API Migration to `ctmd-db2`
 
-1. **`migrations/003_nullable_csv_pks.sql`** — Dropped PK constraints on `ConsultationRequest.consultationRequestID` and `SuggestedChanges.changeID`. These columns were never populated by CSV uploads (source data was all-NULL); the legacy `ctmd-db` schema was nullable. Applied directly to `ctmd-db2` and committed for future deployments.
+1. **`migrations/003_nullable_csv_pks.sql`** — Dropped PK constraints on `ConsultationRequest.consultationRequestID` and `SuggestedChanges.changeID`. These columns were never populated by CSV uploads (source data was all-NULL); the legacy `ctmd-db` schema was nullable.
 
-2. **`scripts/migrate_csv_tables.py`** — One-time migration of 19 CSV-managed tables from `ctmd-db` → `ctmd-db2`. 3 tables were empty (skipped). 0 errors. Run with `--dry-run` first to verify row counts.
+2. **`scripts/migrate_csv_tables.py`** — One-time migration of 19 CSV-managed tables from `ctmd-db` → `ctmd-db2`. 3 tables were empty (skipped). 0 errors. Supports `--dry-run`.
 
-3. **`api.yaml` helm template** — `envFrom` switched from `db-dsn` → `db-dsn-pipeline2`; init container now waits for `ctmd-db2`. Deployed as helm REVISION 17.
+3. **`api.yaml` helm template** — `envFrom` switched from `db-dsn` → `db-dsn-pipeline2`; init container conditionally waits for `ctmd-db2` (when `pipeline2.postgres.create: true`) or `ctmd-db` (local dev). Deployed as helm REVISION 17.
 
-4. **Redis session store** — Already implemented (`connect-redis` v7, `REDIS_SESSION_DB=2`). No changes required.
+4. **Redis session store** — Already implemented (`connect-redis` v7, `REDIS_SESSION_DB=2`).
 
 ### Current State
 
@@ -341,7 +343,7 @@ All services are now fully migrated to `ctmd-db2`. The old pipeline and its data
 
 ### If `ctmd-db` Needs to Be Decommissioned
 
-Set `postgres.create: false` in `.values.yaml` and run `helm upgrade`. The `ctmd-db-pvc` is protected by `helm.sh/resource-policy: keep` and will not be deleted. Confirm no services reference `db-dsn` before proceeding.
+Set `postgres.create: false` in `.values.yaml` and run `helm upgrade`. The `ctmd-db-pvc` is protected by `helm.sh/resource-policy: keep`. Confirm no services reference `db-dsn` before proceeding.
 
 See `spec/services/api/session-store-migration-plan.md` for session store context.
 

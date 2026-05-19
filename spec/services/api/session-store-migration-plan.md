@@ -1,16 +1,13 @@
 # Session Store Migration Plan
 
-> **✅ Session store migration DONE** (2026-04-28)
+> **✅ Fully complete as of 2026-05-08**
 >
-> `app.js` uses `connect-redis` v7 with `REDIS_SESSION_DB=2`. `api.yaml` sets
-> `REDIS_HOST`, `REDIS_PORT`, `REDIS_SESSION_DB`. No further session store changes needed.
+> - Session store: `connect-redis` v7 with `REDIS_SESSION_DB=2` — done
+> - API database: `ctmd-api` now connects to `ctmd-db2` via `db-dsn-pipeline2` — done
+> - CSV data migrated: 19 tables copied from `ctmd-db` → `ctmd-db2` — done
+> - `ctmd-db` retained as fallback; no services connected to it
 >
-> **API database migration status (branch: `ctmd-138-update-api-session-store`):**
-> - `migrate_csv_tables.py` created — copies 22 CSV-managed tables from `ctmd-db` → `ctmd-db2`
-> - `api.yaml` updated — `envFrom` now references `db-dsn-pipeline2`; init container waits for `ctmd-db2`
-> - **Pending cutover:** run migration script after hours, then `helm upgrade`
->
-> See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for full context.
+> See `spec/pipeline/pipeline-rebuild-spec.md` Section 9 for full migration details.
 
 ## Problem Statement
 

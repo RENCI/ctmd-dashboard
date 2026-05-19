@@ -45,10 +45,17 @@ spec:
           - 'sh'
           - '-c'
           - |
+            {{- if and .Values.pipeline2.create .Values.pipeline2.postgres.create }}
             until nc -z {{ .Values.pipeline2.postgres.name }} {{ .Values.pipeline2.postgres.service.port | default 5432 }}; do
               echo "Waiting for postgres at {{ .Values.pipeline2.postgres.name }}:{{ .Values.pipeline2.postgres.service.port | default 5432 }}..."
               sleep 2
             done
+            {{- else }}
+            until nc -z {{ .Values.postgres.name }} {{ .Values.postgres.service.port | default 5432 }}; do
+              echo "Waiting for postgres at {{ .Values.postgres.name }}:{{ .Values.postgres.service.port | default 5432 }}..."
+              sleep 2
+            done
+            {{- end }}
             echo "PostgreSQL is ready!"
       containers:
         - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.api.tag | default .Chart.AppVersion }}"
@@ -83,8 +90,12 @@ spec:
               value: "2"
           envFrom:
             - secretRef:
+                {{- if and .Values.pipeline2.create .Values.pipeline2.postgres.create }}
                 name: {{ .Values.pipeline2.postgres.secrets.name }}
-          resources: {} 
+                {{- else }}
+                name: {{ .Values.postgres.secrets.name }}
+                {{- end }}
+          resources: {}
 ---
 apiVersion: v1
 kind: Service
@@ -103,6 +114,3 @@ spec:
     #   name: graphics-api
   selector:
     app: {{ .Values.api.name }}
-
-
-

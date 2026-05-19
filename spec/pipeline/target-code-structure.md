@@ -4,7 +4,7 @@ Reference: [pipeline-rebuild-spec.md](./pipeline-rebuild-spec.md)
 
 ---
 
-## Delivered Directory Layout (as of 2026-05-08, REVISION 17)
+## Delivered Directory Layout (as of 2026-05-18)
 
 ```
 services/pipeline2/
@@ -25,8 +25,8 @@ services/pipeline2/
 ├── migrations/
 │   ├── 001_initial_schema.sql  # Committed static SQL schema (all tables)
 │   ├── 002_add_notable_risk.sql # ALTER TABLE ProposalDetails ADD COLUMN IF NOT EXISTS
-│   └── 003_nullable_csv_pks.sql # DROP PK constraints on ConsultationRequest + SuggestedChanges
-│                               # (source data has all-NULL PKs; matches legacy ctmd-db schema)
+│   └── 003_nullable_csv_pks.sql # DROP PK constraints on ConsultationRequest +
+│                               # SuggestedChanges (source data has all-NULL PKs)
 │
 ├── transformer/
 │   ├── __init__.py
@@ -39,8 +39,7 @@ services/pipeline2/
 │
 ├── scripts/
 │   ├── compare_tables.py       # Intersection-based comparison vs old pipeline output
-│   └── migrate_csv_tables.py   # One-time migration: copies CSV-managed tables from
-│                               # ctmd-db → ctmd-db2; --dry-run support
+│   └── migrate_csv_tables.py   # One-time migration: CSV-managed tables ctmd-db → ctmd-db2
 │
 └── tests/
     ├── __init__.py
@@ -49,6 +48,15 @@ services/pipeline2/
     ├── test_transforms.py       # 36 tests: field transformation functions
     ├── test_loader.py           # 27 tests: bulk load and transaction safety
     └── test_server.py           # 31 tests: Flask API endpoints (injectable FakeQueue)
+
+services/frontend/
+└── src/
+    └── setupProxy.js            # CRA dev-server proxy: /api → :3030, /data → :5000
+                                 # Mirrors nginx rules; enables hot-reload dev workflow
+
+helm-charts/ctmd-dashboard/templates/
+└── api.yaml                     # Init container + envFrom conditional on
+                                 # pipeline2.postgres.create (fixes local KiND dev)
 ```
 
 ---
@@ -80,6 +88,17 @@ just clear, readable Python.
 All database interaction: migration runner, COPY-based bulk load, transaction
 management. Uses `psycopg2.sql.Identifier()` for all table/column names.
 
+### `scripts/`
+Ops and maintenance utilities. Not part of the runtime pipeline.
+
+- `compare_tables.py` — validates pipeline2 output against old pipeline
+- `migrate_csv_tables.py` — one-time pre-cutover data migration (run once; already done in prod)
+
+### `frontend/src/setupProxy.js`
+CRA dev-server configuration. Automatically loaded by `react-scripts start` — no
+import needed. Proxies `/api/*` and `/data/*` to locally port-forwarded backends,
+enabling hot-reload development without rebuilding the Docker image.
+
 ---
 
 ## Decommissioned: Old Pipeline
@@ -95,4 +114,6 @@ services/pipeline/
 └── utils.py                    ← Replaced by redcap_importer/
 ```
 
-Helm: `pipeline.create: false` — pod terminated, CPU quota freed. The old database (`ctmd-db`) is still running as a fallback but has no active service connections. All data now lives in `ctmd-db2`.
+Helm: `pipeline.create: false` — pod terminated, CPU quota freed. The old database
+(`ctmd-db`) is retained as a fallback but has no active service connections. All
+data now lives in `ctmd-db2`.
