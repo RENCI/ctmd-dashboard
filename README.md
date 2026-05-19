@@ -127,21 +127,40 @@ make kind-load-pipeline2
 
 Instead of rebuilding the image on every change, run the CRA dev server locally. Changes are visible in the browser in **under a second** via hot module replacement — no image rebuild, no pod restart.
 
-**Terminal 1** — port-forward the backend services from your cluster:
-```bash
-make dev-services
-# forwards ctmd-api → localhost:3030 and ctmd-pipeline2 → localhost:5000
-```
-
-**Terminal 2** — start the dev server:
-```bash
-make dev-ui
-# CRA dev server at http://localhost:3000 with HMR
-```
-
-`src/setupProxy.js` mirrors the nginx proxy rules from the helm chart:
+`src/setupProxy.js` proxies the same paths nginx handles in prod:
 - `/api/*` → `http://localhost:3030` (ctmd-api)
 - `/data/*` → `http://localhost:5000` (ctmd-pipeline2)
+
+**Option A — forward both services from prod/stage** (`KUBECONFIG` must point to a cluster where `pipeline2` is deployed):
+```bash
+# Terminal 1
+export KUBECONFIG=/path/to/your/kubeconfig
+make dev-services          # forwards ctmd-api :3030 + ctmd-pipeline2 :5000
+
+# Terminal 2
+make dev-ui
+```
+
+**Option B — local KiND + separate pipeline2 forward** (default KiND does not deploy `pipeline2`):
+```bash
+# Terminal 1 — API from local KiND
+make dev-api
+
+# Terminal 2 — pipeline2 from prod or stage (read-only real data)
+export KUBECONFIG=/path/to/your/kubeconfig
+make dev-pipeline2                      # prod (ctmd namespace)
+make dev-pipeline2 NAMESPACE=ctmd-stage # or stage
+
+# Terminal 3
+make dev-ui
+```
+
+Proxy targets can be overridden via env vars:
+```bash
+API_PROXY_TARGET=http://localhost:3030 DATA_PROXY_TARGET=http://localhost:5000 make dev-ui
+```
+
+> ⚠️ When forwarding prod/stage services, treat all data as **read-only**. CSV uploads and sync triggers will affect the real database.
 
 ### CI/CD
 
