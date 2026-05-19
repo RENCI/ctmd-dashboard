@@ -56,7 +56,7 @@ frontend:
     name: http
   env:
     REACT_APP_API_ROOT: "http://ctmd-api:3030/" # specify the location of api endpoint service
-    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline:5000/" # specify the location of the pipeline service
+    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline2:5000/" # specify the location of the pipeline service
   resources:
     limits:
       cpu: 500m
@@ -156,9 +156,9 @@ redis:
       memory: 300Mi
 
 pipeline2:
-  create: false  # Set to true to deploy pipeline2 alongside pipeline (blue/green mode)
+  create: true  # Active pipeline (Scala/Spark pipeline is decommissioned)
   name: ctmd-pipeline2
-  tag: "v0.1.0"
+  tag: "v0.1.11"
   service:
     port: 5000
   resources:
@@ -175,16 +175,12 @@ pipeline2:
     persistence:
       create: true
       existingClaim: "db-backups-pipeline2-pvc"
-  # Blue/green dedicated database for pipeline2.
-  # Set postgres.create: true to give pipeline2 its own PostgreSQL instance,
-  # independent of the shared ctmd-db. Recommended for zero-downtime cutover:
-  #   1. Deploy with postgres.create: true — pipeline2 gets fresh isolated DB
-  #   2. Verify sync completes and data looks correct
-  #   3. Switch frontend REACT_APP_DATA_API_ROOT to http://ctmd-pipeline2:5000/
-  #   4. Decommission old pipeline (pipeline.create: false)
-  # Set postgres.create: false to share the existing ctmd-db (staging / shared-DB mode).
+  # Dedicated database for pipeline2 (ctmd-db2).
+  # All services now connect exclusively to ctmd-db2. The old ctmd-db is retained
+  # as a fallback with no active service connections.
+  # Set postgres.create: false only for local dev where you want to skip DB provisioning.
   postgres:
-    create: false
+    create: true
     name: ctmd-db2
     tag: "17-alpine"
     publicRepository: true
@@ -237,7 +233,7 @@ pipeline2:
     USE_SPARK_ETL: "0"           # rollback flag; 0 = use Python pipeline
 
 pipeline:
-  create: true
+  create: false  # Decommissioned — replaced by pipeline2
   name: ctmd-pipeline
   tag: "v3.1.2"
   service:
