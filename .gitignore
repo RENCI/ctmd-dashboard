@@ -4,6 +4,7 @@ pgdata
 db/data
 .values.yaml
 .values-stage.yaml
+.values-ashe.yaml
 
 #api
 node_modules

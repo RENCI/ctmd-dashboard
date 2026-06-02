@@ -48,9 +48,17 @@ spec:
       labels:
         app: {{ .Values.pipeline2.name }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
       - name: wait-for-postgres
         image: busybox:1.36
+        {{- with .Values.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - 'sh'
           - '-c'
@@ -70,6 +78,10 @@ spec:
       containers:
       - image: "{{ .Values.images.repository }}/{{ .Values.pipeline2.name }}:{{ .Values.pipeline2.tag }}"
         name: {{ .Values.pipeline2.name }}
+        {{- with .Values.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: 5000
         env:

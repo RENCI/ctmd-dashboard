@@ -36,11 +36,19 @@ spec:
       labels:
         app: {{ .Values.api.name }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       # Wait for PostgreSQL to be ready to accept connections
       # Uses netcat (nc) to test TCP connectivity to postgres port
       initContainers:
       - name: wait-for-postgres
         image: busybox:1.36
+        {{- with .Values.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - 'sh'
           - '-c'
@@ -60,6 +68,10 @@ spec:
       containers:
         - image: "{{ .Values.images.repository }}/{{ .Values.api.name }}:{{ .Values.api.tag | default .Chart.AppVersion }}"
           name: {{ .Values.api.name }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: 3030
               # name: api
@@ -95,7 +107,10 @@ spec:
                 {{- else }}
                 name: {{ .Values.postgres.secrets.name }}
                 {{- end }}
-          resources: {}
+          {{- with .Values.api.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 ---
 apiVersion: v1
 kind: Service

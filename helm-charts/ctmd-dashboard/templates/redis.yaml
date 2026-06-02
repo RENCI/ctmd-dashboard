@@ -15,6 +15,10 @@ spec:
       labels:
         app: {{ .Values.redis.name }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       {{- if .Values.redis.publicRepository }}
       - image: redis:{{ .Values.redis.tag }}
@@ -22,6 +26,10 @@ spec:
       - image: {{ .Values.images.repository }}/{{ .Values.redis.name }}:{{ .Values.redis.tag | default .Chart.AppVersion }}
       {{- end }}
         name: {{ .Values.redis.name }}
+        {{- with .Values.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: 6379
         resources: {}
