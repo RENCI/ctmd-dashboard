@@ -17,17 +17,38 @@ images:
 serviceAccounts:
   create: false
   annotations: {}
-  
+
 networkPolicies:
-  create: false 
+  create: false
 
 securityContext:
-  enable: false 
+  enable: false
+
+# Pod-level securityContext applied to every deployment when non-empty.
+# Required on OpenShift, where pods must run inside the project's UID/GID range
+# (e.g. fsGroup: 1001780000 for the ashe ctmd namespace). Leave empty for default k8s.
+podSecurityContext: {}
+
+# Container-level securityContext applied to every container when non-empty.
+# Useful on OpenShift to drop capabilities and assert non-root.
+containerSecurityContext: {}
 
 # Indicate whether this is [production || development] context
 # This value will affect the application configurations globally
 # for the appropriate settings.
 softwareContext: "development"
+
+# OpenShift Route — alternative to .ingress, only rendered when route.create: true.
+# Use this on OpenShift instead of Ingress. Cluster's wildcard cert covers default
+# *.apps.<cluster>.renci.unc.edu hosts; supply a custom host for a vanity DNS.
+route:
+  create: false
+  name: "ctmd-route"
+  host: ""                 # leave blank to use cluster's wildcard *.apps.<cluster>
+  tls:
+    enabled: true
+    termination: edge      # edge | passthrough | reencrypt
+    insecureEdgeTerminationPolicy: Redirect
 
 # Auth service has been removed - authentication now handled directly by API service
 # The API service connects directly to REDCap SSO (see api.env.REDCAP_AUTH_URL below)
@@ -103,7 +124,13 @@ postgres:
   tag: "11.22-alpine"
   # Will use a public docker image of postgres, otherwise uses images.repository/postgres.name.
   publicRepository: true
-  # The port is informational values and 
+  # Public image name (when publicRepository is true). Default is the official "postgres";
+  # set to "bitnami/postgresql" on OpenShift for arbitrary-UID compatibility.
+  image: "postgres"
+  # Where the data PVC is mounted inside the container. Official postgres expects
+  # /var/lib/postgresql/data; bitnami expects /bitnami/postgresql.
+  dataMountPath: "/var/lib/postgresql/data"
+  # The port is informational values and
   # not used to change template currently.
   service:
     port: 5432
@@ -184,6 +211,10 @@ pipeline2:
     name: ctmd-db2
     tag: "17-alpine"
     publicRepository: true
+    # Override for OpenShift: "bitnami/postgresql" supports arbitrary UIDs.
+    image: "postgres"
+    # Bitnami expects /bitnami/postgresql; official postgres expects /var/lib/postgresql/data.
+    dataMountPath: "/var/lib/postgresql/data"
     service:
       port: 5432
     resources:

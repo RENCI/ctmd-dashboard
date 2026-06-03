@@ -55,12 +55,25 @@ spec:
       labels:
         app: {{ .Values.postgres.name | quote }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Values.postgres.name | quote }}
           {{- if .Values.postgres.publicRepository }}
-          image: postgres:{{ .Values.postgres.tag }}
+          image: {{ .Values.postgres.image | default "postgres" }}:{{ .Values.postgres.tag }}
           {{- else }}
           image: {{ .Values.images.repository }}/{{ .Values.postgres.name }}:{{ .Values.postgres.tag | default .Chart.AppVersion }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.postgres.pgdataSubdir }}
+          env:
+            - name: PGDATA
+              value: {{ printf "%s/%s" (.Values.postgres.dataMountPath | default "/var/lib/postgresql/data") .Values.postgres.pgdataSubdir | quote }}
           {{- end }}
           envFrom:
             - secretRef:
@@ -69,7 +82,7 @@ spec:
             - containerPort: 5432
           volumeMounts:
             - name: data
-              mountPath: "/var/lib/postgresql/data"
+              mountPath: {{ .Values.postgres.dataMountPath | default "/var/lib/postgresql/data" | quote }}
       volumes:
         - name: data
           persistentVolumeClaim:

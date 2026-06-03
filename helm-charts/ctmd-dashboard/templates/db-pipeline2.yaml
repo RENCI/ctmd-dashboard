@@ -50,12 +50,28 @@ spec:
       labels:
         app: {{ .Values.pipeline2.postgres.name | quote }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Values.pipeline2.postgres.name | quote }}
           {{- if .Values.pipeline2.postgres.publicRepository }}
-          image: postgres:{{ .Values.pipeline2.postgres.tag }}
+          image: {{ .Values.pipeline2.postgres.image | default "postgres" }}:{{ .Values.pipeline2.postgres.tag }}
           {{- else }}
           image: {{ .Values.images.repository }}/{{ .Values.pipeline2.postgres.name }}:{{ .Values.pipeline2.postgres.tag | default .Chart.AppVersion }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.pipeline2.postgres.pgdataSubdir }}
+          env:
+            # Move PGDATA into a subdir of the mount. The mount root is owned
+            # by root (via OpenShift's fsGroup), so initdb's chmod on the root
+            # fails. Using a subdir lets postgres create+own the dir itself.
+            - name: PGDATA
+              value: {{ printf "%s/%s" (.Values.pipeline2.postgres.dataMountPath | default "/var/lib/postgresql/data") .Values.pipeline2.postgres.pgdataSubdir | quote }}
           {{- end }}
           envFrom:
             - secretRef:
@@ -64,7 +80,7 @@ spec:
             - containerPort: 5432
           volumeMounts:
             - name: data
-              mountPath: "/var/lib/postgresql/data"
+              mountPath: {{ .Values.pipeline2.postgres.dataMountPath | default "/var/lib/postgresql/data" | quote }}
           resources:
             limits:
               cpu: {{ .Values.pipeline2.postgres.resources.limits.cpu }}

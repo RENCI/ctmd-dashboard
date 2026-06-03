@@ -1,0 +1,253 @@
+# ============================================================================
+# CTMD Dashboard — OpenShift (ashe) values
+# ----------------------------------------------------------------------------
+# Target cluster: api.ashe-k8s.renci.unc.edu (OpenShift), namespace: ctmd
+# Future DNS:    ctmd.renci.unc.edu  (Route will be configured later)
+#
+# OpenShift constraints that drive this file:
+#   - Project UID/fsGroup range: 1001780000/10000 (1001780000 .. 1001789999)
+#   - SCC restricted-v2: arbitrary UID, no privileged, no host network/PID
+#   - Containers MUST tolerate arbitrary UIDs (we pin fsGroup to namespace range)
+#   - Postgres official image won't run as arbitrary UID → use bitnami/postgresql
+#
+# SECRETS LIVE ELSEWHERE — do not commit credentials to this file.
+#   Create `.values-ashe.yaml` (gitignored) alongside this file with:
+#     pipeline2:
+#       postgres:
+#         secrets:
+#           password: "<strong-password>"
+#       env:
+#         REDCAP_APPLICATION_TOKEN: "<token>"
+#
+# ============================================================================
+# DEPLOY RUNBOOK
+# ----------------------------------------------------------------------------
+#   1. Switch kubeconfig to ashe (oc):
+#        oc login --server=https://api.ashe-k8s.renci.unc.edu:6443
+#        oc project ctmd
+#
+#   2. Render the chart locally first to inspect:
+#        helm template ctmd-dashboard helm-charts/ctmd-dashboard \
+#          -f helm-charts/ctmd-dashboard/values-ashe.yaml \
+#          -f .values-ashe.yaml | less
+#
+#   3. Install:
+#        helm upgrade --install ctmd-dashboard helm-charts/ctmd-dashboard \
+#          -n ctmd \
+#          -f helm-charts/ctmd-dashboard/values-ashe.yaml \
+#          -f .values-ashe.yaml
+#
+#   4. Watch rollout:
+#        oc rollout status deploy/ctmd-db2 -n ctmd
+#        oc rollout status deploy/ctmd-pipeline2 -n ctmd
+#        oc rollout status deploy/ctmd-api -n ctmd
+#        oc rollout status deploy/ctmd-frontend -n ctmd
+#
+#   5. Data sync (no copy from sterling — pipeline2 pulls fresh from REDCap):
+#      On first start with CREATE_TABLES=1, pipeline2 runs migrations and the
+#      scheduler triggers a REDCap sync within SYNC_INTERVAL_HOURS. To force an
+#      immediate sync, hit the service:
+#        oc port-forward svc/ctmd-pipeline2 5001:5000
+#        curl -X POST localhost:5001/sync
+#      Or restart the pipeline2 pod to retrigger the startup logic.
+#
+#   6. Verify data row counts match sterling expectations
+#      (port-forward ashe DB to localhost:5435 to compare with sterling
+#      prod on :5433):
+#        oc port-forward svc/ctmd-db2 5435:5432
+#        psql "postgresql://ctmd-user:<pw>@localhost:5435/postgres" \
+#          -c "SELECT relname, n_live_tup FROM pg_stat_user_tables ORDER BY 1;"
+#
+#   7. When external DNS is ready: flip route.create to true (see below) and
+#      run helm upgrade. Update api.env.DASHBOARD_URL if hostname changes.
+# ============================================================================
+
+images:
+  repository: containers.renci.org/ctmd
+
+softwareContext: "production"
+
+# Pod-level security: pin fsGroup so PVCs are group-owned in the project range,
+# making the volume writable for whatever UID OpenShift assigns from the SCC.
+# runAsNonRoot belongs in containerSecurityContext (below). runAsUser is left
+# unset so OpenShift's SCC assigns one from the project range.
+podSecurityContext:
+  fsGroup: 1001780000
+  fsGroupChangePolicy: "OnRootMismatch"
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container-level: assert non-root, drop ALL caps, no privilege escalation.
+containerSecurityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# --- External exposure ------------------------------------------------------
+# Ingress and Route are both off for now. When ready to wire up DNS:
+#   route:
+#     create: true
+#     host: ctmd.renci.unc.edu
+#     tls:
+#       enabled: true
+#       termination: edge
+#       insecureEdgeTerminationPolicy: Redirect
+ingress:
+  create: false
+route:
+  create: false
+  host: ctmd.renci.unc.edu   # placeholder — flip create to true to enable
+
+# --- Application services ---------------------------------------------------
+frontend:
+  create: true
+  name: ctmd-frontend
+  tag: "v3.1.14"             # matches sterling prod
+  service:
+    port: 3000
+    name: http
+  env:
+    REACT_APP_API_ROOT: "http://ctmd-api:3030/"
+    REACT_APP_DATA_API_ROOT: "http://ctmd-pipeline2:5000/"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+
+api:
+  create: true
+  name: ctmd-api
+  tag: "v3.1.14"             # matches sterling prod
+  service:
+    apiPort: 3030
+    graphicsApiPort: 4040
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  sessionSecret:
+    name: "api-session-secret"
+    value: ""                # auto-generated on first install; persisted by helm.sh/resource-policy=keep
+    existingSecret: ""
+  env:
+    # Update once Route DNS is live:
+    DASHBOARD_URL: "https://ctmd.renci.unc.edu/"
+    REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
+
+# Legacy Scala/Spark pipeline — decommissioned, do not deploy.
+pipeline:
+  create: false
+
+# pipeline2 is the active Python pipeline. It owns its own postgres (ctmd-db2).
+pipeline2:
+  create: true
+  name: ctmd-pipeline2
+  tag: "v0.1.11"             # matches sterling prod
+  service:
+    port: 5000
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  recurringBackup:
+    backupPath: "/backups"
+    storageClass:            # default "basic" on ashe
+    size: "5Gi"
+    persistence:
+      create: true
+      # The chart uses this same name for the PVC it creates AND for the pod's
+      # claimName, so set it explicitly — leaving it blank causes a mismatch
+      # (the deployment defaults to "db-backups-pvc" while the PVC defaults
+      # to "ctmd-pipeline2-backups-pvc"). Matches sterling prod naming.
+      existingClaim: "db-backups-pipeline2-pvc"
+  postgres:
+    create: true
+    name: ctmd-db2
+    # Official postgres:17-alpine works on OpenShift via fsGroup-owned PVC.
+    # Postgres 12+ supports group-readable data dirs (0750); the chown failure
+    # in the entrypoint is non-fatal (|| :) since the volume is already group-owned.
+    # bitnami/postgresql was abandoned — DockerHub tag `17` no longer exists
+    # after Bitnami's August 2025 image policy change.
+    image: "postgres"
+    tag: "17-alpine"
+    publicRepository: true
+    dataMountPath: "/var/lib/postgresql/data"
+    # Postgres writes into a subdir of the mount so its initdb chmod doesn't
+    # try to chmod the mount root (which is owned by root via OpenShift fsGroup).
+    pgdataSubdir: "pgdata"
+    service:
+      port: 5432
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+    secrets:
+      create: true
+      name: db-dsn-pipeline2
+      database: postgres
+      user: ctmd-user
+      # password intentionally blank — supply via .values-ashe.yaml (gitignored)
+      password: ""
+    persistence:
+      create: true
+      existingClaim: ""
+      storageClass:          # default "basic"
+      size: "10Gi"
+  env:
+    # Empty here; populate REDCAP_APPLICATION_TOKEN via .values-ashe.yaml (gitignored).
+    REDCAP_APPLICATION_TOKEN: ""
+    REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
+    DATABASE_URL: ""
+    MAPPING_PATH: "/data/mapping.json"
+    BACKUP_DIR: "/backups"
+    CREATE_TABLES: "1"
+    SYNC_INTERVAL_HOURS: "24"
+    REDIS_QUEUE_HOST: "ctmd-redis"
+    REDIS_QUEUE_PORT: "6379"
+    REDIS_QUEUE_DB: "0"
+    REDIS_LOCK_HOST: "ctmd-redis"
+    REDIS_LOCK_PORT: "6379"
+    REDIS_LOCK_DB: "2"
+    REDIS_LOCK_EXPIRE: "7200"
+    REDIS_LOCK_TIMEOUT: "7200"
+    TASK_TIME: "7200"
+    LOCAL_ENV: "false"       # production: CORS hardened
+    USE_SPARK_ETL: "0"
+
+# Old shared ctmd-db is NOT deployed on ashe — pipeline2 has its own DB and
+# the old pipeline is decommissioned. Keep create:false unless you need a
+# parity-with-sterling fallback DB.
+postgres:
+  create: false
+  name: ctmd-db
+  secrets:
+    create: false        # don't render an orphan db-dsn secret
+
+redis:
+  create: true
+  name: ctmd-redis
+  tag: "7-alpine"            # pinned (sterling uses "latest", drift-prone)
+  publicRepository: true
+  service:
+    port: 6379
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
