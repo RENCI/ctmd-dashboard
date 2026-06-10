@@ -60,6 +60,10 @@ metadata:
   name: {{ .Values.pipeline.name }}
 spec:
   replicas: 1
+  # RWO backup PVC means a RollingUpdate deadlocks on the same volume; same
+  # rationale as pipeline2. See pipeline2.yaml for details.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Values.pipeline.name }}

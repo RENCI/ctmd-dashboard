@@ -40,6 +40,12 @@ metadata:
   name: {{ .Values.pipeline2.name }}
 spec:
   replicas: 1
+  # RWO backup PVC means a RollingUpdate deadlocks: the new pod can't attach
+  # the volume while the old one still holds it. Recreate tears down the old
+  # pod first, releases the PVC, then brings up the new pod. Trade is ~30-60s
+  # of /data/* unavailability per upgrade.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Values.pipeline2.name }}
