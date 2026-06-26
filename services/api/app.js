@@ -178,9 +178,19 @@ app.use('/graphics', require('./routes/graphics'))
 app.use('/auth', require('./routes/auth'))
 
 app.get('/auth_status', (req, res) => {
+  // Prevent browser/proxy caching — stale cached responses cause the frontend
+  // to see an old authenticated=false result even after a successful login.
+  res.set('Cache-Control', 'no-store')
+
   const authInfo = typeof req.session.auth_info === 'undefined' ? {} : req.session.auth_info
-  let statusCode = Object.keys(authInfo).length ? 200 : 401
-  let data = authInfo
+  // Guard: treat non-plain-object auth_info (e.g. a string stored from a bad REDCap response) as empty
+  const safeAuthInfo = (typeof authInfo === 'object' && authInfo !== null && !Array.isArray(authInfo))
+    ? authInfo
+    : {}
+  let statusCode = Object.keys(safeAuthInfo).length ? 200 : 401
+  // Always include authenticated: true in the response when a session exists.
+  // Old sessions may not have this field set, but the frontend requires it.
+  let data = Object.keys(safeAuthInfo).length ? { ...safeAuthInfo, authenticated: true } : safeAuthInfo
   if (process.env.AUTH_ENV === 'development') {
     statusCode = 200
     data = {
@@ -194,7 +204,7 @@ app.get('/auth_status', (req, res) => {
     }
   }
 
-  res.status(statusCode).send(data)
+  res.status(statusCode).json(data)
 })
 
 app.post('/logout', (req, res, next) => {

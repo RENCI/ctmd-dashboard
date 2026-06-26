@@ -7,8 +7,6 @@ const AGENT = new https.Agent({
   rejectUnauthorized: false,
 })
 
-console.log(JSON.stringify(process.env, null, 2))
-
 /**
  * Sanitize authorization code to prevent injection attacks
  * @param {string} code - Authorization code from external provider
@@ -49,11 +47,25 @@ exports.auth = async (req, res) => {
     return res.status(400).send('Invalid authorization code')
   }
 
-  // Skip if already authenticated
-  if (req.session.auth_info) {
-    console.log('User already authenticated, redirecting to dashboard')
+  // Skip if already authenticated with a valid session (proper object with authenticated: true).
+  // Old sessions may have auth_info = "1" (string from REDCap) which is truthy but not a valid
+  // session object — those should fall through to fresh auth so a proper session is created.
+  const hasValidSession = (
+    req.session.auth_info !== null &&
+    req.session.auth_info !== undefined &&
+    typeof req.session.auth_info === 'object' &&
+    !Array.isArray(req.session.auth_info) &&
+    req.session.auth_info.authenticated === true
+  )
+  if (hasValidSession) {
+    console.log(`User already authenticated: ${req.session.auth_info.username || req.session.auth_info.email || 'unknown'}`)
     res.redirect(DASHBOARD_URL)
     return
+  }
+  // Clear any stale/invalid session data so we get a fresh session below
+  if (req.session.auth_info !== undefined) {
+    console.log(`Clearing stale session (auth_info type: ${typeof req.session.auth_info}), proceeding with fresh auth`)
+    req.session.auth_info = undefined
   }
 
   // Validate code with REDCap SSO
@@ -68,12 +80,18 @@ exports.auth = async (req, res) => {
     })
 
     if (response.status === 200) {
-      // REDCap validated the code and returned user info
-      const userData = response.data
+      // REDCap validated the code and returned user info.
+      // Guard: if REDCap returns a non-object (e.g. a plain string like "1"),
+      // userData.authenticated = true would silently fail on the primitive, so
+      // we normalise to a plain object first.
+      const raw = response.data
+      const userData = (typeof raw === 'object' && raw !== null && !Array.isArray(raw))
+        ? raw
+        : {}
       userData.authenticated = true
       req.session.auth_info = userData
 
-      console.log(`User authenticated: ${userData.username || userData.email || 'unknown'}`)
+      console.log(`User authenticated: ${userData.username || userData.email || 'unknown'}, keys: [${Object.keys(userData).join(', ')}]`)
 
       // Redirect to dashboard - user is now logged in
       res.redirect(DASHBOARD_URL)

@@ -14,8 +14,14 @@ data:
   # Use explicitly provided secret value
   session-secret: {{ .Values.api.sessionSecret.value | b64enc | quote }}
   {{- else }}
-  # Auto-generate a random 32-character secret on first install
-  session-secret: {{ randAlphaNum 32 | b64enc | quote }}
+  {{- $secretLookup := lookup "v1" "Secret" .Release.Namespace .Values.api.sessionSecret.name }}
+  {{- $existingValue := "" }}
+  {{- if $secretLookup }}
+  {{- $existingValue = index $secretLookup.data "session-secret" }}
+  {{- end }}
+  # Preserve existing secret across upgrades (lookup); generate on first install only.
+  # randAlphaNum on every upgrade would rotate the secret and invalidate all sessions.
+  session-secret: {{ default (randAlphaNum 32 | b64enc) $existingValue | quote }}
   {{- end }}
 ---
 {{- end }}
