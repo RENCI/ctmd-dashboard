@@ -188,7 +188,9 @@ app.get('/auth_status', (req, res) => {
     ? authInfo
     : {}
   let statusCode = Object.keys(safeAuthInfo).length ? 200 : 401
-  let data = safeAuthInfo
+  // Always include authenticated: true in the response when a session exists.
+  // Old sessions may not have this field set, but the frontend requires it.
+  let data = Object.keys(safeAuthInfo).length ? { ...safeAuthInfo, authenticated: true } : safeAuthInfo
   if (process.env.AUTH_ENV === 'development') {
     statusCode = 200
     data = {
