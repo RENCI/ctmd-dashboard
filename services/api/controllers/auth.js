@@ -7,8 +7,6 @@ const AGENT = new https.Agent({
   rejectUnauthorized: false,
 })
 
-console.log(JSON.stringify(process.env, null, 2))
-
 /**
  * Sanitize authorization code to prevent injection attacks
  * @param {string} code - Authorization code from external provider
@@ -68,12 +66,18 @@ exports.auth = async (req, res) => {
     })
 
     if (response.status === 200) {
-      // REDCap validated the code and returned user info
-      const userData = response.data
+      // REDCap validated the code and returned user info.
+      // Guard: if REDCap returns a non-object (e.g. a plain string like "1"),
+      // userData.authenticated = true would silently fail on the primitive, so
+      // we normalise to a plain object first.
+      const raw = response.data
+      const userData = (typeof raw === 'object' && raw !== null && !Array.isArray(raw))
+        ? raw
+        : {}
       userData.authenticated = true
       req.session.auth_info = userData
 
-      console.log(`User authenticated: ${userData.username || userData.email || 'unknown'}`)
+      console.log(`User authenticated: ${userData.username || userData.email || 'unknown'}, keys: [${Object.keys(userData).join(', ')}]`)
 
       // Redirect to dashboard - user is now logged in
       res.redirect(DASHBOARD_URL)
