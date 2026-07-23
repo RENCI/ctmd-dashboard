@@ -1,6 +1,7 @@
 import React from 'react'
 import MaterialTable from 'material-table'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
+import { ensureColumnWidths } from '../../utils'
 
 export const SitesEnrollmentTable = props => {
     const title = 'SitesEnrollment'
@@ -33,7 +34,7 @@ export const SitesEnrollmentTable = props => {
 
     return (
         <MaterialTable
-            columns={ [
+            columns={ ensureColumnWidths([
                 { title: 'ID', field: 'id', },
                 { title: 'Name', field: 'name', },
                 { title: 'Study', field: 'studyName' },
@@ -42,7 +43,7 @@ export const SitesEnrollmentTable = props => {
                 { title: 'Expected', field: 'expected', type: 'numeric' },
                 { title: 'Percent Enrolled (%)', field: 'percentEnrolled', type: 'numeric' },
                 { title: 'CTSA ID', field: 'ctsaId'}
-            ] }
+            ]) }
             data={ props.data }
             options={{
                 showTitle: false,

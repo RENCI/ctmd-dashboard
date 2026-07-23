@@ -21,6 +21,10 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: process.env.API_PROXY_TARGET || 'http://localhost:3030',
       changeOrigin: true,
+      // nginx uses `location /api/ { proxy_pass http://ctmd-api:3030/; }`, whose
+      // trailing slashes strip the `/api` prefix. Mirror that here so requests
+      // reach the API's real routes (e.g. /api/auth_status -> /auth_status).
+      pathRewrite: { '^/api': '' },
     })
   )
 
@@ -29,6 +33,7 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: process.env.DATA_PROXY_TARGET || 'http://localhost:5000',
       changeOrigin: true,
+      pathRewrite: { '^/data': '' },
     })
   )
 }

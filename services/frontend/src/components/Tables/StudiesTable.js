@@ -4,6 +4,7 @@ import MaterialTable from 'material-table'
 import { SettingsContext, StoreContext } from '../../contexts'
 import { IconButton } from '@material-ui/core'
 import { Assessment as ReportIcon } from '@material-ui/icons'
+import { ensureColumnWidths } from '../../utils'
 
 export const StudiesTable = ({ title, studies, paging }) => {
     const [store, ] = useContext(StoreContext)
@@ -26,7 +27,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
     return (
         <MaterialTable
             title={ title || null }
-            columns={ [
+            columns={ ensureColumnWidths([
                 {
                     title: 'ID', field: 'proposalID',
                     hidden: !settings.tables.visibleColumns.proposalID,
@@ -83,7 +84,7 @@ export const StudiesTable = ({ title, studies, paging }) => {
                     title: 'Funding Period', field: 'fundingPeriod',
                     hidden: !settings.tables.visibleColumns.fundingPeriod,
                 },
-            ] }
+            ]) }
             data={ studies }
             options={{
                 paging: paging,
