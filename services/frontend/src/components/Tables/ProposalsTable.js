@@ -5,6 +5,7 @@ import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
 import { CsvBuilder } from 'filefy'
+import { ensureColumnWidths } from '../../utils'
 
 const headerWithTooltip = (title, tooltip) => (
     <Tooltip title={tooltip} placement='top'>
@@ -59,7 +60,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
         <MaterialTable
             title={ title || null }
             components={{ ...components }}
-            columns={ [
+            columns={ ensureColumnWidths([
                 {
                     title: headerWithTooltip('ID', 'Proposal ID'),
                     field: 'proposalID',
@@ -238,7 +239,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                         field: resource,
                         hidden: !settings.tables.visibleColumns.resources,
                 })
-              ))  
+              )))
             }
             data={ proposals }
             options={{

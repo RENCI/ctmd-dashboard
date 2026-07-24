@@ -1,14 +1,15 @@
 import React from 'react'
 import MaterialTable from 'material-table'
+import { ensureColumnWidths } from '../../utils'
 
 export const LookupTable = ({ title, data }) => {
     const now = new Date()
     return (
         <MaterialTable
-            columns={ [
+            columns={ ensureColumnWidths([
                 { title: 'ID', field: 'id', },
                 { title: 'Name', field: 'name', },
-            ] }
+            ]) }
             data={ data }
             options={{
                 showTitle: false,

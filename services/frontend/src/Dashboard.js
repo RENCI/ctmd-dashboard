@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { AuthContext } from './contexts'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { CssBaseline } from '@material-ui/core'
 import ScrollToTop from './utils/ScrollToTop'
@@ -29,6 +29,7 @@ import {
 } from './views'
 import { RouteChangeTracker } from './RouteChangeTracker'
 
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { Footer } from './components/Footer'
 
 const useStyles = makeStyles((theme) => ({
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = (props) => {
   const classes = useStyles()
   const { authenticated } = useContext(AuthContext)
+  const location = useLocation()
 
   return (
     <div className={classes.layout}>
@@ -69,6 +71,8 @@ const Dashboard = (props) => {
       <main className={classes.main}>
         <CssBaseline />
         <ScrollToTop>
+          {/* Keyed on pathname so a crash on one page is cleared when the user navigates away. */}
+          <ErrorBoundary key={location.pathname}>
           {authenticated && (
             <Routes>
               <Route path="/manage" element={<ManagementPage />} />
@@ -93,6 +97,7 @@ const Dashboard = (props) => {
             </Routes>
           )}
           {!authenticated && <LoginPage />}
+          </ErrorBoundary>
         </ScrollToTop>
       </main>
       <Footer />

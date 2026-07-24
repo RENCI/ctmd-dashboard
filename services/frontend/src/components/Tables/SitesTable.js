@@ -3,6 +3,7 @@ import MaterialTable from 'material-table'
 import { SiteDetailPanel } from './DetailPanels'
 import { EnrollmentBar } from '../Widgets/EnrollmentBar'
 import { computeMetrics } from '../../utils/sites'
+import { ensureColumnWidths } from '../../utils'
 import { StoreContext } from '../../contexts'
 
 export const SitesTable = props => {
@@ -59,7 +60,7 @@ export const SitesTable = props => {
         <MaterialTable
             title={ null }
             columns={
-                [
+                ensureColumnWidths([
                     { title: 'Protocol (Short Description)', field: 'shortDescription', hidden: true, hiddenByColumnsButton: true, },
                     { title: 'Site ID', field: 'siteId', hidden: false, },
                     { title: 'CTSA ID', field: 'ctsaId', hidden: true, hiddenByColumnsButton: true, },
@@ -93,7 +94,7 @@ export const SitesTable = props => {
                     { title: 'Major Protocol deviations per randomized patient', field: 'majorProtocolDeviationsPerRandomizedPtDisplay', hidden: true, hiddenByColumnsButton: true, },
                     { title: 'Number of Queries', field: 'queriesCount', hidden: true, hiddenByColumnsButton: true, },
                     { title: 'Queries per patient', field: 'queriesPerConsentedPatientDisplay', hidden: true, hiddenByColumnsButton: true, },
-                ]
+                ])
             }
             data={ sites }
             options={{
