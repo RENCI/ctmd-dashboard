@@ -15,7 +15,10 @@ from unittest.mock import MagicMock, patch, call
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from server import create_app, _parse_upload, _write_tmpfile, _validate_columns, _read_csv_header
+from server import (
+    create_app, _parse_upload, _write_tmpfile, _validate_columns, _read_csv_header,
+    _coerce_value, _sanitize_rows,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -482,3 +485,65 @@ class TestWriteTmpfile:
             assert "Ångström" in content
         finally:
             os.unlink(path)
+
+
+# ---------------------------------------------------------------------------
+# Upload data sanitization (regression tests for the StudySites upload bug:
+# real-world CSVs with "n/a", spreadsheet floats, and blank cells used to fail
+# COPY asynchronously after the endpoint already returned 200.)
+# ---------------------------------------------------------------------------
+
+class TestCoerceValue:
+    def test_null_tokens_become_empty(self):
+        for dtype in ("date", "bigint", "character varying"):
+            assert _coerce_value("n/a", dtype) == ("", None)
+            assert _coerce_value("N/A", dtype) == ("", None)
+            assert _coerce_value("", dtype) == ("", None)
+            assert _coerce_value("  ", dtype) == ("", None)
+
+    def test_spreadsheet_float_coerced_to_integer(self):
+        assert _coerce_value("186.00", "bigint") == ("186", None)
+        assert _coerce_value("186.0", "integer") == ("186", None)
+        assert _coerce_value("42", "bigint") == ("42", None)
+
+    def test_non_integer_for_integer_column_errors(self):
+        val, err = _coerce_value("186.5", "bigint")
+        assert err is not None
+
+    def test_non_numeric_for_integer_column_errors(self):
+        val, err = _coerce_value("abc", "integer")
+        assert err is not None
+
+    def test_dates_and_strings_pass_through(self):
+        assert _coerce_value("2026-06-15", "date") == ("2026-06-15", None)
+        assert _coerce_value("Mayo Clinic", "character varying") == ("Mayo Clinic", None)
+
+
+class TestSanitizeRows:
+    COL_TYPES = {
+        "siteId": "bigint",
+        "ProposalID": "bigint",
+        "dateContractSent": "date",
+        "patientsConsentedCount": "bigint",
+        "siteName": "character varying",
+    }
+    COLUMNS = ["siteId", "ProposalID", "dateContractSent", "patientsConsentedCount", "siteName"]
+
+    def test_coerces_messy_but_valid_row(self):
+        rows = [["114", "146", "n/a", "186.00", "Indiana University"]]
+        clean, warnings, errors = _sanitize_rows(self.COLUMNS, rows, self.COL_TYPES, ["siteId", "ProposalID"])
+        assert errors == []
+        assert clean == [["114", "146", "", "186", "Indiana University"]]
+
+    def test_skips_row_missing_key(self):
+        rows = [["", "146", "2026-01-01", "10", "No Site ID"]]
+        clean, warnings, errors = _sanitize_rows(self.COLUMNS, rows, self.COL_TYPES, ["siteId", "ProposalID"])
+        assert clean == []
+        assert errors == []
+        assert warnings and "Skipped 1" in warnings[0]
+
+    def test_reports_uncoercible_cell(self):
+        rows = [["114", "146", "2026-01-01", "not-a-number", "Bad Count"]]
+        clean, warnings, errors = _sanitize_rows(self.COLUMNS, rows, self.COL_TYPES, ["siteId", "ProposalID"])
+        assert clean == []
+        assert any("patientsConsentedCount" in e for e in errors)

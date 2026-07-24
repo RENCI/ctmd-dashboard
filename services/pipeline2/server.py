@@ -414,6 +414,108 @@ def _validate_columns(database_url: str, table: str, columns: list) -> list:
     return [f"Unknown column: '{c}'" for c in columns if c not in db_cols]
 
 
+# Column type sanitization -------------------------------------------------
+#
+# Real-world upload CSVs (exported from spreadsheets) contain values Postgres
+# COPY rejects: "n/a" in date columns, "186.00" in integer columns, blank
+# cells, etc. Before this, such a file was enqueued, failed asynchronously
+# during COPY, and the HTTP layer had already returned 200 — so the user saw
+# "File uploaded!" while no data landed. We now coerce these values up front
+# and reject only the rows we genuinely cannot parse, with a clear message.
+
+_INT_TYPES = {"smallint", "integer", "bigint"}
+_FLOAT_TYPES = {"numeric", "double precision", "real"}
+# Tokens that should be treated as NULL/empty regardless of column type.
+_NULL_TOKENS = {"", "n/a", "na", "null", "none", "nan", "-", "."}
+
+
+def _get_column_types(database_url: str, table: str) -> dict:
+    """Return {column_name: data_type} for `table` from information_schema."""
+    conn = psycopg2.connect(database_url, options="-c client_encoding=UTF8")
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT column_name, data_type
+                FROM information_schema.columns
+                WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+                  AND table_name = %s
+                """,
+                (table,),
+            )
+            return {name: dtype for name, dtype in cur.fetchall()}
+    finally:
+        conn.close()
+
+
+def _coerce_value(value, dtype: str):
+    """Coerce one cell to something COPY accepts for `dtype`.
+
+    Returns (coerced_string, error_or_None). Null-like tokens become '' (COPY
+    NULL). Integer columns accept spreadsheet floats like '186.00'. Values that
+    cannot be parsed for a numeric column return an error string.
+    """
+    s = ("" if value is None else str(value)).strip()
+    if s.lower() in _NULL_TOKENS:
+        return "", None
+    if dtype in _INT_TYPES:
+        try:
+            f = float(s)
+        except ValueError:
+            return s, f"'{s}' is not a valid integer"
+        if not f.is_integer():
+            return s, f"'{s}' is not a whole number"
+        return str(int(f)), None
+    if dtype in _FLOAT_TYPES:
+        try:
+            float(s)
+        except ValueError:
+            return s, f"'{s}' is not a valid number"
+        return s, None
+    # date / timestamp / varchar / text / boolean: leave for COPY to parse.
+    return s, None
+
+
+def _sanitize_rows(columns: list, rows: list, col_types: dict, key_columns: list):
+    """Type-coerce upload rows and drop rows missing a key value.
+
+    Returns (clean_rows, warnings, errors). `errors` lists uncoercible cells
+    (capped) so the caller can reject the upload with a helpful message;
+    `warnings` notes rows skipped for an empty key column.
+    """
+    clean_rows, errors = [], []
+    skipped_empty_key = 0
+    key_idx = [columns.index(c) for c in key_columns if c in columns]
+
+    for r_i, row in enumerate(rows):
+        coerced = list(row)
+        row_error = False
+        for c_i, col in enumerate(columns):
+            dtype = col_types.get(col)
+            if dtype is None or c_i >= len(row):
+                continue
+            new_val, err = _coerce_value(row[c_i], dtype)
+            coerced[c_i] = new_val
+            if err and len(errors) < 25:
+                errors.append(f"Row {r_i + 1}, column '{col}': {err}")
+            if err:
+                row_error = True
+        if row_error:
+            continue
+        if any(coerced[i] == "" for i in key_idx):
+            skipped_empty_key += 1
+            continue
+        clean_rows.append(coerced)
+
+    warnings = []
+    if skipped_empty_key:
+        warnings.append(
+            f"Skipped {skipped_empty_key} row(s) missing a value for "
+            f"{' / '.join(key_columns)}."
+        )
+    return clean_rows, warnings, errors
+
+
 # ---------------------------------------------------------------------------
 # Flask app factory
 # ---------------------------------------------------------------------------
@@ -520,6 +622,17 @@ def create_app(database_url: str = None, backup_dir: str = None,
         if errors:
             return json.dumps(errors), 400
 
+        try:
+            col_types = _get_column_types(db_url, tablename)
+            rows, warnings, data_errors = _sanitize_rows(columns, rows, col_types, [])
+        except Exception as e:
+            logger.error("sanitize %s error: %s", tablename, e)
+            col_types, warnings, data_errors = {}, [], []
+        if data_errors:
+            return json.dumps(data_errors), 400
+        for w in warnings:
+            logger.info("upload %s: %s", tablename, w)
+
         tmpfile = _write_tmpfile(columns, rows)
         worker = _replace_table if request.method == "PUT" else _append_table
         job = q.enqueue(worker, tablename, tmpfile, job_timeout=t_time)
@@ -535,6 +648,24 @@ def create_app(database_url: str = None, backup_dir: str = None,
         errors = _validate_columns(db_url, tablename, columns)
         if errors:
             return json.dumps(errors), 400
+
+        # Delete/insert keys off the pair (siteId, ProposalID) when both are
+        # present, so rows missing either key can't be safely upserted.
+        if columnname in ("siteId", "ProposalID") and "siteId" in columns and "ProposalID" in columns:
+            key_columns = ["siteId", "ProposalID"]
+        else:
+            key_columns = [columnname]
+
+        try:
+            col_types = _get_column_types(db_url, tablename)
+            rows, warnings, data_errors = _sanitize_rows(columns, rows, col_types, key_columns)
+        except Exception as e:
+            logger.error("sanitize %s error: %s", tablename, e)
+            warnings, data_errors = [], []
+        if data_errors:
+            return json.dumps(data_errors), 400
+        for w in warnings:
+            logger.info("upload %s.%s: %s", tablename, columnname, w)
 
         tmpfile = _write_tmpfile(columns, rows)
         job = q.enqueue(_update_column, tablename, columnname, tmpfile,

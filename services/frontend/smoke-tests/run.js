@@ -27,10 +27,16 @@ async function main() {
       results.push({ name: test.name, ok: true, ms: Date.now() - started })
       console.log(`  PASS  ${test.name}`)
     } catch (err) {
-      results.push({ name: test.name, ok: false, ms: Date.now() - started, error: err.message, pageErrors })
-      console.log(`  FAIL  ${test.name}`)
-      console.log(`        ${err.message}`)
-      if (pageErrors.length) console.log(`        page errors: ${pageErrors.slice(0, 3).join(' | ')}`)
+      if (err.skip) {
+        results.push({ name: test.name, skipped: true, ms: Date.now() - started })
+        console.log(`  SKIP  ${test.name}`)
+        console.log(`        ${err.message}`)
+      } else {
+        results.push({ name: test.name, ok: false, ms: Date.now() - started, error: err.message, pageErrors })
+        console.log(`  FAIL  ${test.name}`)
+        console.log(`        ${err.message}`)
+        if (pageErrors.length) console.log(`        page errors: ${pageErrors.slice(0, 3).join(' | ')}`)
+      }
     }
     await ctx.close()
   }
@@ -38,8 +44,10 @@ async function main() {
   await browser.close()
 
   const passed = results.filter((r) => r.ok).length
-  console.log(`\n${passed}/${results.length} passed  (target: ${BASE_URL})`)
-  if (passed !== results.length) process.exit(1)
+  const skipped = results.filter((r) => r.skipped).length
+  const failed = results.filter((r) => !r.ok && !r.skipped).length
+  console.log(`\n${passed} passed, ${failed} failed, ${skipped} skipped  (target: ${BASE_URL})`)
+  if (failed > 0) process.exit(1)
 }
 
 main().catch((e) => {

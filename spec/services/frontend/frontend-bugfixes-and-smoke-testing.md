@@ -217,12 +217,19 @@ SMOKE_BASE_URL=http://host:3000 npm test
 ```
 
 - `lib.js` — helpers: `fatalState` (detects a blanked page via the dev overlay
-  or an unmounted `#root`), `toggleAllColumns`, `assert`.
+  or an unmounted `#root`), `toggleAllColumns`, `assert`, `skip` (mark a test
+  skipped when a backend isn't reachable).
 - `tests.js` — one entry per test; add a test by appending to the array.
-- `run.js` — runner, prints pass/fail, exits non-zero on failure.
+- `run.js` — runner, prints pass/fail/skip, exits non-zero only on failure.
 
-Current coverage: Studies list loads with data; column toggle on the Studies
-list, the study report Sites table; Site Metrics CSV has data rows.
+Current coverage:
+- Studies list loads with data; column toggle on the Studies list and the study
+  report Sites table doesn't blank the page; Site Metrics CSV has data rows
+  (ctmd-163).
+- Home "Submissions By Month" renders (not the empty state); proposal data is
+  fresh — newest `dateSubmitted` within `SMOKE_FRESHNESS_DAYS` (default 120),
+  catching a stuck REDCap sync; StudySites upload rejects malformed CSV with a
+  400 instead of silently accepting it (ctmd-165).
 
 ### Planned expansion
 
