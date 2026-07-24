@@ -112,11 +112,14 @@ def _run_worker() -> None:
 def _enqueue_sync(queue: Queue) -> None:
     """Enqueue a REDCap sync job onto the RQ queue."""
     from server import _run_sync
-    database_url = os.environ.get("DATABASE_URL", "")
     mapping_path = os.environ.get("MAPPING_PATH", "/data/mapping.json")
     task_time = int(os.environ.get("TASK_TIME", 3600))
     log.info("Enqueueing scheduled REDCap sync")
-    queue.enqueue(_run_sync, database_url, mapping_path, job_timeout=task_time)
+    # _run_sync(mapping_path) reads DATABASE_URL from the environment itself.
+    # Passing database_url here caused "takes 1 positional argument but 2 were
+    # given", crashing every scheduled sync (server.py:_run_sync signature
+    # changed in e521467 but this caller was missed).
+    queue.enqueue(_run_sync, mapping_path, job_timeout=task_time)
 
 
 # ---------------------------------------------------------------------------

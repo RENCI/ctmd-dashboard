@@ -47,4 +47,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message)
 }
 
-module.exports = { BASE_URL, fatalState, toggleAllColumns, assert }
+/** Signal that a test can't run (e.g. a backend isn't reachable). */
+function skip(message) {
+  const err = new Error(message)
+  err.skip = true
+  throw err
+}
+
+module.exports = { BASE_URL, fatalState, toggleAllColumns, assert, skip }
