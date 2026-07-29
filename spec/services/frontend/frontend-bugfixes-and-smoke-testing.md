@@ -7,6 +7,34 @@
 > - CRA dev-proxy prefix stripping — fixed
 > - Playwright smoke-test harness added at `services/frontend/smoke-tests/` (4 tests, passing)
 
+## Addendum — "Submissions at a Glance" grant year (2026-07-29)
+
+Stakeholders reported the **"This Grant Year"** figure in the *Proposal
+Submissions at a Glance* widget (`components/Widgets/Counts.js`) was too low —
+it should be **10** but showed **4**.
+
+Root cause: the widget bucketed submissions into a **July 1 – June 30 fiscal
+year**, but the CTMD grant year runs **May 1 – April 30**. On 2026-07-29 the
+July window counted only July submissions (4) instead of May 1 → now (10).
+
+Fix: compute the window as May 1 (of this year if month ≥ May, else last year)
+through April 30, with inclusive bounds. Verified live: the widget now shows 10,
+matching a direct DB count of proposals with `dateSubmitted` in
+`2026-05-01 .. 2027-04-30`.
+
+Field validation: `dateSubmitted` maps from REDCap intake field `prop_submit`
+(instrument `admin_review`) — confirmed correct, since the May 1 count matches
+the stakeholders' expected 10 exactly. Only the boundary was wrong.
+
+Guarded by a smoke test that recomputes the grant-year count from
+`/api/proposals` and compares it to the rendered widget value.
+
+Separately noted (not fixed here): the widget's **"Total"** shows 587 while the
+DB holds ~769 proposals, because `/api/proposals` uses INNER JOINs that drop
+proposals lacking a Submitter / ProposalDetails / ProposalFunding /
+therapeuticArea row. If REDCap's "proposals at a glance" total is the full
+count, our Total will read low for the same reason — worth a follow-up.
+
 ## Problem Statement
 
 Two bugs were reported by users and confirmed by developers on the deployed
