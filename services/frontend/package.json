@@ -24,7 +24,7 @@
     "react-csv": "^2.2.2",
     "react-dom": "^18.3.1",
     "react-ga4": "^2.1.0",
-    "react-router-dom": "^6.30.4",
+    "react-router-dom": "^7.18.2",
     "react-scripts": "^5.0.1",
     "webfontloader": "^1.6.28"
   },
@@ -54,7 +54,7 @@
     "picomatch": "^4.0.4",
     "postcss": "^8.5.25",
     "qs": "^6.15.3",
-    "react-router": "^6.30.4",
+    "react-router": "^7.18.2",
     "rollup": "^2.80.0",
     "serialize-javascript": "^7.0.7",
     "shell-quote": "^1.10.0",
