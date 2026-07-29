@@ -11,3 +11,8 @@ import { applyPlugin } from 'jspdf-autotable'
 import { jsPDF } from 'jspdf'
 
 applyPlugin(jsPDF)
+
+// Note: jspdf defines `text` as an own property of each instance (not on
+// jsPDF.API or jsPDF.prototype), so there is no static seam to patch here.
+// The related null-title crash is fixed by giving each exporting table an
+// `exportFileName` option instead -- see the Tables components.

@@ -248,7 +248,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                 exportButton: true,
                 filtering: true,
                 grouping: true,
-                exportFileName: title,
+                exportFileName: title || 'proposals',
                 groupTitle: rowData => {
                     return 'TITLE'
                 },
