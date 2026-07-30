@@ -1,5 +1,6 @@
 const https = require('https')
 const axios = require('axios')
+const { maskCode, describeRedcapError } = require('../utils/helpers')
 
 const REDCAP_AUTH_URL = process.env.REDCAP_AUTH_URL
 const DASHBOARD_URL = process.env.DASHBOARD_URL
@@ -100,7 +101,7 @@ exports.auth = async (req, res) => {
       res.status(response.status).send('Authentication failed')
     }
   } catch (err) {
-    console.error('REDCap authentication error:', err.message)
+    console.error(`REDCap authentication error on /auth (code ${maskCode(code)}): ${describeRedcapError(err)}`)
 
     if (err.code === 'ETIMEDOUT' || err.code === 'ECONNABORTED') {
       res.status(504).send('Authentication provider timeout')
