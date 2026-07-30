@@ -20,7 +20,7 @@ export const LookupTable = ({ title, data }) => {
                 paging: false,
                 // pageSize: 25,
                 // pageSizeOptions: [15, 25, 50, 100, 200],
-                exportFileName: `${ title }__${ now.toISOString() }`,
+                exportFileName: `${ title || 'lookup' }__${ now.toISOString() }`,
             }}
         />
     )
