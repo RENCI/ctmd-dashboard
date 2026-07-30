@@ -5,6 +5,7 @@ import { ProposalDetailPanel } from './DetailPanels'
 import { Check as CheckIcon } from '@material-ui/icons'
 import { Tooltip, TableCell } from '@material-ui/core'
 import { CsvBuilder } from 'filefy'
+import { jsPDF } from 'jspdf'
 import { ensureColumnWidths } from '../../utils'
 
 const headerWithTooltip = (title, tooltip) => (
@@ -12,6 +13,16 @@ const headerWithTooltip = (title, tooltip) => (
         <TableCell className="MTableHeader-header-350">{title}</TableCell>
     </Tooltip>
 )
+
+// Every column here uses headerWithTooltip, so column.title is a React element.
+// material-table's default PDF export does `head: [columns.map(c => c.title)]`,
+// which stringifies those to "[object Object]". Recover the plain label.
+const columnLabel = column => {
+    if (typeof column.title === 'string') return column.title
+    // headerWithTooltip renders <Tooltip><TableCell>{label}</TableCell></Tooltip>
+    const label = column.title?.props?.children?.props?.children
+    return typeof label === 'string' ? label : column.field ?? ''
+}
 
 const exportCsv = (columns, rows) => {
     // determine which headers are visible in the UI.
@@ -36,6 +47,26 @@ const exportCsv = (columns, rows) => {
         .setColumns(columnHeaders)
         .addRows(data)
         .exportFile()
+}
+
+// Mirrors material-table's defaultExportPdf, but with plain-text headers instead
+// of the JSX column titles (which render as "[object Object]").
+const exportPdf = (columns, rows) => {
+    const visibleColumns = columns.filter(column => !column.hidden && column.field)
+    const doc = new jsPDF('landscape', 'pt', 'A4')
+    doc.setFontSize(15)
+    doc.text('proposals', 40, 40)
+    doc.autoTable({
+        startY: 50,
+        head: [visibleColumns.map(columnLabel)],
+        body: rows.map(row =>
+            visibleColumns.map(column => {
+                const value = row[column.field]
+                return value === null || value === undefined ? '' : String(value)
+            })
+        ),
+    })
+    doc.save('proposals.pdf')
 }
 
 export const ProposalsTable = ({ title, proposals, components, ...props }) => {
@@ -253,6 +284,7 @@ export const ProposalsTable = ({ title, proposals, components, ...props }) => {
                     return 'TITLE'
                 },
                 exportCsv: exportCsv,
+                exportPdf: exportPdf,
             }}
             detailPanel={ rowData => <ProposalDetailPanel { ...rowData } />}
             onRowClick={ (event, rowData, togglePanel) => togglePanel() }
