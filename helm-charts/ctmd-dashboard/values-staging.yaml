@@ -134,7 +134,6 @@ postgres:
     # To use default of 1Gi (dev mode) leave blank.
     size: "5Gi"
     
-
 redis:
   create: true
   name: ctmd-redis
@@ -153,57 +152,3 @@ redis:
     requests:
       cpu: 200m
       memory: 300Mi
-
-pipeline:
-  create: true
-  name: ctmd-pipeline
-  tag: "v3.0.2"
-  service:
-    port: 5000
-  resources:
-    limits:
-      cpu: 500m
-      memory: 1024Mi
-    requests:
-      cpu: 200m
-      memory: 300Mi
-  recurringBackup:
-    backupPath: "/backups"
-    storageClass:  # Leave blank for default "standard"
-    size: "5Gi"
-    persistence:
-      # Set to true to create a new PVC, false to use existing PVC
-      create: true
-      # Name of existing PVC to use (only used if create is false)
-      existingClaim: ""
-  config:
-    # The file being referenced is located in ctmd-dashboard/files/ 
-    syntheticDataFile: "syntheticDataset.json"
-    databaseMappingFile: "mapping.json"
-    redcapDataFile: "redcap_data_dictionary_export.json"
-  env:
-    REDCAP_APPLICATION_TOKEN: ""
-    REDCAP_URL_BASE: "https://redcap.vumc.org/api/"
-    AUXILIARY_PATH: "/auxiliary"
-    FILTER_PATH: "/filter"
-    BLOCK_PATH: "/block"
-    RELOAD_SCHEDULE: "0"  # scheduled sync with redcap in production
-    RELOAD_DATABASE: "0"  # wipe or reload db on every new prod instance
-    SCHEDULE_RUN_TIME: "00:00"
-    SERVER: "1"
-    REDIS_QUEUE_HOST: "ctmd-redis"
-    REDIS_QUEUE_PORT: "6379"
-    REDIS_QUEUE_DB: "0"
-    REDIS_LOCK_HOST: "ctmd-redis"
-    REDIS_LOCK_PORT: "6379"
-    REDIS_LOCK_DB: "1"
-    REDIS_LOCK_EXPIRE: "7200"
-    REDIS_LOCK_TIMEOUT: "7200"
-    TASK_TIME: "7200"
-    SPARK_EXECUTOR_MEMORY: "8g"
-    SPARK_DRIVER_MEMORY: "8g"
-    PAUSE: "0"
-    DOWNLOAD_REDCAP_DATA: "0" # use redcap data production and not synthetic
-    CREATE_TABLES: "1" # If deploying to existing db, set to 0
-    GLOBAL_WRITE_PERMISSIONS: "none"
-    LOCAL_ENV: "true" # set to false for production

@@ -368,3 +368,36 @@ See `spec/services/api/session-store-migration-plan.md` for session store contex
 | `BACKUP_DIR` | No | Path B | Directory for pg_dump backup files |
 | `USE_SPARK_ETL` | No | Path A | Set to `1` to fall back to old Spark pipeline |
 | `USE_CSVSQL` | No | Both | Set to `1` to fall back to csvsql loading |
+
+---
+
+## 10. Known Gaps / Future Work
+
+### Offline / synthetic development mode (not yet ported)
+
+The old Scala/Spark pipeline supported a **development mode** (Helm
+`softwareContext: development`) that ran the ETL against **bundled synthetic
+data with no REDCap connection**. It mounted two files as ConfigMaps:
+
+- `helm-charts/ctmd-dashboard/files/syntheticDataset.json` — synthetic proposal records
+- `helm-charts/ctmd-dashboard/files/redcap_data_dictionary_export.json` — a captured REDCap data dictionary (field metadata)
+
+**pipeline2 has not carried this over.** `server._run_sync` always calls the
+live REDCap API for both records (`RedcapDownloader.download_all`) and the data
+dictionary (`content=metadata`); there is no branch to source them from a local
+file, and `LOCAL_ENV` only toggles CORS. Unit tests run offline via inline
+synthetic records + mocks, but the **running service cannot sync without a
+reachable REDCap URL and a valid token**.
+
+The two data files above are intentionally **kept** in the chart for this
+purpose even though nothing currently consumes them.
+
+**TODO — add an offline/synthetic mode to pipeline2** so the service can run for
+local/dev work without REDCap. Suggested approach:
+
+- Env flags, e.g. `REDCAP_RECORDS_FILE` and `REDCAP_DICTIONARY_FILE` (or a single
+  `USE_SYNTHETIC_DATA=1`), that make `_run_sync` load records and the data
+  dictionary from the bundled JSON files instead of calling the REDCap API.
+- Wire the Helm chart (dev values / `softwareContext: development`) to mount the
+  two files and set those env vars, restoring parity with the old pipeline's
+  development mode.

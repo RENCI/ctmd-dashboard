@@ -19,18 +19,16 @@ spec:
   storageClassName: {{ .Values.pipeline2.recurringBackup.storageClass | quote }}
   {{- end }}
 {{- end }}
-{{- if not .Values.pipeline.create }}
 ---
-# When the old pipeline is disabled it no longer creates ctmd-database-mapping.
-# Pipeline2 owns the ConfigMap in that case.
+# Pipeline2 owns the ctmd-database-mapping ConfigMap (the old pipeline that
+# formerly provided it has been decommissioned).
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ctmd-database-mapping
 data:
-  {{ .Values.pipeline.config.databaseMappingFile | default "mapping.json" }}: |-
-{{ .Files.Get (printf "files/%s" (.Values.pipeline.config.databaseMappingFile | default "mapping.json")) | indent 4 }}
-{{- end }}
+  mapping.json: |-
+{{ .Files.Get "files/mapping.json" | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
