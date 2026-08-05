@@ -131,6 +131,40 @@ const tests = [
       )
     },
   },
+  {
+    name: 'Submissions at a Glance: "This Grant Year" uses the May 1 grant year',
+    async run(page) {
+      // The grant year runs May 1 – April 30. Independently compute the count
+      // from the API and compare to the widget, so a regression back to a
+      // July fiscal year (or any wrong boundary) is caught.
+      const now = new Date()
+      const startYear = now.getMonth() >= 4 ? now.getFullYear() : now.getFullYear() - 1
+      const gyStart = `${startYear}-05-01`
+      const gyEnd = `${startYear + 1}-04-30`
+
+      const res = await page.request.get(`${BASE_URL}/api/proposals`)
+      assert(res.ok(), `/api/proposals returned ${res.status()}`)
+      const proposals = await res.json()
+      const expected = proposals.filter(
+        (p) => p.dateSubmitted && gyStart <= p.dateSubmitted && p.dateSubmitted <= gyEnd,
+      ).length
+
+      await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' })
+      await page.waitForTimeout(3000)
+      const shown = await page.evaluate(() => {
+        const label = Array.from(document.querySelectorAll('span')).find(
+          (s) => s.textContent.trim() === 'This Grant Year',
+        )
+        const valueEl = label && label.previousElementSibling
+        return valueEl ? valueEl.textContent.trim() : null
+      })
+      assert(shown !== null, '"This Grant Year" stat not found on Home')
+      assert(
+        Number(shown) === expected,
+        `"This Grant Year" shows ${shown} but the May 1–Apr 30 grant year (${gyStart}..${gyEnd}) has ${expected} — grant-year window is wrong`,
+      )
+    },
+  },
 ]
 
 module.exports = { tests }

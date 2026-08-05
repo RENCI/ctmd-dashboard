@@ -8,6 +8,7 @@ const session = require('express-session')
 const RedisStore = require('connect-redis').default
 const redis = require('redis')
 const axios = require('axios')
+const { maskCode, describeRedcapError } = require('./utils/helpers')
 
 // Config
 const AGENT = new https.Agent({
@@ -108,12 +109,17 @@ app.use(async (req, res, next) => {
           // const userData = response.data
           // userData.authenticated = true
           // req.session.auth_info = userData
+          console.log(`REDCap code accepted for ${req.method} ${req.path} (code ${maskCode(code)})`)
           next()
         } else {
+          console.error(`REDCap code rejected for ${req.method} ${req.path} (code ${maskCode(code)}): status=${response.status}`)
           res.status(response.status).send('Authentication failed')
         }
       } catch (err) {
-        console.error('REDCap authentication error:', err.message)
+        // Log REDCap's actual status + response body (e.g. "Code is invalid")
+        // and which route was being authorized — the graphics embed and login
+        // both hit here, and the body is the only thing that distinguishes why.
+        console.error(`REDCap authentication error for ${req.method} ${req.path} (code ${maskCode(code)}): ${describeRedcapError(err)}`)
 
         if (err.code === 'ETIMEDOUT' || err.code === 'ECONNABORTED') {
           res.status(504).send('Authentication provider timeout')
