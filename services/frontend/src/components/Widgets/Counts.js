@@ -44,15 +44,19 @@ const useStyles = makeStyles(theme => ({
 
 export const Counts = props => {
     const proposals = useProposals()
-    const [FYStartDate, setFYStartDate] = useState()
-    const [FYEndDate, setFYEndDate] = useState()
+    const [grantYearStart, setGrantYearStart] = useState()
+    const [grantYearEnd, setGrantYearEnd] = useState()
     const classes = useStyles()
     const today = new Date()
     const todayYYYYMM = `${ today.getFullYear() }-${ ('0' + (today.getMonth() + 1)).slice(-2) }`
 
     useEffect(() => {
-        setFYStartDate(`${ today.getMonth() > 5 ? today.getFullYear() : today.getFullYear() - 1 }-07-01`)
-        setFYEndDate(`${ today.getMonth() > 5 ? today.getFullYear() + 1 : today.getFullYear() }-06-30`)
+        // The CTMD grant year runs May 1 – April 30. If we're in May (month index 4)
+        // or later, the current grant year started May 1 this calendar year;
+        // otherwise (Jan–Apr) it started May 1 last year.
+        const startYear = today.getMonth() >= 4 ? today.getFullYear() : today.getFullYear() - 1
+        setGrantYearStart(`${ startYear }-05-01`)
+        setGrantYearEnd(`${ startYear + 1 }-04-30`)
     }, [proposals])
 
     return (
@@ -68,8 +72,7 @@ export const Counts = props => {
                         {
                             proposals
                             ? proposals.filter(
-                                // ({ dateSubmitted }) => dateSubmitted && dateSubmitted.substring(0, 4) === todayYYYYMM.substring(0, 4)
-                                ({ dateSubmitted }) => dateSubmitted && FYStartDate < dateSubmitted && dateSubmitted < FYEndDate
+                                ({ dateSubmitted }) => dateSubmitted && grantYearStart <= dateSubmitted && dateSubmitted <= grantYearEnd
                             ).length
                             : <CircularLoader />
                         }

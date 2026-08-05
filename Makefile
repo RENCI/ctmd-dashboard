@@ -8,9 +8,6 @@ UI_TAG := v3.1.2
 API_BASE_IMAGE := ctmd-api
 API_TAG := v3.1.2
 
-PIPELINE_BASE_IMAGE := ctmd-pipeline
-PIPELINE_TAG := v3.1.2
-
 PIPELINE2_BASE_IMAGE := ctmd-pipeline2
 PIPELINE2_TAG := v0.1.0
 
@@ -74,15 +71,6 @@ build-ui:
 	--tag containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 	./services/frontend/
 
-build-pipeline:
-	docker buildx build \
-	--platform=linux/amd64 \
-	--build-arg=BUILD_DATE=$(BUILD_DATE) \
-	--file ./services/pipeline/Dockerfile \
-	--tag rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-	--tag containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-	./services/pipeline/
-
 build-pipeline2:
 	docker buildx build \
 	--platform=linux/amd64 \
@@ -116,16 +104,13 @@ e2e-check:
 benchmark:
 	python services/pipeline2/scripts/benchmark.py $(PIPELINE2_URL)
 
-build-all: build-api build-ui build-pipeline build-pipeline2
+build-all: build-api build-ui build-pipeline2
 
 push-ui:
 	docker push containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG)
 
 push-api:
 	docker push containers.renci.org/ctmd/$(API_BASE_IMAGE):$(API_TAG)
-
-push-pipeline:
-	docker push containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
 
 push-pipeline2:
 	docker push containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG)
@@ -137,10 +122,7 @@ push-ui-dockerhub:
 push-api-dockerhub:
 	docker push rencibuild/$(API_BASE_IMAGE):$(API_TAG)
 
-push-pipeline-dockerhub:
-	dockerhub push rencibuild/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG)
-
-push-all: push-api push-ui push-pipeline push-pipeline2
+push-all: push-api push-ui push-pipeline2
 # ==============================================================================
 ## KiND Kubernetes 
 #
@@ -171,17 +153,12 @@ kind-load-ui:
 	  containers.renci.org/ctmd/$(UI_BASE_IMAGE):$(UI_TAG) \
 		--name $(KIND_CLUSTER)
 
-kind-load-pipeline:
-		kind load docker-image \
-	  containers.renci.org/ctmd/$(PIPELINE_BASE_IMAGE):$(PIPELINE_TAG) \
-		--name $(KIND_CLUSTER)
-
 kind-load-pipeline2:
 	kind load docker-image \
 	  containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
 		--name $(KIND_CLUSTER)
 
-kind-load: kind-load-ui kind-load-api kind-load-pipeline kind-load-pipeline2
+kind-load: kind-load-ui kind-load-api kind-load-pipeline2
 
 # =======================================================
 ## Helm

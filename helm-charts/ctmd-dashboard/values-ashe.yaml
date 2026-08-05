@@ -142,11 +142,6 @@ api:
     DASHBOARD_URL: "https://ctmd.renci.unc.edu/"
     REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
 
-# Legacy Scala/Spark pipeline — decommissioned, do not deploy.
-pipeline:
-  create: false
-
-# pipeline2 is the active Python pipeline. It owns its own postgres (ctmd-db2).
 pipeline2:
   create: true
   name: ctmd-pipeline2

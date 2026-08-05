@@ -49,12 +49,13 @@ ctmd-pipeline2 (Flask) ──► ctmd-db2
 
 ### Decommissioned
 
-The old pipeline (`services/pipeline/`) is fully decommissioned:
+The old pipeline (formerly `services/pipeline/`) is fully decommissioned and its
+source has been removed from the repository (along with its CI workflow):
 
 | Component | Status |
 |-----------|--------|
-| Scala/Spark ETL (`map-pipeline`) | Removed — `pipeline.create: false` |
-| Haskell schema generator (`map-pipeline-schema`) | Removed |
+| Scala/Spark ETL (`map-pipeline`) | Removed — source deleted; `pipeline.create: false` |
+| Haskell schema generator (`map-pipeline-schema`) | Removed — source deleted |
 | Old PostgreSQL (`ctmd-db`) | Running as fallback only; no services write to it |
 | `csvsql` / `csvkit` | Replaced by psycopg2 COPY |
 
