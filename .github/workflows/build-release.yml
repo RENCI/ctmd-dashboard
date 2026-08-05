@@ -84,17 +84,6 @@ jobs:
         container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
         container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
 
-    - name: Build-Pipeline
-      uses: ./.github/actions/build-service
-      with:
-        app-name: 'pipeline'
-        tag: '${{ env.SHORT_SHA }}'
-        release-tag: '${{ env.SEMVER }}'
-        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
-        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
-        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
-        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
-
     - name: Build-Pipeline2
       uses: ./.github/actions/build-service
       with:

@@ -2,6 +2,7 @@
   "name": "ctmd-frontend-smoke-tests",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Playwright browser smoke tests for the CTMD dashboard frontend.",
   "scripts": {
     "test": "node run.js",
