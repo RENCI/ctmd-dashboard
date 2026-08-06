@@ -92,6 +92,22 @@
   table.schema td:nth-child(2){color:var(--slate);font-size:.8rem;white-space:nowrap}
   table.schema tr.hi td:first-child{font-weight:700}
   table.schema tr.hi{background:#eaf5f8 !important}
+  .areahead{display:flex;align-items:center;gap:12px;margin:28px 0 8px}
+  .areahead .n{font-family:'Montserrat',sans-serif;font-weight:700;color:#fff;background:var(--blue);border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;flex:none}
+  .areahead h3{margin:0;color:var(--navy);font-size:1.2rem}
+  .areahead .src{color:var(--slate);font-size:.8rem;margin-left:auto;font-style:italic;text-align:right}
+  .req{border:1px solid var(--lt);border-radius:10px;margin:12px 0;overflow:hidden;background:#fff;box-shadow:0 1px 6px rgba(20,56,95,.04)}
+  .req-head{background:var(--navy);color:#fff;padding:9px 15px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .req-head .id{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.7rem;background:var(--cyan);color:#08323b;border-radius:4px;padding:2px 8px}
+  .req-head .t{font-family:'Montserrat',sans-serif;font-weight:600;font-size:.98rem}
+  .req-head .tk{margin-left:auto;font-size:.7rem;color:#bcd6e4;font-family:'SFMono-Regular',monospace}
+  .req-body{padding:11px 16px;display:grid;grid-template-columns:108px 1fr;gap:7px 14px;font-size:.9rem}
+  .req-body dt{font-family:'Montserrat',sans-serif;font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--slate);padding-top:2px}
+  .req-body dt.want{color:var(--blue)}
+  .req-body dd{margin:0}
+  .req .src{color:var(--slate);font-size:.8rem;font-style:italic}
+  .req .q{color:#a85c1a}
+  @media(max-width:720px){.req-body{grid-template-columns:1fr}.req-body dt{padding-top:8px}}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:720px){.grid2{grid-template-columns:1fr}header.hero h1{font-size:1.6rem}}
 
@@ -118,6 +134,7 @@
 
 <nav class="toc">
   <div class="wrap">
+    <a href="#requests"><b>Requests → data → code</b></a>
     <a href="#reproduce">Reproduce</a>
     <a href="#model">Data model</a>
     <a href="#cycle">TIN Cycle</a>
@@ -132,6 +149,206 @@
 
   <section id="intro">
     <p class="lead">Every claim in the change-request spec is backed by a query against the live CTMD database (<code class="inline">ctmd-db2</code>) or a specific line in the frontend/API code. This report lays those out end-to-end: the exact SQL/JS that was run, the results returned, and the files that implement each chart — so a human reviewer can independently re-run the investigation and arrive at the same conclusions.</p>
+  </section>
+
+  <section id="requests">
+    <h2>Change requests → data → code</h2>
+    <p class="lead">Every atomic ask extracted from the two source documents (the July 17 brainstorming doc and the TIN Metrics Chart Reference deck), grouped by the chart it targets. Each is written as a mini-ticket: <b>what TIN wants to see</b>, <b>how our data looks</b> today, <b>which code changes</b>, any <b>open question</b>, and the matching draft ticket. Follow the “→” links to the backing evidence lower in this report.</p>
+
+    <!-- AREA A -->
+    <div class="areahead"><span class="n">A</span><h3>Every chart — export</h3><span class="src">docx · “HOME PAGE VISUALIZATION UPDATES”</span></div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">A1</span><span class="t">Export the filtered visual / data from any chart</span><span class="tk">CTMD-Q34-50 / 51</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>A way to export the <b>currently-filtered</b> data (and ideally the chart image) from every chart. <span class="src">docx: “To all Charts: Add a way to export the filtered visual/data.”</span></dd>
+        <dt>In our data</dt><dd>Filters operate on the proposals already in the store; no new data needed. <b>None of the Home charts export today</b>; CSV patterns exist elsewhere (<code class="inline">SiteMetricsDownload</code>, material-table <code class="inline">exportButton</code>). <a href="#model">→ Data model</a></dd>
+        <dt>Code</dt><dd>Add an export control to each Home widget (ProposalsByTic, ProposalsByMonth, DayStats, ResourceMetrics, Counts); reuse <code class="inline">react-csv</code>/<code class="inline">filefy</code>. <a href="#code">→ Code to change</a></dd>
+      </dl>
+    </div>
+
+    <!-- AREA B -->
+    <div class="areahead"><span class="n">B</span><h3>Proposals by Application Status</h3><span class="src">docx + deck slides 2–4 · component <code>ProposalsByTic.js</code></span></div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B1</span><span class="t">Filter by TIN Cycle (1.0 / 2.0)</span><span class="tk">CTMD-Q34-10 · dep -1</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Filter/compare the chart by TIN Cycle. <span class="src">docx: “Filter Options: TIN Cycle — Cycle 1: JHU-Tufts TIC, DUKE/VUMC TIC, University of Utah TIC; Cycle 2: JHU TIC, VUMC TIC.” Slides 2–3.</span></dd>
+        <dt>In our data</dt><dd><b>No <code class="inline">cycle</code> field</b> — derived from <code class="inline">assignToInstitution</code>. Cycle 1 = JHU/Tufts + Duke/VUMC + Utah; Cycle 2 = JHU + VUMC. <a href="#cycle">→ Finding 1</a></dd>
+        <dt>Code</dt><dd>Add filter to <code class="inline">ProposalsByTic.js</code>; needs a shared cycle→TIC lookup (Foundation). <a href="#code">→ Code §1</a></dd>
+        <dt>Open Q</dt><dd class="q">Where do VUMC RIC (160 proposals) and NCATS sit?</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B2 · B3</span><span class="t">Filter by Active / Completed</span><span class="tk">CTMD-Q34-10 · dep -2</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Toggle the chart to Active vs Completed proposals. <span class="src">docx &amp; slide 2: “Filter Options: … Active, Completed …”</span></dd>
+        <dt>In our data</dt><dd>Derivable from <code class="inline">proposalStatus</code>, but there is <b>no active/completed flag</b> — it must be classified across the 33 live statuses. <a href="#status">→ Finding 2</a></dd>
+        <dt>Code</dt><dd>Same filter surface as B1; consumes the shared status classification. <a href="#code">→ Code §1</a></dd>
+        <dt>Open Q</dt><dd class="q">Confirm the authoritative status → Active/Completed mapping.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B4</span><span class="t">Filter by Grant Year</span><span class="tk">CTMD-Q34-10</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Filter/compare by Grant Year. <span class="src">docx &amp; slide 2: “Filter Options: … Grant Year”; slide 3 “Grant Year Comparison”.</span></dd>
+        <dt>In our data</dt><dd>Derived from <code class="inline">Proposal.dateSubmitted</code>; grant year = <b>May 1 – Apr 30</b> (already implemented in <code class="inline">Counts.js</code>). <a href="#dates">→ Finding 3</a></dd>
+        <dt>Code</dt><dd>Reuse the exact boundary from <code class="inline">Counts.js</code> (don’t re-derive). <a href="#code">→ Code §4</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B5</span><span class="t">Filter by TIC/RIC, Intake Date &amp; other variables</span><span class="tk">CTMD-Q34-10</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Additional sort/filter variables. <span class="src">docx: “[Other potential available variables to sort by]”; slide 3 “Options: TIN Cycle, TIC/RIC, Grant Year, Intake Date, etc.”</span></dd>
+        <dt>In our data</dt><dd>TIC/RIC = <code class="inline">assignToInstitution</code> ✓. “Intake date” = <code class="inline">dateSubmitted</code> (550/769 populated). Bonus filter options in <code class="inline">StudyProfile</code> (<code class="inline">isPilot</code>, <code class="inline">type</code>, <code class="inline">phase</code>) and <code class="inline">Proposal</code> (HEAL, COVID). <a href="#model">→ Data model</a></dd>
+        <dt>Code</dt><dd>Extend the same filter surface. <a href="#code">→ Code §1</a></dd>
+        <dt>Open Q</dt><dd class="q">Is “intake date” = submission date, or <code class="inline">InitialConsultationDates.FirstContact</code>?</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B6</span><span class="t">Grouping — split into N independently-filterable panels</span><span class="tk">CTMD-Q34-12</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Split the chart into chunks filtered independently, e.g. Cycle 1 vs Cycle 2 side-by-side. <span class="src">docx: “Add Grouping Option to Split chart into chunks…”; slides 3–4 “Number of Groups: 2”, “Stepwise Filtering”.</span></dd>
+        <dt>In our data</dt><dd>No new data — same proposals, rendered into multiple filtered subsets. <a href="#cycle">→ Finding 1</a></dd>
+        <dt>Code</dt><dd><b>Largest sub-item:</b> turns the single chart into a <b>panel of N configurable chart instances</b> sharing filters/classifications (grouping today at <code class="inline">ProposalsByTic.js:100–109</code>). <a href="#code">→ Code §1</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B7</span><span class="t">Status checkboxes (toggle each proposal type on/off)</span><span class="tk">CTMD-Q34-11 · dep -2</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Checkboxes to show/hide individual proposal statuses. <span class="src">docx: “Checkboxes on the proposal types…”; slide 2 “Add Toggle Boxes”; slide 4 example “Only ‘Initial Consult Complete: No Further Support Needed’ checked”.</span></dd>
+        <dt>In our data</dt><dd>33 distinct statuses available to enumerate as checkboxes. <a href="#status">→ Finding 2</a></dd>
+        <dt>Code</dt><dd>Drive visibility from a status set; reconcile the two existing status maps first. <a href="#code">→ Code §1</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B8</span><span class="t">Category presets (Initial/Comprehensive Consults, Pilots, Studies, Resources)</span><span class="tk">CTMD-Q34-11 · dep -2</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>One-click presets that collapse statuses into named groups. <span class="src">docx: “presets … ‘Initial Consults’, ‘Comprehensive Consults’, ‘Pilots’, ‘Full Implementation Studies’, ‘Resources’, etc.”; slide 2 “Collapse Consultation Outcome Categories”.</span></dd>
+        <dt>In our data</dt><dd>Two conflicting, incomplete category maps already exist (<code class="inline">statusMap</code> + <code class="inline">statusGroup</code>). “Pilots”/“Studies” may map more cleanly to <code class="inline">StudyProfile.isPilot</code>/<code class="inline">type</code> than to status. <a href="#status">→ Finding 2</a> · <a href="#model">→ Data model</a></dd>
+        <dt>Code</dt><dd>Consolidate into one shared, complete mapping (Foundation), reconciled with the WG list. <a href="#code">→ Code §1</a></dd>
+        <dt>Open Q</dt><dd class="q">Confirm exact status membership of each preset; status vs StudyProfile as source.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">B9</span><span class="t">Color fixes for readability, by category preset</span><span class="tk">CTMD-Q34-13</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>A clearer color scheme keyed to the category presets. <span class="src">docx: “Color fixes for readability by category preset(?)”.</span></dd>
+        <dt>In our data</dt><dd>Presentational — depends on the preset definitions (B8). <a href="#status">→ Finding 2</a></dd>
+        <dt>Code</dt><dd>Palette mapping in <code class="inline">ProposalsByTic.js</code> once presets are defined. <a href="#code">→ Code §1</a></dd>
+      </dl>
+    </div>
+
+    <!-- AREA C -->
+    <div class="areahead"><span class="n">C</span><h3>Timeline Metrics chart</h3><span class="src">docx + deck slides 5–6 · calc seed in <code>DayStats.js</code></span></div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">C1</span><span class="t">Change chart types (Bar, Box &amp; Whisker) to show outliers</span><span class="tk">CTMD-Q34-20</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Switch the timeline chart between Bar, Box &amp; Whisker, etc. to reveal outliers. <span class="src">docx: “Add ability to change chart types (Bar, Box &amp; Whisker, …)”; slides 5–6 Bar vs Box &amp; Whisker.</span></dd>
+        <dt>In our data</dt><dd>Interval durations already computed in <code class="inline">DayStats.js</code> — but only as <b>avg/median</b>. A box-plot needs the <b>full per-proposal distribution</b>. <a href="#dates">→ Finding 3</a></dd>
+        <dt>Code</dt><dd>Extend the calc to return day-value arrays per interval; render via <code class="inline">@nivo/boxplot</code>. <a href="#code">→ Code §2</a></dd>
+        <dt>Open Q</dt><dd class="q">Grant-stage intervals are sparse (~6–8%) — show N per bar.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">C2 · C3</span><span class="t">Add/remove interval rows &amp; add new intervals</span><span class="tk">CTMD-Q34-21</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>A button to add/remove rows, and more milestone intervals than the defaults. <span class="src">docx: “Button to add/remove rows”, “[Other potential available intervals…]”; slide 5 “Button to add rows”.</span></dd>
+        <dt>In our data</dt><dd>Many milestone dates exist (submission, PAT, initial-consult, grant, funding, site activation) — plenty to offer as selectable interval endpoints. <a href="#model">→ Data model</a></dd>
+        <dt>Code</dt><dd>Make the interval list (milestone pairs) configurable rather than hard-coded. <a href="#code">→ Code §2</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">C4 · C5</span><span class="t">Filter Timeline Metrics by time period &amp; TIN cycle / TIC</span><span class="tk">CTMD-Q34-22</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Filter the timeline by time period and by TIN 1.0/2.0 grants / specific TIC. <span class="src">docx: “Add a filter by time period”; slide 5 “Filter Timeline Metrics by TIN 1.0/2.0 Grants — Show: JHU-Tufts TIC – TIN 1.0”.</span></dd>
+        <dt>In our data</dt><dd>Reuses the cycle/TIC derivation (Finding 1) and <code class="inline">dateSubmitted</code> for the time window. <a href="#cycle">→ Finding 1</a></dd>
+        <dt>Code</dt><dd>Same filter surface + shared cycle map. <a href="#code">→ Code §2</a></dd>
+      </dl>
+    </div>
+
+    <!-- AREA D -->
+    <div class="areahead"><span class="n">D</span><h3>Submissions by Month</h3><span class="src">docx + deck slides 7–8 · component <code>ProposalsByMonth.js</code></span></div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">D1 · D2</span><span class="t">Interval dropdown (Week/Month/Quarter/Year) + flexible bounds</span><span class="tk">CTMD-Q34-30</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Choose the bucket size and set custom start/end. <span class="src">docx: “Dropdown for interval (Week/Month/Quarter/Year)”, “Flexible time bounds”; slide 7 “Submission by: Week / Month / Year”, “Flexible Time bounds”.</span></dd>
+        <dt>In our data</dt><dd>Single source field <code class="inline">Proposal.dateSubmitted</code>; bucketing is client-side date math. <b>219/769 proposals have no submission date</b> and silently drop. <a href="#dates">→ Finding 3</a></dd>
+        <dt>Code</dt><dd>Replace the hard-coded month key (<code class="inline">slice(0,7)</code>) with a selectable bucket; surface the “no-date” count. <a href="#code">→ Code §3</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">D3 · D5</span><span class="t">Compare time periods &amp; filter by cycle / grant-year-to-year</span><span class="tk">CTMD-Q34-31</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Overlay/compare two periods, and filter by TIN 1.0/2.0 and grant-year-to-year. <span class="src">docx: “Add ability to compare time periods”; slides 7–8 “Comparisons Between time-periods”, “Filter … by TIN 1.0/2.0 &amp; by Grant Year-to-Year”.</span></dd>
+        <dt>In our data</dt><dd><code class="inline">dateSubmitted</code> + cycle derivation (Finding 1). <a href="#cycle">→ Finding 1</a></dd>
+        <dt>Code</dt><dd>Add comparison series + cycle/grant-year filters to <code class="inline">ProposalsByMonth.js</code>. <a href="#code">→ Code §3</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">D4</span><span class="t">Axis &amp; format fixes (uncropped points, y-axis labels)</span><span class="tk">CTMD-Q34-32</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Stop cutting off the top dots; add y-axis labels; general format polish. <span class="src">docx: “No cutting off the top of the dots”, “y-axis labels”; slide 8 “Improvements to format and axes”.</span></dd>
+        <dt>In our data</dt><dd>Presentational only. <a href="#model">→ n/a</a></dd>
+        <dt>Code</dt><dd>Contained nivo config (margins, <code class="inline">axisLeft</code>, point size) in <code class="inline">ProposalsByMonth.js</code>. <a href="#code">→ Code §3</a></dd>
+      </dl>
+    </div>
+
+    <!-- AREA E -->
+    <div class="areahead"><span class="n">E</span><h3>Proposal tab</h3><span class="src">docx · no slide reference</span></div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">E1</span><span class="t">Per-proposal progress timeline with step durations</span><span class="tk">CTMD-Q34-40</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>An individual timeline per proposal with calculated durations between all steps. <span class="src">docx: “Individual progress timelines on a per-proposal basis with calculated durations between all steps.”</span></dd>
+        <dt>In our data</dt><dd>Milestone dates exist per proposal (submission, PAT, initial-consult, grant, funding) — but some steps are blank per proposal (coverage varies). <a href="#dates">→ Finding 3</a> · <a href="#model">→ Data model</a></dd>
+        <dt>Code</dt><dd>Reuse <code class="inline">DayStats.js</code> duration logic, per-proposal instead of aggregate. <a href="#code">→ Code §2</a></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">E2</span><span class="t">Aggregate pathways (Sankey) with average timelines</span><span class="tk">CTMD-Q34-41 · spike</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Show how many initial consults → comprehensive → what conclusions, with average timelines. <span class="src">docx: “How best to show aggregate pathways? … Sankey?”</span></dd>
+        <dt>In our data</dt><dd><b>We store only each proposal’s <em>current</em> status, not status history</b> — true transitions aren’t recorded. Pathways would have to be approximated from milestone-date presence. <a href="#status">→ Finding 2</a></dd>
+        <dt>Code</dt><dd>A Sankey component already exists (<code class="inline">proposalsSankey.js</code>) to build on. <a href="#code">→ Code §5</a></dd>
+        <dt>Open Q</dt><dd class="q">Is a status-change history available anywhere (REDCap)? If not, is the approximation acceptable? <b>Spike before committing.</b></dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">E3</span><span class="t">Filter proposals by intake-date bounds</span><span class="tk">CTMD-Q34-42</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Filter the proposal list by an intake-date range. <span class="src">docx: “Filter by intake date bounds.”</span></dd>
+        <dt>In our data</dt><dd><code class="inline">Proposal.dateSubmitted</code> (550/769 populated). <a href="#dates">→ Finding 3</a></dd>
+        <dt>Code</dt><dd>Date-range filter on the proposals collection. <a href="#code">→ Code §3/§4</a></dd>
+        <dt>Open Q</dt><dd class="q">Same “intake date” definition question as B5.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <div class="req-head"><span class="id">E4</span><span class="t">Make proposal data exportable</span><span class="tk">CTMD-Q34-43</span></div>
+      <dl class="req-body">
+        <dt class="want">TIN wants</dt><dd>Export the proposal data shown in CTMD. <span class="src">docx: “Make proposal data shown in CTMD exportable.”</span></dd>
+        <dt>In our data</dt><dd>Proposal collection is already in the store; material-table export exists in <code class="inline">ProposalsTable.js</code> (<code class="inline">filefy</code>). <a href="#model">→ Data model</a></dd>
+        <dt>Code</dt><dd>Extend/enable the existing export path. <a href="#code">→ Code (shares A1)</a></dd>
+      </dl>
+    </div>
+
+    <div class="callout key"><span class="label">How to read this</span>The three findings (TIN Cycle, Statuses, Date coverage), the data-model reference, and the code section below are the evidence each card points to. The draft tickets (<code class="inline">CTMD-Q34-xx</code>) and their dependencies are enumerated in the companion spec, <code class="inline">spec/Q3-Q4-change-requests.md</code>, under Epic <b>CTMD-168</b>.</div>
   </section>
 
   <section id="reproduce">
