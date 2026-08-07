@@ -1,10 +1,57 @@
 const D3Node = require("d3-node");
 const d3 = require("d3");
 const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 let d3n;
 const { getProposals } = require("./proposals");
 
-//
+
+// The lockup is inlined rather than referenced so the figures stay
+// self-contained for consumers that embed them as an image. Its "CTMD" is
+// outlined, so it needs no font installed wherever the figure is rendered.
+const lockup = (() => {
+  try {
+    const source = fs.readFileSync(
+      path.join(__dirname, "..", "assets", "renci-ctmd-lockup.svg"),
+      "utf8"
+    );
+    const viewBox = source.match(/viewBox="([^"]*)"/)[1];
+    const [, , viewBoxWidth, viewBoxHeight] = viewBox
+      .split(/[\s,]+/)
+      .map(Number);
+    return {
+      viewBox,
+      aspectRatio: viewBoxWidth / viewBoxHeight,
+      markup: source
+        .replace(/^[\s\S]*?<svg[^>]*>/, "")
+        .replace(/<\/svg>\s*$/, "")
+        // the provenance comment belongs in the asset, not in every response
+        .replace(/<!--[\s\S]*?-->/g, "")
+        .trim(),
+    };
+  } catch (error) {
+    console.error("Could not load the RENCI CTMD lockup:", error);
+    return null;
+  }
+})();
+
+// Draws the RENCI CTMD lockup with its top-left corner at (x, y), scaled so the
+// wordmark stands `height` tall. The branding guide requires clear space of at
+// least half that height on every side, including to the edge of the figure.
+const drawBranding = (svg, { x, y, height }) => {
+  if (!lockup) return;
+
+  svg
+    .append("svg")
+    .attr("class", "branding")
+    .attr("x", x)
+    .attr("y", y)
+    .attr("width", height * lockup.aspectRatio)
+    .attr("height", height)
+    .attr("viewBox", lockup.viewBox)
+    .html(lockup.markup);
+};
 
 // /api/graphics/proposals-by-tic
 
@@ -97,7 +144,10 @@ exports.proposalsByTic = (req, res) => {
 
       const width = 800;
       const height = 400;
-      const margin = { top: 10, right: 10, bottom: 20, left: 110 };
+      // left fits the longest label ("University of Utah TIC", ~133px including
+      // the .5em offset below); labels are right-anchored here, so too small a
+      // value clips them off the left edge rather than wrapping.
+      const margin = { top: 10, right: 10, bottom: 20, left: 145 };
       const legendHeight = 120;
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - legendHeight - margin.top - margin.bottom;
@@ -256,6 +306,11 @@ exports.proposalsByTic = (req, res) => {
         .style("text-anchor", "end")
         .style("dominant-baseline", "central")
         .text((d) => d);
+
+      // The legend occupies its own row above the chart, leaving the top-left
+      // corner empty. x and y are the guide's required clear space: half the
+      // lockup height, measured to the edge of the figure.
+      drawBranding(svg, { x: 19, y: 19, height: 38 });
 
       res.status(200).type("image/svg+xml").send(d3n.svgString());
     })
