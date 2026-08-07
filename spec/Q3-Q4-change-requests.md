@@ -94,10 +94,19 @@ chart must handle small-N gracefully (and probably surface the N per bar).
   pattern to reuse (`react-csv` `CSVLink`, or the `filefy` `CsvBuilder` used in
   `ProposalsTable`).
 - **Scope:** add a consistent "Export" affordance to each chart that outputs
-  **the currently-filtered data** as CSV; optionally a PNG/SVG image export of
-  the chart itself (nivo charts render SVG — image export is a larger add).
-- **Recommendation:** ship **filtered-data CSV** first (small, high value);
-  treat image export as a separate stretch ticket.
+  **the currently-filtered data** as CSV, plus a **chart image** (PNG/SVG).
+- **Image-export lift (assessed 2026-08-07):** the Home charts are all **nivo,
+  rendering SVG** in the DOM (no export tooling installed yet). SVG export is
+  trivial (serialize the `<svg>` + download). PNG is a routine add: a shared
+  "Export image" button using `html-to-image` (`toPng(chartRef)`), reused across
+  the ~5 charts — roughly **a day** for the shared mechanism, near-trivial per
+  chart after. Two details to get right: **embed the chart font** so raster text
+  isn't a fallback, and export at **2× DPI / fixed size** for crisp slides.
+  Server-side rasterization (`sharp`/`resvg`, precedent in `graphics.js`) is
+  possible but unnecessary — client-side is simpler.
+- **Recommendation:** ship **filtered-data CSV** first (small, highest value),
+  then the image export (modest, per the lift above) — deliver both, per the
+  requirement wording "export the filtered *visual/data*."
 
 ### 4.B — Proposals by Application Status (`ProposalsByTic.js` + `graphics.js`)
 
@@ -184,9 +193,12 @@ Data/code mapping:
 - **A Sankey already exists**: `Visualizations/proposalsSankey.js` — evaluate
   whether it can be repurposed for status-pathway flows, or whether "pathway" =
   ordered status transitions, which we **do not currently store** (we only have
-  the *current* status, not status history). **Open question:** is there any
-  status-history/audit source (REDCap status-change log)? Without it, "pathways"
-  must be approximated from milestone-date presence, not true transitions.
+  the *current* status: `protocol_status`, a single dropdown — no history field).
+  **Checked REDCap (2026-08-07):** the audit log *does* record every
+  `protocol_status` change with timestamps, but the CTMD API token returns
+  `403 "you do not have Logging privileges"`. So a genuine transition Sankey is
+  feasible **only if VUMC grants the token Logging export access**; otherwise
+  pathways must be approximated from milestone-date presence.
 - Export reuses §4.A.
 
 ---
@@ -201,8 +213,10 @@ Data/code mapping:
 4. **Preset categories** — confirm the exact status membership of "Initial
    Consults", "Comprehensive Consults", "Pilots", "Full Implementation
    Studies", "Resources" (reconcile with existing `statusMap`/`statusGroup`).
-5. **Aggregate pathways** — is status *history* available anywhere? If not, is a
-   milestone-presence approximation acceptable?
+5. **Aggregate pathways** — *resolved to a decision:* status history lives in
+   REDCap's audit log but the CTMD token lacks Logging export access. Request
+   Logging access from VUMC (→ true transition Sankey), or accept a
+   milestone-presence approximation?
 6. **Export** — data-only CSV sufficient for v1, or is chart-image export required?
 7. **Grant Year** — confirm May 1–Apr 30 boundary applies to all "Grant Year"
    filters (matches the recent `Counts.js` fix).
@@ -250,15 +264,18 @@ workspace, so these are drafted here for paste/import.)
 
 ### EPIC 4 — Proposal tab
 - **CTMD-Q34-40 — Per-proposal progress timeline with step durations**
-- **CTMD-Q34-41 — Aggregate pathways visualization (Sankey)** (spike first —
-  depends on the status-history open question, §5.5)
+- **CTMD-Q34-41 — Aggregate pathways visualization (Sankey)** (blocked on a
+  decision, §5.5: request REDCap **Logging export access** for a true transition
+  Sankey, else build the milestone-presence approximation)
 - **CTMD-Q34-42 — Filter proposals by intake-date bounds**
 - **CTMD-Q34-43 — Export proposal data (CSV)**
 
 ### EPIC 5 — Cross-cutting export
 - **CTMD-Q34-50 — Filtered-data CSV export on all Home charts** (reuse
   `react-csv` / `filefy` pattern)
-- **CTMD-Q34-51 — (Stretch) chart image (PNG/SVG) export**
+- **CTMD-Q34-51 — Chart image (PNG/SVG) export** (shared `html-to-image` button
+  across the nivo charts; ~1 day for the mechanism — embed font, 2× DPI. See
+  §4.A lift note)
 
 ---
 
