@@ -23,7 +23,7 @@ async function main() {
     page.on('pageerror', (e) => pageErrors.push((e.message || '').split('\n')[0]))
     const started = Date.now()
     try {
-      await test.run(page, { fatalState })
+      await test.run(page, { fatalState, pageErrors })
       results.push({ name: test.name, ok: true, ms: Date.now() - started })
       console.log(`  PASS  ${test.name}`)
     } catch (err) {

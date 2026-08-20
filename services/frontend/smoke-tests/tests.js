@@ -1,8 +1,20 @@
 /**
  * Smoke test definitions. Each test receives a Playwright `page` plus helpers
- * and throws on failure. Add new tests by appending to the exported array.
+ * ({ fatalState, pageErrors }) and throws on failure. The exported `tests`
+ * array is assembled from several groups:
+ *
+ *   1. API endpoint coverage   — every GET /api route returns 200 + sane JSON
+ *   2. Parameterized endpoints — the /proposals/:id and /studies/:id family
+ *   3. Non-JSON endpoints      — graphics SVG, CSV templates, auth_status
+ *   4. pipeline2 /data reads   — task queue, backups, table reads (skip if down)
+ *   5. Upload validation       — malformed uploads are rejected (safe: no write)
+ *   6. View render coverage    — every frontend route renders without crashing
+ *   7. Regression tests        — the specific production bugs we fixed
+ *
+ * Groups 1–6 give broad "does every endpoint/view still work" coverage; group 7
+ * locks in past fixes. Add a test by appending to the relevant array below.
  */
-const { BASE_URL, toggleAllColumns, assert, skip } = require('./lib')
+const { BASE_URL, toggleAllColumns, assert, skip, okJson, dataRequest, fatalState } = require('./lib')
 
 // A stuck REDCap sync silently freezes all proposal data (the ctmd-165 bug).
 // If proposals haven't advanced in this many days, either the sync is broken
@@ -10,7 +22,251 @@ const { BASE_URL, toggleAllColumns, assert, skip } = require('./lib')
 // normal operation never flakes; the real incident was ~90 days stale.
 const FRESHNESS_DAYS = Number(process.env.SMOKE_FRESHNESS_DAYS || 120)
 
-const tests = [
+// A proposal id used for the :id-parameterized endpoints and report views.
+// Resolved against live data at runtime (see resolveProposalId); this is only
+// the fallback / preferred value. 146 is a study with many sites.
+const PREFERRED_PROPOSAL_ID = process.env.SMOKE_PROPOSAL_ID || '146'
+
+// Uncaught page exceptions we treat as noise, not failures. ResizeObserver's
+// "loop limit exceeded" is a benign browser warning nivo/material-table trip.
+const IGNORED_PAGE_ERRORS = /ResizeObserver loop/i
+
+/** Pick a real proposal id from live data, preferring PREFERRED_PROPOSAL_ID. */
+async function resolveProposalId(page) {
+  const res = await page.request.get(`${BASE_URL}/api/proposals`)
+  if (!res.ok()) return PREFERRED_PROPOSAL_ID
+  const list = await res.json().catch(() => null)
+  if (!Array.isArray(list) || list.length === 0) return PREFERRED_PROPOSAL_ID
+  const ids = list.map((p) => String(p.proposalID ?? p.ProposalID ?? p.id)).filter((v) => v && v !== 'undefined')
+  return ids.includes(String(PREFERRED_PROPOSAL_ID)) ? PREFERRED_PROPOSAL_ID : ids[0]
+}
+
+// ── 1. API endpoint coverage ────────────────────────────────────────────────
+// [path, { nonEmpty }]. nonEmpty flags the core datasets that must always have
+// rows — an empty result there means a broken sync or field mapping, not a
+// legitimately empty table.
+const API_GET_ENDPOINTS = [
+  ['/api/proposals', { nonEmpty: true }],
+  ['/api/proposals/by-submitted-service', {}],
+  ['/api/proposals/by-status', {}],
+  ['/api/proposals/by-tic', {}],
+  ['/api/proposals/by-organization', {}],
+  ['/api/proposals/by-therapeutic-area', {}],
+  ['/api/proposals/by-date', {}],
+  ['/api/proposals/approved-services', {}],
+  ['/api/proposals/submitted-services', {}],
+  ['/api/proposals/network', {}],
+  ['/api/statuses', { nonEmpty: true }],
+  ['/api/resources', { nonEmpty: true }],
+  ['/api/resources/requested', {}],
+  ['/api/resources/approved', {}],
+  ['/api/pis', {}],
+  ['/api/tics', { nonEmpty: true }],
+  // organizations reads name-table rows for column='submitterInstitution', which
+  // REDCap doesn't code as a lookup — so this is legitimately empty today. Kept
+  // as an endpoint-health check (200 + array), not a data-completeness assertion.
+  ['/api/organizations', {}],
+  ['/api/therapeutic-areas', { nonEmpty: true }],
+  ['/api/sites', {}],
+  ['/api/ctsas', {}],
+  ['/api/studies/studysites', {}],
+]
+
+const apiEndpointTests = API_GET_ENDPOINTS.map(([path, opts]) => ({
+  name: `API: GET ${path}${opts.nonEmpty ? ' returns data' : ' responds'}`,
+  async run(page) {
+    await okJson(page, path, opts)
+  },
+}))
+
+// ── 2. Parameterized (:id) endpoints ────────────────────────────────────────
+// [pathTemplate, label, { nonEmpty }]. `{id}` is substituted with a real id.
+const API_ID_ENDPOINTS = [
+  ['/api/proposals/{id}', 'one proposal', { nonEmpty: true }],
+  ['/api/studies/{id}', 'study profile', { nonEmpty: true }],
+  ['/api/studies/{id}/sites', 'study sites', {}],
+  ['/api/studies/{id}/enrollment-data', 'study enrollment', {}],
+]
+
+const apiIdEndpointTests = API_ID_ENDPOINTS.map(([tmpl, label, opts]) => ({
+  name: `API: GET ${tmpl} (${label})`,
+  async run(page) {
+    const id = await resolveProposalId(page)
+    await okJson(page, tmpl.replace('{id}', id), opts)
+  },
+}))
+
+// ── 3. Non-JSON endpoints: graphics SVG, CSV templates, auth_status ──────────
+const nonJsonTests = [
+  {
+    name: 'API: GET /api/graphics/proposals-by-tic returns an SVG',
+    async run(page) {
+      const res = await page.request.get(`${BASE_URL}/api/graphics/proposals-by-tic`)
+      assert(res.ok(), `graphics endpoint returned HTTP ${res.status()}`)
+      const body = await res.text()
+      assert(/<svg[\s>]/i.test(body), 'graphics endpoint did not return SVG markup')
+    },
+  },
+  {
+    name: 'API: GET /api/auth_status reports an authenticated user (dev mode)',
+    async run(page) {
+      const res = await page.request.get(`${BASE_URL}/api/auth_status`)
+      assert(res.ok(), `auth_status returned HTTP ${res.status()} — start the API with AUTH_ENV=development`)
+      const body = await res.json()
+      assert(body && body.authenticated === true, 'auth_status did not report authenticated:true')
+    },
+  },
+  // Every downloadable CSV template must exist (a 404 breaks the Uploads page).
+  ...['ctsas', 'enrollment', 'sites', 'study-profile', 'study-sites'].map((name) => ({
+    name: `API: GET /api/template/${name} downloads a CSV template`,
+    async run(page) {
+      const res = await page.request.get(`${BASE_URL}/api/template/${name}`)
+      assert(res.ok(), `template ${name} returned HTTP ${res.status()}`)
+      const body = await res.text()
+      assert(body.split(/\r?\n/)[0].includes(','), `template ${name} does not look like CSV (no header row)`)
+    },
+  })),
+]
+
+// ── 4. pipeline2 /data read-only endpoints (skip gracefully if not running) ──
+const dataReadTests = [
+  {
+    name: 'DATA: GET /data/task returns the queue status',
+    async run(page) {
+      const res = await dataRequest(page, 'get', '/data/task')
+      assert(res.ok(), `/data/task returned HTTP ${res.status()}`)
+      const body = await res.json()
+      assert(body && typeof body === 'object', '/data/task did not return an object')
+    },
+  },
+  {
+    name: 'DATA: GET /data/backup lists backups',
+    async run(page) {
+      const res = await dataRequest(page, 'get', '/data/backup')
+      assert(res.ok(), `/data/backup returned HTTP ${res.status()}`)
+      const body = await res.json()
+      assert(Array.isArray(body) || (body && typeof body === 'object'), '/data/backup returned unexpected shape')
+    },
+  },
+  {
+    name: 'DATA: GET /data/table/Sites reads a table as JSON',
+    async run(page) {
+      const res = await dataRequest(page, 'get', '/data/table/Sites')
+      assert(res.ok(), `/data/table/Sites returned HTTP ${res.status()}`)
+      const body = await res.json()
+      assert(Array.isArray(body), '/data/table/Sites did not return an array of rows')
+    },
+  },
+]
+
+// ── 5. Upload validation (safe mutations — a rejected upload writes nothing) ─
+// Each upload endpoint must reject a malformed row with 400, not accept it with
+// 200 and silently drop it (the ctmd-165 failure mode). A 400 means nothing is
+// written to the database, so this is safe to run against real data.
+const UPLOAD_ENDPOINTS = [
+  {
+    label: 'StudySites',
+    path: '/data/table/StudySites/column/siteId',
+    csv: 'siteId,ProposalID,patientsConsentedCount,siteName\n999999,999999,not-a-number,Smoke Test Row\n',
+    offendingColumn: 'patientsConsentedCount',
+  },
+  {
+    label: 'Sites',
+    path: '/data/table/Sites/column/siteId',
+    csv: 'siteId,siteName\nnot-a-number,Smoke Test Site\n',
+    offendingColumn: 'siteId',
+  },
+  {
+    label: 'EnrollmentInformation',
+    path: '/data/table/EnrollmentInformation/column/ProposalID',
+    csv: 'ProposalID,targetEnrollment\n999999,not-a-number\n',
+    offendingColumn: 'targetEnrollment',
+  },
+]
+
+const uploadValidationTests = UPLOAD_ENDPOINTS.map((u) => ({
+  name: `DATA: ${u.label} upload rejects malformed data with 400 (writes nothing)`,
+  async run(page) {
+    const res = await dataRequest(page, 'post', u.path, {
+      multipart: {
+        data: { name: 'smoke.csv', mimeType: 'text/csv', buffer: Buffer.from(u.csv) },
+        'content-type': 'text/csv',
+        user: 'smoke@test',
+        json: '{}',
+        has_comments: 'false',
+      },
+      timeout: 15000,
+    })
+    assert(
+      res.status() === 400,
+      `expected 400 for malformed ${u.label} CSV, got ${res.status()} — bad data may be silently accepted`,
+    )
+    const errors = await res.json().catch(() => ({}))
+    assert(
+      JSON.stringify(errors).includes(u.offendingColumn),
+      `${u.label} error response did not identify the offending column (${u.offendingColumn})`,
+    )
+  },
+}))
+
+// ── 6. View render coverage — every route renders without crashing ───────────
+// [route, label]. Report views that need a real id are handled separately below.
+const VIEW_ROUTES = [
+  ['/', 'Home'],
+  ['/proposals', 'Proposals list'],
+  ['/proposals/organization', 'Proposals by organization'],
+  ['/proposals/tic', 'Proposals by TIC'],
+  ['/proposals/status', 'Proposals by application status'],
+  ['/proposals/therapeutic-area', 'Proposals by therapeutic area'],
+  ['/proposals/date', 'Proposals by date'],
+  ['/proposals/resources-requested', 'Proposals by resources requested'],
+  ['/proposals/resources-approved', 'Proposals by resources approved'],
+  ['/collaborations', 'Collaborations'],
+  ['/studies', 'Studies list'],
+  ['/ctsas', 'CTSAs'],
+  ['/sites', 'Sites'],
+  ['/uploads', 'Uploads'],
+  ['/profile', 'Profile'],
+  ['/manage', 'Management'],
+]
+
+/** Navigate to a route and assert it rendered without blanking or throwing. */
+async function assertViewRenders(page, route, label, pageErrors) {
+  await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(2500)
+  const f = await fatalState(page)
+  assert(!f.devOverlay, `${label} (${route}) shows the dev-server error overlay`)
+  assert(!f.blank, `${label} (${route}) rendered blank (React root only ${f.rootLen} bytes)`)
+  const real = (pageErrors || []).filter((e) => !IGNORED_PAGE_ERRORS.test(e))
+  assert(real.length === 0, `${label} (${route}) threw: ${real.slice(0, 2).join(' | ')}`)
+}
+
+const viewRenderTests = VIEW_ROUTES.map(([route, label]) => ({
+  name: `View: ${label} renders (${route})`,
+  async run(page, { pageErrors }) {
+    await assertViewRenders(page, route, label, pageErrors)
+  },
+}))
+
+const reportViewTests = [
+  {
+    name: 'View: Proposal report renders (/proposals/:id)',
+    async run(page, { pageErrors }) {
+      const id = await resolveProposalId(page)
+      await assertViewRenders(page, `/proposals/${id}`, 'Proposal report', pageErrors)
+    },
+  },
+  {
+    name: 'View: Study report renders (/studies/:id)',
+    async run(page, { pageErrors }) {
+      const id = await resolveProposalId(page)
+      await assertViewRenders(page, `/studies/${id}`, 'Study report', pageErrors)
+    },
+  },
+]
+
+// ── 7. Regression tests — the specific production bugs we fixed ──────────────
+const regressionTests = [
   {
     name: 'Studies list: page loads with data',
     async run(page) {
@@ -94,44 +350,6 @@ const tests = [
     },
   },
   {
-    name: 'StudySites upload rejects malformed data (does not silently accept)',
-    async run(page) {
-      // A CSV with a non-numeric integer cell must be rejected with a clear
-      // error — not accepted with HTTP 200 and then dropped asynchronously.
-      // Safe: a 400 means nothing is written to the database.
-      const csv =
-        'siteId,ProposalID,patientsConsentedCount,siteName\n' +
-        '999999,999999,not-a-number,Smoke Test Row\n'
-      let res
-      try {
-        res = await page.request.post(`${BASE_URL}/data/table/StudySites/column/siteId`, {
-          multipart: {
-            data: { name: 'smoke.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) },
-            'content-type': 'text/csv',
-            user: 'smoke@test',
-            json: '{}',
-            has_comments: 'false',
-          },
-          timeout: 15000,
-        })
-      } catch (e) {
-        skip(`pipeline2 /data not reachable (${e.message.split('\n')[0]}) — port-forward ctmd-pipeline2 to run this`)
-      }
-      if (res.status() === 502 || res.status() === 503 || res.status() === 504) {
-        skip(`pipeline2 /data not reachable (status ${res.status()})`)
-      }
-      assert(
-        res.status() === 400,
-        `expected 400 for malformed CSV, got ${res.status()} — bad data may be silently accepted`,
-      )
-      const errors = await res.json()
-      assert(
-        JSON.stringify(errors).includes('patientsConsentedCount'),
-        'error response did not identify the offending column',
-      )
-    },
-  },
-  {
     name: 'Submissions at a Glance: "This Grant Year" uses the May 1 grant year',
     async run(page) {
       // The grant year runs May 1 – April 30. Independently compute the count
@@ -165,6 +383,17 @@ const tests = [
       )
     },
   },
+]
+
+const tests = [
+  ...apiEndpointTests,
+  ...apiIdEndpointTests,
+  ...nonJsonTests,
+  ...dataReadTests,
+  ...uploadValidationTests,
+  ...viewRenderTests,
+  ...reportViewTests,
+  ...regressionTests,
 ]
 
 module.exports = { tests }
