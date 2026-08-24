@@ -54,4 +54,52 @@ function skip(message) {
   throw err
 }
 
-module.exports = { BASE_URL, fatalState, toggleAllColumns, assert, skip }
+/**
+ * GETs a JSON endpoint through the dev-server proxy and asserts a healthy
+ * response. Returns the parsed body so callers can make further assertions.
+ *   opts.nonEmpty  — require a non-empty array/object (catches a broken sync
+ *                    or field mapping that silently returns []).
+ *   opts.object    — require an object/array payload but allow it to be empty
+ *                    (e.g. one proposal's enrollment data).
+ */
+async function okJson(page, path, opts = {}) {
+  const res = await page.request.get(`${BASE_URL}${path}`)
+  assert(res.ok(), `${path} returned HTTP ${res.status()}`)
+  let body
+  try {
+    body = await res.json()
+  } catch (e) {
+    throw new Error(`${path} did not return valid JSON`)
+  }
+  assert(
+    Array.isArray(body) || (body !== null && typeof body === 'object'),
+    `${path} returned neither an array nor an object`,
+  )
+  if (opts.nonEmpty) {
+    const len = Array.isArray(body) ? body.length : Object.keys(body).length
+    assert(len > 0, `${path} returned empty — expected data (broken sync or field mapping?)`)
+  }
+  return body
+}
+
+/**
+ * Runs a request against the pipeline2 /data service, converting the common
+ * "not port-forwarded" failures (connection refused, or a 502/503/504 from the
+ * dev-server proxy) into a skip rather than a hard failure — /data is optional
+ * for most local runs. Returns the response for further assertions.
+ */
+async function dataRequest(page, method, path, opts) {
+  let res
+  try {
+    res = await page.request[method](`${BASE_URL}${path}`, opts)
+  } catch (e) {
+    skip(`pipeline2 /data not reachable (${(e.message || '').split('\n')[0]}) — port-forward ctmd-pipeline2 to run this`)
+  }
+  const s = res.status()
+  if (s === 502 || s === 503 || s === 504) {
+    skip(`pipeline2 /data not reachable (proxy returned ${s}) — port-forward ctmd-pipeline2 to run this`)
+  }
+  return res
+}
+
+module.exports = { BASE_URL, fatalState, toggleAllColumns, assert, skip, okJson, dataRequest }

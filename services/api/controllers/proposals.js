@@ -421,7 +421,9 @@ exports.approvedServices = (req, res) => {
           newData.push({
             proposal_id: proposal.proposal_id,
             services_approved: [proposal.service_approved],
-            meeting_date: proposal.meeting_date.toDateString(),
+            // Guard: some proposals have no meeting date — don't crash the whole
+            // endpoint (was throwing "Cannot read properties of undefined").
+            meeting_date: proposal.meeting_date ? proposal.meeting_date.toDateString() : null,
           })
         }
       })
@@ -447,7 +449,9 @@ exports.submittedServices = (req, res) => {
           newData.push({
             proposal_id: prop.proposal_id,
             new_service_selection: [prop.new_service_selection],
-            meeting_date: prop.meeting_date.toDateString(),
+            // Guard: some proposals have no meeting date — don't crash the whole
+            // endpoint (was throwing "Cannot read properties of undefined").
+            meeting_date: prop.meeting_date ? prop.meeting_date.toDateString() : null,
           })
         }
       })

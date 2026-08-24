@@ -5,7 +5,9 @@
 > - Blank Site Metrics CSV — fixed
 > - White screen when adding table columns — fixed (crash prevention + error boundary)
 > - CRA dev-proxy prefix stripping — fixed
-> - Playwright smoke-test harness added at `services/frontend/smoke-tests/` (4 tests, passing)
+> - Playwright smoke-test harness added at `services/frontend/smoke-tests/`
+>   — expanded 2026-08-20 to comprehensive coverage of every endpoint and route
+>   (63 tests, passing). See "Coverage" below.
 
 ## Addendum — "Submissions at a Glance" grant year (2026-07-29)
 
@@ -171,44 +173,78 @@ data via the local dev stack (see `services/frontend/smoke-tests/README.md`):
 
 ## Reusable Local Dev Stack
 
-This is the setup used to reproduce and verify the bugs above: the hot-reload
-CRA dev server proxying to a **real API** backed by the **real `ctmd-db2`**
-data in the cluster. It also lets you develop UI changes without rebuilding an
-image, and is the environment the smoke tests run against.
+This is the setup used to reproduce/verify the bugs above **and to run the
+smoke tests**: the hot-reload CRA dev server proxying to a **real API** and
+**real pipeline2**, both backed by the **real `ctmd-db2`** data in the cluster.
+It also lets you develop UI changes without rebuilding an image.
 
-Four pieces run concurrently. Each block is copy-pasteable.
+> **Why run the API locally instead of port-forwarding the `ctmd-api` pod?**
+> The production API has REDCap SSO auth enabled, so every `/api/*` call without
+> a session returns 401. Running it locally with `AUTH_ENV=development` bypasses
+> the auth middleware, which is what lets the smoke tests (and your browser) hit
+> every endpoint. Port-forward the DB and pipeline2 pods; run the API yourself.
 
-**1. Port-forward the database** (`ctmd-db2` — the API and pipeline2 both use it
-via the `db-dsn-pipeline2` secret):
+Five pieces run concurrently. Each block is copy-pasteable.
+
+**0. Cluster access.** The cluster is `sterling`, in your default kubeconfig as
+the `jseals@sterling` context (adjust for your user). You must be on the **RENCI
+VPN**; the OIDC token expires and a stale one returns `403 Forbidden` — just
+re-run any `kubectl` command to trigger the browser re-login.
 
 ```bash
-export KUBECONFIG=/Users/jseals/.kube/sterling
-kubectl port-forward svc/ctmd-db2 -n ctmd 5439:5432
+kubectl config use-context jseals@sterling
+kubectl get ns ctmd          # smoke test: succeeds → you're authed
 ```
 
-**2. Local Redis** for the API session store (any throwaway instance):
+**1. Port-forward the database** (`ctmd-db2` — the API and pipeline2 both use it
+via the `db-dsn-pipeline2` secret). The password lives in that secret; read it
+rather than hardcoding:
+
+```bash
+kubectl port-forward svc/ctmd-db2 -n ctmd 5439:5432
+# In another shell, grab the DB password for step 3:
+kubectl get secret db-dsn-pipeline2 -n ctmd -o jsonpath='{.data.dsn}' | base64 -d
+```
+
+> **Tunnel gotcha:** `kubectl port-forward` drops intermittently ("lost
+> connection to pod"), which will flake a full smoke run. Keep it alive with a
+> reconnect loop:
+> ```bash
+> while true; do kubectl port-forward svc/ctmd-db2 -n ctmd 5439:5432; sleep 1; done
+> ```
+
+**2. Port-forward pipeline2** (`ctmd-pipeline2` — required for the `/data` smoke
+tests and any Uploads/backup/restore/sync page; the `/data` tests **skip**
+cleanly if you omit this):
+
+```bash
+kubectl port-forward svc/ctmd-pipeline2 -n ctmd 5000:5000
+# (same reconnect-loop tip applies)
+```
+
+**3. Local Redis** for the API session store (any throwaway instance):
 
 ```bash
 docker run -d --name ctmd-dev-redis -p 6380:6379 redis:7-alpine
 ```
 
-**3. API in dev mode.** `AUTH_ENV=development` bypasses REDCap SSO — the auth
+**4. API in dev mode.** `AUTH_ENV=development` bypasses REDCap SSO — the auth
 middleware is skipped and `/auth_status` returns a demo user, so pages load
 without a real login:
 
 ```bash
 cd services/api
 POSTGRES_HOST=localhost POSTGRES_PORT=5439 POSTGRES_DB=postgres \
-POSTGRES_USER=ctmd-user POSTGRES_PASSWORD=<db-password> \
+POSTGRES_USER=ctmd-user POSTGRES_PASSWORD=<db-password-from-step-1> \
 AUTH_ENV=development API_PORT=3030 \
 REDIS_HOST=localhost REDIS_PORT=6380 REDIS_SESSION_DB=2 API_SESSION_SECRET=devsecret \
 node app
 ```
 
 Sanity check: `curl localhost:3030/auth_status` returns the demo user, and
-`curl localhost:3030/studies/studysites | head` returns rows.
+`curl localhost:3030/proposals | head -c 100` returns rows.
 
-**4. CRA dev server** (proxies `/api` → :3030, `/data` → :5000 per
+**5. CRA dev server** (proxies `/api` → :3030, `/data` → :5000 per
 `setupProxy.js`; needs the prefix-stripping fix above):
 
 ```bash
@@ -217,23 +253,32 @@ API_PROXY_TARGET=http://localhost:3030 BROWSER=none npm start
 # or: make dev-ui   (from repo root)
 ```
 
-Only port-forward `ctmd-pipeline2` → :5000 as well if you're exercising pages
-that call `/data` (backup/restore/sync). The pages in these bugs use only
-`/api`.
+Sanity check the whole chain through the proxy before running the suite:
+
+```bash
+for e in api/proposals api/statuses api/graphics/proposals-by-tic data/task; do
+  printf '%-32s ' "$e"; curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/$e
+done   # all should be 200
+```
 
 Teardown:
 
 ```bash
 docker rm -f ctmd-dev-redis
-# Ctrl-C the API, dev server, and kubectl port-forward
+# Ctrl-C the API, dev server, and each kubectl port-forward (loop)
 ```
 
 ## Smoke Testing
 
 `services/frontend/smoke-tests/` is a self-contained Playwright harness that
 drives the real UI against real backend data — catching blank pages, broken
-downloads, and crash-on-interaction bugs that unit tests miss. It targets the
-Local Dev Stack above (`http://localhost:3000` by default).
+downloads, and crash-on-interaction bugs that unit tests miss.
+
+**Prerequisite:** bring up the **Reusable Local Dev Stack** above first — the
+suite talks to `http://localhost:3000` and expects `/api` (and, for the `/data`
+group, pipeline2) reachable through the proxy. Run the chain sanity-check
+(step 5) and confirm all `200`s before `npm test`; otherwise you'll get a wall
+of failures that just mean "backend isn't up."
 
 ```bash
 cd services/frontend/smoke-tests
@@ -244,38 +289,74 @@ SMOKE_HEADED=1 npm test        # watch the browser drive
 SMOKE_BASE_URL=http://host:3000 npm test
 ```
 
+Environment knobs:
+
+- `SMOKE_BASE_URL` — target origin (default `http://localhost:3000`); point it
+  at a port-forwarded stage/prod to smoke a deploy.
+- `SMOKE_PROPOSAL_ID` — preferred proposal id for the `:id` endpoints and report
+  views (default `146`); the suite falls back to a real id from live data if it
+  isn't present.
+- `SMOKE_FRESHNESS_DAYS` — max age of the newest proposal before the freshness
+  test fails (default `120`).
+
+The `/data` tests **skip** (not fail) when pipeline2 isn't port-forwarded, so an
+API/UI-only run is still meaningful. A non-zero exit means a real failure.
+
 - `lib.js` — helpers: `fatalState` (detects a blanked page via the dev overlay
-  or an unmounted `#root`), `toggleAllColumns`, `assert`, `skip` (mark a test
-  skipped when a backend isn't reachable).
-- `tests.js` — one entry per test; add a test by appending to the array.
-- `run.js` — runner, prints pass/fail/skip, exits non-zero only on failure.
+  or an unmounted `#root`), `toggleAllColumns`, `okJson` (GET a JSON endpoint,
+  assert 200 + shape), `dataRequest` (call pipeline2 `/data`, skip if it's not
+  port-forwarded), `assert`, `skip`.
+- `tests.js` — data-driven: broad coverage comes from arrays
+  (`API_GET_ENDPOINTS`, `API_ID_ENDPOINTS`, `VIEW_ROUTES`, `UPLOAD_ENDPOINTS`),
+  so adding an endpoint or view is a one-liner. Bespoke checks are `{ name, run }`
+  objects appended to a group.
+- `run.js` — runner, prints pass/fail/skip, exits non-zero only on failure;
+  passes `pageErrors` (uncaught exceptions) into each test.
 
-Current coverage:
-- Studies list loads with data; column toggle on the Studies list and the study
-  report Sites table doesn't blank the page; Site Metrics CSV has data rows
-  (ctmd-163).
-- Home "Submissions By Month" renders (not the empty state); proposal data is
-  fresh — newest `dateSubmitted` within `SMOKE_FRESHNESS_DAYS` (default 120),
-  catching a stuck REDCap sync; StudySites upload rejects malformed CSV with a
-  400 instead of silently accepting it (ctmd-165).
+### Coverage (comprehensive — 63 tests as of 2026-08-20)
 
-### Planned expansion
+The suite now exercises **every endpoint and every frontend route**, grouped as:
 
-The goal is broad frontend regression coverage so UI bugs surface before
-release. Candidate additions:
+1. **API endpoints** — every `GET /api/*` returns 200 + valid JSON. Core
+   datasets (proposals, statuses, tics, therapeutic-areas, resources) must be
+   non-empty (an empty result there means a broken sync or field mapping).
+2. **Parameterized endpoints** — `/proposals/:id`, `/studies/:id`,
+   `/studies/:id/sites`, `/studies/:id/enrollment-data`, using a real proposal
+   id discovered from live data.
+3. **Non-JSON endpoints** — the `graphics/proposals-by-tic` SVG, `auth_status`
+   (dev mode), and all five CSV templates.
+4. **pipeline2 `/data` reads** — `task`, `backup`, `table/Sites`. These *skip*
+   (not fail) when pipeline2 isn't port-forwarded.
+5. **Upload validation** — each upload endpoint (StudySites, Sites,
+   EnrollmentInformation) rejects a malformed row with a 400. Safe against real
+   data: a 400 writes nothing.
+6. **View render** — all 18 routes render without blanking or throwing an
+   uncaught JS error.
+7. **Regression tests** — the specific bugs fixed here: Site Metrics CSV has
+   rows, column toggle doesn't blank, Submissions By Month isn't the empty
+   state, proposal data is fresh (`SMOKE_FRESHNESS_DAYS`, default 120), and
+   "This Grant Year" uses the May 1–Apr 30 boundary.
 
-- **Every list view renders with data**: Proposals, Studies, Sites, CTSAs,
-  Collaborations, Home dashboard charts.
-- **Every material-table**: open the columns menu and toggle all columns
-  without crashing; verify export/CSV buttons produce non-empty files.
-- **Study report page** (`/studies/:id`): profile, milestones, combined metrics,
-  enrollment visualization all render for a study with data and one without.
-- **All downloads**: study reports CSV, site metrics CSV, template downloads —
-  assert non-empty and correct headers.
-- **Filters**: HEAL-only toggle changes result counts; search/filter inputs on
-  tables.
-- **Auth-gated routes**: unauthenticated users see the login page; PL-admin-only
+**Findings surfaced by the first comprehensive run (2026-08-20):**
+- `/proposals/approved-services` and `/proposals/submitted-services` threw a 500
+  (`meeting_date.toDateString()` on proposals with no meeting date) — fixed with
+  a null guard in `controllers/proposals.js`. These routes aren't used by the
+  current frontend, so the crash had gone unnoticed.
+- `/api/organizations` returns `[]` because the `name` table has no
+  `submitterInstitution` mapping (REDCap doesn't code submitter institution as a
+  lookup). The "Proposals by Organization" view renders but without named
+  groups. Left as an endpoint-health check pending a product decision on whether
+  organizations *should* be populated.
+
+### Remaining future work
+
+- **Data-correctness (not just render)** for each grouping view: HEAL-only
+  toggle changes counts; per-group totals reconcile with `/api/proposals`.
+- **Auth-gated behavior**: unauthenticated users see the login page; PL-admin
   links (Uploads, Data Manager) appear only for admins.
-- **No console/page errors** on any route (fail the test on uncaught errors).
-- **CI integration**: run headless against an ephemeral deploy or a
-  port-forwarded stage on PRs to `main`.
+- **CI integration**: run headless against a port-forwarded stage on PRs to
+  `main`.
+
+> Tunnel note: `kubectl port-forward` to `ctmd-db2`/`ctmd-pipeline2` drops
+> intermittently ("lost connection to pod"). For a stable full run, wrap each in
+> a reconnect loop: `while true; do kubectl port-forward …; sleep 1; done`.
