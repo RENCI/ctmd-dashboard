@@ -30,6 +30,10 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{- with .Values.redis.args }}
+        args:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: 6379
         resources: {}
