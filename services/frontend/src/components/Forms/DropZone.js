@@ -70,10 +70,10 @@ export const DropZone = ({ endpoint, method = 'POST', headers = {} }) => {
         }
       }).catch((error) => {
         if(error.response && error.response.data) {
-          let errorMsg = "Error uploading file:"
+          let errorMsg = "Error uploading file:\n"
           let index = 1
-          error.response.data.forEach((elm) => {
-            errorMsg += `\n${index}. ${elm}`
+          error.response.data.forEach((item) => {
+            errorMsg += `\n${index}. ${item}`
             index++
           })
           addFlashMessage({ type: 'error', text: errorMsg })
