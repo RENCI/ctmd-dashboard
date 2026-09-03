@@ -170,3 +170,19 @@ exports.getEnrollmentData = (req, res) => {
       res.status(500).send("There was an error fetching data.");
     });
 };
+
+// /studies/:id/demographics
+// Per-study enrollment demographics in the NIH structure (planned + actual,
+// ethnicity x sex + race x sex). One row per study, or none if not yet uploaded.
+exports.getDemographics = (req, res) => {
+  const proposalId = req.params.id;
+  const query = `SELECT * FROM "EnrollmentDemographics" WHERE "ProposalID" = ${proposalId};`;
+  db.any(query)
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((error) => {
+      console.log("ERROR:", error);
+      res.status(500).send("There was an error fetching data.");
+    });
+};
