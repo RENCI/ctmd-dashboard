@@ -97,14 +97,18 @@ containerSecurityContext:
 ingress:
   create: false
 route:
-  create: false
-  host: ctmd.renci.unc.edu   # placeholder — flip create to true to enable
+  create: true
+  host: ctmd.apps.ashe-k8s.renci.unc.edu   # OpenShift apps wildcard — auto HTTPS via cluster cert
+  tls:
+    enabled: true
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
 
 # --- Application services ---------------------------------------------------
 frontend:
   create: true
   name: ctmd-frontend
-  tag: "v3.1.14"             # matches sterling prod
+  tag: "v3.1.28"             # bumped from v3.1.14 (ASHE upgrade 2026-08)
   service:
     port: 3000
     name: http
@@ -122,7 +126,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "v3.1.14"             # matches sterling prod
+  tag: "v3.1.28"             # bumped from v3.1.14 (ASHE upgrade 2026-08)
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -139,13 +143,13 @@ api:
     existingSecret: ""
   env:
     # Update once Route DNS is live:
-    DASHBOARD_URL: "https://ctmd.renci.unc.edu/"
+    DASHBOARD_URL: "https://ctmd.apps.ashe-k8s.renci.unc.edu/"
     REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
 
 pipeline2:
   create: true
   name: ctmd-pipeline2
-  tag: "v0.1.11"             # matches sterling prod
+  tag: "v3.1.28"             # bumped from v0.1.11 — unifies on release semver; fixes the redis-wait crash
   service:
     port: 5000
   resources:
@@ -237,6 +241,16 @@ redis:
   name: ctmd-redis
   tag: "7-alpine"            # pinned (sterling uses "latest", drift-prone)
   publicRepository: true
+  # Run as a pure in-memory broker (RQ queue + Sherlock lock only — no datastore).
+  # OpenShift's arbitrary UID can't write redis's default RDB dir (/data), so the
+  # default snapshotting fails with MISCONF and redis rejects commands, which
+  # crash-loops pipeline2's redis-wait. Disabling persistence removes all disk I/O.
+  # (Not set on sterling — its redis persists fine as its default user.)
+  args:
+    - "--save"
+    - ""
+    - "--appendonly"
+    - "no"
   service:
     port: 6379
   resources:
