@@ -11,6 +11,8 @@ import { Title, Paragraph } from '../../components/Typography'
 import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
+import { StudyDemographics } from '../../components/Visualizations/StudyDemographics'
+import { SiteContribution } from '../../components/Visualizations/SiteContribution'
 import { Milestones } from './Milestones'
 import { CombinedMetrics } from './CombinedMetrics'
 import { convertBoolToYesOrNo, formatDate } from '../../utils'
@@ -82,6 +84,7 @@ export const StudyReportPage = (props) => {
   const [studyProfile, setStudyProfile] = useState(null)
   const [studySites, setStudySites] = useState(null)
   const [studyEnrollmentData, setStudyEnrollmentData] = useState(null)
+  const [studyDemographics, setStudyDemographics] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [enrollmentRate, setEnrollmentRate] = useState(0.2)
   const [maxEnrollmentRate, setMaxEnrollmentRate] = useState(2)
@@ -133,6 +136,15 @@ export const StudyReportPage = (props) => {
         })
     }
     fetchStudyData(proposalId)
+  }, [])
+
+  // Fetched separately (and kept out of the isLoading gate) so a study with no
+  // demographics — or an older API without the endpoint — never blocks the report.
+  useEffect(() => {
+    axios
+      .get(api.studyDemographics(proposalId), { withCredentials: true })
+      .then((res) => setStudyDemographics(res.data))
+      .catch(() => setStudyDemographics([]))
   }, [])
 
   useEffect(() => {
@@ -292,6 +304,39 @@ export const StudyReportPage = (props) => {
                 ) : (
                   <Paragraph>
                     No enrollment information found! <NavLink to="/uploads">Upload it</NavLink>!
+                  </Paragraph>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={11}>
+            <Card>
+              <CardHeader title="Patient Demographics" subheader="Enrollment by ethnicity/race and sex (NIH categories)" />
+              <CardContent>
+                {studyDemographics && studyDemographics.length > 0 ? (
+                  <StudyDemographics demographics={studyDemographics[0]} />
+                ) : (
+                  <Paragraph>
+                    No demographics found! <NavLink to="/uploads">Upload them</NavLink>!
+                  </Paragraph>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={11}>
+            <Card>
+              <CardHeader title="Site Contribution" subheader="Enrollment by site vs. the study goal" />
+              <CardContent>
+                {studySites && studySites.length > 0 ? (
+                  <SiteContribution
+                    sites={studySites}
+                    enrollmentGoal={studyProfile && studyProfile.enrollmentGoal ? studyProfile.enrollmentGoal.value : 0}
+                  />
+                ) : (
+                  <Paragraph>
+                    No site data found! <NavLink to="/uploads">Upload it</NavLink>!
                   </Paragraph>
                 )}
               </CardContent>

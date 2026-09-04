@@ -59,6 +59,26 @@ source has been removed from the repository (along with its CI workflow):
 | Old PostgreSQL (`ctmd-db`) | Running as fallback only; no services write to it |
 | `csvsql` / `csvkit` | Replaced by psycopg2 COPY |
 
+## Study Report — Patient Demographics & Site Contribution
+
+Each study's report page (**Studies → open a study**, or `/studies/<id>`) ends
+with two enrollment visualizations:
+
+- **Patient Demographics** — a donut of enrollment broken down by the NIH
+  categories (**ethnicity/race × sex**). Toggle between **Ethnicity** and
+  **Race**, and flip **"Show targets"** to compare planned targets against
+  actual enrollment. If a study has no demographics loaded, the card shows an
+  empty-state instead of a chart.
+- **Site Contribution** — a donut showing how much each participating site
+  contributes toward the study's enrollment goal, with a **"Short of Goal"**
+  slice for the remaining gap. The donut shows colors only; the **legend** beside
+  it lists each site with its count and percentage, and hovering a slice shows
+  the same detail.
+
+> **Note:** Patient Demographics data is entered per study and is not pulled from
+> REDCap. The upload path for it is still in progress (CTMD-158 epic), so most
+> studies currently show the empty-state. See `spec/demographics.md` for status.
+
 ## Project Structure
 
 ```

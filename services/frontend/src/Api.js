@@ -56,6 +56,7 @@ endpoints = {
   studySites: () => apiRoot + `studies/studysites`, // GET - send json file containing study sites
   studySitesByProposalId: (proposalID) => apiRoot + `studies/${proposalID}/sites`, // GET - send json file containing study sites
   studyEnrollmentData: (proposalID) => apiRoot + `studies/${proposalID}/enrollment-data`, // GET - send json file containing study enrollment data
+  studyDemographics: (proposalID) => apiRoot + `studies/${proposalID}/demographics`, // GET - per-study NIH enrollment demographics (planned + actual)
   // studyUploadProfile: proposalID => apiRoot + `studies/${ proposalID }`, // POST - to send json file containing study profile
   // studyUploadSites: proposalID => apiRoot + `studies/${ proposalID }/sites`, // POST - to send json file containing study sites
   // studyUploadEnrollmentData: proposalID => apiRoot + `studies/${ proposalID }/enrollment-data`, // POST - to send json file containing study enrollment data

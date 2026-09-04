@@ -82,7 +82,10 @@ export const DayStats = props => {
             }
             return totalDays
         }, 0)
-        return [Math.round(total / count), count]
+        // Guard against 0/0 = NaN when no proposal has both dates (e.g. an
+        // interval whose source milestone table isn't populated). Return a
+        // finite 0 with count 0 so the UI can render "N/A" instead of "NaN".
+        return [count > 0 ? Math.round(total / count) : 0, count]
     }
     
     const findMedianDaysBetween = (proposals, field1, field2, businessDays = false) => {
@@ -198,7 +201,7 @@ export const DayStats = props => {
                             axisBottom={ null }
                             axisLeft={{ tickSize: 0, tickPadding: 16, tickRotation: 0, legend: '', legendPosition: 'middle', legendOffset: 0 }}
                             labelSkipWidth={ 50 }
-                            labelFormat={ d => `${ d } days` }
+                            label={ ({ data }) => (data && data.count > 0) ? `${ data.days } days` : 'N/A' }
                             labelTextColor="inherit:darker(1.6)"
                             animate={ true }
                             motionStiffness={ 90 }
@@ -207,8 +210,14 @@ export const DayStats = props => {
                             tooltip={ ({ id, value, color, indexValue, data }) => (
                                 <ChartTooltip color={ color }>
                                     <div><strong>{ indexValue }</strong></div>
-                                    <div>~ { value } Day{ value !==  1 ? 's' : null }</div>
-                                    <div style={{ opacity: 0.5, fontSize: '90%' }}><small>Calculated from { data.count } Proposals</small></div>
+                                    { data.count > 0 ? (
+                                        <Fragment>
+                                            <div>~ { value } Day{ value !==  1 ? 's' : null }</div>
+                                            <div style={{ opacity: 0.5, fontSize: '90%' }}><small>Calculated from { data.count } Proposals</small></div>
+                                        </Fragment>
+                                    ) : (
+                                        <div style={{ opacity: 0.5, fontSize: '90%' }}><small>No data for this interval</small></div>
+                                    ) }
                                 </ChartTooltip>
                             )} 
                         />
