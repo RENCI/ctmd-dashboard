@@ -34,8 +34,11 @@ export const DemographicsPie = ({ data, height = 300, enableRadialLabels = true,
         cornerRadius={ 3 }
         borderWidth={ 1 }
         borderColor="inherit:darker(0.2)"
-        enableRadialLabels={ enableRadialLabels }
-        enableSlicesLabels={ enableSlicesLabels }
+        // nivo v0.87 prop names: arc-link labels = the names around the ring,
+        // arc labels = the values inside each slice. (The radialLabels*/slicesLabels*
+        // props below are legacy no-ops kept for reference.)
+        enableArcLinkLabels={ enableRadialLabels }
+        enableArcLabels={ enableSlicesLabels }
         radialLabelsSkipAngle={ 10 }
         radialLabelsTextColor="#333333"
         radialLabelsLinkColor="inherit"
