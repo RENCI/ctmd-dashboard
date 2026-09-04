@@ -9,7 +9,7 @@ import { useTheme } from '@material-ui/styles'
 // `enableRadialLabels` draws the site/category name next to each arc. With many
 // slices (e.g. a study with lots of sites) those labels collide, so callers can
 // turn them off and render their own legend instead.
-export const DemographicsPie = ({ data, height = 300, enableRadialLabels = true }) => {
+export const DemographicsPie = ({ data, height = 300, enableRadialLabels = true, enableSlicesLabels = true }) => {
   const theme = useTheme()
   const total = data.reduce((sum, d) => sum + d.value, 0)
 
@@ -18,7 +18,9 @@ export const DemographicsPie = ({ data, height = 300, enableRadialLabels = true 
       <ResponsivePie
         height={ height - 8 }
         data={ data }
-        tooltip={ ({ id, value, color }) => (
+        // nivo v0.87 passes the tooltip a wrapper object; the slice lives on `datum`.
+        // Destructuring id/value directly off the arg yields undefined -> NaN%.
+        tooltip={ ({ datum: { id, value, color } }) => (
           <ChartTooltip color={ color }>
             <div><strong>{ id }</strong></div>
             <div>{ value }{ total > 0 ? ` (${ Math.round((100 * value) / total) }%)` : '' }</div>
@@ -33,6 +35,7 @@ export const DemographicsPie = ({ data, height = 300, enableRadialLabels = true 
         borderWidth={ 1 }
         borderColor="inherit:darker(0.2)"
         enableRadialLabels={ enableRadialLabels }
+        enableSlicesLabels={ enableSlicesLabels }
         radialLabelsSkipAngle={ 10 }
         radialLabelsTextColor="#333333"
         radialLabelsLinkColor="inherit"

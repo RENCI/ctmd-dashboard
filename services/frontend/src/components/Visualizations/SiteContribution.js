@@ -31,7 +31,7 @@ export const SiteContribution = ({ sites, enrollmentGoal }) => {
 
       <Box display="flex" flexWrap="wrap" alignItems="center">
         <Box flex="1 1 320px" minWidth={ 300 }>
-          <DemographicsPie data={ data } enableRadialLabels={ false } />
+          <DemographicsPie data={ data } enableRadialLabels={ false } enableSlicesLabels={ false } />
         </Box>
 
         <Box
