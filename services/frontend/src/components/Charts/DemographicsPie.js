@@ -6,7 +6,10 @@ import { useTheme } from '@material-ui/styles'
 // A multi-slice donut for enrollment demographics. `data` is [{ id, value }, ...].
 // Mirrors ProposalsPieChart's nivo config for visual consistency with the rest
 // of the dashboard.
-export const DemographicsPie = ({ data, height = 300 }) => {
+// `enableRadialLabels` draws the site/category name next to each arc. With many
+// slices (e.g. a study with lots of sites) those labels collide, so callers can
+// turn them off and render their own legend instead.
+export const DemographicsPie = ({ data, height = 300, enableRadialLabels = true }) => {
   const theme = useTheme()
   const total = data.reduce((sum, d) => sum + d.value, 0)
 
@@ -29,6 +32,7 @@ export const DemographicsPie = ({ data, height = 300 }) => {
         cornerRadius={ 3 }
         borderWidth={ 1 }
         borderColor="inherit:darker(0.2)"
+        enableRadialLabels={ enableRadialLabels }
         radialLabelsSkipAngle={ 10 }
         radialLabelsTextColor="#333333"
         radialLabelsLinkColor="inherit"
