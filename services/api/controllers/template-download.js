@@ -3,6 +3,7 @@ const fs = require('fs')
 const templates = {
     'ctsas': 'ctsas-template.csv',
     'enrollment': 'enrollment-template.csv',
+    'enrollment-demographics': 'enrollment-demographics-template.csv',
     'sites': 'sites-template.csv',
     'study-profile': 'study-profiles-template.csv',
     'study-sites': 'study-sites-template.csv'
