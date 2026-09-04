@@ -296,6 +296,20 @@ const reportViewTests = [
       assert(real.length === 0, `study report threw: ${real.slice(0, 2).join(' | ')}`)
     },
   },
+  {
+    // CTMD-161: the Site Contribution card must render on the study report
+    // (empty state included) without crashing.
+    name: 'View: Study report shows the Site Contribution card',
+    async run(page, { pageErrors }) {
+      const id = await resolveProposalId(page)
+      await page.goto(`${BASE_URL}/studies/${id}`, { waitUntil: 'networkidle' })
+      await page.waitForTimeout(3000)
+      const body = await page.evaluate(() => document.body.innerText || '')
+      assert(/Site Contribution/i.test(body), 'Site Contribution card not found on the study report')
+      const real = (pageErrors || []).filter((e) => !/ResizeObserver loop/i.test(e))
+      assert(real.length === 0, `study report threw: ${real.slice(0, 2).join(' | ')}`)
+    },
+  },
 ]
 
 // ── 7. Regression tests — the specific production bugs we fixed ──────────────

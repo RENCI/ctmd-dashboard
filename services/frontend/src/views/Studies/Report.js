@@ -12,6 +12,7 @@ import { CircularLoader } from '../../components/Progress/Progress'
 import { SitesTable } from '../../components/Tables'
 import StudyEnrollment from '../../components/Visualizations/StudyEnrollmentContainer'
 import { StudyDemographics } from '../../components/Visualizations/StudyDemographics'
+import { SiteContribution } from '../../components/Visualizations/SiteContribution'
 import { Milestones } from './Milestones'
 import { CombinedMetrics } from './CombinedMetrics'
 import { convertBoolToYesOrNo, formatDate } from '../../utils'
@@ -318,6 +319,24 @@ export const StudyReportPage = (props) => {
                 ) : (
                   <Paragraph>
                     No demographics found! <NavLink to="/uploads">Upload them</NavLink>!
+                  </Paragraph>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={11}>
+            <Card>
+              <CardHeader title="Site Contribution" subheader="Enrollment by site vs. the study goal" />
+              <CardContent>
+                {studySites && studySites.length > 0 ? (
+                  <SiteContribution
+                    sites={studySites}
+                    enrollmentGoal={studyProfile && studyProfile.enrollmentGoal ? studyProfile.enrollmentGoal.value : 0}
+                  />
+                ) : (
+                  <Paragraph>
+                    No site data found! <NavLink to="/uploads">Upload it</NavLink>!
                   </Paragraph>
                 )}
               </CardContent>
