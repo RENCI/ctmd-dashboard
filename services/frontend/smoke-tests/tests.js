@@ -86,6 +86,7 @@ const API_ID_ENDPOINTS = [
   ['/api/studies/{id}', 'study profile', { nonEmpty: true }],
   ['/api/studies/{id}/sites', 'study sites', {}],
   ['/api/studies/{id}/enrollment-data', 'study enrollment', {}],
+  ['/api/studies/{id}/demographics', 'study demographics', {}],
 ]
 
 const apiIdEndpointTests = API_ID_ENDPOINTS.map(([tmpl, label, opts]) => ({
@@ -117,7 +118,7 @@ const nonJsonTests = [
     },
   },
   // Every downloadable CSV template must exist (a 404 breaks the Uploads page).
-  ...['ctsas', 'enrollment', 'sites', 'study-profile', 'study-sites'].map((name) => ({
+  ...['ctsas', 'enrollment', 'enrollment-demographics', 'sites', 'study-profile', 'study-sites'].map((name) => ({
     name: `API: GET /api/template/${name} downloads a CSV template`,
     async run(page) {
       const res = await page.request.get(`${BASE_URL}/api/template/${name}`)
@@ -126,6 +127,24 @@ const nonJsonTests = [
       assert(body.split(/\r?\n/)[0].includes(','), `template ${name} does not look like CSV (no header row)`)
     },
   })),
+  {
+    // CTMD-160: the per-study demographics endpoint returns [] when nothing is
+    // uploaded (the common case), but when a row exists it must carry the NIH
+    // planned + actual × ethnicity/race × sex cells.
+    name: 'API: /api/studies/:id/demographics has the NIH structure when populated',
+    async run(page) {
+      const id = await resolveProposalId(page)
+      const res = await page.request.get(`${BASE_URL}/api/studies/${id}/demographics`)
+      assert(res.ok(), `demographics returned HTTP ${res.status()}`)
+      const rows = await res.json()
+      assert(Array.isArray(rows), 'demographics did not return an array')
+      if (rows.length > 0) {
+        const sample = ['plannedHispanicFemale', 'plannedWhiteMale', 'actualHispanicFemale', 'actualWhiteMale']
+        const missing = sample.filter((c) => !(c in rows[0]))
+        assert(missing.length === 0, `demographics row missing NIH columns: ${missing.join(', ')}`)
+      }
+    },
+  },
 ]
 
 // ── 4. pipeline2 /data read-only endpoints (skip gracefully if not running) ──
