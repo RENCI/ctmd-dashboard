@@ -300,6 +300,31 @@ The API runs on port 3030 (configurable via `API_PORT` environment variable).
 
 ---
 
+### GET /studies/:id/demographics
+**Description:** Per-study NIH enrollment demographics (ethnicity/race × sex,
+planned + actual). Reads the CSV-managed `EnrollmentDemographics` table. See
+`spec/demographics.md` (CTMD-158). Returns an array of 0 or 1 row — empty until
+the study has demographics loaded.
+
+**Parameters:**
+- `id` (integer, path): Proposal ID
+
+**Response (200):**
+```json
+[
+  {
+    "ProposalID": 146,
+    "plannedHispanicFemale": 10,
+    "actualHispanicFemale": 7
+  }
+]
+```
+> Column set is the full planned/actual × ethnicity/race × sex cross — see
+> `services/pipeline2/migrations/004_add_enrollment_demographics.sql` for the
+> authoritative column list.
+
+---
+
 ## Sites
 
 ### GET /sites
