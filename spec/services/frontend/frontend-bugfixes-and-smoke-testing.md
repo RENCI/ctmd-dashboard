@@ -7,7 +7,8 @@
 > - CRA dev-proxy prefix stripping — fixed
 > - Playwright smoke-test harness added at `services/frontend/smoke-tests/`
 >   — expanded 2026-08-20 to comprehensive coverage of every endpoint and route
->   (63 tests, passing). See "Coverage" below.
+>   (66 tests as of 2026-09-04, incl. the CTMD-160 demographics endpoint).
+>   See "Coverage" below.
 
 ## Addendum — "Submissions at a Glance" grant year (2026-07-29)
 
@@ -313,7 +314,13 @@ API/UI-only run is still meaningful. A non-zero exit means a real failure.
 - `run.js` — runner, prints pass/fail/skip, exits non-zero only on failure;
   passes `pageErrors` (uncaught exceptions) into each test.
 
-### Coverage (comprehensive — 63 tests as of 2026-08-20)
+### Coverage (comprehensive — 66 tests as of 2026-09-04)
+
+**Practice: every new endpoint and feature gets a smoke test in the same PR.**
+The API service has no unit-test harness, so this Playwright suite *is* its
+endpoint coverage — a new route without an entry here is untested. When adding an
+endpoint, add its line to the data-driven arrays (`API_GET_ENDPOINTS` /
+`API_ID_ENDPOINTS` / the template list) and a shape check if the payload matters.
 
 The suite now exercises **every endpoint and every frontend route**, grouped as:
 
@@ -321,10 +328,13 @@ The suite now exercises **every endpoint and every frontend route**, grouped as:
    datasets (proposals, statuses, tics, therapeutic-areas, resources) must be
    non-empty (an empty result there means a broken sync or field mapping).
 2. **Parameterized endpoints** — `/proposals/:id`, `/studies/:id`,
-   `/studies/:id/sites`, `/studies/:id/enrollment-data`, using a real proposal
-   id discovered from live data.
+   `/studies/:id/sites`, `/studies/:id/enrollment-data`, and
+   `/studies/:id/demographics` (CTMD-160), using a real proposal id discovered
+   from live data.
 3. **Non-JSON endpoints** — the `graphics/proposals-by-tic` SVG, `auth_status`
-   (dev mode), and all five CSV templates.
+   (dev mode), and all six CSV templates (incl. `enrollment-demographics`). Plus
+   a shape check that `/studies/:id/demographics` carries the NIH planned+actual
+   × ethnicity/race × sex columns when a row exists (tolerates the empty case).
 4. **pipeline2 `/data` reads** — `task`, `backup`, `table/Sites`. These *skip*
    (not fail) when pipeline2 isn't port-forwarded.
 5. **Upload validation** — each upload endpoint (StudySites, Sites,

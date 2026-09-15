@@ -28,6 +28,17 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_ENV
 
+    # Run the API unit tests before building — a failing test blocks the image.
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+    - name: API unit tests
+      working-directory: services/api
+      run: |
+        npm ci
+        npm test
+
     - name: Call Build-Service Workflow
       uses: ./.github/actions/build-service
       with:
