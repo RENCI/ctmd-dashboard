@@ -256,7 +256,7 @@ class TestTransformAll:
     def result(self):
         return transform_all([FULL_RECORD])
 
-    def test_returns_all_18_tables(self, result):
+    def test_returns_all_20_tables(self, result):
         expected = {
             "Proposal", "Submitter", "ProposalDetails", "ProposalFunding",
             "AssignProposal", "InitialConsultationSummary",
@@ -265,6 +265,8 @@ class TestTransformAll:
             "Proposal_ConsultOptions", "Proposal_NewServiceSelection",
             "Proposal_ServicesApproved", "Proposal_ServicesPatOutcome",
             "Proposal_ServicesPostOutcome", "Proposal_RemovedServices",
+            # Added in CTMD-195 (Timeline Metrics NaN fix):
+            "PATMeeting", "InitialConsultationDates",
         }
         assert set(result.keys()) == expected
 
