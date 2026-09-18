@@ -86,6 +86,36 @@ test-pipeline2:
 	containers.renci.org/ctmd/$(PIPELINE2_BASE_IMAGE):$(PIPELINE2_TAG) \
 	python -m pytest tests/ -v
 
+# ------------------------------------------------------------------------------
+## Testing
+#
+# Per-service test runners. `test-pipeline2` (above) runs pytest inside the
+# built image; the targets below run each service's own runner on the host.
+# The unit targets assume dependencies are installed (npm install once per
+# service, like the dev-* targets). CI runs the same commands.
+#
+# Run every unit suite:            make test-all
+# Run one service:                 make test-api | test-frontend | test-pipeline2
+# Run smoke tests vs a live app:   make test-smoke BASE_URL=http://localhost:3000
+
+# API — node:test (matches `npm test` used by build-api.yml)
+test-api:
+	cd services/api && npm test
+
+# Frontend — CRA/jest single run (CI=true disables watch mode)
+test-frontend:
+	cd services/frontend && CI=true npm test
+
+# Smoke tests — Playwright against a RUNNING instance. Point BASE_URL at it and
+# install the browser once: (cd services/frontend/smoke-tests && npm run install-browser)
+SMOKE_BASE_URL ?= http://localhost:3000
+test-smoke:
+	cd services/frontend/smoke-tests && BASE_URL=$(SMOKE_BASE_URL) npm test
+
+# All unit suites. Excludes test-smoke (needs a live app — run it separately).
+# test-pipeline2 requires the pipeline2 image built first: make build-pipeline2
+test-all: test-api test-frontend test-pipeline2
+
 # Week 4 — Testing & Cutover
 # Override defaults with: make compare-tables OLD_DB=... NEW_DB=...
 OLD_DB ?= postgresql://ctmd-user:changeMeDevPassword@localhost:5432/postgres

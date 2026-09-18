@@ -7,8 +7,9 @@
 > - CRA dev-proxy prefix stripping — fixed
 > - Playwright smoke-test harness added at `services/frontend/smoke-tests/`
 >   — expanded 2026-08-20 to comprehensive coverage of every endpoint and route
->   (66 tests as of 2026-09-04, incl. the CTMD-160 demographics endpoint).
->   See "Coverage" below.
+>   (68 tests as of 2026-09-04, incl. the CTMD-160 demographics endpoint and the
+>   Patient Demographics + Site Contribution study-report cards). See "Coverage"
+>   below. Demographics feature spec: `spec/demographics.md`.
 
 ## Addendum — "Submissions at a Glance" grant year (2026-07-29)
 

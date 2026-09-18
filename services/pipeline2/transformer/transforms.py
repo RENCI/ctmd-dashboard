@@ -425,8 +425,42 @@ def _transform_proposal_removed_services(record: dict) -> list:
 # Maps each table name to its transform function.
 # Single-row functions return dict | None.
 # Junction functions return list[dict].
+def _transform_pat_meeting(record: dict):
+    pid = record.get("proposal_id")
+    if not pid:
+        return None
+    return {
+        "ProposalID": pid,
+        "meetingDate": _coalesce(record, "meeting_date_2", "meeting_date"),
+        "meetingNumber": None,  # 'n/a' in mapping.json — no REDCap source
+        "comments": _coalesce(record, "vote_comments", "vote_comments_2"),
+    }
+
+
+def _transform_initial_consultation_dates(record: dict):
+    pid = record.get("proposal_id")
+    if not pid:
+        return None
+    # Gated dates: emit the date only when the flag is set, else NULL. NOT the
+    # literal "N/A" the mapping spells out — new Date("N/A") is Invalid, which
+    # would re-break the Timeline Metrics averages (NaN). NULL lets the UI skip it.
+    kick_off_scheduled = record.get("kick_off_scheduled") if record.get("ko_meeting") == "1" else None
+    kick_off_occurs = record.get("kick_off") if record.get("ko_occured") == "1" else None
+    return {
+        "ProposalID": pid,
+        "FirstContact": record.get("intro_call"),
+        "kickOffNeeded": None,  # 'n/a' in mapping.json — no REDCap source
+        "kickOffScheduled": kick_off_scheduled,
+        "kickOffDateOccurs": kick_off_occurs,
+        "workComplete": record.get("wk_complete"),
+        "reportSentToPI": record.get("wrap_up_sent"),
+    }
+
+
 _SINGLE_ROW_TABLES = {
     "Proposal": _transform_proposal,
+    "PATMeeting": _transform_pat_meeting,
+    "InitialConsultationDates": _transform_initial_consultation_dates,
     "Submitter": _transform_submitter,
     "ProposalDetails": _transform_proposal_details,
     "ProposalFunding": _transform_proposal_funding,
