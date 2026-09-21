@@ -145,6 +145,19 @@ const nonJsonTests = [
       }
     },
   },
+  {
+    // CTMD-161/191: the Uploads page must expose the Patient Demographics
+    // upload card so users can actually populate EnrollmentDemographics.
+    name: 'View: Uploads page shows the Patient Demographics upload card',
+    async run(page, { pageErrors }) {
+      await page.goto(`${BASE_URL}/uploads`, { waitUntil: 'networkidle' })
+      await page.waitForTimeout(2000)
+      const body = await page.evaluate(() => document.body.innerText || '')
+      assert(/Upload Patient Demographics/i.test(body), 'Patient Demographics upload card not found on /uploads')
+      const real = (pageErrors || []).filter((e) => !/ResizeObserver loop/i.test(e))
+      assert(real.length === 0, `uploads page threw: ${real.slice(0, 2).join(' | ')}`)
+    },
+  },
 ]
 
 // ── 4. pipeline2 /data read-only endpoints (skip gracefully if not running) ──

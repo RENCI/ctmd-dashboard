@@ -99,6 +99,24 @@ export const UploadsPage = (props) => {
             </CardContent>
           </Card>
         </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card>
+            <CardHeader
+              title="Upload Patient Demographics"
+              classes={{ action: classes.action }}
+              action={
+                <DownloadButton
+                  path={api.download('enrollment-demographics')}
+                  tooltip="Download Patient Demographics CSV Template"
+                />
+              }
+            />
+            <CardContent>
+              <DropZone method="POST" endpoint={api.uploadStudyDemographics} />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
     </div>
   )

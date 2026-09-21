@@ -80,6 +80,7 @@ endpoints = {
   uploadStudyProfile: pipelineApiRoot + `table/StudyProfile/column/ProposalID`,
   uploadStudySites: pipelineApiRoot + `table/StudySites/column/siteId`,
   uploadStudyEnrollmentData: pipelineApiRoot + `table/EnrollmentInformation/column/ProposalID`,
+  uploadStudyDemographics: pipelineApiRoot + `table/EnrollmentDemographics/column/ProposalID`, // per-study NIH demographics (planned + actual); upsert by ProposalID
   logout: apiRoot + 'logout',
 }
 
