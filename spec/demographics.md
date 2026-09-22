@@ -1,10 +1,12 @@
 # Patient Demographics & Site Contribution (CTMD-158 epic)
 
-> **Status (2026-09-04):** read + display slice **implemented** on branch
-> `ctmd-161-frontend` (stacked on `ctmd-160-api`, PR #421). **Not merged to
-> `main`.** The data-entry (ingestion) side is **not built** — the feature has
-> no way to load demographics yet, so it renders empty everywhere except one
-> seeded row. See **Remaining work**.
+> **Status (2026-09-21):** read + display **and** ingestion **implemented** on
+> branch `ctmd-161-frontend` (stacked on `ctmd-160-api`, PR #421). **Not merged
+> to `main`.** Users can now upload per-study demographics via the Uploads page;
+> the write path was verified end-to-end against the live `ctmd` pipeline2 (CSV
+> upload → DB row → API read-back). What remains is the ship loop: merge →
+> release build → deploy the release to `ctmd` (replacing the test images) →
+> revert the test-image overrides. See **Remaining work**.
 
 ## Purpose
 
@@ -24,8 +26,8 @@ Both live at the bottom of the **Study Report** page (`/studies/:proposalID`).
 | CTMD-160 | API read path — `GET /studies/:id/demographics` | code complete, PR #421 |
 | CTMD-161 | Frontend — Patient Demographics + Site Contribution donuts | code complete |
 | CTMD-195 | Timeline Metrics NaN fix (PATMeeting / InitialConsultationDates builders) | folded into `ctmd-161-frontend` |
-| CTMD-191 | **Re-scoped** → per-study NIH-form **data entry** + cross-total (ethnicity=race) validation (was: standalone targets) | **not built** (UI target toggle exists, no data source) |
-| CTMD-162 | E2E + deploy | **not done** (test images in `ctmd`, not merged) |
+| CTMD-191 | **Re-scoped** → per-study NIH-form **data entry** (was: standalone targets) | **built** — CSV upload card (planned + actual). Cross-total (ethnicity=race) validation NOT implemented (optional). |
+| CTMD-162 | E2E + deploy | write path E2E-verified on `ctmd`; **merge → release → deploy release → revert test images** still to do |
 
 ## Data model — CTMD-159
 
@@ -36,9 +38,32 @@ Both live at the bottom of the **Study Report** page (`/studies/:proposalID`).
   **planned/actual × ethnicity/race × sex**. The migration file is the source
   of truth for exact column names.
 - **CSV-managed, not REDCap-sourced.** It is in `pipeline2`'s
-  `CSV_ONLY_TABLES` set, so the REDCap sync never truncates/loads it. That also
-  means the sync will **never populate it** — data must arrive via an upload
-  path that does not yet exist (see Remaining work).
+  `CSV_ONLY_TABLES` set, so the REDCap sync never truncates/loads it. Data
+  arrives via the CSV upload path (see Ingestion).
+
+## Ingestion — CTMD-191
+
+Per-study demographics are entered by CSV upload on the **Uploads** page
+(*Per-Study Uploads → Upload Patient Demographics*). No REDCap involvement.
+
+- **Template:** `services/api/templates/enrollment-demographics-template.csv`,
+  registered as `enrollment-demographics` in
+  `services/api/controllers/template-download.js`. Like every CTMD template it
+  has **two header rows** — row 1 is human-readable labels (skipped), row 2 is
+  the exact DB column names. The `DropZone` sends `has_comments=true`, so
+  pipeline2 skips row 1 and COPYs using row 2 as the columns. Row 2 must match
+  `EnrollmentDemographics` columns exactly (`ProposalID`, `planned*`, `actual*`).
+- **Write endpoint:** the generic pipeline2 table API —
+  `POST /table/EnrollmentDemographics/column/ProposalID` (upsert by ProposalID:
+  rows for each uploaded ProposalID are replaced). Wired in `Api.js` as
+  `uploadStudyDemographics`; the card lives in `views/Uploads.js`.
+- **Targets + actuals share this path:** the template carries both `planned*`
+  (targets, driving the "Show targets" toggle) and `actual*` cells.
+- **Verified (2026-09-21):** uploaded a template CSV to the live `ctmd`
+  pipeline2 → row landed in `EnrollmentDemographics` → read back through the API
+  unchanged. Smoke test asserts the upload card renders on `/uploads`.
+- **Not implemented (optional):** NIH cross-total validation (ethnicity totals
+  reconciling with race totals) is not enforced at upload.
 
 ## API — CTMD-160
 
@@ -123,14 +148,16 @@ oc patch deploy/ctmd-frontend -n ctmd --type=json -p='[{"op":"replace","path":"/
 oc patch deploy/ctmd-api      -n ctmd --type=json -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
 ```
 
-## Remaining work (epic is NOT usable yet)
+## Remaining work
 
-1. **Ingestion / upload path — the blocker.** Nothing writes
-   `EnrollmentDemographics`. The intended entry mechanism is a CSV upload
-   ("Expanded Demographics Upload Template" mockup, per-study NIH grid). Until it
-   exists, every study shows the empty-state. This is the largest remaining
-   chunk.
-2. **Targets — CTMD-191.** The "Show targets" toggle is wired in the UI, but
-   there is no source or entry for planned/target values (same upload gap).
-3. **Ship it (CTMD-162 — E2E + deploy).** Merge → release → deploy → revert the
-   test images (above).
+The feature is now functionally complete (DB, API, donuts, and CSV ingestion for
+both targets and actuals — all verified on `ctmd`). What's left is shipping and
+one optional nicety:
+
+1. **Ship it (CTMD-162 — E2E + deploy).** Merge PR #421 + the `ctmd-161-frontend`
+   PR → release build → deploy the release to `ctmd`, replacing the test images →
+   revert the test-image overrides (commands above). `ctmd` currently runs the
+   test images; migration 004 ships in the release pipeline2 image and runs as a
+   `CREATE TABLE IF NOT EXISTS` no-op where the table already exists.
+2. **(Optional) NIH cross-total validation** on upload — enforce that ethnicity
+   totals reconcile with race totals per the NIH form. Not required for use.

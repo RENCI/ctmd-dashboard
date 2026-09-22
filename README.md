@@ -75,9 +75,11 @@ with two enrollment visualizations:
   it lists each site with its count and percentage, and hovering a slice shows
   the same detail.
 
-> **Note:** Patient Demographics data is entered per study and is not pulled from
-> REDCap. The upload path for it is still in progress (CTMD-158 epic), so most
-> studies currently show the empty-state. See `spec/demographics.md` for status.
+> **Note:** Patient Demographics data is entered per study (it is **not** pulled
+> from REDCap). Add it on the **Uploads** page → *Upload Patient Demographics*:
+> download the CSV template, fill in each study's planned (target) and actual
+> NIH cells, and upload. Studies without an uploaded row show the empty-state.
+> See `spec/demographics.md` for details.
 
 ## Project Structure
 
