@@ -108,7 +108,7 @@ route:
 frontend:
   create: true
   name: ctmd-frontend
-  tag: "v3.1.28"             # bumped from v3.1.14 (ASHE upgrade 2026-08)
+  tag: "v3.1.34"             # prod release (demographics); deployed to ctmd 2026-09-24 (helm rev 20)
   service:
     port: 3000
     name: http
@@ -126,7 +126,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "v3.1.28"             # bumped from v3.1.14 (ASHE upgrade 2026-08)
+  tag: "v3.1.34"             # prod release (demographics); deployed to ctmd 2026-09-24 (helm rev 20)
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -142,14 +142,16 @@ api:
     value: ""                # auto-generated on first install; persisted by helm.sh/resource-policy=keep
     existingSecret: ""
   env:
-    # Update once Route DNS is live:
-    DASHBOARD_URL: "https://ctmd.apps.ashe-k8s.renci.unc.edu/"
+    # DNS is live: public host is ctmd.renci.org (external nginx → OpenShift route).
+    # DASHBOARD_URL MUST match the browser host or the session cookie host mismatches
+    # and login loops. Do NOT revert to the ashe-k8s host.
+    DASHBOARD_URL: "https://ctmd.renci.org/"
     REDCAP_AUTH_URL: "https://redcap.vumc.org/plugins/TIN/sso/check_login"
 
 pipeline2:
   create: true
   name: ctmd-pipeline2
-  tag: "v3.1.28"             # bumped from v0.1.11 — unifies on release semver; fixes the redis-wait crash
+  tag: "v3.1.34"             # prod release (demographics + migration 004); deployed to ctmd 2026-09-24 (helm rev 20)
   service:
     port: 5000
   resources:
