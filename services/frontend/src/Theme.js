@@ -29,10 +29,10 @@ let theme = createMuiTheme({
         chartColors: schemeSet2,
         calendarColors: [...Array(8).keys()].map(i => interpolateBlues(0.3 + i * (1 - 0.3) / 8)),
         flashMessage: {
-            success: '#63c0a5',
+            success: '#53d0a5',
             info: '#999',
-            warning: '#ffd548',
-            error: '#ff8a66',
+            warning: '#efe548',
+            error: '#ef9a66',
         },
     },
     shape: { borderRadius: 4 },
