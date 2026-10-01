@@ -4,6 +4,6 @@ const graphicsController = require('../controllers/graphics')
 
 // Routes beginning with "HOSTNAME/api/graphics/..."
 
-router.route('/proposals-by-tic').get(graphicsController.proposalsByTic)
+router.route('/proposals-by-tic').get(graphicsController.ctmdCard)
 
 module.exports = router
