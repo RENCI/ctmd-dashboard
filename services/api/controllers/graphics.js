@@ -7,13 +7,13 @@ let d3n;
 const { getProposals } = require("./proposals");
 
 
-// The lockup is inlined rather than referenced so the figures stay
-// self-contained for consumers that embed them as an image. Its "CTMD" is
-// outlined, so it needs no font installed wherever the figure is rendered.
-const lockup = (() => {
+// Assets are inlined rather than referenced so the figures stay self-contained
+// for consumers that embed them as an image. Their text is outlined, so they
+// need no font installed wherever the figure is rendered.
+const loadAsset = (filename) => {
   try {
     const source = fs.readFileSync(
-      path.join(__dirname, "..", "assets", "renci-ctmd-lockup.svg"),
+      path.join(__dirname, "..", "assets", filename),
       "utf8"
     );
     const viewBox = source.match(/viewBox="([^"]*)"/)[1];
@@ -31,29 +31,60 @@ const lockup = (() => {
         .trim(),
     };
   } catch (error) {
-    console.error("Could not load the RENCI CTMD lockup:", error);
+    console.error(`Could not load ${filename}:`, error);
     return null;
   }
-})();
+};
 
-// Draws the RENCI CTMD lockup with its top-left corner at (x, y), scaled so the
-// wordmark stands `height` tall. The branding guide requires clear space of at
-// least half that height on every side, including to the edge of the figure.
-const drawBranding = (svg, { x, y, height }) => {
-  if (!lockup) return;
+const lockup = loadAsset("renci-ctmd-lockup.svg");
+const cardLockup = loadAsset("renci-ctmd-card-lockup.svg");
+
+const drawAsset = (svg, asset, { x, y, height }) => {
+  if (!asset) return;
 
   svg
     .append("svg")
     .attr("class", "branding")
     .attr("x", x)
     .attr("y", y)
-    .attr("width", height * lockup.aspectRatio)
+    .attr("width", height * asset.aspectRatio)
     .attr("height", height)
-    .attr("viewBox", lockup.viewBox)
-    .html(lockup.markup);
+    .attr("viewBox", asset.viewBox)
+    .html(asset.markup);
 };
 
-// /api/graphics/proposals-by-tic
+// Draws the RENCI CTMD lockup with its top-left corner at (x, y), scaled so the
+// wordmark stands `height` tall. The branding guide requires clear space of at
+// least half that height on every side, including to the edge of the figure.
+const drawBranding = (svg, options) => drawAsset(svg, lockup, options);
+
+// Served in place of the proposals-by-TIC chart.
+exports.ctmdCard = (req, res) => {
+  const width = 700;
+  const height = 330;
+  // the lockup within the asset spans its full width
+  const assetWidth = 416;
+  const assetHeight = cardLockup ? assetWidth / cardLockup.aspectRatio : 0;
+
+  const node = new D3Node({ d3Module: d3 });
+  const svg = node.createSVG(width, height);
+
+  svg
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .style("fill", "#ffffff");
+
+  drawAsset(svg, cardLockup, {
+    x: (width - assetWidth) / 2,
+    y: (height - assetHeight) / 2,
+    height: assetHeight,
+  });
+
+  res.status(200).type("image/svg+xml").send(node.svgString());
+};
+
+// /api/graphics/proposals-by-tic (currently unrouted; see ctmdCard)
 
 exports.proposalsByTic = (req, res) => {
   const statusGroup = (status) => {
