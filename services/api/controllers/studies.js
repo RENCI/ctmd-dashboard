@@ -144,7 +144,8 @@ exports.getSites = (req, res) => {
             "StudySites"."patientsWithdrawnCount",
             "StudySites"."patientsExpectedCount",
             "StudySites"."queriesCount",
-            "StudySites"."protocolDeviationsCount"
+            "StudySites"."protocolDeviationsCount",
+            ${ACTUAL_COLS.map((c) => `"StudySites"."${c}"`).join(",\n            ")}
         FROM "StudySites"
         LEFT JOIN "Sites" ON "StudySites"."siteId" = "Sites"."siteId"
         LEFT JOIN "CTSAs" ON "StudySites"."ctsaId" = "CTSAs"."ctsaId"

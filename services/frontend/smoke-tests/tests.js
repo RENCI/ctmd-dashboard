@@ -161,6 +161,23 @@ const nonJsonTests = [
     },
   },
   {
+    // CTMD-201: per-site actuals power the Site Contribution drill-down, so the
+    // sites endpoint must expose the actual* NIH columns.
+    name: 'API: /api/studies/:id/sites exposes per-site actual demographic columns',
+    async run(page) {
+      const id = await resolveProposalId(page)
+      const res = await page.request.get(`${BASE_URL}/api/studies/${id}/sites`)
+      assert(res.ok(), `sites returned HTTP ${res.status()}`)
+      const rows = await res.json()
+      assert(Array.isArray(rows), 'sites did not return an array')
+      if (rows.length > 0) {
+        const sample = ['actualHispanicFemale', 'actualWhiteMale']
+        const missing = sample.filter((c) => !(c in rows[0]))
+        assert(missing.length === 0, `site row missing actual demographic columns: ${missing.join(', ')}`)
+      }
+    },
+  },
+  {
     // CTMD-161/191: the Uploads page must expose the Patient Demographics
     // upload card so users can actually populate EnrollmentDemographics.
     name: 'View: Uploads page shows the Patient Demographics upload card',
