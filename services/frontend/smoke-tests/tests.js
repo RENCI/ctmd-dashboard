@@ -128,7 +128,22 @@ const nonJsonTests = [
     },
   })),
   {
-    // CTMD-160: the per-study demographics endpoint returns [] when nothing is
+    // CTMD-198/199: planned* cells are entered via the Study Profile template and
+    // actual* cells via the Study Sites template (row 2 = exact DB column names).
+    name: 'API: Study Profile + Study Sites templates carry the demographic columns',
+    async run(page) {
+      const check = async (name, col) => {
+        const res = await page.request.get(`${BASE_URL}/api/template/${name}`)
+        assert(res.ok(), `template ${name} returned HTTP ${res.status()}`)
+        const row2 = ((await res.text()).split(/\r?\n/)[1] || '').split(',')
+        assert(row2.includes(col), `template ${name} row 2 (DB columns) missing ${col}`)
+      }
+      await check('study-profile', 'plannedWhiteMale')
+      await check('study-sites', 'actualWhiteMale')
+    },
+  },
+  {
+    // CTMD-160/200: the per-study demographics endpoint returns [] when nothing is
     // uploaded (the common case), but when a row exists it must carry the NIH
     // planned + actual × ethnicity/race × sex cells.
     name: 'API: /api/studies/:id/demographics has the NIH structure when populated',
