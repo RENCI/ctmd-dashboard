@@ -15,14 +15,17 @@ import { Paragraph, Subheading } from '../Typography'
 // breakdown below the ring.
 const pct = (v, total) => (total ? `${ Math.round((v / total) * 100) }%` : '0%')
 
-// One category's "790 · 62% (♀410 ♂380)" value line.
-const ValueLine = ({ row, total, theme }) => (
+// One category's "790 · 62% (♀410 ♂380)" value line. On the Sex axis the slices
+// are already Female/Male, so the (♀ ♂) sub-split is dropped (showSplit=false).
+const ValueLine = ({ row, total, theme, showSplit = true }) => (
   <span style={{ color: theme.palette.text.secondary, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
     <b style={{ color: theme.palette.text.primary }}>{ (row.f + row.m).toLocaleString() }</b>
-    { ` · ${ pct(row.f + row.m, total) } ` }
-    <span style={{ color: theme.palette.text.hint || theme.palette.text.secondary }}>
-      { `(♀${ row.f.toLocaleString() } ♂${ row.m.toLocaleString() })` }
-    </span>
+    { ` · ${ pct(row.f + row.m, total) }` }
+    { showSplit && (
+      <span style={{ color: theme.palette.text.hint || theme.palette.text.secondary }}>
+        { ` (♀${ row.f.toLocaleString() } ♂${ row.m.toLocaleString() })` }
+      </span>
+    ) }
   </span>
 )
 
@@ -51,6 +54,7 @@ export const StudyDemographics = ({ demographics }) => {
           >
             <ToggleButton value="race">Race</ToggleButton>
             <ToggleButton value="ethnicity">Ethnicity</ToggleButton>
+            <ToggleButton value="sex">Sex</ToggleButton>
           </ToggleButtonGroup>
         </Grid>
         <Grid item>
@@ -95,17 +99,17 @@ export const StudyDemographics = ({ demographics }) => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ width: 13, height: 13, borderRadius: 3, background: base, flexShrink: 0 }} />
                   <span style={{ flex: 1, fontWeight: 600, color: theme.palette.text.primary }}>{ row.cat }</span>
-                  { !showTargets && <ValueLine row={ row } total={ aTotals.total } theme={ theme } /> }
+                  { !showTargets && <ValueLine row={ row } total={ aTotals.total } theme={ theme } showSplit={ axis !== 'sex' } /> }
                 </div>
                 { showTargets && (
                   <React.Fragment>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, paddingLeft: 23, marginTop: 3 }}>
                       <span style={{ width: 44, flexShrink: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: theme.palette.text.secondary }}>Actual</span>
-                      <ValueLine row={ row } total={ aTotals.total } theme={ theme } />
+                      <ValueLine row={ row } total={ aTotals.total } theme={ theme } showSplit={ axis !== 'sex' } />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, paddingLeft: 23, marginTop: 3 }}>
                       <span style={{ width: 44, flexShrink: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: theme.palette.text.secondary }}>Target</span>
-                      <ValueLine row={ target } total={ pTotals.total } theme={ theme } />
+                      <ValueLine row={ target } total={ pTotals.total } theme={ theme } showSplit={ axis !== 'sex' } />
                     </div>
                   </React.Fragment>
                 ) }
@@ -115,8 +119,8 @@ export const StudyDemographics = ({ demographics }) => {
         </Box>
       ) }
 
-      {/* Shading key */}
-      { hasActual && (
+      {/* Shading key (not shown on the Sex axis, where colour alone distinguishes F/M) */}
+      { hasActual && axis !== 'sex' && (
         <Box mt={ 1.5 } pt={ 1.5 } style={{ borderTop: `1px dashed ${ theme.palette.divider }`, display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: '0.78rem', color: theme.palette.text.secondary }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
             <span style={{ display: 'inline-flex', borderRadius: 4, overflow: 'hidden', border: `1px solid ${ theme.palette.divider }` }}>

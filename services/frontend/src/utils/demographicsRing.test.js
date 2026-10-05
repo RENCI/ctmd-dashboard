@@ -43,6 +43,12 @@ describe('buildRingData', () => {
     expect(data.find((d) => d.cat === 'White')).toEqual({ cat: 'White', f: 385, m: 355 })
   })
 
+  it('collapses to a two-slice Female/Male breakdown on the sex axis', () => {
+    const data = buildRingData(row, 'actual', 'sex')
+    expect(data).toEqual([{ cat: 'Female', f: 664, m: 0 }, { cat: 'Male', f: 0, m: 612 }])
+    expect(ringTotals(data)).toEqual({ f: 664, m: 612, total: 1276 })
+  })
+
   it('returns [] for a missing row', () => {
     expect(buildRingData(null, 'actual', 'race')).toEqual([])
     expect(buildRingData(undefined, 'actual', 'ethnicity')).toEqual([])

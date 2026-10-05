@@ -14,8 +14,16 @@ const ETH_LABEL = { Hispanic: 'Hispanic', NonHispanic: 'Non-Hispanic' }
 
 // Shape one EnrollmentDemographics row into ring slices for an axis + kind:
 // [{ cat, f, m }] (one entry per category). `kind` is 'actual' | 'planned'.
+// The 'sex' axis collapses every category into a two-slice Female/Male breakdown
+// (CTMD-203); each slice carries its own count on one side so the ring shades it
+// as a single tone.
 export const buildRingData = (row, kind, axis) => {
   if (!row) return []
+  if (axis === 'sex') {
+    const f = RACES.reduce((sum, r) => sum + num(row[`${ kind }${ r }Female`]), 0)
+    const m = RACES.reduce((sum, r) => sum + num(row[`${ kind }${ r }Male`]), 0)
+    return [{ cat: 'Female', f, m: 0 }, { cat: 'Male', f: 0, m }]
+  }
   const stems = axis === 'ethnicity' ? ETHNICITIES : RACES
   return stems.map((stem) => ({
     cat: axis === 'ethnicity' ? ETH_LABEL[stem] : stem,
