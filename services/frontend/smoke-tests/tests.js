@@ -118,7 +118,7 @@ const nonJsonTests = [
     },
   },
   // Every downloadable CSV template must exist (a 404 breaks the Uploads page).
-  ...['ctsas', 'enrollment', 'enrollment-demographics', 'sites', 'study-profile', 'study-sites'].map((name) => ({
+  ...['ctsas', 'enrollment', 'sites', 'study-profile', 'study-sites'].map((name) => ({
     name: `API: GET /api/template/${name} downloads a CSV template`,
     async run(page) {
       const res = await page.request.get(`${BASE_URL}/api/template/${name}`)
@@ -178,14 +178,17 @@ const nonJsonTests = [
     },
   },
   {
-    // CTMD-161/191: the Uploads page must expose the Patient Demographics
-    // upload card so users can actually populate EnrollmentDemographics.
-    name: 'View: Uploads page shows the Patient Demographics upload card',
+    // CTMD-202: the standalone Patient Demographics upload is retired — planned
+    // cells go in the Study Profile upload, actual cells in the Study Sites upload.
+    // The old card must be gone, and the two host uploads must still be present.
+    name: 'View: Uploads page no longer shows the standalone Patient Demographics card',
     async run(page, { pageErrors }) {
       await page.goto(`${BASE_URL}/uploads`, { waitUntil: 'networkidle' })
       await page.waitForTimeout(2000)
       const body = await page.evaluate(() => document.body.innerText || '')
-      assert(/Upload Patient Demographics/i.test(body), 'Patient Demographics upload card not found on /uploads')
+      assert(!/Upload Patient Demographics/i.test(body), 'retired Patient Demographics upload card still present on /uploads')
+      assert(/Upload Study Profile/i.test(body), 'Study Profile upload card missing')
+      assert(/Upload Study Sites/i.test(body), 'Study Sites upload card missing')
       const real = (pageErrors || []).filter((e) => !/ResizeObserver loop/i.test(e))
       assert(real.length === 0, `uploads page threw: ${real.slice(0, 2).join(' | ')}`)
     },
