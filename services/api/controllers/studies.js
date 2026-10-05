@@ -4,6 +4,17 @@ const fs = require("fs");
 const csv = require("csv-parser");
 const lookupFieldName = require("../config/dictionary");
 
+// NIH enrollment-demographics cells: ethnicity x sex (4) + race x sex (10) = 14.
+// Planned cells live on StudyProfile (per study); actual cells live on StudySites
+// (per site) and are summed to the study (CTMD-198/199/200).
+const DEMO_STEMS = [
+  "HispanicFemale", "HispanicMale", "NonHispanicFemale", "NonHispanicMale",
+  "AIANFemale", "AIANMale", "AsianFemale", "AsianMale", "NHPIFemale", "NHPIMale",
+  "BlackFemale", "BlackMale", "WhiteFemale", "WhiteMale",
+];
+const PLANNED_COLS = DEMO_STEMS.map((s) => `planned${s}`);
+const ACTUAL_COLS = DEMO_STEMS.map((s) => `actual${s}`);
+
 // /api/studies/:id
 
 exports.getProfile = (req, res) => {
@@ -173,13 +184,33 @@ exports.getEnrollmentData = (req, res) => {
 
 // /studies/:id/demographics
 // Per-study enrollment demographics in the NIH structure (planned + actual,
-// ethnicity x sex + race x sex). One row per study, or none if not yet uploaded.
+// ethnicity x sex + race x sex). Planned (target) cells are read from StudyProfile
+// (one row per study); actual cells are SUMMED across the study's StudySites rows.
+// The response keeps the old EnrollmentDemographics column names, so the frontend
+// is unchanged. Returns a single-element array, or [] when the study has neither
+// planned nor actual demographics. (CTMD-198/199/200)
 exports.getDemographics = (req, res) => {
   const proposalId = req.params.id;
-  const query = `SELECT * FROM "EnrollmentDemographics" WHERE "ProposalID" = ${proposalId};`;
-  db.any(query)
+  const plannedSelect = PLANNED_COLS.map((c) => `sp."${c}"`).join(", ");
+  const actualSelect = ACTUAL_COLS.map((c) => `COALESCE(agg."${c}", 0) AS "${c}"`).join(", ");
+  const actualAgg = ACTUAL_COLS.map((c) => `SUM("${c}") AS "${c}"`).join(", ");
+  // $1 (the ProposalID) is parameterized; the route constrains :id to \d+.
+  const query = `
+    SELECT base.pid AS "ProposalID", ${plannedSelect}, ${actualSelect}
+    FROM (SELECT $1::bigint AS pid) base
+    LEFT JOIN "StudyProfile" sp ON sp."ProposalID" = base.pid
+    LEFT JOIN (
+      SELECT "ProposalID", ${actualAgg}
+      FROM "StudySites"
+      WHERE "ProposalID" = $1
+      GROUP BY "ProposalID"
+    ) agg ON agg."ProposalID" = base.pid;`;
+  db.any(query, [proposalId])
     .then((data) => {
-      res.status(200).send(data);
+      const row = data[0] || {};
+      const hasPlanned = PLANNED_COLS.some((c) => row[c] !== null && row[c] !== undefined);
+      const hasActual = ACTUAL_COLS.some((c) => Number(row[c]) > 0);
+      res.status(200).send(hasPlanned || hasActual ? [row] : []);
     })
     .catch((error) => {
       console.log("ERROR:", error);
