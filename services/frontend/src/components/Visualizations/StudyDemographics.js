@@ -71,14 +71,14 @@ export const StudyDemographics = ({ demographics }) => {
           <Subheading>Actual enrollment</Subheading>
           { hasActual
             ? <DemographicsRing data={ actual } kind="actual" />
-            : <Paragraph>No enrollment demographics recorded yet.</Paragraph> }
+            : <Paragraph>No actual enrollment yet — add it with the Study Sites CSV upload.</Paragraph> }
         </Grid>
         { showTargets && (
           <Grid item xs={ 12 } md={ 6 }>
             <Subheading>Planned target</Subheading>
             { hasTarget
               ? <DemographicsRing data={ planned } kind="planned" />
-              : <Paragraph>No enrollment targets entered for this study.</Paragraph> }
+              : <Paragraph>No targets yet — add them with the Study Profile CSV upload.</Paragraph> }
           </Grid>
         ) }
       </Grid>
