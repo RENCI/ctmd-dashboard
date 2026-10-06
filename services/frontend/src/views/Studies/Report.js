@@ -202,7 +202,7 @@ export const StudyReportPage = (props) => {
                 {studyProfile ? (
                   <StudyProfile profile={studyProfile} />
                 ) : (
-                  <Paragraph>No profile found! {isPLAdmin && <NavLink to="/uploads">Upload it</NavLink>}!</Paragraph>
+                  <Paragraph>No study profile found.{isPLAdmin && <> Upload it with the <NavLink to="/uploads">Study Profile</NavLink> CSV.</>}</Paragraph>
                 )}
               </CardContent>
             </Card>
@@ -224,7 +224,7 @@ export const StudyReportPage = (props) => {
                 {studyProfile ? (
                   <CombinedMetrics study={ study } studyProfile={ studyProfile } sites={ studySites } />
                 ) : (
-                  <Paragraph>No profile found! {isPLAdmin && <NavLink to="/uploads">Upload it</NavLink>}!</Paragraph>
+                  <Paragraph>No study profile found.{isPLAdmin && <> Upload it with the <NavLink to="/uploads">Study Profile</NavLink> CSV.</>}</Paragraph>
                 )}
               </CardContent>
             </Card>
@@ -239,7 +239,7 @@ export const StudyReportPage = (props) => {
                 <CardHeader title="Sites" />
                 <CardContent>
                   <Paragraph>
-                    No sites list found! <NavLink to="/uploads">Upload it</NavLink>!
+                    No sites list found. Upload it with the <NavLink to="/uploads">Study Sites</NavLink> CSV.
                   </Paragraph>
                 </CardContent>
               </Card>
@@ -303,7 +303,7 @@ export const StudyReportPage = (props) => {
                   </Fragment>
                 ) : (
                   <Paragraph>
-                    No enrollment information found! <NavLink to="/uploads">Upload it</NavLink>!
+                    No enrollment information found. Upload it with the <NavLink to="/uploads">Study Enrollment Data</NavLink> CSV.
                   </Paragraph>
                 )}
               </CardContent>
@@ -338,7 +338,7 @@ export const StudyReportPage = (props) => {
                   />
                 ) : (
                   <Paragraph>
-                    No site data found! <NavLink to="/uploads">Upload it</NavLink>!
+                    No site data found. Upload it with the <NavLink to="/uploads">Study Sites</NavLink> CSV.
                   </Paragraph>
                 )}
               </CardContent>
