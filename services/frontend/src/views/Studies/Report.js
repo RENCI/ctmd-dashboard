@@ -318,7 +318,9 @@ export const StudyReportPage = (props) => {
                   <StudyDemographics demographics={studyDemographics[0]} />
                 ) : (
                   <Paragraph>
-                    No demographics found! <NavLink to="/uploads">Upload them</NavLink>!
+                    No demographics yet. Upload planned targets with the{' '}
+                    <NavLink to="/uploads">Study Profile</NavLink> CSV and actual enrollment with the{' '}
+                    <NavLink to="/uploads">Study Sites</NavLink> CSV.
                   </Paragraph>
                 )}
               </CardContent>
