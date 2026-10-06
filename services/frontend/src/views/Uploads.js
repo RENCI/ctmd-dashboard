@@ -100,23 +100,8 @@ export const UploadsPage = (props) => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardHeader
-              title="Upload Patient Demographics"
-              classes={{ action: classes.action }}
-              action={
-                <DownloadButton
-                  path={api.download('enrollment-demographics')}
-                  tooltip="Download Patient Demographics CSV Template"
-                />
-              }
-            />
-            <CardContent>
-              <DropZone method="POST" endpoint={api.uploadStudyDemographics} />
-            </CardContent>
-          </Card>
-        </Grid>
+        {/* Patient Demographics upload retired (CTMD-202): planned cells now live
+            in the Study Profile upload, actual cells in the Study Sites upload. */}
       </Grid>
     </div>
   )

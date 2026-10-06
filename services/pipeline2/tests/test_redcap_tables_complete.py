@@ -25,7 +25,8 @@ CSV_ONLY_TABLES = {
     "StudySites",
     "StudyProfile",
     "EnrollmentInformation",
-    "EnrollmentDemographics",
+    # EnrollmentDemographics retired (CTMD-202): planned cells moved to StudyProfile,
+    # actual cells to StudySites; the standalone table is dropped (migration 007).
 }
 # Mapped but not queried by any API controller — i.e. unused by the dashboard, so
 # leaving them unloaded is harmless (audited 2026-09 via grep of

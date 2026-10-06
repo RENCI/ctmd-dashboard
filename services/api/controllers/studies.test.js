@@ -12,41 +12,52 @@ const { getDemographics } = require('./studies')
 // Let the controller's .then/.catch microtasks run before we assert.
 const flush = () => new Promise((resolve) => setImmediate(resolve))
 
+const STEMS = [
+  'HispanicFemale', 'HispanicMale', 'NonHispanicFemale', 'NonHispanicMale',
+  'AIANFemale', 'AIANMale', 'AsianFemale', 'AsianMale', 'NHPIFemale', 'NHPIMale',
+  'BlackFemale', 'BlackMale', 'WhiteFemale', 'WhiteMale',
+]
+// Build a demographics row like the controller's query returns: planned* from the
+// profile, actual* summed from sites. `planned`/`actual` set every cell to that
+// value (null planned = no profile; 0 actual = no site data).
+const demoRow = (ProposalID, planned, actual) => {
+  const row = { ProposalID }
+  STEMS.forEach((s) => { row[`planned${s}`] = planned })
+  STEMS.forEach((s) => { row[`actual${s}`] = actual })
+  return row
+}
+
 function mockRes() {
   return {
     statusCode: null,
     body: undefined,
-    status(code) {
-      this.statusCode = code
-      return this
-    },
-    send(payload) {
-      this.body = payload
-      return this
-    },
+    status(code) { this.statusCode = code; return this },
+    send(payload) { this.body = payload; return this },
   }
 }
 
-test('getDemographics: queries EnrollmentDemographics by ProposalID and returns the rows with 200', async () => {
-  const rows = [{ ProposalID: '146', plannedHispanicFemale: '10', actualWhiteMale: '19' }]
+test('getDemographics: reads planned from StudyProfile + summed actual from StudySites, parameterized by ProposalID', async () => {
+  const rows = [demoRow('146', '10', '19')]
   let capturedQuery
-  db.any = async (q) => {
-    capturedQuery = q
-    return rows
-  }
+  let capturedParams
+  db.any = async (q, params) => { capturedQuery = q; capturedParams = params; return rows }
 
   const res = mockRes()
   getDemographics({ params: { id: '146' } }, res)
   await flush()
 
-  assert.match(capturedQuery, /FROM "EnrollmentDemographics"/)
-  assert.match(capturedQuery, /WHERE "ProposalID" = 146/)
+  assert.match(capturedQuery, /FROM\s+\(SELECT \$1::bigint AS pid\) base/)
+  assert.match(capturedQuery, /LEFT JOIN "StudyProfile"/)
+  assert.match(capturedQuery, /FROM "StudySites"/)
+  assert.match(capturedQuery, /SUM\("actualWhiteMale"\)/)
+  assert.deepStrictEqual(capturedParams, ['146'])
   assert.strictEqual(res.statusCode, 200)
   assert.deepStrictEqual(res.body, rows)
 })
 
-test('getDemographics: passes through an empty result (study with no demographics) as 200 []', async () => {
-  db.any = async () => []
+test('getDemographics: returns [] when the study has neither planned nor actual demographics', async () => {
+  // base dummy always yields one row: planned null (no profile), actual 0 (no sites).
+  db.any = async () => [demoRow('999', null, 0)]
 
   const res = mockRes()
   getDemographics({ params: { id: '999' } }, res)
@@ -56,10 +67,32 @@ test('getDemographics: passes through an empty result (study with no demographic
   assert.deepStrictEqual(res.body, [])
 })
 
+test('getDemographics: returns the row when only actual (site) data exists, no profile', async () => {
+  const rows = [demoRow('500', null, '7')]
+  db.any = async () => rows
+
+  const res = mockRes()
+  getDemographics({ params: { id: '500' } }, res)
+  await flush()
+
+  assert.strictEqual(res.statusCode, 200)
+  assert.deepStrictEqual(res.body, rows)
+})
+
+test('getDemographics: returns the row when only planned (profile) data exists, no site actuals', async () => {
+  const rows = [demoRow('501', '12', 0)]
+  db.any = async () => rows
+
+  const res = mockRes()
+  getDemographics({ params: { id: '501' } }, res)
+  await flush()
+
+  assert.strictEqual(res.statusCode, 200)
+  assert.deepStrictEqual(res.body, rows)
+})
+
 test('getDemographics: returns 500 when the DB query fails', async () => {
-  db.any = async () => {
-    throw new Error('boom')
-  }
+  db.any = async () => { throw new Error('boom') }
 
   const res = mockRes()
   getDemographics({ params: { id: '146' } }, res)

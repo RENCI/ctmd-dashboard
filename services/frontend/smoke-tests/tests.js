@@ -118,7 +118,7 @@ const nonJsonTests = [
     },
   },
   // Every downloadable CSV template must exist (a 404 breaks the Uploads page).
-  ...['ctsas', 'enrollment', 'enrollment-demographics', 'sites', 'study-profile', 'study-sites'].map((name) => ({
+  ...['ctsas', 'enrollment', 'sites', 'study-profile', 'study-sites'].map((name) => ({
     name: `API: GET /api/template/${name} downloads a CSV template`,
     async run(page) {
       const res = await page.request.get(`${BASE_URL}/api/template/${name}`)
@@ -128,7 +128,22 @@ const nonJsonTests = [
     },
   })),
   {
-    // CTMD-160: the per-study demographics endpoint returns [] when nothing is
+    // CTMD-198/199: planned* cells are entered via the Study Profile template and
+    // actual* cells via the Study Sites template (row 2 = exact DB column names).
+    name: 'API: Study Profile + Study Sites templates carry the demographic columns',
+    async run(page) {
+      const check = async (name, col) => {
+        const res = await page.request.get(`${BASE_URL}/api/template/${name}`)
+        assert(res.ok(), `template ${name} returned HTTP ${res.status()}`)
+        const row2 = ((await res.text()).split(/\r?\n/)[1] || '').split(',')
+        assert(row2.includes(col), `template ${name} row 2 (DB columns) missing ${col}`)
+      }
+      await check('study-profile', 'plannedWhiteMale')
+      await check('study-sites', 'actualWhiteMale')
+    },
+  },
+  {
+    // CTMD-160/200: the per-study demographics endpoint returns [] when nothing is
     // uploaded (the common case), but when a row exists it must carry the NIH
     // planned + actual × ethnicity/race × sex cells.
     name: 'API: /api/studies/:id/demographics has the NIH structure when populated',
@@ -146,14 +161,34 @@ const nonJsonTests = [
     },
   },
   {
-    // CTMD-161/191: the Uploads page must expose the Patient Demographics
-    // upload card so users can actually populate EnrollmentDemographics.
-    name: 'View: Uploads page shows the Patient Demographics upload card',
+    // CTMD-201: per-site actuals power the Site Contribution drill-down, so the
+    // sites endpoint must expose the actual* NIH columns.
+    name: 'API: /api/studies/:id/sites exposes per-site actual demographic columns',
+    async run(page) {
+      const id = await resolveProposalId(page)
+      const res = await page.request.get(`${BASE_URL}/api/studies/${id}/sites`)
+      assert(res.ok(), `sites returned HTTP ${res.status()}`)
+      const rows = await res.json()
+      assert(Array.isArray(rows), 'sites did not return an array')
+      if (rows.length > 0) {
+        const sample = ['actualHispanicFemale', 'actualWhiteMale']
+        const missing = sample.filter((c) => !(c in rows[0]))
+        assert(missing.length === 0, `site row missing actual demographic columns: ${missing.join(', ')}`)
+      }
+    },
+  },
+  {
+    // CTMD-202: the standalone Patient Demographics upload is retired — planned
+    // cells go in the Study Profile upload, actual cells in the Study Sites upload.
+    // The old card must be gone, and the two host uploads must still be present.
+    name: 'View: Uploads page no longer shows the standalone Patient Demographics card',
     async run(page, { pageErrors }) {
       await page.goto(`${BASE_URL}/uploads`, { waitUntil: 'networkidle' })
       await page.waitForTimeout(2000)
       const body = await page.evaluate(() => document.body.innerText || '')
-      assert(/Upload Patient Demographics/i.test(body), 'Patient Demographics upload card not found on /uploads')
+      assert(!/Upload Patient Demographics/i.test(body), 'retired Patient Demographics upload card still present on /uploads')
+      assert(/Upload Study Profile/i.test(body), 'Study Profile upload card missing')
+      assert(/Upload Study Sites/i.test(body), 'Study Sites upload card missing')
       const real = (pageErrors || []).filter((e) => !/ResizeObserver loop/i.test(e))
       assert(real.length === 0, `uploads page threw: ${real.slice(0, 2).join(' | ')}`)
     },
