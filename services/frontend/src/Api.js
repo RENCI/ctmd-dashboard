@@ -10,6 +10,7 @@ const pipelineApiRoot = '/data/'
 // Proposals
 let endpoints = {
   proposals: apiRoot + 'proposals',
+  proposalsByTicFigure: apiRoot + 'graphics/proposals-by-tic-chart', // server-rendered SVG embedded on the home dashboard
   oneProposal: (id) => apiRoot + `proposals/${id}`,
   // proposalsByTic: apiRoot + 'proposals/by-tic',
   // proposalsByDate: apiRoot + 'proposals/by-date',
