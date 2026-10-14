@@ -2,7 +2,7 @@ import React from 'react'
 import { Grid } from '@material-ui/core'
 import { Title } from '../components/Typography'
 import {
-    ProposalsByTicBarChart, ProposalsByMonthChart, ProposalsCalendar, DayStats, Counts, ResourceMetrics
+    ProposalsByTicBarChart, ProposalsByConsultationStatus, ProposalsByMonthChart, ProposalsCalendar, DayStats, Counts, ResourceMetrics
 } from '../components/Widgets'
 
 export const HomePage = (props) => {
@@ -18,6 +18,9 @@ export const HomePage = (props) => {
                 </Grid>
                 <Grid item xs={ 12 } sm={ 11 }>
                     <ProposalsByTicBarChart />
+                </Grid>
+                <Grid item xs={ 12 } sm={ 11 }>
+                    <ProposalsByConsultationStatus />
                 </Grid>
                 <Grid item xs={ 12 } sm={ 11 } lg={ 5 }>
                     <ProposalsByMonthChart />

@@ -100,10 +100,11 @@ export const ProposalsByTicBarChart = props => {
         if (proposals && store.tics) {
             const tics = store.tics.map(({ name }) => ({ name: name, proposals: [] })).concat({ name: null, proposals: [] })
             proposals.forEach(proposal => {
-                proposal.proposalStatus = getDisplayName(proposal.proposalStatus)
+                // Map to the display name WITHOUT mutating the shared store object
+                // (other widgets read the raw proposalStatus — e.g. ProposalsByConsultationStatus).
                 const index = tics.findIndex(({ name }) => name === proposal.assignToInstitution)
                 if (index >= 0) {
-                    tics[index].proposals.push(proposal)
+                    tics[index].proposals.push({ proposalStatus: getDisplayName(proposal.proposalStatus) })
                 }
             })
             setProposalGroups(tics.map(tic => ({ name: tic.name || 'Unassigned', ...tic.proposals.countBy('proposalStatus') })))
