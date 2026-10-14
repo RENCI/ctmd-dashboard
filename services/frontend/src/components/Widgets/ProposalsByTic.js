@@ -1,12 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useTheme } from '@material-ui/styles'
 import { ResponsiveBar } from '@nivo/bar'
+import { schemeSet2, schemePaired } from 'd3-scale-chromatic'
 import { ChartTooltip } from '../Tooltip'
 import { CardContent } from '@material-ui/core'
 import { StoreContext } from '../../contexts/StoreContext'
 import { CircularLoader } from '../Progress/Progress'
-import { useWindowSize, useProposals } from '../../hooks'
+import { useProposals } from '../../hooks'
 import { Widget } from './Widget'
+
+// This chart breaks proposals into ~18 granular statuses, so it needs more than
+// the dashboard's 8-colour palette to keep every status visually distinct.
+const PALETTE = [...schemeSet2, ...schemePaired]
 
 const statusMap = [
     {
@@ -93,7 +98,6 @@ export const ProposalsByTicBarChart = props => {
     const [store, ] = useContext(StoreContext)
     const proposals = useProposals()
     const [proposalGroups, setProposalGroups] = useState()
-    const { width } = useWindowSize()
     const theme = useTheme()
 
     useEffect(() => {
@@ -111,61 +115,46 @@ export const ProposalsByTicBarChart = props => {
         }
     }, [proposals, store.tics])
 
-    const chartLegends = [{
-        enableLabel: false,
-        dataFrom: 'keys',
-        anchor: 'top-right',
-        direction: 'column',
-        justify: false,
-        translateX: width < 1000 ? 0 : 450,
-        translateY: -32,
-        itemsSpacing: 1,
-        itemWidth: 20,
-        itemHeight: 15,
-        itemDirection: 'right-to-left',
-        itemOpacity: 0.75,
-        symbolSize: 15,
-        effects: [{
-            on: 'hover',
-            style: { itemOpacity: 1.0 }
-        }]
-    }]
+    const colors = PALETTE
+    // Every status key (store statuses + mapped display names), stable order.
+    // Computed once so the chart and the legend below stay in sync.
+    const keys = (proposalGroups && store.statuses)
+        ? [...new Set(
+            store.statuses.map(({ description }) => description).concat(statusMap.map(({ displayName }) => displayName))
+          )].sort((s, t) =>
+            statusMap.findIndex(({ displayName }) => displayName === t) - statusMap.findIndex(({ displayName }) => displayName === s)
+          )
+        : []
+    const keyColor = i => colors[i % colors.length]
     
     return (
         <Widget
             title="Proposals by Application Status"
             subtitle="Grouped by TIC/RIC"
         >
-            <CardContent style={{ height: '550px' }}>
+            <CardContent>
                 {
                     (proposalGroups && store.statuses) ? (
+                      <div>
+                        <div style={{ height: 440 }}>
                         <ResponsiveBar
                             data={ proposalGroups }
-                            keys={
-                                [...new Set(store.statuses.map(({ description }) => description)
-                                    .concat(statusMap.map(({ displayName }) => displayName)))
-                                ].sort(
-                                    (s, t) => {
-                                        const sIndex = statusMap.findIndex(({ displayName }) => displayName === s)
-                                        const tIndex = statusMap.findIndex(({ displayName }) => displayName === t)
-                                        return tIndex - sIndex
-                                    }
-                                )
-                            }
+                            keys={ keys }
                             indexBy="name"
-                            margin={{ top: 32, right: width < 1000 ? 0 : 450, bottom: 24, left: 0 }}
-                            padding={ 0.05 }
+                            margin={{ top: 20, right: 12, bottom: 96, left: 0 }}
+                            padding={ 0.3 }
                             groupMode="stacked"
                             layout="vertical"
                             height={ 500 }
-                            colors={ theme.palette.chartColors }
+                            colors={ colors }
                             colorBy="id"
-                            borderColor="inherit:darker(1.6)"
+                            borderColor={ theme.palette.background.paper }
+                            borderWidth={ 1.5 }
                             axisLeft={ null }
                             axisBottom={{
                                 renderTick: tick => (
-                                    <g key={ tick.key } transform={ `translate(${ tick.x },${ tick.y + 16 }) `}>
-                                        <text style={{ fill: '#333', fontSize: 10 }} textAnchor="middle" alignmentBaseline="middle">
+                                    <g key={ tick.key } transform={ `translate(${ tick.x },${ tick.y + 10 })` }>
+                                        <text transform="rotate(-22)" style={{ fill: theme.palette.text.secondary, fontSize: 10 }} textAnchor="end">
                                             { tick.value }
                                             { ' ' }
                                             ({
@@ -185,7 +174,7 @@ export const ProposalsByTicBarChart = props => {
                             animate={ true }
                             motionStiffness={ 90 }
                             motionDamping={ 15 }
-                            legends={ width < 1000 ? [] : chartLegends }
+                            legends={ [] }
                             tooltip={ ({ id, value, color, indexValue }) => (
                                 <ChartTooltip color={ color }>
                                     <div><strong>{ indexValue }</strong></div>
@@ -194,6 +183,17 @@ export const ProposalsByTicBarChart = props => {
                                 </ChartTooltip>
                             )}
                         />
+                        </div>
+                        {/* full, always-visible legend of every status (fixes the cut-off right-side legend) */}
+                        <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${ theme.palette.divider }`, display: 'flex', flexWrap: 'wrap', gap: '8px 20px' }}>
+                            { keys.map((k, i) => (
+                                <span key={ k } style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: '0.8rem', color: theme.palette.text.primary }}>
+                                    <span style={{ width: 13, height: 13, borderRadius: 3, background: keyColor(i), flexShrink: 0 }} />
+                                    { k }
+                                </span>
+                            )) }
+                        </div>
+                      </div>
                     ) : <CircularLoader />
                 }
             </CardContent>
