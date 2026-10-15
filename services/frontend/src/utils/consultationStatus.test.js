@@ -34,9 +34,10 @@ describe('buildTicConsultationData', () => {
     expect(a.counts).toHaveProperty('Other', 0)
   })
 
-  it('sorts by total descending and drops TICs with no proposals', () => {
+  it('sorts by total descending and keeps every seeded TIC (incl 0-proposal, e.g. NCATS)', () => {
     const data = buildTicConsultationData(proposals, ['A TIC', 'B TIC', 'Empty TIC'])
-    expect(data.map((d) => d.tic)).toEqual(['A TIC', 'B TIC'])
+    expect(data.map((d) => d.tic)).toEqual(['A TIC', 'B TIC', 'Empty TIC'])
+    expect(data.find((d) => d.tic === 'Empty TIC').total).toBe(0)
   })
 
   it('does not read a mutated/display status (unknown maps to Other, not a crash)', () => {
