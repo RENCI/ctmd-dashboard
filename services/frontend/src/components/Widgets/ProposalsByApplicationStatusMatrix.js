@@ -22,6 +22,7 @@ export const ProposalsByApplicationStatusMatrix = () => {
     title: 'Proposals by Application Status',
     subtitle: 'Proposals per TIC by status · cell shaded by count',
     info: 'Every status currently in use is a row; TICs (plus an Unassigned bucket) are columns; each cell is shaded by the number of proposals. Rows, columns and the colour scale all come from the data, so a new status appears automatically.',
+    exportFilename: 'proposals-by-application-status',
   }
 
   if (!store.proposals || !store.tics) {
