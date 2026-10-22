@@ -6,11 +6,13 @@ ARG BUILD_REF
 # during development
 ENV BUILD_DATE=${BUILD_DATE}
 
-# Force the latest ca-certificates so the distrusted eMudhra/emSign roots
-# are removed from the system trust store (CVE-2026-111943, Debian DSA-6572-1).
+# Install tzdata and the latest ca-certificates so the distrusted eMudhra/emSign
+# roots are absent from the system trust store (CVE-2026-111943, Debian
+# DSA-6572-1). node:bookworm-slim ships without ca-certificates, so install it
+# outright (a plain install pulls the fixed package from the Debian repo).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata \
-    && apt-get install -y --only-upgrade ca-certificates \
+    ca-certificates \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 

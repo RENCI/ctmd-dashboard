@@ -30,9 +30,11 @@ ARG BUILD_REF
 # during development
 ENV BUILD_DATE=${BUILD_DATE}
 
-# Force the latest ca-certificates bundle so the distrusted eMudhra/emSign
-# roots are removed from the runtime trust store (CVE-2026-111943).
-RUN apk update && apk upgrade ca-certificates ca-certificates-bundle
+# Install/upgrade to the latest ca-certificates bundle so the distrusted
+# eMudhra/emSign roots are absent from the runtime trust store
+# (CVE-2026-111943). `apk add --upgrade` installs-or-upgrades (plain
+# `apk upgrade <pkg>` errors when the package isn't already present).
+RUN apk add --no-cache --upgrade ca-certificates ca-certificates-bundle
 
 EXPOSE 3000
 COPY --from=builder /src/build /usr/share/nginx/html/
