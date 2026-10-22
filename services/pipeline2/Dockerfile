@@ -6,10 +6,20 @@ ENV BUILD_DATE=${BUILD_DATE}
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
+# Install postgresql-client and force the latest ca-certificates so the
+# distrusted eMudhra/emSign roots are removed from the system trust store
+# (CVE-2026-111943, Debian DSA-6572-1).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    postgresql-client \
+    ca-certificates \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# Python's requests/urllib3 trust certifi's own bundle, not the system store,
+# so pin a certifi that has dropped the compromised eMudhra roots (>=2026.10.19).
+RUN pip install --no-cache-dir --upgrade "certifi>=2026.10.19"
 
 COPY . .
 
