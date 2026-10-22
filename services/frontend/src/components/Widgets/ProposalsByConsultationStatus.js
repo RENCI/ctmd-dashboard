@@ -32,7 +32,7 @@ export const ProposalsByConsultationStatus = () => {
   }
 
   return (
-    <Widget title="Proposals by Consultation Status" subtitle="Proposals per TIC, by consultation phase">
+    <Widget title="Proposals by Consultation Status" subtitle="Proposals per TIC, by consultation phase" exportFilename="proposals-by-consultation-status">
       <CardContent>
         { (!proposals || !store.tics) ? (
           <CircularLoader />
