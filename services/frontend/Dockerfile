@@ -1,6 +1,6 @@
 # Build environment
 ###################
-FROM node:24.11.1-alpine AS builder
+FROM node:24.22.1-alpine AS builder
 
 # Create and set working directory
 RUN mkdir /src
@@ -29,6 +29,12 @@ ARG BUILD_REF
 # This can be used for sanity checking images
 # during development
 ENV BUILD_DATE=${BUILD_DATE}
+
+# Install/upgrade to the latest ca-certificates bundle so the distrusted
+# eMudhra/emSign roots are absent from the runtime trust store
+# (CVE-2026-111943). `apk add --upgrade` installs-or-upgrades (plain
+# `apk upgrade <pkg>` errors when the package isn't already present).
+RUN apk add --no-cache --upgrade ca-certificates ca-certificates-bundle
 
 EXPOSE 3000
 COPY --from=builder /src/build /usr/share/nginx/html/
