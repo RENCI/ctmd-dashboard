@@ -71,7 +71,7 @@ frontend:
 # May need to template out nginx.conf for frontend
   create: true
   name: "ctmd-frontend"
-  tag: "v3.1.2"
+  tag: "v3.1.40"
   service:
     port: 3000
     name: http
@@ -89,7 +89,7 @@ frontend:
 api:
   create: true
   name: ctmd-api
-  tag: "v3.1.2"
+  tag: "v3.1.40"
   service:
     apiPort: 3030
     graphicsApiPort: 4040
@@ -184,7 +184,7 @@ redis:
 pipeline2:
   create: true  # Active pipeline (Scala/Spark pipeline is decommissioned)
   name: ctmd-pipeline2
-  tag: "v0.1.11"
+  tag: "v3.1.40"
   service:
     port: 5000
   resources:
