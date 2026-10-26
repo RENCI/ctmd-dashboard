@@ -67,8 +67,10 @@ export const consultationGroup = (status) => {
 const emptyCounts = () => CONSULTATION_PHASES.reduce((o, ph) => { o[ph] = 0; return o }, {})
 
 // Roll proposals into [{ tic, counts: { <phase>: n }, total }], one entry per TIC,
-// sorted by total descending. `ticNames` seeds the set so EVERY known TIC appears
-// — including ones with no proposals yet (e.g. NCATS) — rather than being dropped.
+// sorted by total descending. `ticNames` seeds the set so a known TIC can surface
+// even before its proposals are counted; TICs that still have no proposals (e.g.
+// NCATS, which is a funder rather than a consultation site) are dropped so the chart
+// never shows an empty bar.
 export const buildTicConsultationData = (proposals, ticNames = []) => {
   const byTic = {}
   ;(ticNames || []).forEach((name) => { if (name) byTic[name] = emptyCounts() })
@@ -84,6 +86,7 @@ export const buildTicConsultationData = (proposals, ticNames = []) => {
       const total = CONSULTATION_PHASES.reduce((s, ph) => s + counts[ph], 0)
       return { tic, counts, total }
     })
+    .filter((d) => d.total > 0)
     .sort((a, b) => b.total - a.total)
 }
 
