@@ -1,0 +1,90 @@
+# Informational post-deploy verification for STAGING.
+# Fires when the staging image-tag overlay changes (i.e. after a release promotes to
+# staging). Runs the per-interface unit suites and the Playwright smoke tests against the
+# live staging URL, then writes a PASS/FAIL table to the run summary. It never blocks the
+# prod dispatch — test steps use continue-on-error so results are visible without gating.
+name: Staging Verify
+on:
+  push:
+    branches: [main]
+    paths:
+      - helm-charts/ctmd-dashboard/env/staging-images.yaml
+  workflow_dispatch: {}
+
+env:
+  STAGING_URL: https://ctmd-stage.apps.ashe-k8s.renci.unc.edu
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ---- per-interface unit tests (do not require a live env) ----
+      - name: API unit tests
+        id: api_tests
+        continue-on-error: true
+        working-directory: services/api
+        run: |
+          npm ci || npm install
+          npm test
+
+      - name: Frontend unit tests
+        id: fe_tests
+        continue-on-error: true
+        working-directory: services/frontend
+        env:
+          CI: "true"
+        run: |
+          npm ci || npm install
+          npm test -- --watchAll=false
+
+      # ---- wait for ArgoCD to roll staging, then smoke-test the live URL ----
+      - name: Wait for staging to serve
+        id: wait
+        continue-on-error: true
+        run: |
+          echo "Polling ${STAGING_URL} ..."
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${STAGING_URL}/" || echo 000)
+            echo "attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+            sleep 15
+          done
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          echo "staging did not become reachable (route/stub may not be provisioned yet)"
+
+      - name: Smoke tests vs staging
+        id: smoke
+        if: steps.wait.outputs.ready == 'true'
+        continue-on-error: true
+        working-directory: services/frontend/smoke-tests
+        env:
+          SMOKE_BASE_URL: ${{ env.STAGING_URL }}
+        run: |
+          npm ci || npm install
+          npm run install-browser
+          npm test
+
+      # ---- summary (always runs) ----
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Staging verify — informational"
+            echo ""
+            echo "Target: ${STAGING_URL}"
+            echo ""
+            echo "| Suite | Result |"
+            echo "|-------|--------|"
+            echo "| API unit tests | ${{ steps.api_tests.outcome }} |"
+            echo "| Frontend unit tests | ${{ steps.fe_tests.outcome }} |"
+            echo "| Staging reachable | ${{ steps.wait.outputs.ready || 'false' }} |"
+            echo "| Smoke tests (vs staging) | ${{ steps.smoke.outcome || 'skipped' }} |"
+            echo ""
+            echo "_Informational only — does not gate prod promotion._"
+          } >> "$GITHUB_STEP_SUMMARY"

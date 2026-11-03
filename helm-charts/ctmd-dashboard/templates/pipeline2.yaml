@@ -89,8 +89,18 @@ spec:
         ports:
         - containerPort: 5000
         env:
+          # REDCAP_APPLICATION_TOKEN: source from a pre-provisioned Secret when
+          # pipeline2.redcapSecret.existingSecret is set (GitOps — no token in values);
+          # otherwise fall back to the inline value (local dev / legacy helm -f).
           - name: REDCAP_APPLICATION_TOKEN
+            {{- if .Values.pipeline2.redcapSecret.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pipeline2.redcapSecret.existingSecret }}
+                key: {{ .Values.pipeline2.redcapSecret.key | default "REDCAP_APPLICATION_TOKEN" }}
+            {{- else }}
             value: {{ .Values.pipeline2.env.REDCAP_APPLICATION_TOKEN | quote }}
+            {{- end }}
           - name: REDCAP_URL_BASE
             value: {{ .Values.pipeline2.env.REDCAP_URL_BASE | quote }}
           - name: MAPPING_PATH
