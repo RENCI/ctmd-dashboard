@@ -32,6 +32,7 @@ Human → Actions → "Deploy to Prod" (choose version; default = latest release
 |------|---------|
 | `gitops/apps/ctmd-staging.yaml` | ArgoCD Application → `ctmd-stage` (auto-sync) |
 | `gitops/apps/ctmd-prod.yaml` | ArgoCD Application → `ctmd` (auto-sync, selfHeal off) |
+| `gitops/bootstrap/argocd-instance.yaml` | Self-hosted ArgoCD instance (OpenShift GitOps operator) for `ctmd-stage` |
 | `helm-charts/ctmd-dashboard/values-staging.yaml` | staging overlay (dev mode, ASHE Route) |
 | `helm-charts/ctmd-dashboard/values-prod.yaml` | prod overlay (captured from live release) |
 | `helm-charts/ctmd-dashboard/env/staging-images.yaml` | staging image tags (CI-written) |
@@ -98,8 +99,45 @@ then the inline `pipeline2.env.REDCAP_APPLICATION_TOKEN` (gitignored `.values.ya
 - The chart's secret-externalization is additive (gated on new keys); clearing
   `*.existingSecret` / setting `secrets.create: true` restores the inline/local-dev behavior.
 
-## Open admin item
+## Self-hosting ArgoCD (no cluster-admin) — and the egress blocker
 
-`oc auth can-i create applications.argoproj.io -n ctmd` is **yes**, but that alone does not prove
-the ArgoCD instance *reconciles* apps in these namespaces. Confirm `sourceNamespaces` + AppProject
-before relying on auto-sync.
+The Red Hat OpenShift GitOps **operator is installed cluster-wide** (v1.22.3), and we can create
+`argocds`, `applications`, `appprojects`, `namespacemanagements`, and `rolebindings` in `ctmd` /
+`ctmd-stage`. So we can stand up our **own** namespaced ArgoCD instance with no admin help:
+
+```sh
+oc apply -f gitops/bootstrap/argocd-instance.yaml      # instance in ctmd-stage, manages its own ns
+oc apply -f gitops/apps/ctmd-staging.yaml              # Application in the same ns → reconciled
+```
+
+A namespaced instance manages Applications **in its own namespace** by default — no namespace
+labeling (which we can't do) and no cluster-admin. Verified 2026-11-04: the operator brings the
+instance up **Available** in ctmd-stage. Note the instance's repo-server needs `ephemeral-storage`
+raised above the namespace LimitRange default (256Mi) or it is evicted mid-clone — the CR sets 2Gi.
+
+### ⛔ Blocker: cluster egress allowlist (requires admin)
+
+The cluster enforces an **egress allowlist** we can neither see nor edit (`egressfirewalls.k8s.ovn.org`
+is admin-only). Verified 2026-11-04 from live pods:
+
+| From | To `redcap.vumc.org:443` | To `github.com:443` |
+|------|--------------------------|---------------------|
+| prod `ctmd` | ✅ OK | ❌ timeout |
+| staging `ctmd-stage` | ❌ timeout | ❌ timeout |
+
+Consequences:
+- **ArgoCD repo-server cannot clone from github.com in any namespace** → `ComparisonError … failed
+  to list refs … context deadline exceeded`. In-cluster GitOps against this GitHub repo is blocked
+  until egress to GitHub is opened (`github.com`, `codeload.github.com`, optionally `api.github.com`).
+- **`ctmd-stage` also lacks the `redcap.vumc.org` egress that prod has**, so staging's pipeline2
+  REDCap sync would fail until that is opened too.
+
+**Admin ask (the "additional namespace resources"):** add egress-firewall allowances for
+`ctmd-stage` → `redcap.vumc.org`, and for the ArgoCD instance's namespace → GitHub. Alternatively,
+mirror the repo to an in-cluster/on-campus git the pods can already reach and point `repoURL` there.
+Everything else (operator, RBAC, secrets, manifests) is already in place and verified.
+
+## Other prerequisite
+
+If instead you use a central/admin-managed ArgoCD rather than the self-hosted instance above, that
+instance must watch `ctmd-stage` + `ctmd` (`sourceNamespaces`) with an AppProject allowing this repo.

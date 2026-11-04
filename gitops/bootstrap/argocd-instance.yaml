@@ -1,0 +1,46 @@
+# Self-hosted ArgoCD instance for CTMD, provisioned by the Red Hat OpenShift GitOps
+# operator (installed cluster-wide; we only create this namespaced CR). It lives in
+# ctmd-stage and manages Applications in its OWN namespace by default — no cluster-admin,
+# no namespace labeling required (we lack both). The `ctmd-staging` Application is created
+# in this same namespace so this instance reconciles it.
+#
+# Managing prod (ctmd) from here would need a NamespaceManagement CR + RoleBinding in ctmd
+# (both within our rights) OR a second instance in ctmd — deferred; prod is manual for now.
+#
+# Apply:  oc apply -f gitops/bootstrap/argocd-instance.yaml
+# UI:     oc get route ctmd-argocd-server -n ctmd-stage
+apiVersion: argoproj.io/v1beta1
+kind: ArgoCD
+metadata:
+  name: ctmd-argocd
+  namespace: ctmd-stage
+spec:
+  # Expose the ArgoCD UI/API via an OpenShift Route (edge TLS).
+  server:
+    route:
+      enabled: true
+    resources:
+      requests: { cpu: 125m, memory: 128Mi }
+      limits:   { cpu: 500m, memory: 256Mi }
+  repo:
+    # ephemeral-storage raised above the namespace LimitRange default (256Mi): the
+    # repo-server clones the repo and renders Helm to scratch space and is evicted otherwise.
+    resources:
+      requests: { cpu: 125m, memory: 256Mi, ephemeral-storage: 256Mi }
+      limits:   { cpu: 500m, memory: 1024Mi, ephemeral-storage: 2Gi }
+  controller:
+    resources:
+      requests: { cpu: 250m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 2048Mi }
+  redis:
+    resources:
+      requests: { cpu: 125m, memory: 128Mi }
+      limits:   { cpu: 250m, memory: 256Mi }
+  applicationSet:
+    resources:
+      requests: { cpu: 125m, memory: 128Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+  # No SSO/Dex — log in with the auto-generated admin secret (argocd-cluster or
+  # ctmd-argocd-cluster secret in ctmd-stage). HA off (single-namespace, low scale).
+  ha:
+    enabled: false
