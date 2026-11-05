@@ -27,6 +27,18 @@ jobs:
         REF=${{ github.ref_name }}
         echo "GHR=${REF%/*}" >> $GITHUB_ENV
 
+    # Run the pipeline2 unit tests before building — a failing test blocks the image
+    # (mirrors build-api.yml / build-frontend.yml). CTMD-197.
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Pipeline2 unit tests
+      working-directory: services/pipeline2
+      run: |
+        pip install -r requirements.txt
+        python -m pytest tests/
+
     - uses: ./.github/actions/build-service
       with:
         app-name: 'pipeline2'

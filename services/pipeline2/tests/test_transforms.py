@@ -234,8 +234,10 @@ class TestCheckboxRows:
         rec = {"field___1": "1", "field___2": "0", "field___3": "1"}
         rows = _checkbox_rows(rec, "pid42", "field", "myCol")
         assert len(rows) == 2
-        assert {"ProposalID": "pid42", "myCol": "1"} in rows
-        assert {"ProposalID": "pid42", "myCol": "3"} in rows
+        # Rows store the full REDCap checkbox field name (base___N), matching the
+        # legacy pipeline and what prod holds today (CTMD-197).
+        assert {"ProposalID": "pid42", "myCol": "field___1"} in rows
+        assert {"ProposalID": "pid42", "myCol": "field___3"} in rows
 
     def test_no_checked_returns_empty(self):
         rec = {"field___1": "0", "field___2": "0"}
@@ -276,28 +278,30 @@ class TestTransformAll:
         assert row["FullTitle"] == "A Study of Things"
         assert row["proposalStatus"] == "100"
 
+    # ShareThisInfo / planningGrant are BOOLEAN columns (see 001_initial_schema.sql);
+    # the transformer emits Python bool, and prod stores t/f (CTMD-197).
     def test_share_this_info_from_direct_field(self, result):
         # info_share_question = "1" should win over the conditional
-        assert result["Proposal"][0]["ShareThisInfo"] == "1"
+        assert result["Proposal"][0]["ShareThisInfo"] is True
 
     def test_share_this_info_fallback_to_conditional(self):
         rec = {**FULL_RECORD, "info_share_question": "", "funding": "1"}
         row = transform_all([rec])["Proposal"][0]
-        assert row["ShareThisInfo"] == "1"
+        assert row["ShareThisInfo"] is True
 
     def test_share_this_info_conditional_false(self):
         rec = {**FULL_RECORD, "info_share_question": "", "funding": "0"}
         row = transform_all([rec])["Proposal"][0]
-        assert row["ShareThisInfo"] == "0"
+        assert row["ShareThisInfo"] is False
 
     def test_planning_grant_conditional(self):
         rec = {**FULL_RECORD, "protocol_status": "119"}
         row = transform_all([rec])["ProposalFunding"][0]
-        assert row["planningGrant"] == "1"
+        assert row["planningGrant"] is True
 
     def test_planning_grant_conditional_false(self, result):
         row = result["ProposalFunding"][0]
-        assert row["planningGrant"] == "0"
+        assert row["planningGrant"] is False
 
     def test_coalesce_assign_institution(self, result):
         row = result["AssignProposal"][0]
@@ -331,9 +335,10 @@ class TestTransformAll:
     def test_checkbox_consult_options(self, result):
         rows = result["Proposal_ConsultOptions"]
         options = {r["consultOptions"] for r in rows}
-        assert "1" in options
-        assert "3" in options
-        assert "2" not in options  # was "0"
+        # Full REDCap token stored (legacy format / prod — CTMD-197); ___2 was "0".
+        assert "consult_options___1" in options
+        assert "consult_options___3" in options
+        assert "consult_options___2" not in options
 
     def test_checkbox_new_service_selection(self, result):
         rows = result["Proposal_NewServiceSelection"]
@@ -342,8 +347,9 @@ class TestTransformAll:
     def test_checkbox_removed_services(self, result):
         rows = result["Proposal_RemovedServices"]
         options = {r["removedServices"] for r in rows}
-        assert "2" in options
-        assert "1" not in options  # was "0"
+        # Full REDCap token stored (legacy format / prod — CTMD-197); ___1 was "0".
+        assert "removed_services___2" in options
+        assert "removed_services___1" not in options
 
     def test_missing_proposal_id_skipped(self):
         rec = {**FULL_RECORD, "proposal_id": ""}
