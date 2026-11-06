@@ -7,7 +7,11 @@ import pytest
 from schema.generator import generate_sql, _pg_type
 
 
-MAPPING_PATH = "/data/mapping.json"
+# Resolves to repo-root data/mapping.json locally and to the mounted
+# /data/mapping.json in the test image (same trick as test_mapping.py).
+MAPPING_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "..", "data", "mapping.json"
+)
 
 
 # ---------------------------------------------------------------------------
