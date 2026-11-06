@@ -38,6 +38,10 @@ spec:
     syncOptions:
       - CreateNamespace=false
       - ApplyOutOfSyncOnly=true
+      # Server-side apply: the ctmd-database-mapping ConfigMap embeds mapping.json
+      # (~246KB) in .data; client-side apply would stash the whole object in the
+      # last-applied-configuration annotation and blow the 256KB annotation limit.
+      - ServerSideApply=true
     retry:
       limit: 3
       backoff:

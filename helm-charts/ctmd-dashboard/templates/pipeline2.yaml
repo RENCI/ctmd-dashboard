@@ -164,7 +164,10 @@ spec:
             name: ctmd-database-mapping
         - name: db-backups-pvc
           persistentVolumeClaim:
-            claimName: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default "db-backups-pvc" }}
+            # Must match the PVC name rendered above (default "<pipeline2.name>-backups-pvc");
+            # the old "db-backups-pvc" default never matched the created PVC when
+            # existingClaim was unset, leaving the pod Unschedulable (surfaced in ctmd-stage).
+            claimName: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default (printf "%s-backups-pvc" .Values.pipeline2.name) }}
 ---
 apiVersion: v1
 kind: Service
