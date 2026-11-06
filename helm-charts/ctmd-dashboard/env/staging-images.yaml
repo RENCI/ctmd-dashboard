@@ -2,8 +2,8 @@
 # app `ctmd-staging`. The Build-Push-Release workflow rewrites these three tags on every
 # merge to main and commits [skip ci]; ArgoCD then auto-syncs staging. Do not hand-edit.
 api:
-  tag: v3.1.42
+  tag: v3.1.44
 frontend:
-  tag: v3.1.42
+  tag: v3.1.44
 pipeline2:
-  tag: v3.1.42
+  tag: v3.1.44
