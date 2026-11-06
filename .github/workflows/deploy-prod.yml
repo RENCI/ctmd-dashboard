@@ -1,0 +1,77 @@
+# Manual promotion to PROD (namespace: ctmd).
+# A human runs this from the Actions tab, choosing a version (defaults to the latest
+# release). It rewrites the three prod image tags and commits [skip ci]; ArgoCD's
+# `ctmd-prod` app then syncs prod to that version. No ArgoCD credentials are used —
+# git is the source of truth. Staging test results are informational (see Staging Verify);
+# nothing here blocks on them.
+name: Deploy to Prod
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version to deploy (e.g. v3.1.42). Blank = latest release."
+        required: false
+        default: ""
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: ver
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+          VERSION="${INPUT_VERSION}"
+          if [ -z "${VERSION}" ]; then
+            VERSION=$(gh release view --json tagName -q .tagName)
+            echo "No version given; using latest release ${VERSION}"
+          fi
+          # Normalise to a v-prefixed tag.
+          case "${VERSION}" in v*) ;; *) VERSION="v${VERSION}" ;; esac
+          # Sanity gate: the release/tag must exist (images are published alongside it).
+          if ! gh release view "${VERSION#v}" >/dev/null 2>&1 && ! git rev-parse "${VERSION}" >/dev/null 2>&1; then
+            echo "::error::No release or tag found for ${VERSION}"; exit 1
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Write prod image tags & commit
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          FILE="helm-charts/ctmd-dashboard/env/prod-images.yaml"
+          sed -i -E "s|^([[:space:]]*tag:[[:space:]]*).*|\\1${VERSION}|" "$FILE"
+          git config user.name  "ctmd-ci[bot]"
+          git config user.email "ctmd-ci@users.noreply.github.com"
+          if git diff --quiet -- "$FILE"; then
+            echo "prod already at ${VERSION}; nothing to deploy"
+          else
+            git add "$FILE"
+            git commit -m "chore(cd): prod → ${VERSION}"
+            git push origin main
+          fi
+
+      - name: Summary
+        if: always()
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          {
+            echo "## Deploy to Prod"
+            echo ""
+            echo "Requested version: **${VERSION}**"
+            echo ""
+            echo "env/prod-images.yaml updated and committed to main. ArgoCD \`ctmd-prod\` will sync prod (namespace ctmd) to ${VERSION}."
+            echo ""
+            echo "_Staging test results are informational — review the latest **Staging Verify** run for this version before promoting._"
+          } >> "$GITHUB_STEP_SUMMARY"

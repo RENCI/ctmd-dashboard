@@ -1,0 +1,50 @@
+# ArgoCD Application: PROD (ctmd).
+# Auto-syncs committed changes, but selfHeal is OFF: ArgoCD will apply what git says when
+# git changes, yet will NOT fight manual `oc`/helm drift — it only reports it OutOfSync.
+# This lets the existing manual hotfix path coexist during cutover. prune is OFF for prod
+# safety (orphans are reported, never auto-deleted). Promotion is a human action: the
+# "Deploy to Prod" workflow_dispatch rewrites env/prod-images.yaml and commits; ArgoCD
+# then syncs the new version here.
+#
+# STUB / admin prerequisites (see gitops/README.md):
+#   - The ArgoCD instance must watch namespace `ctmd` (sourceNamespaces) and an AppProject
+#     must allow this repo + the ctmd destination.
+#   - Secrets db-dsn-pipeline2, api-session-secret already exist; add pipeline2-redcap
+#     (the REDCap token is inlined today and must be moved to a Secret before first sync).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ctmd-prod
+  namespace: ctmd
+  labels:
+    app.kubernetes.io/part-of: ctmd-dashboard
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/RENCI/ctmd-dashboard.git
+    targetRevision: main
+    path: helm-charts/ctmd-dashboard
+    helm:
+      valueFiles:
+        - values-prod.yaml
+        - env/prod-images.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ctmd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=false
+      - ApplyOutOfSyncOnly=true
+      # Server-side apply: the ctmd-database-mapping ConfigMap embeds mapping.json
+      # (~246KB) in .data; client-side apply would stash the whole object in the
+      # last-applied-configuration annotation and blow the 256KB annotation limit.
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 20s
+        factor: 2
+        maxDuration: 3m

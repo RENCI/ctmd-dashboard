@@ -185,6 +185,12 @@ pipeline2:
   create: true  # Active pipeline (Scala/Spark pipeline is decommissioned)
   name: ctmd-pipeline2
   tag: "v3.1.40"
+  # When existingSecret is set, REDCAP_APPLICATION_TOKEN is sourced from that Secret
+  # (GitOps — no token in values). Leave blank to use the inline env value below
+  # (local dev / legacy `helm -f`).
+  redcapSecret:
+    existingSecret: ""
+    key: "REDCAP_APPLICATION_TOKEN"
   service:
     port: 5000
   resources:

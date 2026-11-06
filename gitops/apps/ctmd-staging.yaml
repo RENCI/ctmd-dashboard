@@ -1,0 +1,50 @@
+# ArgoCD Application: STAGING (ctmd-stage).
+# Auto-syncs on every commit to main. Staging runs in dev mode (no TIN auth hook):
+# values-staging.yaml sets softwareContext=development. Deployed image tags come from
+# env/staging-images.yaml, which the Build-Push-Release workflow rewrites on each merge.
+#
+# STUB / admin prerequisites (see gitops/README.md):
+#   - The ArgoCD instance must watch namespace `ctmd-stage` (sourceNamespaces) and an
+#     AppProject must allow this repo + the ctmd-stage destination.
+#   - Secrets db-dsn-pipeline2, api-session-secret, pipeline2-redcap must exist in ctmd-stage.
+# If apps are instead managed from the ArgoCD namespace, move metadata.namespace there.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ctmd-staging
+  namespace: ctmd-stage
+  labels:
+    app.kubernetes.io/part-of: ctmd-dashboard
+  # Resources are pruned/rolled back cleanly if the app is deleted-from-git.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/RENCI/ctmd-dashboard.git
+    targetRevision: main
+    path: helm-charts/ctmd-dashboard
+    helm:
+      valueFiles:
+        - values-staging.yaml
+        - env/staging-images.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ctmd-stage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ApplyOutOfSyncOnly=true
+      # Server-side apply: the ctmd-database-mapping ConfigMap embeds mapping.json
+      # (~246KB) in .data; client-side apply would stash the whole object in the
+      # last-applied-configuration annotation and blow the 256KB annotation limit.
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 20s
+        factor: 2
+        maxDuration: 3m

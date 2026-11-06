@@ -1,0 +1,161 @@
+# Production overlay for the ctmd-dashboard chart (namespace: ctmd), tracked by the
+# ArgoCD app `ctmd-prod`. Captured from the live Helm release 2026-11-03 and hardened
+# for GitOps: NO secrets live here — DB/session/REDCap creds come from pre-provisioned
+# Secrets (db-dsn-pipeline2, api-session-secret, pipeline2-redcap). Deployed image tags
+# are set by env/prod-images.yaml, layered AFTER this file by the ArgoCD Application.
+api:
+  create: true
+  env:
+    DASHBOARD_URL: https://ctmd.renci.org/
+    REDCAP_AUTH_URL: https://redcap.vumc.org/plugins/TIN/sso/check_login
+  name: ctmd-api
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  service:
+    apiPort: 3030
+    graphicsApiPort: 4040
+  sessionSecret:
+    # GitOps: reference the pre-provisioned api-session-secret (never create/commit it).
+    existingSecret: api-session-secret
+    name: api-session-secret
+    value: ""
+  # Deployed image tag is set by env/prod-images.yaml (layered last), not here.
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  runAsNonRoot: true
+frontend:
+  create: true
+  env:
+    REACT_APP_API_ROOT: http://ctmd-api:3030/
+    REACT_APP_DATA_API_ROOT: http://ctmd-pipeline2:5000/
+  name: ctmd-frontend
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  service:
+    name: http
+    port: 3000
+  # Deployed image tag is set by env/prod-images.yaml (layered last), not here.
+images:
+  repository: containers.renci.org/ctmd
+ingress:
+  create: false
+pipeline2:
+  create: true
+  env:
+    BACKUP_DIR: /backups
+    CREATE_TABLES: "1"
+    DATABASE_URL: ""
+    LOCAL_ENV: "false"
+    MAPPING_PATH: /data/mapping.json
+    REDCAP_URL_BASE: https://redcap.vumc.org/api/
+    REDIS_LOCK_DB: "2"
+    REDIS_LOCK_EXPIRE: "7200"
+    REDIS_LOCK_HOST: ctmd-redis
+    REDIS_LOCK_PORT: "6379"
+    REDIS_LOCK_TIMEOUT: "7200"
+    REDIS_QUEUE_DB: "0"
+    REDIS_QUEUE_HOST: ctmd-redis
+    REDIS_QUEUE_PORT: "6379"
+    SYNC_INTERVAL_HOURS: "24"
+    TASK_TIME: "7200"
+    USE_SPARK_ETL: "0"
+  name: ctmd-pipeline2
+  # GitOps: REDCAP_APPLICATION_TOKEN is sourced from a pre-provisioned Secret, not inline.
+  redcapSecret:
+    existingSecret: pipeline2-redcap
+    key: REDCAP_APPLICATION_TOKEN
+  postgres:
+    create: true
+    dataMountPath: /var/lib/postgresql/data
+    image: postgres
+    name: ctmd-db2
+    persistence:
+      create: true
+      existingClaim: ""
+      size: 10Gi
+      storageClass: null
+    pgdataSubdir: pgdata
+    publicRepository: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+    secrets:
+      # GitOps: reference the pre-provisioned db-dsn-pipeline2 Secret (never commit the password).
+      create: false
+      database: postgres
+      name: db-dsn-pipeline2
+      user: ctmd-user
+    service:
+      port: 5432
+    tag: 17-alpine
+  recurringBackup:
+    backupPath: /backups
+    persistence:
+      create: true
+      existingClaim: db-backups-pipeline2-pvc
+    size: 5Gi
+    storageClass: null
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  service:
+    port: 5000
+  # Deployed image tag is set by env/prod-images.yaml (layered last), not here.
+podSecurityContext:
+  fsGroup: 1001780000
+  fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: RuntimeDefault
+postgres:
+  create: false
+  name: ctmd-db
+  secrets:
+    create: false
+redis:
+  args:
+  - --save
+  - ""
+  - --appendonly
+  - "no"
+  create: true
+  name: ctmd-redis
+  publicRepository: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 300Mi
+  service:
+    port: 6379
+  tag: 7-alpine
+route:
+  create: true
+  host: ctmd.apps.ashe-k8s.renci.unc.edu
+  tls:
+    enabled: true
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+softwareContext: production

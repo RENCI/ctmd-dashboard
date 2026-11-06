@@ -89,8 +89,18 @@ spec:
         ports:
         - containerPort: 5000
         env:
+          # REDCAP_APPLICATION_TOKEN: source from a pre-provisioned Secret when
+          # pipeline2.redcapSecret.existingSecret is set (GitOps — no token in values);
+          # otherwise fall back to the inline value (local dev / legacy helm -f).
           - name: REDCAP_APPLICATION_TOKEN
+            {{- if .Values.pipeline2.redcapSecret.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pipeline2.redcapSecret.existingSecret }}
+                key: {{ .Values.pipeline2.redcapSecret.key | default "REDCAP_APPLICATION_TOKEN" }}
+            {{- else }}
             value: {{ .Values.pipeline2.env.REDCAP_APPLICATION_TOKEN | quote }}
+            {{- end }}
           - name: REDCAP_URL_BASE
             value: {{ .Values.pipeline2.env.REDCAP_URL_BASE | quote }}
           - name: MAPPING_PATH
@@ -154,7 +164,10 @@ spec:
             name: ctmd-database-mapping
         - name: db-backups-pvc
           persistentVolumeClaim:
-            claimName: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default "db-backups-pvc" }}
+            # Must match the PVC name rendered above (default "<pipeline2.name>-backups-pvc");
+            # the old "db-backups-pvc" default never matched the created PVC when
+            # existingClaim was unset, leaving the pod Unschedulable (surfaced in ctmd-stage).
+            claimName: {{ .Values.pipeline2.recurringBackup.persistence.existingClaim | default (printf "%s-backups-pvc" .Values.pipeline2.name) }}
 ---
 apiVersion: v1
 kind: Service

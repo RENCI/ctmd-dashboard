@@ -15,11 +15,18 @@ on:
       - LICENSE
       - .gitignore
       - .dockerignore
+      # CD image-tag overlays: a staging/prod promotion edits only these. Ignoring them
+      # here breaks the write-back loop (so promoting staging does not rebuild/re-release),
+      # while Staging Verify still fires on the staging overlay change.
+      - helm-charts/ctmd-dashboard/env/**
     tags-ignore:
       - '*'
 jobs:
   build-push-release:
     runs-on: ubuntu-latest
+    # contents: write lets the staging-promotion step commit the image-tag bump back to main.
+    permissions:
+      contents: write
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -123,3 +130,27 @@ jobs:
           -t "${{ env.RELEASE_VERSION }}" \
           --generate-notes \
           --latest
+
+#==========================PROMOTE TO STAGING (GitOps write-back) =========================
+    # Rewrite the three image tags in the staging overlay and commit back to main.
+    # ArgoCD's `ctmd-staging` app watches main and auto-syncs ctmd-stage to $SEMVER.
+    # No [skip ci]: build-release ignores env/** (so this won't rebuild), but Staging
+    # Verify intentionally fires on this staging-images.yaml change.
+    - name: Promote to staging (write image tags)
+      run: |
+        set -euo pipefail
+        FILE="helm-charts/ctmd-dashboard/env/staging-images.yaml"
+        # The overlay contains exactly the three app tags; set them all to $SEMVER.
+        sed -i -E "s|^([[:space:]]*tag:[[:space:]]*).*|\\1${SEMVER}|" "$FILE"
+        git config user.name  "ctmd-ci[bot]"
+        git config user.email "ctmd-ci@users.noreply.github.com"
+        git fetch origin main
+        git checkout main
+        sed -i -E "s|^([[:space:]]*tag:[[:space:]]*).*|\\1${SEMVER}|" "$FILE"
+        if git diff --quiet -- "$FILE"; then
+          echo "staging already at ${SEMVER}; nothing to promote"
+          exit 0
+        fi
+        git add "$FILE"
+        git commit -m "chore(cd): staging → ${SEMVER}"
+        git push origin main
