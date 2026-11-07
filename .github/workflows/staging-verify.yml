@@ -1,8 +1,13 @@
 # Informational post-deploy verification for STAGING.
-# Fires when the staging image-tag overlay changes (i.e. after a release promotes to
-# staging). Runs the per-interface unit suites and the Playwright smoke tests against the
-# live staging URL, then writes a PASS/FAIL table to the run summary. It never blocks the
-# prod dispatch — test steps use continue-on-error so results are visible without gating.
+# Fires when the staging image-tag overlay changes (i.e. after a merge promotes to staging).
+# Runs the per-interface unit suites (which run anywhere) and, if the staging URL is
+# reachable from the runner, the Playwright smoke tests against it. Writes a PASS/FAIL table
+# to the run summary. Never blocks prod — all steps use continue-on-error.
+#
+# NOTE: the staging Route (ctmd-stage.apps.ashe-k8s.renci.unc.edu) is UNC-network-internal,
+# so GitHub's cloud runners generally CANNOT reach it — the "Wait for staging" step will
+# report unreachable and the live smoke tests skip. To actually smoke-test staging, run this
+# on a self-hosted runner on the UNC network. The unit suites below do not need a live env.
 name: Staging Verify
 on:
   push:
@@ -22,7 +27,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'  # parity with build-api.yml / build-frontend.yml
 
       # ---- per-interface unit tests (do not require a live env) ----
       - name: API unit tests
@@ -40,7 +45,9 @@ jobs:
         env:
           CI: "true"
         run: |
-          npm ci || npm install
+          # --legacy-peer-deps: Material-UI v4 doesn't declare React 18 support (matches the
+          # frontend Dockerfile); plain `npm ci` fails ERESOLVE otherwise.
+          npm ci --legacy-peer-deps || npm install --legacy-peer-deps
           npm test -- --watchAll=false
 
       # ---- wait for ArgoCD to roll staging, then smoke-test the live URL ----
@@ -48,15 +55,19 @@ jobs:
         id: wait
         continue-on-error: true
         run: |
-          echo "Polling ${STAGING_URL} ..."
-          for i in $(seq 1 60); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${STAGING_URL}/" || echo 000)
+          # Bounded probe (~80s worst case). The staging Route is UNC-internal, so a cloud
+          # runner will almost certainly get HTTP 000 (no connectivity) — we fail fast and
+          # mark unreachable rather than spinning. On a UNC-network self-hosted runner this
+          # succeeds once ArgoCD has rolled staging.
+          echo "Polling ${STAGING_URL} (bounded; UNC-internal route may be unreachable from cloud runners) ..."
+          for i in $(seq 1 8); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "${STAGING_URL}/" || echo 000)
             echo "attempt $i: HTTP $code"
             if [ "$code" = "200" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; exit 0; fi
-            sleep 15
+            sleep 8
           done
           echo "ready=false" >> "$GITHUB_OUTPUT"
-          echo "staging did not become reachable (route/stub may not be provisioned yet)"
+          echo "staging not reachable from this runner — if HTTP 000, the route is UNC-internal; use a self-hosted runner for live smoke."
 
       - name: Smoke tests vs staging
         id: smoke
