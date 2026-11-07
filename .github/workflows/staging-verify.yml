@@ -1,13 +1,12 @@
 # Informational post-deploy verification for STAGING.
 # Fires when the staging image-tag overlay changes (i.e. after a merge promotes to staging).
-# Runs the per-interface unit suites (which run anywhere) and, if the staging URL is
-# reachable from the runner, the Playwright smoke tests against it. Writes a PASS/FAIL table
-# to the run summary. Never blocks prod — all steps use continue-on-error.
+# Runs the per-interface unit suites (which run anywhere) and writes a PASS/FAIL table to the
+# run summary. Never blocks prod — all steps use continue-on-error.
 #
-# NOTE: the staging Route (ctmd-stage.apps.ashe-k8s.renci.unc.edu) is UNC-network-internal,
-# so GitHub's cloud runners generally CANNOT reach it — the "Wait for staging" step will
-# report unreachable and the live smoke tests skip. To actually smoke-test staging, run this
-# on a self-hosted runner on the UNC network. The unit suites below do not need a live env.
+# NOTE: the live-URL checks (wait-for-staging + Playwright smoke) are CURRENTLY COMMENTED OUT
+# below. The staging Route (ctmd-stage.apps.ashe-k8s.renci.unc.edu) is UNC-network-internal,
+# so GitHub cloud runners can't reach it (HTTP 000) — running them there just wastes time.
+# Re-enable them on a self-hosted runner on the UNC network to smoke-test live staging.
 name: Staging Verify
 on:
   push:
@@ -50,36 +49,36 @@ jobs:
           npm ci --legacy-peer-deps || npm install --legacy-peer-deps
           npm test -- --watchAll=false
 
-      # ---- wait for ArgoCD to roll staging, then smoke-test the live URL ----
-      - name: Wait for staging to serve
-        id: wait
-        continue-on-error: true
-        run: |
-          # Bounded probe (~80s worst case). The staging Route is UNC-internal, so a cloud
-          # runner will almost certainly get HTTP 000 (no connectivity) — we fail fast and
-          # mark unreachable rather than spinning. On a UNC-network self-hosted runner this
-          # succeeds once ArgoCD has rolled staging.
-          echo "Polling ${STAGING_URL} (bounded; UNC-internal route may be unreachable from cloud runners) ..."
-          for i in $(seq 1 8); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "${STAGING_URL}/" || echo 000)
-            echo "attempt $i: HTTP $code"
-            if [ "$code" = "200" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; exit 0; fi
-            sleep 8
-          done
-          echo "ready=false" >> "$GITHUB_OUTPUT"
-          echo "staging not reachable from this runner — if HTTP 000, the route is UNC-internal; use a self-hosted runner for live smoke."
-
-      - name: Smoke tests vs staging
-        id: smoke
-        if: steps.wait.outputs.ready == 'true'
-        continue-on-error: true
-        working-directory: services/frontend/smoke-tests
-        env:
-          SMOKE_BASE_URL: ${{ env.STAGING_URL }}
-        run: |
-          npm ci || npm install
-          npm run install-browser
-          npm test
+      # ---- live-URL checks DISABLED for now ----
+      # The staging Route is UNC-network-internal, so GitHub cloud runners can't reach it
+      # (HTTP 000). Commented out so we don't waste runner time. Re-enable both steps on a
+      # self-hosted runner on the UNC network (and switch `runs-on` above accordingly) to
+      # smoke-test live staging after ArgoCD rolls it.
+      #
+      # - name: Wait for staging to serve
+      #   id: wait
+      #   continue-on-error: true
+      #   run: |
+      #     echo "Polling ${STAGING_URL} ..."
+      #     for i in $(seq 1 8); do
+      #       code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "${STAGING_URL}/" || echo 000)
+      #       echo "attempt $i: HTTP $code"
+      #       if [ "$code" = "200" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+      #       sleep 8
+      #     done
+      #     echo "ready=false" >> "$GITHUB_OUTPUT"
+      #
+      # - name: Smoke tests vs staging
+      #   id: smoke
+      #   if: steps.wait.outputs.ready == 'true'
+      #   continue-on-error: true
+      #   working-directory: services/frontend/smoke-tests
+      #   env:
+      #     SMOKE_BASE_URL: ${{ env.STAGING_URL }}
+      #   run: |
+      #     npm ci || npm install
+      #     npm run install-browser
+      #     npm test
 
       # ---- summary (always runs) ----
       - name: Summary
@@ -94,8 +93,7 @@ jobs:
             echo "|-------|--------|"
             echo "| API unit tests | ${{ steps.api_tests.outcome }} |"
             echo "| Frontend unit tests | ${{ steps.fe_tests.outcome }} |"
-            echo "| Staging reachable | ${{ steps.wait.outputs.ready || 'false' }} |"
-            echo "| Smoke tests (vs staging) | ${{ steps.smoke.outcome || 'skipped' }} |"
+            echo "| Live smoke (vs staging) | disabled — needs UNC-network runner |"
             echo ""
             echo "_Informational only — does not gate prod promotion._"
           } >> "$GITHUB_STEP_SUMMARY"
