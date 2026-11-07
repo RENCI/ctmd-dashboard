@@ -10,11 +10,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: |
-          [Check smoke tests](https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu)
-
-
-          Release version to deploy (e.g. v3.1.42). Blank = latest release.
+        # NOTE: GitHub renders this as PLAIN TEXT in the Run-workflow dialog — no markdown
+        # links, no newlines. Keep it a single readable line with the URL inline.
+        description: "Check smoke tests first → https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu    |    Release version to deploy (e.g. v3.1.42). Blank = latest release."
         required: false
         default: ""
 
