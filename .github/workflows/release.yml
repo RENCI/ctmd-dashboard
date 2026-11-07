@@ -10,7 +10,9 @@
 # "Deploy to Prod" button; it does not cut a new version.)
 #
 # Usage: Actions → Release → Run workflow. Pick a bump (patch/minor/major) or type an
-# explicit version. By default it promotes the current tip of main.
+# explicit version. By default it promotes whatever is currently running in staging
+# (the tag recorded in env/staging-images.yaml) — i.e. the artifact staging just tested.
+# Override with source_sha only to release a specific earlier main build.
 name: Release
 on:
   workflow_dispatch:
@@ -25,7 +27,7 @@ on:
         required: false
         default: ""
       source_sha:
-        description: "main short-sha to promote (blank = current main tip)"
+        description: "main short-sha to promote (blank = whatever is currently in staging)"
         required: false
         default: ""
 
@@ -66,18 +68,31 @@ jobs:
           echo "version=${V}" >> "$GITHUB_OUTPUT"
           echo "Release version: ${V}"
 
-      - name: Resolve source commit
+      - name: Resolve source image
         id: src
         env:
           IN_SHA: ${{ github.event.inputs.source_sha }}
         run: |
           set -euo pipefail
-          SHA="${IN_SHA}"
-          [ -z "${SHA}" ] && SHA=$(git rev-parse --short HEAD)
-          # Normalise to the short form the build used (main-<shortsha>).
-          SHA=$(git rev-parse --short "${SHA}")
+          STAGING_OVERLAY="helm-charts/ctmd-dashboard/env/staging-images.yaml"
+          if [ -n "${IN_SHA}" ]; then
+            # Explicit override: promote a specific main build.
+            SHA=$(git rev-parse --short "${IN_SHA}")
+            SRC_TAG="main-${SHA}"
+          else
+            # Default: promote exactly what is running in staging (the tag the Build-Staging
+            # write-back recorded). The tip of main is the write-back commit itself, which has
+            # NO image built for it — so never derive the source from HEAD.
+            SRC_TAG=$(grep -m1 -E '^[[:space:]]*tag:' "${STAGING_OVERLAY}" | awk '{print $2}')
+            case "${SRC_TAG}" in
+              main-*) SHA="${SRC_TAG#main-}" ;;
+              *)      SHA=$(git rev-parse --short HEAD) ;;  # overlay still a released tag (pre-first main build)
+            esac
+          fi
+          if [ -z "${SRC_TAG}" ]; then echo "::error::could not resolve a source image tag"; exit 1; fi
+          echo "src_tag=${SRC_TAG}" >> "$GITHUB_OUTPUT"
           echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
-          echo "Promoting images main-${SHA} → ${{ steps.ver.outputs.version }}"
+          echo "Promoting images ${SRC_TAG} → ${{ steps.ver.outputs.version }} (git tag at ${SHA})"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.7.1
@@ -97,12 +112,12 @@ jobs:
       - name: Promote images (re-tag, no rebuild)
         env:
           V: ${{ steps.ver.outputs.version }}
-          SHA: ${{ steps.src.outputs.sha }}
+          SRC_TAG: ${{ steps.src.outputs.src_tag }}
         run: |
           set -euo pipefail
           for app in api frontend pipeline2; do
             for reg in containers.renci.org/ctmd rencibuild; do
-              SRC="${reg}/ctmd-${app}:main-${SHA}"
+              SRC="${reg}/ctmd-${app}:${SRC_TAG}"
               DST="${reg}/ctmd-${app}:${V}"
               echo "::group::${SRC} → ${DST}"
               docker buildx imagetools create -t "${DST}" "${SRC}"
@@ -147,12 +162,12 @@ jobs:
         if: always()
         env:
           V: ${{ steps.ver.outputs.version }}
-          SHA: ${{ steps.src.outputs.sha }}
+          SRC_TAG: ${{ steps.src.outputs.src_tag }}
         run: |
           {
             echo "## Release ${V} — cut & shipped to prod"
             echo ""
-            echo "Promoted \`main-${SHA}\` images → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
+            echo "Promoted \`${SRC_TAG}\` images (the staging build) → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
             echo "Wrote \`${V}\` into env/prod-images.yaml → ArgoCD \`ctmd-prod\` syncs prod (namespace ctmd)."
             echo ""
             echo "_Roll back / redeploy a different version: Actions → **Deploy to Prod**._"
