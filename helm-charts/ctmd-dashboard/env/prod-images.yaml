@@ -1,6 +1,6 @@
 # Deployed image tags for PROD (namespace: ctmd), layered last by the ArgoCD app
-# `ctmd-prod`. These are always a cut RELEASE version (vX.Y.Z from the Release button).
-# The "Deploy to Prod" workflow_dispatch rewrites these three tags and commits; ArgoCD
+# `ctmd-prod`. Always a cut RELEASE version (vX.Y.Z). Written by the "Release" button
+# (cut + ship) or by "Deploy to Prod" (roll back / redeploy an existing release); ArgoCD
 # then syncs prod to that version. Do not hand-edit in normal flow.
 api:
   tag: v3.1.42

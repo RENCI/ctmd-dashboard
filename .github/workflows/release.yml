@@ -1,10 +1,13 @@
-# Cut a RELEASE — the "approve" button.
+# Cut a RELEASE and ship it to PROD — the single "approve & ship" button.
 #
 # Build-once / promote model: this does NOT rebuild anything. It takes images that were
-# already built and tested in staging (tagged main-<shortsha>) and re-tags them as vX.Y.Z
-# in both registries (registry-side, same digest — the exact bits staging ran), then
-# creates the git tag + GitHub release. Deploying a release to PROD is a separate button
-# ("Deploy to Prod"), which nothing here triggers.
+# already built and tested in staging (tagged main-<shortsha>), re-tags them as vX.Y.Z in
+# both registries (registry-side, same digest — the exact bits staging ran), creates the
+# git tag + GitHub release, then writes vX.Y.Z into env/prod-images.yaml so ArgoCD's
+# `ctmd-prod` app rolls prod to it. Cutting a release = the decision to ship.
+#
+# (Rolling back or redeploying a DIFFERENT already-cut release is the separate
+# "Deploy to Prod" button; it does not cut a new version.)
 #
 # Usage: Actions → Release → Run workflow. Pick a bump (patch/minor/major) or type an
 # explicit version. By default it promotes the current tip of main.
@@ -118,6 +121,28 @@ jobs:
           git push origin "${V}"
           gh release create "${V}" -t "${V}" --generate-notes --latest
 
+      # Cutting a release is the decision to ship: write the version into the PROD overlay
+      # and commit → ArgoCD's `ctmd-prod` app syncs prod to ${V}. (Re-deploying or rolling
+      # back to a DIFFERENT already-cut release is the separate "Deploy to Prod" button.)
+      - name: Deploy release to prod
+        env:
+          V: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          FILE="helm-charts/ctmd-dashboard/env/prod-images.yaml"
+          git fetch origin main
+          git checkout -B main origin/main
+          sed -i -E "s|^([[:space:]]*tag:[[:space:]]*).*|\\1${V}|" "$FILE"
+          git config user.name  "ctmd-ci[bot]"
+          git config user.email "ctmd-ci@users.noreply.github.com"
+          if git diff --quiet -- "$FILE"; then
+            echo "prod already at ${V}; nothing to deploy"
+          else
+            git add "$FILE"
+            git commit -m "chore(cd): prod → ${V}"
+            git push origin main
+          fi
+
       - name: Summary
         if: always()
         env:
@@ -125,9 +150,10 @@ jobs:
           SHA: ${{ steps.src.outputs.sha }}
         run: |
           {
-            echo "## Release ${V}"
+            echo "## Release ${V} — cut & shipped to prod"
             echo ""
             echo "Promoted \`main-${SHA}\` images → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
+            echo "Wrote \`${V}\` into env/prod-images.yaml → ArgoCD \`ctmd-prod\` syncs prod (namespace ctmd)."
             echo ""
-            echo "_To ship it: Actions → **Deploy to Prod** → choose \`${V}\`._"
+            echo "_Roll back / redeploy a different version: Actions → **Deploy to Prod**._"
           } >> "$GITHUB_STEP_SUMMARY"

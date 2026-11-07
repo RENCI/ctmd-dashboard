@@ -5,8 +5,8 @@ reaching a cluster is an auditable git commit, and ArgoCD reconciles the rest.
 
 ## Flow
 
-Build once, promote the same artifact. A merge delivers to staging automatically; a
-release and a prod deploy are each a deliberate **button** (`workflow_dispatch`).
+Build once, promote the same artifact. A merge delivers to staging automatically; cutting
+a release is one **button** (`workflow_dispatch`) that also ships it to prod.
 
 ```
 PR → merge to main
@@ -18,14 +18,18 @@ PR → merge to main
 Human → Actions → "Release"  (button: bump patch/minor/major or type a version; default = promote main tip)
   └─ re-tags the already-built main-<shortsha> images → vX.Y.Z in both registries (NO rebuild)
        └─ creates git tag vX.Y.Z + GitHub release
+            └─ writes vX.Y.Z into env/prod-images.yaml, commits to main
+                 └─ ArgoCD `ctmd-prod` (auto-sync, selfHeal OFF) rolls ctmd to vX.Y.Z
 
 Human → Actions → "Deploy to Prod"  (button: choose version; default = latest release)
-  └─ writes vX.Y.Z into env/prod-images.yaml, commits to main
-       └─ ArgoCD `ctmd-prod` (auto-sync, selfHeal OFF) rolls ctmd to that version
+  └─ ROLLBACK / REDEPLOY an already-cut release — writes that version into env/prod-images.yaml
+       └─ ArgoCD `ctmd-prod` rolls ctmd to it (does not cut a new release)
 ```
 
 The release re-tag is registry-side (`docker buildx imagetools create`), so the exact bits
-staging ran are what reach prod — no rebuild between environments.
+staging ran are what reach prod — no rebuild between environments. Cutting a release is the
+decision to ship: one click re-tags, releases, and rolls prod. The separate "Deploy to Prod"
+button exists only to roll back to or redeploy a different existing version.
 
 - **Staging runs in dev mode** (`values-staging.yaml` → `softwareContext: development` →
   `AUTH_ENV=development`): the API skips the TIN/REDCap SSO auth middleware and `/auth_status`
@@ -48,9 +52,9 @@ staging ran are what reach prod — no rebuild between environments.
 | `helm-charts/ctmd-dashboard/env/staging-images.yaml` | staging image tags (CI-written) |
 | `helm-charts/ctmd-dashboard/env/prod-images.yaml` | prod image tags (dispatch-written) |
 | `.github/workflows/build-staging.yml` | build `:main-<sha>` on merge + **staging write-back** |
-| `.github/workflows/release.yml` | **button**: re-tag `main-<sha>` → `vX.Y.Z` + GH release (no rebuild) |
+| `.github/workflows/release.yml` | **button**: re-tag `main-<sha>` → `vX.Y.Z` + GH release + **ship to prod** (no rebuild) |
 | `.github/workflows/staging-verify.yml` | informational post-deploy tests |
-| `.github/workflows/deploy-prod.yml` | **button**: promote a chosen release to prod |
+| `.github/workflows/deploy-prod.yml` | **button**: roll back / redeploy a chosen existing release to prod |
 
 ## Secret contract (pre-provision per namespace — never in git)
 
