@@ -9,10 +9,15 @@ name: Deploy to Prod
 on:
   workflow_dispatch:
     inputs:
+      # Display-only: a prefilled text box so the ArgoCD URL is easy to read/copy from the
+      # Run-workflow form (input descriptions render as plain text, so a box is the tidiest
+      # way to surface a URL). Declared first so it sits at the top. The job never reads it.
+      argocd_smoke_url:
+        description: "Check staging smoke in ArgoCD before promoting (open/copy this URL):"
+        required: false
+        default: "https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu"
       version:
-        # NOTE: GitHub renders this as PLAIN TEXT in the Run-workflow dialog — no markdown
-        # links, no newlines. Keep it a single readable line with the URL inline.
-        description: "Check smoke tests first → https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu    |    Release version to deploy (e.g. v3.1.42). Blank = latest release."
+        description: "Release version to deploy (e.g. v3.1.42). Blank = latest release."
         required: false
         default: ""
 
