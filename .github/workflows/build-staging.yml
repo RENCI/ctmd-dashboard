@@ -7,21 +7,24 @@
 #   - It writes main-<shortsha> into env/staging-images.yaml and commits to main;
 #     ArgoCD's `ctmd-staging` app (tracking main) then auto-syncs the ctmd-stage namespace.
 #
-# Loop-breaker: env/** is path-ignored, so the write-back commit does not re-trigger this
-# workflow (and pushes made with GITHUB_TOKEN do not trigger workflows anyway).
+# Loop-breaker: the trigger allow-list is services/** only, so the write-back commit (which
+# touches env/staging-images.yaml) does not re-trigger this workflow — and pushes made with
+# GITHUB_TOKEN do not trigger workflows anyway.
 name: Build-Staging
 on:
   push:
     branches:
       - main
-    paths-ignore:
-      - README.md
-      - README.md.old
-      - .github/**
-      - LICENSE
-      - .gitignore
-      - .dockerignore
-      - helm-charts/ctmd-dashboard/env/**
+    # Rebuild images ONLY when application source changes — the images are built from
+    # services/<app>/ (Dockerfiles included), so nothing else can change them. This
+    # allow-list means administrative/non-code changes never rebuild or redeploy:
+    # README and all docs, spec/**, gitops/**, .github/** (workflows + actions), LICENSE,
+    # the Helm chart/values, and the env/ image-tag overlays (the write-back commit).
+    # Chart/values edits still reach staging without a rebuild, because ArgoCD watches
+    # helm-charts/ctmd-dashboard on main and re-syncs on its own when rendered output changes.
+    # (This also breaks the write-back loop: the env/ commit doesn't touch services/**.)
+    paths:
+      - services/**
     tags-ignore:
       - '*'
 jobs:
