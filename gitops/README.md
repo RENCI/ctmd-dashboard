@@ -18,20 +18,20 @@ PR → merge to main
                  └─ Staging Verify (GitHub): unit suites (informational; the live-URL smoke is
                       disabled on cloud runners — the UNC-internal route isn't reachable there)
 
-Human → Actions → "Release"  (button: bump patch/minor/major or type a version; default = promote main tip)
+Human → Actions → "Production Release"  (button: bump patch/minor/major or type a version; default = promote the staging build)
   └─ re-tags the already-built main-<shortsha> images → vX.Y.Z in both registries (NO rebuild)
        └─ creates git tag vX.Y.Z + GitHub release
             └─ writes vX.Y.Z into env/prod-images.yaml, commits to main
                  └─ ArgoCD `ctmd-prod` (auto-sync, selfHeal OFF) rolls ctmd to vX.Y.Z
 
-Human → Actions → "Deploy to Prod"  (button: choose version; default = latest release)
+Human → Actions → "Redeploy Prod"  (button: choose version; default = latest release)
   └─ ROLLBACK / REDEPLOY an already-cut release — writes that version into env/prod-images.yaml
        └─ ArgoCD `ctmd-prod` rolls ctmd to it (does not cut a new release)
 ```
 
 The release re-tag is registry-side (`docker buildx imagetools create`), so the exact bits
 staging ran are what reach prod — no rebuild between environments. Cutting a release is the
-decision to ship: one click re-tags, releases, and rolls prod. The separate "Deploy to Prod"
+decision to ship: one click re-tags, releases, and rolls prod. The separate "Redeploy Prod"
 button exists only to roll back to or redeploy a different existing version.
 
 - **Staging runs in dev mode** (`values-staging.yaml` → `softwareContext: development` →
@@ -48,7 +48,7 @@ button exists only to roll back to or redeploy a different existing version.
   (which proxies `/api` + `/data`, so one URL covers the stack). The Job shows on the
   `ctmd-staging` app in the ArgoCD UI — its logs are the pass/fail, and a failure marks the
   staging sync failed so you can **check it before promoting**. It never runs in prod and
-  never touches prod; promotion stays the GitHub Release button. The Release / Deploy-to-Prod
+  never touches prod; promotion stays the GitHub Release button. The Production Release / Redeploy Prod
   run summaries link straight to the ArgoCD UI as a reminder to check smoke first.
 
 ## Files
@@ -65,9 +65,9 @@ button exists only to roll back to or redeploy a different existing version.
 | `.github/workflows/build-staging.yml` | build `:main-<sha>` (incl. `ctmd-smoke`) on merge + **staging write-back** |
 | `helm-charts/ctmd-dashboard/templates/smoke-postsync.yaml` | ArgoCD PostSync smoke hook (staging only) |
 | `services/frontend/smoke-tests/Dockerfile` | containerised Playwright smoke suite (`ctmd-smoke` image) |
-| `.github/workflows/release.yml` | **button**: re-tag `main-<sha>` → `vX.Y.Z` + GH release + **ship to prod** (no rebuild) |
+| `.github/workflows/release.yml` | **Production Release** button: re-tag `main-<sha>` → `vX.Y.Z` + GH release + **ship to prod** (no rebuild) |
 | `.github/workflows/staging-verify.yml` | informational post-deploy tests |
-| `.github/workflows/deploy-prod.yml` | **button**: roll back / redeploy a chosen existing release to prod |
+| `.github/workflows/deploy-prod.yml` | **Redeploy Prod** button: roll back / redeploy a chosen existing release to prod (no new version) |
 
 ## Secret contract (pre-provision per namespace — never in git)
 

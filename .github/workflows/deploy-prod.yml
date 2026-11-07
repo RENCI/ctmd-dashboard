@@ -1,23 +1,16 @@
-# Promote an ALREADY-CUT release to PROD (namespace: ctmd) — rollback / redeploy button.
-# The normal ship path is the "Release" workflow, which cuts vX.Y.Z and deploys it to prod
-# in one click. Use THIS button to roll back to, or redeploy, a different existing release
-# without cutting a new one. A human runs it from the Actions tab, choosing a version
+# REDEPLOY / ROLLBACK prod to an ALREADY-CUT release (namespace: ctmd). Does NOT mint a
+# new version. The normal ship path is the "Production Release" workflow, which cuts vX.Y.Z
+# and ships it to prod in one click. Use THIS button only to roll back to, or redeploy, a
+# different existing release. A human runs it from the Actions tab, choosing a version
 # (defaults to the latest release). It rewrites the three prod image tags and commits to
 # main; ArgoCD's `ctmd-prod` app then syncs prod to that version. No ArgoCD creds used —
-# git is the source of truth. Staging test results are informational (see Staging Verify).
-name: Deploy to Prod
+# git is the source of truth.
+name: Redeploy Prod
 on:
   workflow_dispatch:
     inputs:
-      # Display-only: a prefilled text box so the ArgoCD URL is easy to read/copy from the
-      # Run-workflow form (input descriptions render as plain text, so a box is the tidiest
-      # way to surface a URL). Declared first so it sits at the top. The job never reads it.
-      argocd_smoke_url:
-        description: "Check staging smoke in ArgoCD before promoting (open/copy this URL):"
-        required: false
-        default: "https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu"
       version:
-        description: "Release version to deploy (e.g. v3.1.42). Blank = latest release."
+        description: "Rollback / redeploy scenario — does NOT mint a new version. Existing release to deploy (e.g. v3.1.42). Blank = latest release."
         required: false
         default: ""
 
@@ -75,12 +68,11 @@ jobs:
           VERSION: ${{ steps.ver.outputs.version }}
         run: |
           {
-            echo "## Deploy to Prod"
+            echo "## Redeploy Prod"
             echo ""
             echo "Requested version: **${VERSION}**"
             echo ""
             echo "env/prod-images.yaml updated and committed to main. ArgoCD \`ctmd-prod\` will sync prod (namespace ctmd) to ${VERSION}."
             echo ""
-            echo "_Before promoting, confirm staging is healthy and smoke passed:_"
-            echo "_[open ArgoCD](https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu) (UNC network/VPN) → the \`ctmd-staging\` app shows the in-cluster smoke result._"
+            echo "_Rollback / redeploy of an existing release — no new version cut._"
           } >> "$GITHUB_STEP_SUMMARY"

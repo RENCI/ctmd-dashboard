@@ -7,16 +7,22 @@
 # `ctmd-prod` app rolls prod to it. Cutting a release = the decision to ship.
 #
 # (Rolling back or redeploying a DIFFERENT already-cut release is the separate
-# "Deploy to Prod" button; it does not cut a new version.)
+# "Redeploy Prod" button; it does not cut a new version.)
 #
 # Usage: Actions → Release → Run workflow. Pick a bump (patch/minor/major) or type an
 # explicit version. By default it promotes whatever is currently running in staging
 # (the tag recorded in env/staging-images.yaml) — i.e. the artifact staging just tested.
 # Override with source_sha only to release a specific earlier main build.
-name: Release
+name: Production Release
 on:
   workflow_dispatch:
     inputs:
+      # Display-only: a prefilled box so the ArgoCD URL is easy to read/copy here — check
+      # staging smoke before shipping. Declared first so it sits at the top. Not read by the job.
+      argocd_smoke_url:
+        description: "Check staging smoke in ArgoCD before shipping (open/copy this URL):"
+        required: false
+        default: "https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu"
       bump:
         description: "Semver bump (ignored when 'version' is set)"
         type: choice
@@ -138,7 +144,7 @@ jobs:
 
       # Cutting a release is the decision to ship: write the version into the PROD overlay
       # and commit → ArgoCD's `ctmd-prod` app syncs prod to ${V}. (Re-deploying or rolling
-      # back to a DIFFERENT already-cut release is the separate "Deploy to Prod" button.)
+      # back to a DIFFERENT already-cut release is the separate "Redeploy Prod" button.)
       - name: Deploy release to prod
         env:
           V: ${{ steps.ver.outputs.version }}
@@ -175,5 +181,5 @@ jobs:
             echo "Promoted \`${SRC_TAG}\` images (the staging build) → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
             echo "Wrote \`${V}\` into env/prod-images.yaml → ArgoCD \`ctmd-prod\` syncs prod (namespace ctmd)."
             echo ""
-            echo "_Roll back / redeploy a different version: Actions → **Deploy to Prod**._"
+            echo "_Roll back / redeploy a different version: Actions → **Redeploy Prod**._"
           } >> "$GITHUB_STEP_SUMMARY"
