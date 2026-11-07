@@ -9,8 +9,10 @@ FROM mcr.microsoft.com/playwright:v1.61.1-jammy
 WORKDIR /smoke
 
 # Install just the playwright npm package (browsers already in the base image).
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev || npm install --omit=dev
+# package-lock.json is intentionally gitignored for this harness, so install (not ci) and
+# pin the version in package.json to match the base image's bundled browsers.
+COPY package.json ./
+RUN npm install --omit=dev
 
 COPY . .
 
