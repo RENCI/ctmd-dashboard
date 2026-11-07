@@ -1,0 +1,52 @@
+{{- if .Values.smoke.enabled }}
+# ArgoCD PostSync hook: after ArgoCD syncs this app, run the Playwright smoke suite
+# in-cluster against the freshly rolled frontend (which proxies /api and /data, so one
+# URL exercises the full stack). The Job shows up in the ArgoCD UI as a resource — its
+# logs are the pass/fail. STAGING ONLY (gated on smoke.enabled); never rendered for prod.
+#
+# A failed PostSync hook marks the sync as failed, so staging's ArgoCD health reflects
+# smoke status — check it before promoting. It does NOT touch prod; promotion stays the
+# GitHub Release button. hook-delete-policy BeforeHookCreation keeps exactly the latest
+# run (pass or fail) visible until the next sync replaces it.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.frontend.name }}-smoke
+  labels:
+    app.kubernetes.io/part-of: ctmd-dashboard
+    app: ctmd-smoke
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: {{ .Values.smoke.timeoutSeconds | default 300 }}
+  template:
+    metadata:
+      labels:
+        app: ctmd-smoke
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: smoke
+          image: "{{ .Values.images.repository }}/ctmd-smoke:{{ .Values.frontend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SMOKE_BASE_URL
+              value: "{{ .Values.smoke.targetUrl | default (printf "http://%s:3000" .Values.frontend.name) }}"
+            # Required under OpenShift restricted SCC (non-root / arbitrary UID).
+            - name: SMOKE_NO_SANDBOX
+              value: "1"
+            - name: HOME
+              value: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+              ephemeral-storage: 128Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+              # Fits the ctmd-stage ResourceQuota (4Gi total limits.ephemeral-storage).
+              ephemeral-storage: 512Mi
+{{- end }}

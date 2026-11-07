@@ -38,6 +38,16 @@ containerSecurityContext: {}
 # for the appropriate settings.
 softwareContext: "development"
 
+# Post-deploy smoke tests, run in-cluster as an ArgoCD PostSync hook Job (templates/
+# smoke-postsync.yaml). Off by default; enabled in staging (values-staging.yaml) where
+# the Playwright suite runs against the frontend after each sync. The image is
+# containers.renci.org/ctmd/ctmd-smoke:<frontend.tag>, built by Build-Staging.
+smoke:
+  enabled: false
+  # Blank → http://<frontend.name>:3000 (the in-cluster frontend, which proxies /api + /data).
+  targetUrl: ""
+  timeoutSeconds: 300
+
 # OpenShift Route — alternative to .ingress, only rendered when route.create: true.
 # Use this on OpenShift instead of Ingress. Cluster's wildcard cert covers default
 # *.apps.<cluster>.renci.unc.edu hosts; supply a custom host for a vanity DNS.

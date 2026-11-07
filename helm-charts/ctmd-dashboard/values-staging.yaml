@@ -140,3 +140,9 @@ redis:
   resources:
     limits: { cpu: 500m, memory: 1024Mi }
     requests: { cpu: 200m, memory: 300Mi }
+
+# Run the Playwright smoke suite in-cluster as an ArgoCD PostSync hook after each staging
+# sync (targets the in-cluster frontend). Visible in the ArgoCD UI; a failure marks the
+# staging sync failed so you can check it before promoting.
+smoke:
+  enabled: true
