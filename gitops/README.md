@@ -10,10 +10,13 @@ a release is one **button** (`workflow_dispatch`) that also ships it to prod.
 
 ```
 PR → merge to main
-  └─ Build-Staging: build/push api,frontend,pipeline2 :main-<shortsha>   (no release minted)
+  └─ Build-Staging: build/push api,frontend,pipeline2,smoke :main-<shortsha>   (no release minted)
        └─ writes main-<shortsha> into helm-charts/ctmd-dashboard/env/staging-images.yaml, commits to main
             └─ ArgoCD `ctmd-staging` (auto-sync) rolls ctmd-stage to main-<shortsha>
-                 └─ Staging Verify: unit suites + Playwright smoke vs staging URL (informational)
+                 ├─ ArgoCD PostSync hook: Playwright smoke runs IN-CLUSTER vs the frontend;
+                 │    pass/fail + logs show on the ctmd-staging app in the ArgoCD UI
+                 └─ Staging Verify (GitHub): unit suites (informational; the live-URL smoke is
+                      disabled on cloud runners — the UNC-internal route isn't reachable there)
 
 Human → Actions → "Release"  (button: bump patch/minor/major or type a version; default = promote main tip)
   └─ re-tags the already-built main-<shortsha> images → vX.Y.Z in both registries (NO rebuild)
@@ -39,6 +42,14 @@ button exists only to roll back to or redeploy a different existing version.
   the existing manual path can coexist during cutover.
 - **No secrets in git.** All creds come from pre-provisioned Secrets referenced via
   `existingSecret`. `helm template … | grep -i password` is empty for both overlays.
+- **Post-deploy smoke (staging only).** `templates/smoke-postsync.yaml` is an ArgoCD
+  **PostSync hook** Job (gated on `smoke.enabled`, true only in `values-staging.yaml`). After
+  each staging sync it runs the Playwright suite in-cluster against `http://ctmd-frontend:3000`
+  (which proxies `/api` + `/data`, so one URL covers the stack). The Job shows on the
+  `ctmd-staging` app in the ArgoCD UI — its logs are the pass/fail, and a failure marks the
+  staging sync failed so you can **check it before promoting**. It never runs in prod and
+  never touches prod; promotion stays the GitHub Release button. The Release / Deploy-to-Prod
+  run summaries link straight to the ArgoCD UI as a reminder to check smoke first.
 
 ## Files
 
@@ -51,7 +62,9 @@ button exists only to roll back to or redeploy a different existing version.
 | `helm-charts/ctmd-dashboard/values-prod.yaml` | prod overlay (captured from live release) |
 | `helm-charts/ctmd-dashboard/env/staging-images.yaml` | staging image tags (CI-written) |
 | `helm-charts/ctmd-dashboard/env/prod-images.yaml` | prod image tags (dispatch-written) |
-| `.github/workflows/build-staging.yml` | build `:main-<sha>` on merge + **staging write-back** |
+| `.github/workflows/build-staging.yml` | build `:main-<sha>` (incl. `ctmd-smoke`) on merge + **staging write-back** |
+| `helm-charts/ctmd-dashboard/templates/smoke-postsync.yaml` | ArgoCD PostSync smoke hook (staging only) |
+| `services/frontend/smoke-tests/Dockerfile` | containerised Playwright smoke suite (`ctmd-smoke` image) |
 | `.github/workflows/release.yml` | **button**: re-tag `main-<sha>` → `vX.Y.Z` + GH release + **ship to prod** (no rebuild) |
 | `.github/workflows/staging-verify.yml` | informational post-deploy tests |
 | `.github/workflows/deploy-prod.yml` | **button**: roll back / redeploy a chosen existing release to prod |

@@ -163,9 +163,14 @@ jobs:
         env:
           V: ${{ steps.ver.outputs.version }}
           SRC_TAG: ${{ steps.src.outputs.src_tag }}
+          ARGOCD_URL: https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu
         run: |
           {
             echo "## Release ${V} — cut & shipped to prod"
+            echo ""
+            echo "> **Before relying on this: confirm staging smoke passed.** The Playwright"
+            echo "> smoke suite runs in-cluster after each staging deploy and shows up on the"
+            echo "> \`ctmd-staging\` app in ArgoCD → [open ArgoCD](${ARGOCD_URL}) (UNC network/VPN)."
             echo ""
             echo "Promoted \`${SRC_TAG}\` images (the staging build) → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
             echo "Wrote \`${V}\` into env/prod-images.yaml → ArgoCD \`ctmd-prod\` syncs prod (namespace ctmd)."

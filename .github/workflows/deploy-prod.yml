@@ -74,5 +74,6 @@ jobs:
             echo ""
             echo "env/prod-images.yaml updated and committed to main. ArgoCD \`ctmd-prod\` will sync prod (namespace ctmd) to ${VERSION}."
             echo ""
-            echo "_Staging test results are informational — review the latest **Staging Verify** run for this version before promoting._"
+            echo "_Before promoting, confirm staging is healthy and smoke passed:_"
+            echo "_[open ArgoCD](https://ctmd-argocd-server-ctmd-stage.apps.ashe-k8s.renci.unc.edu) (UNC network/VPN) → the \`ctmd-staging\` app shows the in-cluster smoke result._"
           } >> "$GITHUB_STEP_SUMMARY"

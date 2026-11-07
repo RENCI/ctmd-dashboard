@@ -13,7 +13,10 @@ const { BASE_URL, fatalState } = require('./lib')
 const { tests } = require('./tests')
 
 async function main() {
-  const browser = await chromium.launch({ headless: !process.env.SMOKE_HEADED })
+  // SMOKE_NO_SANDBOX=1 is required when running as a non-root/arbitrary UID (e.g. an
+  // OpenShift restricted-SCC pod), where chromium's setuid sandbox can't initialise.
+  const launchArgs = process.env.SMOKE_NO_SANDBOX ? ['--no-sandbox', '--disable-dev-shm-usage'] : []
+  const browser = await chromium.launch({ headless: !process.env.SMOKE_HEADED, args: launchArgs })
   const results = []
 
   for (const test of tests) {
