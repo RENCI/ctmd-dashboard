@@ -1,7 +1,7 @@
 # ArgoCD Application: STAGING (ctmd-stage).
 # Auto-syncs on every commit to main. Staging runs in dev mode (no TIN auth hook):
 # values-staging.yaml sets softwareContext=development. Deployed image tags come from
-# env/staging-images.yaml, which the Build-Push-Release workflow rewrites on each merge.
+# env/staging-images.yaml, which the Build-Staging workflow rewrites (main-<sha>) on each merge.
 #
 # STUB / admin prerequisites (see gitops/README.md):
 #   - The ArgoCD instance must watch namespace `ctmd-stage` (sourceNamespaces) and an

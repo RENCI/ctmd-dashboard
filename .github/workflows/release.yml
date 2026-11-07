@@ -1,0 +1,133 @@
+# Cut a RELEASE — the "approve" button.
+#
+# Build-once / promote model: this does NOT rebuild anything. It takes images that were
+# already built and tested in staging (tagged main-<shortsha>) and re-tags them as vX.Y.Z
+# in both registries (registry-side, same digest — the exact bits staging ran), then
+# creates the git tag + GitHub release. Deploying a release to PROD is a separate button
+# ("Deploy to Prod"), which nothing here triggers.
+#
+# Usage: Actions → Release → Run workflow. Pick a bump (patch/minor/major) or type an
+# explicit version. By default it promotes the current tip of main.
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Semver bump (ignored when 'version' is set)"
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+      version:
+        description: "Explicit version e.g. v3.2.0 (blank = bump the latest release)"
+        required: false
+        default: ""
+      source_sha:
+        description: "main short-sha to promote (blank = current main tip)"
+        required: false
+        default: ""
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: ver
+        env:
+          IN_VERSION: ${{ github.event.inputs.version }}
+          IN_BUMP: ${{ github.event.inputs.bump }}
+        run: |
+          set -euo pipefail
+          if [ -n "${IN_VERSION}" ]; then
+            V="${IN_VERSION}"; case "$V" in v*) ;; *) V="v${V}" ;; esac
+          else
+            LATEST=$(git tag -l 'v*' --sort=-v:refname | head -1)
+            LATEST=${LATEST:-v0.0.0}
+            IFS=. read -r MA MI PA <<< "${LATEST#v}"
+            case "${IN_BUMP}" in
+              major) MA=$((MA+1)); MI=0; PA=0 ;;
+              minor) MI=$((MI+1)); PA=0 ;;
+              *)     PA=$((PA+1)) ;;
+            esac
+            V="v${MA}.${MI}.${PA}"
+          fi
+          if git rev-parse "refs/tags/${V}" >/dev/null 2>&1; then
+            echo "::error::tag ${V} already exists"; exit 1
+          fi
+          echo "version=${V}" >> "$GITHUB_OUTPUT"
+          echo "Release version: ${V}"
+
+      - name: Resolve source commit
+        id: src
+        env:
+          IN_SHA: ${{ github.event.inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          SHA="${IN_SHA}"
+          [ -z "${SHA}" ] && SHA=$(git rev-parse --short HEAD)
+          # Normalise to the short form the build used (main-<shortsha>).
+          SHA=$(git rev-parse --short "${SHA}")
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "Promoting images main-${SHA} → ${{ steps.ver.outputs.version }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.7.1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4.2.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to Container Registry
+        uses: docker/login-action@v4.2.0
+        with:
+          registry: containers.renci.org
+          username: ${{ secrets.CONTAINERHUB_USERNAME }}
+          password: ${{ secrets.CONTAINERHUB_TOKEN }}
+
+      - name: Promote images (re-tag, no rebuild)
+        env:
+          V: ${{ steps.ver.outputs.version }}
+          SHA: ${{ steps.src.outputs.sha }}
+        run: |
+          set -euo pipefail
+          for app in api frontend pipeline2; do
+            for reg in containers.renci.org/ctmd rencibuild; do
+              SRC="${reg}/ctmd-${app}:main-${SHA}"
+              DST="${reg}/ctmd-${app}:${V}"
+              echo "::group::${SRC} → ${DST}"
+              docker buildx imagetools create -t "${DST}" "${SRC}"
+              echo "::endgroup::"
+            done
+          done
+
+      - name: Tag + GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          V: ${{ steps.ver.outputs.version }}
+          SHA: ${{ steps.src.outputs.sha }}
+        run: |
+          set -euo pipefail
+          git tag -a "${V}" "${SHA}" -m "Release ${V}"
+          git push origin "${V}"
+          gh release create "${V}" -t "${V}" --generate-notes --latest
+
+      - name: Summary
+        if: always()
+        env:
+          V: ${{ steps.ver.outputs.version }}
+          SHA: ${{ steps.src.outputs.sha }}
+        run: |
+          {
+            echo "## Release ${V}"
+            echo ""
+            echo "Promoted \`main-${SHA}\` images → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
+            echo ""
+            echo "_To ship it: Actions → **Deploy to Prod** → choose \`${V}\`._"
+          } >> "$GITHUB_STEP_SUMMARY"

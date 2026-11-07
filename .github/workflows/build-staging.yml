@@ -1,0 +1,91 @@
+# Build + deliver to STAGING on every merge to main.
+#
+# Build-once / promote model:
+#   - This builds the three service images ONCE and tags them by commit: main-<shortsha>.
+#   - It does NOT mint a semver release. Cutting a release is a deliberate button:
+#     the "Release" workflow (workflow_dispatch) re-tags these same images as vX.Y.Z.
+#   - It writes main-<shortsha> into env/staging-images.yaml and commits to main;
+#     ArgoCD's `ctmd-staging` app (tracking main) then auto-syncs the ctmd-stage namespace.
+#
+# Loop-breaker: env/** is path-ignored, so the write-back commit does not re-trigger this
+# workflow (and pushes made with GITHUB_TOKEN do not trigger workflows anyway).
+name: Build-Staging
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - README.md.old
+      - .github/**
+      - LICENSE
+      - .gitignore
+      - .dockerignore
+      - helm-charts/ctmd-dashboard/env/**
+    tags-ignore:
+      - '*'
+jobs:
+  build-push-staging:
+    runs-on: ubuntu-latest
+    # contents: write lets the staging-promotion step commit the image-tag bump back to main.
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set short git commit SHA
+      run: echo "SHORT_SHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+    - name: Build-Api
+      uses: ./.github/actions/build-service
+      with:
+        app-name: 'api'
+        tag: 'main-${{ env.SHORT_SHA }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
+
+    - name: Build-Frontend
+      uses: ./.github/actions/build-service
+      with:
+        app-name: 'frontend'
+        tag: 'main-${{ env.SHORT_SHA }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
+
+    - name: Build-Pipeline2
+      uses: ./.github/actions/build-service
+      with:
+        app-name: 'pipeline2'
+        tag: 'main-${{ env.SHORT_SHA }}'
+        docker-name: ${{ secrets.DOCKERHUB_USERNAME }}
+        docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+        container-name: ${{ secrets.CONTAINERHUB_USERNAME }}
+        container-token: ${{ secrets.CONTAINERHUB_TOKEN }}
+
+#==========================PROMOTE TO STAGING (GitOps write-back) =========================
+    # Rewrite the three image tags in the staging overlay to main-<shortsha> and commit to
+    # main. ArgoCD's `ctmd-staging` app auto-syncs ctmd-stage to the new tag.
+    - name: Promote to staging (write image tags)
+      run: |
+        set -euo pipefail
+        FILE="helm-charts/ctmd-dashboard/env/staging-images.yaml"
+        TAG="main-${SHORT_SHA}"
+        git config user.name  "ctmd-ci[bot]"
+        git config user.email "ctmd-ci@users.noreply.github.com"
+        git fetch origin main
+        git checkout main
+        sed -i -E "s|^([[:space:]]*tag:[[:space:]]*).*|\\1${TAG}|" "$FILE"
+        if git diff --quiet -- "$FILE"; then
+          echo "staging already at ${TAG}; nothing to promote"
+          exit 0
+        fi
+        git add "$FILE"
+        git commit -m "chore(cd): staging → ${TAG}"
+        git push origin main

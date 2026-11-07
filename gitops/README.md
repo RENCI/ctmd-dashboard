@@ -5,17 +5,27 @@ reaching a cluster is an auditable git commit, and ArgoCD reconciles the rest.
 
 ## Flow
 
+Build once, promote the same artifact. A merge delivers to staging automatically; a
+release and a prod deploy are each a deliberate **button** (`workflow_dispatch`).
+
 ```
 PR → merge to main
-  └─ Build-Push-Release: semver + build/push api,frontend,pipeline2 :vX.Y.Z + tag + GH release
-       └─ writes vX.Y.Z into helm-charts/ctmd-dashboard/env/staging-images.yaml, commits to main
-            └─ ArgoCD `ctmd-staging` (auto-sync) rolls ctmd-stage to vX.Y.Z
+  └─ Build-Staging: build/push api,frontend,pipeline2 :main-<shortsha>   (no release minted)
+       └─ writes main-<shortsha> into helm-charts/ctmd-dashboard/env/staging-images.yaml, commits to main
+            └─ ArgoCD `ctmd-staging` (auto-sync) rolls ctmd-stage to main-<shortsha>
                  └─ Staging Verify: unit suites + Playwright smoke vs staging URL (informational)
 
-Human → Actions → "Deploy to Prod" (choose version; default = latest release)
-  └─ writes the version into env/prod-images.yaml, commits to main
+Human → Actions → "Release"  (button: bump patch/minor/major or type a version; default = promote main tip)
+  └─ re-tags the already-built main-<shortsha> images → vX.Y.Z in both registries (NO rebuild)
+       └─ creates git tag vX.Y.Z + GitHub release
+
+Human → Actions → "Deploy to Prod"  (button: choose version; default = latest release)
+  └─ writes vX.Y.Z into env/prod-images.yaml, commits to main
        └─ ArgoCD `ctmd-prod` (auto-sync, selfHeal OFF) rolls ctmd to that version
 ```
+
+The release re-tag is registry-side (`docker buildx imagetools create`), so the exact bits
+staging ran are what reach prod — no rebuild between environments.
 
 - **Staging runs in dev mode** (`values-staging.yaml` → `softwareContext: development` →
   `AUTH_ENV=development`): the API skips the TIN/REDCap SSO auth middleware and `/auth_status`
@@ -37,9 +47,10 @@ Human → Actions → "Deploy to Prod" (choose version; default = latest release
 | `helm-charts/ctmd-dashboard/values-prod.yaml` | prod overlay (captured from live release) |
 | `helm-charts/ctmd-dashboard/env/staging-images.yaml` | staging image tags (CI-written) |
 | `helm-charts/ctmd-dashboard/env/prod-images.yaml` | prod image tags (dispatch-written) |
-| `.github/workflows/build-release.yml` | build + release + **staging write-back** |
+| `.github/workflows/build-staging.yml` | build `:main-<sha>` on merge + **staging write-back** |
+| `.github/workflows/release.yml` | **button**: re-tag `main-<sha>` → `vX.Y.Z` + GH release (no rebuild) |
 | `.github/workflows/staging-verify.yml` | informational post-deploy tests |
-| `.github/workflows/deploy-prod.yml` | manual `workflow_dispatch` prod promotion |
+| `.github/workflows/deploy-prod.yml` | **button**: promote a chosen release to prod |
 
 ## Secret contract (pre-provision per namespace — never in git)
 
