@@ -1,0 +1,174 @@
+# Cut a RELEASE and ship it to PROD — the single "approve & ship" button.
+#
+# Build-once / promote model: this does NOT rebuild anything. It takes images that were
+# already built and tested in staging (tagged main-<shortsha>), re-tags them as vX.Y.Z in
+# both registries (registry-side, same digest — the exact bits staging ran), creates the
+# git tag + GitHub release, then writes vX.Y.Z into env/prod-images.yaml so ArgoCD's
+# `ctmd-prod` app rolls prod to it. Cutting a release = the decision to ship.
+#
+# (Rolling back or redeploying a DIFFERENT already-cut release is the separate
+# "Deploy to Prod" button; it does not cut a new version.)
+#
+# Usage: Actions → Release → Run workflow. Pick a bump (patch/minor/major) or type an
+# explicit version. By default it promotes whatever is currently running in staging
+# (the tag recorded in env/staging-images.yaml) — i.e. the artifact staging just tested.
+# Override with source_sha only to release a specific earlier main build.
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Semver bump (ignored when 'version' is set)"
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+      version:
+        description: "Explicit version e.g. v3.2.0 (blank = bump the latest release)"
+        required: false
+        default: ""
+      source_sha:
+        description: "main short-sha to promote (blank = whatever is currently in staging)"
+        required: false
+        default: ""
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: ver
+        env:
+          IN_VERSION: ${{ github.event.inputs.version }}
+          IN_BUMP: ${{ github.event.inputs.bump }}
+        run: |
+          set -euo pipefail
+          if [ -n "${IN_VERSION}" ]; then
+            V="${IN_VERSION}"; case "$V" in v*) ;; *) V="v${V}" ;; esac
+          else
+            LATEST=$(git tag -l 'v*' --sort=-v:refname | head -1)
+            LATEST=${LATEST:-v0.0.0}
+            IFS=. read -r MA MI PA <<< "${LATEST#v}"
+            case "${IN_BUMP}" in
+              major) MA=$((MA+1)); MI=0; PA=0 ;;
+              minor) MI=$((MI+1)); PA=0 ;;
+              *)     PA=$((PA+1)) ;;
+            esac
+            V="v${MA}.${MI}.${PA}"
+          fi
+          if git rev-parse "refs/tags/${V}" >/dev/null 2>&1; then
+            echo "::error::tag ${V} already exists"; exit 1
+          fi
+          echo "version=${V}" >> "$GITHUB_OUTPUT"
+          echo "Release version: ${V}"
+
+      - name: Resolve source image
+        id: src
+        env:
+          IN_SHA: ${{ github.event.inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          STAGING_OVERLAY="helm-charts/ctmd-dashboard/env/staging-images.yaml"
+          if [ -n "${IN_SHA}" ]; then
+            # Explicit override: promote a specific main build.
+            SHA=$(git rev-parse --short "${IN_SHA}")
+            SRC_TAG="main-${SHA}"
+          else
+            # Default: promote exactly what is running in staging (the tag the Build-Staging
+            # write-back recorded). The tip of main is the write-back commit itself, which has
+            # NO image built for it — so never derive the source from HEAD.
+            SRC_TAG=$(grep -m1 -E '^[[:space:]]*tag:' "${STAGING_OVERLAY}" | awk '{print $2}')
+            case "${SRC_TAG}" in
+              main-*) SHA="${SRC_TAG#main-}" ;;
+              *)      SHA=$(git rev-parse --short HEAD) ;;  # overlay still a released tag (pre-first main build)
+            esac
+          fi
+          if [ -z "${SRC_TAG}" ]; then echo "::error::could not resolve a source image tag"; exit 1; fi
+          echo "src_tag=${SRC_TAG}" >> "$GITHUB_OUTPUT"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "Promoting images ${SRC_TAG} → ${{ steps.ver.outputs.version }} (git tag at ${SHA})"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.7.1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4.2.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to Container Registry
+        uses: docker/login-action@v4.2.0
+        with:
+          registry: containers.renci.org
+          username: ${{ secrets.CONTAINERHUB_USERNAME }}
+          password: ${{ secrets.CONTAINERHUB_TOKEN }}
+
+      - name: Promote images (re-tag, no rebuild)
+        env:
+          V: ${{ steps.ver.outputs.version }}
+          SRC_TAG: ${{ steps.src.outputs.src_tag }}
+        run: |
+          set -euo pipefail
+          for app in api frontend pipeline2; do
+            for reg in containers.renci.org/ctmd rencibuild; do
+              SRC="${reg}/ctmd-${app}:${SRC_TAG}"
+              DST="${reg}/ctmd-${app}:${V}"
+              echo "::group::${SRC} → ${DST}"
+              docker buildx imagetools create -t "${DST}" "${SRC}"
+              echo "::endgroup::"
+            done
+          done
+
+      - name: Tag + GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          V: ${{ steps.ver.outputs.version }}
+          SHA: ${{ steps.src.outputs.sha }}
+        run: |
+          set -euo pipefail
+          git tag -a "${V}" "${SHA}" -m "Release ${V}"
+          git push origin "${V}"
+          gh release create "${V}" -t "${V}" --generate-notes --latest
+
+      # Cutting a release is the decision to ship: write the version into the PROD overlay
+      # and commit → ArgoCD's `ctmd-prod` app syncs prod to ${V}. (Re-deploying or rolling
+      # back to a DIFFERENT already-cut release is the separate "Deploy to Prod" button.)
+      - name: Deploy release to prod
+        env:
+          V: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          FILE="helm-charts/ctmd-dashboard/env/prod-images.yaml"
+          git fetch origin main
+          git checkout -B main origin/main
+          sed -i -E "s|^([[:space:]]*tag:[[:space:]]*).*|\\1${V}|" "$FILE"
+          git config user.name  "ctmd-ci[bot]"
+          git config user.email "ctmd-ci@users.noreply.github.com"
+          if git diff --quiet -- "$FILE"; then
+            echo "prod already at ${V}; nothing to deploy"
+          else
+            git add "$FILE"
+            git commit -m "chore(cd): prod → ${V}"
+            git push origin main
+          fi
+
+      - name: Summary
+        if: always()
+        env:
+          V: ${{ steps.ver.outputs.version }}
+          SRC_TAG: ${{ steps.src.outputs.src_tag }}
+        run: |
+          {
+            echo "## Release ${V} — cut & shipped to prod"
+            echo ""
+            echo "Promoted \`${SRC_TAG}\` images (the staging build) → \`${V}\` (api, frontend, pipeline2) in both registries; no rebuild."
+            echo "Wrote \`${V}\` into env/prod-images.yaml → ArgoCD \`ctmd-prod\` syncs prod (namespace ctmd)."
+            echo ""
+            echo "_Roll back / redeploy a different version: Actions → **Deploy to Prod**._"
+          } >> "$GITHUB_STEP_SUMMARY"

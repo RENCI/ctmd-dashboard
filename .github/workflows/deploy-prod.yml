@@ -1,9 +1,10 @@
-# Manual promotion to PROD (namespace: ctmd).
-# A human runs this from the Actions tab, choosing a version (defaults to the latest
-# release). It rewrites the three prod image tags and commits [skip ci]; ArgoCD's
-# `ctmd-prod` app then syncs prod to that version. No ArgoCD credentials are used —
-# git is the source of truth. Staging test results are informational (see Staging Verify);
-# nothing here blocks on them.
+# Promote an ALREADY-CUT release to PROD (namespace: ctmd) — rollback / redeploy button.
+# The normal ship path is the "Release" workflow, which cuts vX.Y.Z and deploys it to prod
+# in one click. Use THIS button to roll back to, or redeploy, a different existing release
+# without cutting a new one. A human runs it from the Actions tab, choosing a version
+# (defaults to the latest release). It rewrites the three prod image tags and commits to
+# main; ArgoCD's `ctmd-prod` app then syncs prod to that version. No ArgoCD creds used —
+# git is the source of truth. Staging test results are informational (see Staging Verify).
 name: Deploy to Prod
 on:
   workflow_dispatch:

@@ -1,6 +1,7 @@
 # Deployed image tags for STAGING (namespace: ctmd-stage), layered last by the ArgoCD
-# app `ctmd-staging`. The Build-Push-Release workflow rewrites these three tags on every
-# merge to main and commits [skip ci]; ArgoCD then auto-syncs staging. Do not hand-edit.
+# app `ctmd-staging`. The Build-Staging workflow rewrites these three tags to the
+# per-commit build tag (main-<shortsha>) on every merge to main and commits; ArgoCD then
+# auto-syncs staging. Do not hand-edit. (Shows a released tag until the next merge.)
 api:
   tag: v3.1.44
 frontend:
