@@ -94,7 +94,7 @@ For anything bespoke (driving the UI, asserting a computed value), append a
 {
   name: 'My page: does the thing',
   async run(page, { fatalState, pageErrors }) {
-    await page.goto(`${BASE_URL}/my-page`, { waitUntil: 'networkidle' })
+    await page.goto(`${BASE_URL}/my-page`, { waitUntil: 'domcontentloaded' })
     // ... drive the UI ...
     assert(condition, 'message shown on failure')
   },

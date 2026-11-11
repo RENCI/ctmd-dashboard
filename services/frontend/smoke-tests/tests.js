@@ -183,7 +183,7 @@ const nonJsonTests = [
     // The old card must be gone, and the two host uploads must still be present.
     name: 'View: Uploads page no longer shows the standalone Patient Demographics card',
     async run(page, { pageErrors }) {
-      await page.goto(`${BASE_URL}/uploads`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/uploads`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2000)
       const body = await page.evaluate(() => document.body.innerText || '')
       assert(!/Upload Patient Demographics/i.test(body), 'retired Patient Demographics upload card still present on /uploads')
@@ -299,7 +299,11 @@ const VIEW_ROUTES = [
 
 /** Navigate to a route and assert it rendered without blanking or throwing. */
 async function assertViewRenders(page, route, label, pageErrors) {
-  await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle' })
+  // Use 'domcontentloaded', not 'networkidle': the staging frontend runs the CRA dev
+  // server, whose hot-reload websocket keeps a connection open so the page never reaches
+  // network-idle — 'networkidle' would hang until the navigation timeout. The explicit
+  // waitForTimeout below gives the SPA time to mount and fetch after the document loads.
+  await page.goto(`${BASE_URL}${route}`, { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(2500)
   const f = await fatalState(page)
   assert(!f.devOverlay, `${label} (${route}) shows the dev-server error overlay`)
@@ -336,7 +340,7 @@ const reportViewTests = [
     name: 'View: Study report shows the Patient Demographics card',
     async run(page, { pageErrors }) {
       const id = await resolveProposalId(page)
-      await page.goto(`${BASE_URL}/studies/${id}`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/studies/${id}`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(3000)
       const body = await page.evaluate(() => document.body.innerText || '')
       assert(/Patient Demographics/i.test(body), 'Patient Demographics card not found on the study report')
@@ -350,7 +354,7 @@ const reportViewTests = [
     name: 'View: Study report shows the Site Contribution card',
     async run(page, { pageErrors }) {
       const id = await resolveProposalId(page)
-      await page.goto(`${BASE_URL}/studies/${id}`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/studies/${id}`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(3000)
       const body = await page.evaluate(() => document.body.innerText || '')
       assert(/Site Contribution/i.test(body), 'Site Contribution card not found on the study report')
@@ -365,7 +369,7 @@ const regressionTests = [
   {
     name: 'Studies list: page loads with data',
     async run(page) {
-      await page.goto(`${BASE_URL}/studies`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/studies`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2500)
       const text = await page.evaluate(() => document.body.innerText || '')
       assert(text.includes('Studies'), 'Studies heading not found')
@@ -376,7 +380,7 @@ const regressionTests = [
   {
     name: 'Studies list: adding columns does not blank the page',
     async run(page) {
-      await page.goto(`${BASE_URL}/studies`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/studies`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2500)
       const r = await toggleAllColumns(page)
       assert(r.found, 'Show Columns button not found')
@@ -388,7 +392,7 @@ const regressionTests = [
     async run(page) {
       // Proposal 146 is a study with many sites; its Sites table exposes ~33
       // columns, most hidden by default — the original crash repro.
-      await page.goto(`${BASE_URL}/studies/146`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/studies/146`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(4000)
       const r = await toggleAllColumns(page)
       assert(r.found, 'Show Columns button not found on study report')
@@ -398,7 +402,7 @@ const regressionTests = [
   {
     name: 'Site Metrics download produces a CSV with data rows',
     async run(page) {
-      await page.goto(`${BASE_URL}/studies`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/studies`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2500)
       await page.locator('button:has-text("Site Metrics")').click()
       await page.waitForSelector('text=/site rows ready to download/', { timeout: 30000 })
@@ -417,7 +421,7 @@ const regressionTests = [
   {
     name: 'Home: Submissions By Month chart renders (not the empty state)',
     async run(page) {
-      await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(3000)
       const body = await page.evaluate(() => document.body.innerText || '')
       assert(/Submissions by Month|Proposals by Month/i.test(body), 'Submissions By Month widget not found on Home')
@@ -462,7 +466,7 @@ const regressionTests = [
         (p) => p.dateSubmitted && gyStart <= p.dateSubmitted && p.dateSubmitted <= gyEnd,
       ).length
 
-      await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' })
+      await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(3000)
       const shown = await page.evaluate(() => {
         const label = Array.from(document.querySelectorAll('span')).find(
