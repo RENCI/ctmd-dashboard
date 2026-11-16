@@ -19,7 +19,7 @@ jobs:
   build-push-pipeline2:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     # Obtain the branch being developed
     - name: Set branch name
       id: branch
@@ -30,7 +30,7 @@ jobs:
     # Run the pipeline2 unit tests before building — a failing test blocks the image
     # (mirrors build-api.yml / build-frontend.yml). CTMD-197.
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: '3.12'
     - name: Pipeline2 unit tests
