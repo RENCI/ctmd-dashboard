@@ -4,7 +4,7 @@
 #
 # Base image bundles chromium + all OS deps for this Playwright version, so no
 # `playwright install` / apt at runtime (the cluster has no such egress anyway).
-FROM mcr.microsoft.com/playwright:v1.61.1-jammy
+FROM mcr.microsoft.com/playwright:v1.65.1-jammy
 
 WORKDIR /smoke
 

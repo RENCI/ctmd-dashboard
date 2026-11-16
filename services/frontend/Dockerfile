@@ -1,6 +1,6 @@
 # Build environment
 ###################
-FROM node:24.22.1-alpine AS builder
+FROM node:24.22.3-alpine AS builder
 
 # Create and set working directory
 RUN mkdir /src
@@ -23,7 +23,7 @@ RUN npm run build
 
 # Production environment
 ########################
-FROM nginx:1.29-alpine
+FROM nginx:1.31-alpine
 ARG BUILD_DATE
 ARG BUILD_REF
 # This can be used for sanity checking images
