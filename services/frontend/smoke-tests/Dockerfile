@@ -4,7 +4,16 @@
 #
 # Base image bundles chromium + all OS deps for this Playwright version, so no
 # `playwright install` / apt at runtime (the cluster has no such egress anyway).
-FROM mcr.microsoft.com/playwright:v1.65.1-jammy
+#
+# PINNED to 1.61.1 — do NOT bump without re-validating the full suite against
+# staging. Playwright 1.65.1 (Chromium 159) hangs while evaluating this app's
+# CRA/MUI-v4 bundle: the deferred main.js never finishes, React never mounts,
+# document.readyState sticks at "interactive", so every page-render ("View:")
+# check times out. The same bundle renders fine in real browsers (Firefox 158,
+# current Chrome) and under Chromium from 1.61.1 — Playwright ships Chromium
+# ahead of stable, so this is a bleeding-edge-engine incompatibility, not a
+# user-facing bug. Keep base image and the npm "playwright" pin below in lockstep.
+FROM mcr.microsoft.com/playwright:v1.61.1-jammy
 
 WORKDIR /smoke
 
