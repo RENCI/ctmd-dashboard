@@ -1,0 +1,124 @@
+# Dependabot configuration — CTMD Dashboard  (CTMD-146: general security update)
+#
+# Goal: keep dependencies and container base images current with LOW PR noise
+# and SECURITY-first prioritisation.
+#   * Weekly cadence (not Dependabot's daily default) -> fewer, batched PRs.
+#   * Grouped updates -> one PR per ecosystem for routine minor/patch bumps
+#     instead of one-PR-per-package.
+#   * A dedicated "<eco>-security" group per ecosystem batches Dependabot
+#     SECURITY updates (the critical/high CVE fixes) so they land fast and are
+#     easy to spot and merge first.
+#   * open-pull-requests-limit caps *version-update* PRs only; Dependabot
+#     security-update PRs are NEVER capped by it, so a CVE fix is never starved
+#     by the noise limit.
+#
+# Scope note — this file governs version-update and security-update *PRs*. The
+# raw number of Dependabot *alerts* (the Security tab) comes from the published
+# CVE feed and is not configurable here. To cut that backlog, enable repo-level
+# auto-triage (Settings > Code security > Dependabot) to auto-dismiss low-impact
+# alerts on development-scoped dependencies.
+#
+# The Playwright smoke harness (services/frontend/smoke-tests) is intentionally
+# NOT tracked below: its base image tag (mcr.microsoft.com/playwright:vX.Y.Z)
+# and its npm "playwright" pin must move together, so it is bumped manually as a
+# matched pair (a split Dependabot PR would leave the browser/driver mismatched).
+version: 2
+updates:
+  # ---- Container base images (frontend, api, pipeline2) --------------------
+  - package-ecosystem: "docker"
+    directories:
+      - "/services/frontend"
+      - "/services/api"
+      - "/services/pipeline2"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "docker", "security"]
+    groups:
+      docker-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      docker-base-images:
+        applies-to: version-updates
+        patterns: ["*"]
+
+  # ---- GitHub Actions workflows -------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels: ["dependencies", "github-actions", "security"]
+    groups:
+      actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      actions-all:
+        applies-to: version-updates
+        patterns: ["*"]
+
+  # ---- Node API (services/api) --------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/services/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "npm", "api"]
+    groups:
+      api-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      api-minor-patch:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ---- React frontend (services/frontend) ---------------------------------
+  # CRA 5 + MUI v4 on React 18 is fragile: batch the safe minor/patch bumps and
+  # surface security fixes promptly. Majors are NOT ignored (an ignore would also
+  # suppress a security update that needs a major bump); they arrive as separate
+  # PRs, capped by the limit, and get a human migration when we choose to take one.
+  - package-ecosystem: "npm"
+    directory: "/services/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "npm", "frontend"]
+    groups:
+      frontend-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      frontend-minor-patch:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ---- Python pipeline2 (services/pipeline2) ------------------------------
+  - package-ecosystem: "pip"
+    directory: "/services/pipeline2"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels: ["dependencies", "pip", "pipeline2"]
+    groups:
+      pip-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      pip-all:
+        applies-to: version-updates
+        patterns: ["*"]
