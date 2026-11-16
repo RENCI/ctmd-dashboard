@@ -1,4 +1,4 @@
-FROM node:24.22.3-bookworm-slim
+FROM node:26.13.1-bookworm-slim
 
 ARG BUILD_DATE
 ARG BUILD_REF
