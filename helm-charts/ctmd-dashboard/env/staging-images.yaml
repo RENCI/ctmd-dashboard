@@ -3,8 +3,8 @@
 # per-commit build tag (main-<shortsha>) on every merge to main and commits; ArgoCD then
 # auto-syncs staging. Do not hand-edit. (Shows a released tag until the next merge.)
 api:
-  tag: main-ab43c82
+  tag: main-26fde66
 frontend:
-  tag: main-ab43c82
+  tag: main-26fde66
 pipeline2:
-  tag: main-ab43c82
+  tag: main-26fde66
