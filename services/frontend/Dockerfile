@@ -23,7 +23,11 @@ RUN npm run build
 
 # Production environment
 ########################
-FROM nginx:1.31-alpine
+# Pinned exact (not the floating 1.31-alpine) to carry the fix for
+# CVE-2026-123007 — an HTTP/2 integer underflow leading to RCE, affecting nginx
+# mainline 1.31.0-1.31.8, fixed in 1.31.9. (Our config does not enable http2, so
+# we are not believed exposed, but this keeps the base image on the patched release.)
+FROM nginx:1.31.9-alpine
 ARG BUILD_DATE
 ARG BUILD_REF
 # This can be used for sanity checking images
